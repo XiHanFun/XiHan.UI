@@ -21,8 +21,8 @@ import {
   provideListboxItem,
   provideListboxItemGroup,
   useListboxContext,
+  useListboxGroupContext,
   useListboxItemContext,
-  useListboxItemGroupContext,
 } from './context'
 import { useListbox } from './use-listbox'
 
@@ -228,7 +228,7 @@ export const XhListboxGroupLabel = defineComponent({
   name: 'XhListboxGroupLabel',
   setup(_, { slots }) {
     const ctx = useListboxContext()
-    const { group } = useListboxItemGroupContext()
+    const { group } = useListboxGroupContext()
     return () => h('span', ctx.api.value.getGroupLabelProps(group.value), slots.default?.())
   },
 })

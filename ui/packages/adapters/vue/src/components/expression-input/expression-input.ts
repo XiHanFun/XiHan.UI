@@ -8,17 +8,17 @@
 import type { ControlVariant, Direction, ExpressionCheck, ExpressionCompletionSource, Placement, Size, Tone } from '@xihan-ui/core'
 import type { FunctionTable } from '@xihan-ui/expression'
 import type { ExpressionInputApi, ExpressionInputAutoSize, ExpressionInputEl, ExpressionInputHost, ExpressionInputItem, ExpressionInputSchema, ExpressionInputTranslations } from '@xihan-ui/headless'
-import type { ComputedRef, InjectionKey, PropType, SlotsType, VNode } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { expressionInputStructure } from '@xihan-ui/headless'
-import { computed, defineComponent, h, inject, mergeProps, onUnmounted, provide, watch } from 'vue'
+import { computed, defineComponent, h, mergeProps, onUnmounted, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { renderStructure } from '../../runtime/structure'
 import { useOverlayScrollbars } from '../../runtime/use-overlay-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
-import { provideExpressionInput, useExpressionInputContext } from './context'
+import { provideExpressionInput, provideExpressionInputItem, useExpressionInputContext, useExpressionInputItemContext } from './context'
 import { useExpressionInput } from './use-expression-input'
 
 type ExpressionInputProps = ExpressionInputSchema['props']
@@ -38,8 +38,6 @@ export type ExpressionInputRootSlotProps = Pick<
   | 'insert'
   | 'close'
 >
-
-const ITEM_KEY: InjectionKey<ComputedRef<ExpressionInputItem | undefined>> = Symbol.for('xh-expression-input-item')
 
 export const XhExpressionInputRoot = defineComponent({
   name: 'XhExpressionInputRoot',
@@ -236,7 +234,7 @@ export const XhExpressionInputItem = defineComponent({
   setup(props, { slots }) {
     const ctx = useExpressionInputContext()
     const item = computed(() => ctx.api.value.items.find(candidate => candidate.key === props.value))
-    provide(ITEM_KEY, item)
+    provideExpressionInputItem(item)
     return () => (item.value ? h('div', ctx.api.value.getItemProps({ item: item.value }), slots.default?.()) : null)
   },
 })
@@ -249,9 +247,7 @@ function itemPart(name: string, props: (api: ExpressionInputApi, item: Expressio
     },
     setup(_, { slots }) {
       const ctx = useExpressionInputContext()
-      const item = inject(ITEM_KEY, null)
-      if (!item)
-        throw new Error(`[xh] ${name} 必须用在 XhExpressionInputItem 内`)
+      const item = useExpressionInputItemContext()
       return () => (item.value ? h('span', props(ctx.api.value, item.value) as Record<string, unknown>, slots.default?.()) : null)
     },
   })

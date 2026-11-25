@@ -233,7 +233,7 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 
 改了哪一块先跑对应模块，提交前再跑一次全量。
 
-`pnpm gate` 运行 139 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
+`pnpm gate` 运行 140 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
 
 | 门禁 | 拦截内容 |
 | --- | --- |
@@ -260,6 +260,7 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 | `check-focus-ring-surface` | 改环色的声明（`--xh-_ring-color` / `outline-color` / 键盘聚焦规则中的 `outline` 简写）解不到库环两支（`currentColor`、前景色、底色、透明）；皮肤给库环令牌链上的名称赋值；`--xh-_ring-gap` 赋了 `var(--xh-ring-gap)` 以外的值；关环规则没在 `ringless` 中写明环由谁绘制，或登记了却已扫不到 |
 | `check-focus-outline-reset` | 皮肤在 `:focus:not(:focus-visible)` 下复位 `outline`（含 `outline-style` / `outline-width` / `outline-color`）。UA 只在 `:focus-visible` 绘制环，这条复位是死代码，而 `outline` 简写会把 `outline-color` 复位成 `currentColor`，描边色一旦进过渡，焦点离开时就闪出一圈近黑描边 |
 | `check-exports` | 已实现却未从包级入口导出，包外无法获取，而构建与类型检查照常通过 |
+| `check-adapter-contexts` | Vue / React 组件上下文的读钩子没从包入口导出、两端同一部件的读钩子不同名，或提供方（`provide*`、Provider）出了包。实现机制用的读钩子逐条登记，登记项过期同样判失败 |
 | `check-type-assertions` | 三个适配器源码里 `as Record<string, unknown>` 与 `as never` 的处数比登记的多：连接层的 getter 本来就按 `Record<string, unknown>` 出类型，逐处断言掩盖不了什么，只会把真需要断言的几处淹掉。处数只降不升，降了跑 `pnpm assertions:update` 收紧登记 |
 | `check-package-roles` | 包所在的角色组与其 `package.json` 中的依赖声明不一致 |
 | `check-public-surface` | 公开面基线中有而当前没有的名字：被删除或改名 |

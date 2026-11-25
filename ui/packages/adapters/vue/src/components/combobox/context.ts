@@ -50,7 +50,7 @@ export function provideComboboxItemGroup(ctx: ComboboxItemGroupContext): void {
   provide(GROUP_KEY, ctx)
 }
 
-export function useComboboxItemGroupContext(): ComboboxItemGroupContext {
+export function useComboboxGroupContext(): ComboboxItemGroupContext {
   const ctx = inject(GROUP_KEY, null)
   if (!ctx)
     throw new Error('[xh] Combobox 分组标题必须用在 XhComboboxGroup 内')

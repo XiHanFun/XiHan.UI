@@ -60,6 +60,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | `exports` 子路径 | 70 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）会被 Node 与打包器拒绝，这些路径不是 API |
 | Vue 组件导出 `Xh*` | 1260（143 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
 | Vue 组合式函数 `use<家族>` | 113 | `useSelect`、`useCombobox`。不使用库内部件、自行编写标记时的唯一入口 |
+| Vue 上下文读钩子 `use*Context` | 205 | `useSelectContext`、`useAccordionItemContext`。供自行编写的部件放进现成组件后读取同一份 `api` 与部件身份，名字与 React 一一对应，只能在对应部件之内调用。上下文只由库内部件提供，提供方不导出 |
 | Vue 指令 | 2 | `vBackground`（`@xihan-ui/vue/backgrounds`）、`vSound`（`@xihan-ui/vue/sound`），两个子入口各依赖一个可选 peer |
 | 无头内核 `connect*` | 143 | `connectAccordion` 及其参数顺序、返回的 getter 名 |
 | 无头内核 `*Machine` | 80 | 机器 schema 的形状 |
@@ -86,8 +87,6 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | `@xihan-ui/headless` 的内部算子与常量 | 625 | `clampRating`、`buildMonthGrid`、`colorHexToRgba`、`CAROUSEL_AUTOPLAY_INTERVAL` 等。它们是内核实现的一部分，实现变化时签名随之变化。所需默认值应从组件 props 的文档默认值读取，不应 import 常量再自行比对 |
 | `@xihan-ui/headless` 的内部伴生类型 | 564 | `*Refs`（机器持有的 DOM 引用袋，48 个）、`ColorAnchor`、`CascaderLevel` 等，是上述函数的参数与返回类型 |
 | `xxxAnatomy` / `xxxMeta` / `xxxKeyboard` 三组导出对象 | 各 143 | 它们描述的 part 名单受约束（见第二节），但这三个对象本身的组织方式不受约束。部件名单以组件文档页的解剖表为准，不应 import 这些对象 |
-| Vue 的 `provide*` / `use*Context` 函数 | 119 | [Vue 适配器](../adapters/vue) 已写明父子组件之间的 provide / inject 是内部实现，不对外开放。需要下探时使用 `use<家族>()` |
-| Vue 的 `useTimelineItem` | 1 | 名字形似组合式函数，实际是 inject 管道，与上一行同类 |
 | 适配器运行时底座 | Vue 3 个、WC 8 个 | `createVueRuntime` / `createVueIdGenerator` / `vueNormalize`；`createElementRuntime` / `createSpreader` / `defineElement` / `discoverParts` / `wcNormalize` / `MachineController` 等。这些是适配器与内核之间的接缝，签名依赖的类型未从同一个包导出，无法构造调用 |
 | WC 的元素类导出 `Xh*Element` | 148 | 仅用于 `instanceof` 与手动 `customElements.define`，不支持 `extends`（元素类的基类不导出、`wire()` 是 protected abstract）。获取元素使用 `document.querySelector`。编写自己的元素继承 `authoring` 子入口的 `XhReactiveElement`，它不计在这一行 |
 | WC 元素上的 `static partContract` | 143 | 部件校验的输入数据，实现细节 |
@@ -431,10 +430,10 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，20678 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，20772 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 246 条子入口、10935 个导出名、143 个 `data-scope` 与 1427 条部件配对、
+覆盖：包名与 246 条子入口、11029 个导出名、143 个 `data-scope` 与 1427 条部件配对、
 143 个组件的 2351 个 prop 名、321 种 `data-*`、33 个 `data-state` 取值、812 个令牌、
 5 个 `@layer` 名、4832 个组件覆盖槽、147 个自定义元素及其 attribute 与事件。
 

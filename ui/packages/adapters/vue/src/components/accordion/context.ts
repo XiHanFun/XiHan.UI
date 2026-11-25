@@ -29,7 +29,7 @@ export function provideAccordionItem(item: () => AccordionItemProps): void {
   provide(ITEM_KEY, item)
 }
 
-export function useAccordionItem(): () => AccordionItemProps {
+export function useAccordionItemContext(): () => AccordionItemProps {
   const item = inject(ITEM_KEY, null)
   if (!item)
     throw new Error('[xh] Accordion 条目部件必须用在 XhAccordionItem 内')

@@ -226,7 +226,9 @@ const { api } = useAccordion(
 
 `api` 是一个 `ComputedRef`，随状态机状态变化重新求值。纯展示型组件（如 `XhBadge` 等没有状态机的组件）不提供组合式函数。
 
-上下文类型（`AccordionContext` 等）也一并导出，便于向下透传 `api` 时标注类型。父子组件之间的 provide / inject 是内部实现，不对外开放；自定义结构请直接用组合式函数获取 `api`，不接入现成组件的上下文。
+上下文类型（`AccordionContext` 等）也一并导出，便于向下透传 `api` 时标注类型。
+
+自行编写的部件放进现成组件时，用读钩子取所在组件的上下文：`useAccordionContext()` 取整个组件的 `api`，`useAccordionItemContext()` 取所在条目的身份。每个部件的上下文都有对应的读钩子，名字与 React 一一对应，只在对应部件之内取得到。上下文只由库内部件提供，提供方（provide）不导出；完全自定义结构时用组合式函数获取 `api`。
 
 ## 状态机接入 Vue 响应式
 

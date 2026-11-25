@@ -32,7 +32,7 @@ export function provideTimelineItem(item: () => TimelineItemProps): void {
   provide(ITEM_KEY, item)
 }
 
-export function useTimelineItem(): () => TimelineItemProps {
+export function useTimelineItemContext(): () => TimelineItemProps {
   const item = inject(ITEM_KEY, null)
   if (!item)
     throw new Error('[xh] Timeline 圆点必须用在 XhTimelineItem 内')

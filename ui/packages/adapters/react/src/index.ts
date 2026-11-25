@@ -180,6 +180,7 @@ export { XhButton, XhButtonIndicator, XhButtonLabel, XhButtonPrefix, XhButtonSuf
 export type { XhButtonIndicatorProps, XhButtonLabelProps, XhButtonPrefixProps, XhButtonProps, XhButtonSuffixProps } from './components/button'
 export { XhButtonGroup } from './components/button-group/button-group'
 export type { XhButtonGroupProps } from './components/button-group/button-group'
+export { useButtonGroupContext } from './components/button-group/context'
 export {
   XhCalendarPickerCell,
   XhCalendarPickerCellTrigger,
@@ -366,6 +367,7 @@ export {
 } from './components/cascader/cascader'
 export type { CascaderRootSlotProps } from './components/cascader/cascader'
 export {
+  useCascaderContentContext,
   useCascaderContext,
   useCascaderGroupContext,
   useCascaderItemContext,
@@ -541,7 +543,7 @@ export type {
   XhColorPickerTriggerProps,
   XhColorPickerValueTextProps,
 } from './components/color-picker/color-picker'
-export { useColorPickerContext } from './components/color-picker/context'
+export { useColorPickerContext, useColorPickerTagContext } from './components/color-picker/context'
 export { useColorPicker } from './components/color-picker/use-color-picker'
 export type { ColorPickerContext } from './components/color-picker/use-color-picker'
 export {
@@ -725,6 +727,7 @@ export {
   useDatePickerCellContext,
   useDatePickerContext,
   useDatePickerPanelContext,
+  useDatePickerTagContext,
 } from './components/date-picker/context'
 export {
   XhDatePickerCalendar,
@@ -814,8 +817,11 @@ export { useDatePicker } from './components/date-picker/use-date-picker'
 export type { DatePickerContext } from './components/date-picker/use-date-picker'
 export {
   useDateRangePickerCellContext,
+  useDateRangePickerColumnGroupContext,
   useDateRangePickerContext,
   useDateRangePickerPanelContext,
+  useDateRangePickerSegmentGroupContext,
+  useDateRangePickerTimeColumnContext,
 } from './components/date-range-picker/context'
 export {
   XhDateRangePickerCalendar,
@@ -1135,7 +1141,7 @@ export { useFieldArray } from './components/field-array/use-field-array'
 export type { FieldArrayContext } from './components/field-array/use-field-array'
 export { XhFieldBoundary } from './components/field/boundary'
 export type { XhFieldBoundaryProps } from './components/field/boundary'
-export { FieldProvider, useFieldContext, useOptionalFieldContext } from './components/field/context'
+export { useFieldContext, useOptionalFieldContext } from './components/field/context'
 export {
   XhFieldControl,
   XhFieldDescription,
@@ -1310,6 +1316,8 @@ export type {
 } from './components/floating-panel/floating-panel'
 export { useFloatingPanel } from './components/floating-panel/use-floating-panel'
 export type { FloatingPanelContext } from './components/floating-panel/use-floating-panel'
+export { useFormContext, useOptionalFormContext } from './components/form/context'
+export { useOptionalFormField } from './components/form/field-context'
 export {
   defineFormFields,
   XhFormErrorSummary,
@@ -1332,7 +1340,7 @@ export type {
   XhFormSubmitTriggerProps,
 } from './components/form/form'
 export { useForm } from './components/form/use-form'
-export type { FormNotifiers, FormContext } from './components/form/use-form'
+export type { FormContext, FormNotifiers } from './components/form/use-form'
 export { useFormatInputContext } from './components/format-input/context'
 export {
   XhFormatInputErrorText,
@@ -1950,8 +1958,6 @@ export type {
 export { useNavigationMenu } from './components/navigation-menu/use-navigation-menu'
 export type { NavigationMenuContext } from './components/navigation-menu/use-navigation-menu'
 export {
-  NotificationItemProvider,
-  NotificationProvider,
   useNotificationContext,
   useNotificationContextOptional,
   useNotificationItemContext,
@@ -2458,7 +2464,12 @@ export type {
   XhSeparatorProps,
   XhSeparatorRootProps,
 } from './components/separator/separator'
-export { useSideNavContext, useSideNavNodeContext } from './components/side-nav/context'
+export {
+  useSideNavContext,
+  useSideNavGroupContext,
+  useSideNavItemContext,
+  useSideNavNodeContext,
+} from './components/side-nav/context'
 export type { SideNavNodeContext } from './components/side-nav/context'
 export {
   XhSideNavBranch,
@@ -2843,7 +2854,11 @@ export type {
 } from './components/time-field/time-field'
 export { useTimeField } from './components/time-field/use-time-field'
 export type { TimeFieldContext } from './components/time-field/use-time-field'
-export { useTimePickerColumnContext, useTimePickerContext } from './components/time-picker/context'
+export {
+  useTimePickerColumnContext,
+  useTimePickerContext,
+  useTimePickerTagContext,
+} from './components/time-picker/context'
 export {
   XhTimePickerClearTrigger,
   XhTimePickerColumn,
@@ -3170,7 +3185,12 @@ export type {
 } from './components/transfer/transfer'
 export { useTransfer } from './components/transfer/use-transfer'
 export type { TransferContext } from './components/transfer/use-transfer'
-export { useTreeSelectContext, useTreeSelectNodeContext, useTreeSelectTagContext } from './components/tree-select/context'
+export {
+  useTreeSelectContentContext,
+  useTreeSelectContext,
+  useTreeSelectNodeContext,
+  useTreeSelectTagContext,
+} from './components/tree-select/context'
 export {
   XhTreeSelectBranch,
   XhTreeSelectBranchContent,

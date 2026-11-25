@@ -12,7 +12,7 @@ import { connectTimeline } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
-import { provideTimeline, provideTimelineItem, useTimelineContext, useTimelineItem } from './context'
+import { provideTimeline, provideTimelineItem, useTimelineContext, useTimelineItemContext } from './context'
 
 /** 根渲染为 ol：事件本身有先后，列表标记由皮肤去除、列表语义由 role 保留。 */
 export const XhTimelineRoot = defineComponent({
@@ -58,7 +58,7 @@ export const XhTimelineIndicator = defineComponent({
   name: 'XhTimelineIndicator',
   setup(_, { slots }) {
     const ctx = useTimelineContext()
-    const item = useTimelineItem()
+    const item = useTimelineItemContext()
     return () => h('span', ctx.api.value.getIndicatorProps(item()), slots.default?.())
   },
 })

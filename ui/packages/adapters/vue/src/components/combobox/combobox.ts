@@ -26,8 +26,8 @@ import {
   provideComboboxItemGroup,
   provideComboboxTag,
   useComboboxContext,
+  useComboboxGroupContext,
   useComboboxItemContext,
-  useComboboxItemGroupContext,
   useComboboxTagContext,
 } from './context'
 import { useCombobox } from './use-combobox'
@@ -383,7 +383,7 @@ export const XhComboboxGroupLabel = defineComponent({
   name: 'XhComboboxGroupLabel',
   setup(_, { slots }) {
     const ctx = useComboboxContext()
-    const { group } = useComboboxItemGroupContext()
+    const { group } = useComboboxGroupContext()
     return () => h('span', ctx.api.value.getGroupLabelProps(group.value), slots.default?.())
   },
 })

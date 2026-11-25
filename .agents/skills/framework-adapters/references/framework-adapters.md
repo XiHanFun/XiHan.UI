@@ -9,6 +9,7 @@
 - 框架命名差异只存在于语法层，不改变功能。
 - 复合组件必须显式渲染完成其 required parts。
 - 样式由共享 CSS 处理，不在适配器写设计属性内联样式。
+- 部件上下文写进组件目录的 `context.ts`：读钩子（`use<部件>Context`）全部从包入口导出，Vue 与 React 同名；提供方（Vue 的 `provide*`、React 的 Provider）不出包。只服务实现机制的读钩子登进 `check-adapter-contexts` 并写明理由。
 
 ## 2. Vue
 

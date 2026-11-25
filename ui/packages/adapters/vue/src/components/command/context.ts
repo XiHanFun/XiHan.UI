@@ -50,7 +50,7 @@ export function provideCommandItemGroup(ctx: CommandItemGroupContext): void {
   provide(GROUP_KEY, ctx)
 }
 
-export function useCommandItemGroupContext(): CommandItemGroupContext {
+export function useCommandGroupContext(): CommandItemGroupContext {
   const ctx = inject(GROUP_KEY, null)
   if (!ctx)
     throw new Error('[xh] Command 分组标题必须用在 XhCommandGroup 内')

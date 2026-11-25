@@ -30,7 +30,7 @@ export function provideFilterBuilderGroup(path: ComputedRef<FilterPath>): void {
   provide(GROUP_KEY, path)
 }
 
-export function useFilterBuilderGroup(): ComputedRef<FilterPath> {
+export function useFilterBuilderGroupContext(): ComputedRef<FilterPath> {
   const path = inject(GROUP_KEY, null)
   if (!path)
     throw new Error('[xh] 组头、条目、组尾与组的触发钮必须用在 XhFilterBuilderGroup 内')
@@ -42,7 +42,7 @@ export function provideFilterBuilderCondition(path: ComputedRef<FilterPath>): vo
   provide(CONDITION_KEY, path)
 }
 
-export function useFilterBuilderCondition(): ComputedRef<FilterPath> {
+export function useFilterBuilderConditionContext(): ComputedRef<FilterPath> {
   const path = inject(CONDITION_KEY, null)
   if (!path)
     throw new Error('[xh] 条件行里的部件必须用在 XhFilterBuilderCondition 内')

@@ -1090,19 +1090,19 @@ truth.Vue家族组合式函数数 = {
   },
 }
 
-truth.Vue内部注入函数数 = {
-  how: 'packages/adapters/vue/src/index.ts 值导出里 provide* 与 use*Context 两类的条数之和',
+truth.Vue上下文读钩子数 = {
+  how: 'packages/adapters/vue/src/index.ts 里从各组件 context 模块转出的 use* 读钩子条数',
   async value() {
     const src = await read('packages/adapters/vue/src/index.ts')
     const names = new Set()
-    for (const block of src.matchAll(/^export\s+\{([\s\S]*?)\}\s+from/gm)) {
+    for (const block of src.matchAll(/^export\s+\{([^}]*)\}\s+from\s+'\.\/components\/[^']*context'/gm)) {
       for (const raw of block[1].split(',')) {
         const name = raw.trim().split(/\s+as\s+/).pop()?.trim()
-        if (name)
+        if (name?.startsWith('use'))
           names.add(name)
       }
     }
-    return [...names].filter(name => /^provide[A-Z]/.test(name) || /^use[A-Z].*Context$/.test(name)).length
+    return names.size
   },
 }
 
@@ -1457,7 +1457,7 @@ const TABLE = [
   ['docs/guide/versioning.md', /\| `@xihan-ui\/web-components` \| (\d+) 个自定义元素/, '自定义元素数加一'],
   ['docs/guide/versioning.md', /\| `@xihan-ui\/styles` \| (\d+) 份组件皮肤/, '组件皮肤份数'],
   ['docs/guide/versioning.md', /DOM 引用袋，(\d+) 个）/, '引用袋类型数'],
-  ['docs/guide/versioning.md', /\| Vue 的 `provide\*` \/ `use\*Context` 函数 \| (\d+) \|/, 'Vue内部注入函数数'],
+  ['docs/guide/versioning.md', /\| Vue 上下文读钩子 `use\*Context` \| (\d+) \|/, 'Vue上下文读钩子数'],
   ['docs/guide/versioning.md', /，(\d+) 个组件的 `emits` 全是对象式/, '对象式emits的组件数'],
   ['docs/guide/versioning.md', /\| `@xihan-ui\/styles` 的 CSS 子路径 \| (\d+) \|/, 'styles子路径键数'],
   ['docs/guide/versioning.md', /，与 (\d+) 条 `\.css`：/, '皮肤份数'],

@@ -22,8 +22,8 @@ import {
   provideCommandItem,
   provideCommandItemGroup,
   useCommandContext,
+  useCommandGroupContext,
   useCommandItemContext,
-  useCommandItemGroupContext,
 } from './context'
 import { useCommand } from './use-command'
 
@@ -241,7 +241,7 @@ export const XhCommandGroupLabel = defineComponent({
   name: 'XhCommandGroupLabel',
   setup(_, { slots }) {
     const ctx = useCommandContext()
-    const { group } = useCommandItemGroupContext()
+    const { group } = useCommandGroupContext()
     return () => h('span', ctx.api.value.getGroupLabelProps(group.value), slots.default?.())
   },
 })

@@ -73,7 +73,7 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from "@
 const { api, service } = useDialog({ open, onOpenChange });
 ```
 
-`api` 每次渲染重新求值，随状态机状态变化。上下文类型（如 `DialogContext`）也导出，便于向下透传 `api` 时标注类型。父子部件之间的 context 是内部实现，不对外开放。
+`api` 每次渲染重新求值，随状态机状态变化。上下文类型（如 `DialogContext`）也导出，便于向下透传 `api` 时标注类型。自行编写的部件放进现成组件时，用读钩子取所在组件的上下文，如 `useDialogContext()`；每个部件的上下文都有对应的读钩子，名字与 Vue 一一对应，只在对应部件之内取得到。上下文只由库内部件提供，Provider 不导出。
 
 ## 全局配置
 

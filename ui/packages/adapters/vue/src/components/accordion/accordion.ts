@@ -13,7 +13,7 @@ import { accordionStructure } from '@xihan-ui/headless'
 import { defineComponent, h, ref } from 'vue'
 import { renderStructure } from '../../runtime/structure'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
-import { provideAccordion, provideAccordionItem, useAccordionContext, useAccordionItem } from './context'
+import { provideAccordion, provideAccordionItem, useAccordionContext, useAccordionItemContext } from './context'
 import { useAccordion } from './use-accordion'
 
 type AccordionProps = AccordionSchema['props']
@@ -90,7 +90,7 @@ export const XhAccordionHeader = defineComponent({
   name: 'XhAccordionHeader',
   setup(_, { slots }) {
     const ctx = useAccordionContext()
-    const item = useAccordionItem()
+    const item = useAccordionItemContext()
     return () => h('h3', ctx.api.value.getHeaderProps(item()), slots.default?.())
   },
 })
@@ -99,7 +99,7 @@ export const XhAccordionTrigger = defineComponent({
   name: 'XhAccordionTrigger',
   setup(_, { slots }) {
     const ctx = useAccordionContext()
-    const item = useAccordionItem()
+    const item = useAccordionItemContext()
     return () => h('button', ctx.api.value.getTriggerProps(item()), slots.default?.())
   },
 })
@@ -108,7 +108,7 @@ export const XhAccordionContent = defineComponent({
   name: 'XhAccordionContent',
   setup(_, { slots }) {
     const ctx = useAccordionContext()
-    const item = useAccordionItem()
+    const item = useAccordionItemContext()
     const contentRef = ref<HTMLElement | null>(null)
     // 闸门按面板各开一个：手风琴模式下切换项时，一个进场一个退场是同时发生的
     const visible = useOverlayExit({
@@ -131,7 +131,7 @@ export const XhAccordionIndicator = defineComponent({
   name: 'XhAccordionIndicator',
   setup(_, { slots }) {
     const ctx = useAccordionContext()
-    const item = useAccordionItem()
+    const item = useAccordionItemContext()
     return () => h('span', ctx.api.value.getIndicatorProps(item()), slots.default?.())
   },
 })

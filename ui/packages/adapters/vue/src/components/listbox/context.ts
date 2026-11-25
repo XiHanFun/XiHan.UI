@@ -50,7 +50,7 @@ export function provideListboxItemGroup(ctx: ListboxItemGroupContext): void {
   provide(GROUP_KEY, ctx)
 }
 
-export function useListboxItemGroupContext(): ListboxItemGroupContext {
+export function useListboxGroupContext(): ListboxItemGroupContext {
   const ctx = inject(GROUP_KEY, null)
   if (!ctx)
     throw new Error('[xh] Listbox 分组标题必须用在 XhListboxGroup 内')

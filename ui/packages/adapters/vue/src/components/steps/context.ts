@@ -29,7 +29,7 @@ export function provideStepsItem(item: () => StepsItemProps): void {
   provide(ITEM_KEY, item)
 }
 
-export function useStepsItem(): () => StepsItemProps {
+export function useStepsItemContext(): () => StepsItemProps {
   const item = inject(ITEM_KEY, null)
   if (!item)
     throw new Error('[xh] Steps 条目部件必须用在 XhStepsItem 内')

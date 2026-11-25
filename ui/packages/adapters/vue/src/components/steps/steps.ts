@@ -11,7 +11,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
-import { provideSteps, provideStepsItem, useStepsContext, useStepsItem } from './context'
+import { provideSteps, provideStepsItem, useStepsContext, useStepsItemContext } from './context'
 import { useSteps } from './use-steps'
 
 type StepsProps = StepsSchema['props']
@@ -104,7 +104,7 @@ export const XhStepsTrigger = defineComponent({
   name: 'XhStepsTrigger',
   setup(_, { slots }) {
     const ctx = useStepsContext()
-    const item = useStepsItem()
+    const item = useStepsItemContext()
     // 本节点持有焦点时，下标变更重报焦点步骤，卸载时上报列表失焦
     const itemEl = ref<HTMLElement | null>(null)
     watch(() => item().index, (next, prev) => {
@@ -136,7 +136,7 @@ export const XhStepsIndicator = defineComponent({
   name: 'XhStepsIndicator',
   setup(_, { slots }) {
     const ctx = useStepsContext()
-    const item = useStepsItem()
+    const item = useStepsItemContext()
     return () => h('span', ctx.api.value.getIndicatorProps(item()), slots.default?.())
   },
 })
@@ -145,7 +145,7 @@ export const XhStepsTitle = defineComponent({
   name: 'XhStepsTitle',
   setup(_, { slots }) {
     const ctx = useStepsContext()
-    const item = useStepsItem()
+    const item = useStepsItemContext()
     return () => h('span', ctx.api.value.getTitleProps(item()), slots.default?.())
   },
 })
@@ -154,7 +154,7 @@ export const XhStepsDescription = defineComponent({
   name: 'XhStepsDescription',
   setup(_, { slots }) {
     const ctx = useStepsContext()
-    const item = useStepsItem()
+    const item = useStepsItemContext()
     return () => h('span', ctx.api.value.getDescriptionProps(item()), slots.default?.())
   },
 })
@@ -164,7 +164,7 @@ export const XhStepsSeparator = defineComponent({
   name: 'XhStepsSeparator',
   setup(_, { slots }) {
     const ctx = useStepsContext()
-    const item = useStepsItem()
+    const item = useStepsItemContext()
     return () => h('div', ctx.api.value.getSeparatorProps(item()), slots.default?.())
   },
 })
