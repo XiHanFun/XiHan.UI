@@ -220,7 +220,8 @@ export const tourMachine = createMachine({
       },
     },
     actions: {
-      ...controlledOpenActions<TourSchema>(),
+      // 走完末步与选完即收同属完成了这一轮，报 selection；放弃（SKIP）按来源报 esc / close-trigger，代码调的 skip() 报 programmatic
+      ...controlledOpenActions<TourSchema>({ reason: true, extra: event => (event.type === 'STEP.NEXT' ? 'selection' : undefined) }),
       clearOpenedAtMount,
       invokeOnComplete: ({ prop, context }) =>
         prop('onComplete')?.({ step: stepOf(prop, context.get('value')) }),
@@ -519,7 +520,7 @@ export const tourMachine = createMachine({
               if (reason === 'escape-key') {
                 if (prop('closeOnEscape') ?? true)
                   // Escape 走放弃这条路而不是单纯关闭，onSkip 要发出去
-                  send({ type: 'SKIP' })
+                  send({ type: 'SKIP', src: 'esc' })
                 return
               }
               // 指针落在层外、焦点跑到层外都归这一条；closeOnInteractOutside 缺省 false

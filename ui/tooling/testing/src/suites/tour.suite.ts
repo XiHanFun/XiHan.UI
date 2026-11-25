@@ -267,7 +267,7 @@ export const tourSuite: ConformanceSuite = {
               backdrop: { hidden: '' },
               spotlight: { hidden: '' },
             },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'selection' } }],
           },
         },
       ],
@@ -283,7 +283,7 @@ export const tourSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'Escape',
-          expect: { events: [{ type: 'open-change', detail: { open: false } }] },
+          expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'esc' } }] },
         },
         {
           kind: 'settle',
@@ -378,7 +378,7 @@ export const tourSuite: ConformanceSuite = {
           part: 'skip-trigger',
           expect: {
             parts: { content: { 'hidden': '', 'data-state': 'closed' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }],
           },
         },
       ],
@@ -396,7 +396,7 @@ export const tourSuite: ConformanceSuite = {
               'content': { hidden: '' },
               'close-trigger': { 'aria-label': 'Close' },
             },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }],
           },
         },
       ],
@@ -457,7 +457,7 @@ export const tourSuite: ConformanceSuite = {
           part: 'skip-trigger',
           expect: {
             parts: { content: { 'hidden': null, 'data-state': 'open' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }],
           },
         },
         { kind: 'setProps', props: { open: false } },

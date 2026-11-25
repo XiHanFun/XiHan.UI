@@ -304,7 +304,7 @@ export function connectTour<T extends PropTypes>(
       'data-xh-action-size': 'sm',
       'data-xh-action-variant': 'ghost',
       ...press('skip-trigger'),
-      'onClick': () => send({ type: 'SKIP' }),
+      'onClick': () => send({ type: 'SKIP', src: 'close-trigger' }),
     }),
 
     // 关闭按钮通常只有一个叉，名字只能从 translations 给，所以这一句总会发出去；

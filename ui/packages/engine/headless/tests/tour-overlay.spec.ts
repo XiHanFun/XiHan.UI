@@ -107,7 +107,7 @@ describe('tour 与 Presence 共用退出生命周期', () => {
     expect(lease).not.toBeNull()
     expect(h.config.layerRegistry.list()).toHaveLength(1)
     pressEscape(h.content)
-    expect(h.changes).toEqual([{ open: true }, { open: false }])
+    expect(h.changes).toEqual([{ open: true }, { open: false, reason: 'close-trigger' }])
 
     lease!.done()
     offBeforeExit()
@@ -135,5 +135,23 @@ describe('tour 与 Presence 共用退出生命周期', () => {
     h.stop()
     offBeforeExit()
     expect(h.config.layerRegistry.list()).toHaveLength(0)
+  })
+})
+
+describe('tour 的关闭原因随消解层的来源走', () => {
+  it('escape 走放弃那条路，报 esc', async () => {
+    const h = makeHarness({ steps: [{ id: 'a', title: '一' }] })
+    await open(h)
+    pressEscape(h.content)
+    expect(h.service.state.get()).toBe('closed')
+    expect(h.changes).toEqual([{ open: true }, { open: false, reason: 'esc' }])
+  })
+
+  it('开了 closeOnInteractOutside 时点在层外报 interact-outside', async () => {
+    const h = makeHarness({ steps: [{ id: 'a', title: '一' }], closeOnInteractOutside: true })
+    await open(h)
+    h.outside.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
+    expect(h.service.state.get()).toBe('closed')
+    expect(h.changes).toEqual([{ open: true }, { open: false, reason: 'interact-outside' }])
   })
 })

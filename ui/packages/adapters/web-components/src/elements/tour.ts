@@ -61,7 +61,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {boolean} auto-scroll - 展开与换步时自动把目标滚进视口（nearest），默认 true；写 auto-scroll="false" 关闭
  * @attr {number} target-timeout - 目标缺席时等它出现的时长（ms），默认 3000；0 即不等，超时后该步居中呈现
  * @attr {string} boundary - 限定区域的 CSS 选择器：引导只在这块区域里进行，遮罩只盖它、高亮框裁在它里面，区域外照常可用；省略即整个视口
- * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
+ * @fires open-change - open 状态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因
  * @fires value-change - 步序变化；detail 为 `{ value: number }`
  * @fires complete - 末步再按下一步；detail 为 `{ step: number }`
  * @fires skip - 用户放弃（跳过按钮或 Escape）；detail 为 `{ step: number }`

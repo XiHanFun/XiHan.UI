@@ -298,7 +298,28 @@ describe('tourMachine 开合与走步', () => {
     expect(onOpenChange).toHaveBeenLastCalledWith({ open: true })
     t.service.send({ type: 'CLOSE' })
     expect(t.service.state.get()).toBe('closed')
-    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false })
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false, reason: 'programmatic' })
+  })
+
+  it('关闭原因：跳过钮与关闭钮报 close-trigger，走完末步报 selection，skip() 与 setOpen(false) 报 programmatic', () => {
+    const onOpenChange = vi.fn()
+    const t = makeService({ steps: STEPS, defaultOpen: true, onOpenChange })
+    const click = (props: unknown) => ((props as { onClick: () => void }).onClick)()
+
+    click(t.api().getSkipTriggerProps())
+    t.api().setOpen(true)
+    click(t.api().getCloseTriggerProps())
+    t.api().setOpen(true)
+    t.api().setValue(2)
+    click(t.api().getNextTriggerProps())
+    t.api().setOpen(true)
+    t.api().skip()
+    t.api().setOpen(true)
+    t.api().setOpen(false)
+
+    const closes = onOpenChange.mock.calls.map(c => c[0] as { open: boolean, reason?: string }).filter(d => !d.open)
+    expect(closes.map(d => d.reason)).toEqual(['close-trigger', 'close-trigger', 'selection', 'programmatic', 'programmatic'])
+    expect(onOpenChange.mock.calls.map(c => c[0]).filter(d => d.open).every(d => d.reason === undefined)).toBe(true)
   })
 
   it('sTEP.NEXT / STEP.PREV 走步并夹在两端', () => {
@@ -363,7 +384,7 @@ describe('tourMachine 开合与走步', () => {
     const t = makeService({ steps: STEPS, defaultOpen: true, defaultValue: 2, onComplete, onOpenChange, onValueChange })
     t.service.send({ type: 'STEP.NEXT' })
     expect(onComplete).toHaveBeenCalledWith({ step: 2 })
-    expect(onOpenChange).toHaveBeenCalledWith({ open: false })
+    expect(onOpenChange).toHaveBeenCalledWith({ open: false, reason: 'selection' })
     expect(t.service.state.get()).toBe('closed')
     // 完成不是"又走了一步"：步序停在末步，不该多发一次 onValueChange
     expect(onValueChange).not.toHaveBeenCalled()
@@ -376,7 +397,7 @@ describe('tourMachine 开合与走步', () => {
     const t = makeService({ steps: STEPS, defaultOpen: true, defaultValue: 1, onSkip, onOpenChange })
     t.api().skip()
     expect(onSkip).toHaveBeenCalledWith({ step: 1 })
-    expect(onOpenChange).toHaveBeenCalledWith({ open: false })
+    expect(onOpenChange).toHaveBeenCalledWith({ open: false, reason: 'programmatic' })
     expect(t.service.state.get()).toBe('closed')
   })
 
@@ -414,7 +435,7 @@ describe('tourMachine 受控', () => {
     const t = makeService({ steps: STEPS, open: true, value: 2, onComplete, onOpenChange })
     t.service.send({ type: 'STEP.NEXT' })
     expect(onComplete).toHaveBeenCalledWith({ step: 2 })
-    expect(onOpenChange).toHaveBeenCalledWith({ open: false })
+    expect(onOpenChange).toHaveBeenCalledWith({ open: false, reason: 'selection' })
     expect(t.service.state.get()).toBe('open')
     t.setProps({ open: false })
     expect(t.service.state.get()).toBe('closed')

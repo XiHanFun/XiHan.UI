@@ -5,7 +5,7 @@
 
 // 定义 tour 类型契约。
 
-import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/core'
+import type { Cleanup, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { TitleDescriptionParts } from '../shared/title-description'
 
@@ -108,6 +108,12 @@ export interface TourValueChangeDetails {
 
 export interface TourOpenChangeDetails {
   open: boolean
+  /**
+   * 本次关闭的原因；展开时不带。
+   * Escape 放弃报 esc，跳过钮与关闭钮报 close-trigger，开了 closeOnInteractOutside 时点在层外报 interact-outside，
+   * 末步再走一步完成报 selection（与选完即收同属完成了这一轮），代码调用（setOpen(false)、skip()）报 programmatic。
+   */
+  reason?: OverlayCloseReason
 }
 
 export interface TourCompleteDetails {
@@ -209,7 +215,8 @@ export interface TourSchema extends MachineSchema {
     | { type: 'VALUE.SET', value: number }
     | { type: 'STEP.PREV' }
     | { type: 'STEP.NEXT' }
-    | { type: 'SKIP' }
+    /** 放弃引导；src 记是怎么放弃的（Escape、跳过钮），代码调的 skip() 不带。 */
+    | { type: 'SKIP', src?: 'esc' | 'close-trigger' }
     /** 重新测量几何：目标节点被外部改动（换位、变尺寸）后由宿主触发。 */
     | { type: 'GEOMETRY.SYNC' }
     /** 等待中的目标出现了。 */

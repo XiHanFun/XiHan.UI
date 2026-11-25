@@ -71,6 +71,7 @@
 - `boundary` 把引导限在一块区域里（写法同步骤的 `target`）：遮罩只盖它，高亮框连同暗幕裁在它里面，居中步摆在它中间，气泡以它为界避让；区域外照常可读可点，焦点不困在气泡里，对话框也不标 `aria-modal`。引导途中区域里新开的层（如抽屉）排在引导之下，Esc 仍先收引导。嵌在页面里的编辑器、设计器这类局部界面用它。
 - `showBackdrop=false` 关闭背景暗幕，但保留目标高亮环。
 - 支持受控步序、完成和跳过回调。
+- 收起时 `onOpenChange` 带上关闭原因 `reason`：Escape 放弃报 `esc`，跳过钮与关闭钮报 `close-trigger`，开了 `closeOnInteractOutside` 时点在层外报 `interact-outside`，末步再走一步完成报 `selection`，`setOpen(false)` 与 `skip()` 报 `programmatic`；展开时不带。完成与放弃另有 `onComplete` / `onSkip`，`reason` 只回答「是怎么收起的」。
 - 气泡走 M4 sheet 三件套（1px 描边、不透明底、投影），与对话框同源；边界由描边承担，不只靠影分层。锚定步从贴着目标的那条边涨开入场，退场按 exit 档收拢。
 - 末行三颗按钮与角落的关闭按钮走 Action Control 家族配方：下一步是整条引导的主线动作，显式 solid 品牌实心；上一步为中性描边，跳过为无壳 ghost；关闭按钮为 icon 档 ghost 面。悬停与按下沿画布承载阶梯换底，Space / Enter 与触屏按住期间投影 `data-pressed`。
 - 标题为 heading-3，说明文字为 13px 说明档；说明区是气泡里唯一让步的滚动面，滚到头不带动页面。进度圆点是 6px 正圆、点距 8px（与走马灯的分页点同一种语言），当前那颗拉成 20px 胶囊。
@@ -147,7 +148,7 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `open-change` | `TourOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `open-change` | `TourOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因 |
 | `value-change` | `TourValueChangeDetails` | 步序变化；detail 为 `{ value: number }` |
 | `complete` | `TourCompleteDetails` | 末步再按下一步；detail 为 `{ step: number }` |
 | `skip` | `TourSkipDetails` | 用户放弃（跳过按钮或 Escape）；detail 为 `{ step: number }` |
