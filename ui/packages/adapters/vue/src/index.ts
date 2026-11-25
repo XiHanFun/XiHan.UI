@@ -1079,7 +1079,7 @@ export {
   XhSliderTrack,
   XhSliderValueText,
 } from './components/slider/slider'
-export type { SliderRootSlotProps, SliderTickGroupTickSlotProps } from './components/slider/slider'
+export type { SliderRootSlotProps, SliderTickSlotProps } from './components/slider/slider'
 export { useSlider } from './components/slider/use-slider'
 export type { SliderContext } from './components/slider/use-slider'
 export { provideSortable, useSortableContext } from './components/sortable/context'

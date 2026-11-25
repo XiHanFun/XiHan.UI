@@ -27,7 +27,7 @@ export type SliderRootSlotProps = Pick<
 >
 
 /** tick 插槽的载荷：该档刻度的呈现数据。 */
-export interface SliderTickGroupTickSlotProps {
+export interface SliderTickSlotProps {
   tick: SliderMarkMeta
 }
 
@@ -136,7 +136,7 @@ export const XhSliderTrack = defineComponent({
 export const XhSliderTickGroup = defineComponent({
   name: 'XhSliderTickGroup',
   slots: Object as SlotsType<{
-    tick?: (props: SliderTickGroupTickSlotProps) => VNode[]
+    tick?: (props: SliderTickSlotProps) => VNode[]
   }>,
   setup(_, { slots }) {
     const ctx = useSliderContext()

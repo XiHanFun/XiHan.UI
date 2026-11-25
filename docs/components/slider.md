@@ -209,7 +209,7 @@ draggableRange 让两端拇指之间的轨道可以整段拖动，时间窗宽�
 | --- | --- | --- | --- |
 | `XhSliderRoot` | `default` | `SliderRootSlotProps` |  |
 | `XhSliderRoot` | `label` | — |  |
-| `XhSliderTickGroup` | `tick` | `SliderTickGroupTickSlotProps` |  |
+| `XhSliderTickGroup` | `tick` | `SliderTickSlotProps` |  |
 
 ### React 适配器 props
 

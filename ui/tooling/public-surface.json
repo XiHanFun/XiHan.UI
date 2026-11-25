@@ -3600,7 +3600,7 @@
       "SignaturePadRootSlotProps",
       "SliderContext",
       "SliderRootSlotProps",
-      "SliderTickGroupTickSlotProps",
+      "SliderTickSlotProps",
       "SortableContext",
       "SortableItemSlotProps",
       "SortableRootSlotProps",
