@@ -165,7 +165,7 @@ describe('notification 条目到达', () => {
     let create: ((options: { title: string, duration: number }) => string) | undefined
     const initial = Array.from({ length: 6 }, (_, i) => ({ id: `n${i}`, title: `第 ${i} 条`, duration: Number.POSITIVE_INFINITY }))
     app = createApp({
-      render: () => h(XhNotificationRoot, { defaultItems: initial, max: 20 }, {
+      render: () => h(XhNotificationRoot, { defaultItems: initial, maxVisible: 20 }, {
         default: (scope: { create: typeof create }) => {
           create = scope.create
           return [h(XhNotificationGroup, null, {
@@ -197,7 +197,7 @@ describe('notification 条目到达', () => {
     let dismiss: ((id: string) => void) | undefined
     const initial = [0, 1, 2].map(i => ({ id: `m${i}`, title: `第 ${i} 条`, duration: Number.POSITIVE_INFINITY }))
     app = createApp({
-      render: () => h(XhNotificationRoot, { defaultItems: initial, max: 20 }, {
+      render: () => h(XhNotificationRoot, { defaultItems: initial, maxVisible: 20 }, {
         default: (scope: { dismiss: typeof dismiss }) => {
           dismiss = scope.dismiss
           return [h(XhNotificationGroup, null, {
