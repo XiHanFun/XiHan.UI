@@ -21,11 +21,30 @@ defaults:
 # 互相不传产物——全量构建不到一分钟，另起一个构建 job 再传产物反而让所有下游多等它一轮。
 #
 # 两条约束：
-#   · job 总数不超过 20。超过账户的并发上限后多出来的 job 要排队等空位，排到哪一个不由我们定，
-#     排到最长的那个时整轮就多等一截。加分片前先数一遍。
+#   · 同时在跑的 job 不超过 20。超过账户的并发上限后多出来的 job 要排队等空位，排到哪一个不由我们定，
+#     排到最长的那个时整轮就多等一截。加分片前先数一遍。判改动范围的 changes 跑完单测与浏览器态才开始，
+#     不与它们同时占位，所以不计在内。
 #   · 同一个 job 里互不依赖的检查都带 `if: !cancelled()`：前一步红了后面的照跑，一轮看全所有的红，
 #     不必修一处推一次才露出下一处。真有先后依赖的（吃构建产物的、吃文档站产物的）另按那一步的结果判。
 jobs:
+  # 改动全落在 Markdown 正文上时，单测、浏览器态与浏览器附加项三组不跑：正文碰不到它们读的任何东西。
+  # 其余 job 照跑。判据与例外（生成的组件页、测试夹具不算正文；取不到比较基点时跑全套）见脚本头注释。
+  # 只看提交树，不取文件内容，所以拉全历史时不带 blob。
+  changes:
+    name: 改动范围
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      code: ${{ steps.scope.outputs.code }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          filter: blob:none
+      - name: 改动是不是全是 Markdown 正文
+        id: scope
+        run: node tooling/scripts/ci-changes.mjs --base=${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }} --head=${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+
   # 不吃构建产物的静态门禁
   lint:
     name: 静态门禁与 Lint
@@ -145,6 +164,8 @@ jobs:
   # 两个包挤一台时 turbo 让它们并行，每包只分得到两个 worker，那一组就成了单测里最长的。
   unit:
     name: 单测（${{ matrix.name }}）
+    needs: changes
+    if: ${{ needs.changes.outputs.code == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
@@ -187,6 +208,8 @@ jobs:
   # 以后新增的项目名不带 -a11y 就自动落进常规分片，不会漏跑。
   browser:
     name: 浏览器态（${{ matrix.name }}）
+    needs: changes
+    if: ${{ needs.changes.outputs.code == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     strategy:
@@ -241,6 +264,8 @@ jobs:
 
   browser-extras:
     name: 性能预算与自定义元素示例
+    needs: changes
+    if: ${{ needs.changes.outputs.code == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
