@@ -48,8 +48,10 @@ export function connectGridList<T extends PropTypes>(
   const isSelected = (rowValue: string): boolean => value.includes(rowValue)
   const isDisabled = (row: GridListRowProps): boolean =>
     disabled || (row.disabled ?? metaOf.get(row.value)?.disabled ?? false)
+  // 行与行内部件的选中走布尔 data-selected（与 Table、Tree、TagGroup 的行一致），data-state 留给删掉的行退场；
+  // 只有行首的勾选标记按勾选框的写法走 data-state=checked
   const stateAttrs = (row: GridListRowProps): Record<string, string | undefined> => ({
-    'data-state': isSelected(row.value) ? 'checked' : 'unchecked',
+    'data-selected': dataAttr(isSelected(row.value)),
     'data-disabled': dataAttr(isDisabled(row)),
     'data-highlighted': dataAttr(focusedValue === row.value),
   })
@@ -259,6 +261,8 @@ export function connectGridList<T extends PropTypes>(
     getRowSelectionIndicatorProps: row => normalize.element({
       ...parts['row-selection-indicator'].attrs,
       ...stateAttrs(row),
+      'data-selected': undefined,
+      'data-state': isSelected(row.value) ? 'checked' : 'unchecked',
       'data-xh-check-mark': isSelected(row.value) ? 'checked' : 'unchecked',
       'data-xh-check-mark-profile': 'box',
       'data-xh-collection-slot': 'prefix',

@@ -311,7 +311,7 @@
     "aria-selected": {
       "attr": "data-selected",
       "family": null,
-      "$description": "treeitem / row / option 的选中用布尔 data-selected；tabs 例外走 activation 族。"
+      "$description": "treeitem / row / 日历格的选中用布尔 data-selected；option 与勾选标记走 data-state=checked；tabs 例外走 activation 族。"
     },
     "aria-current": {
       "attr": "data-current",

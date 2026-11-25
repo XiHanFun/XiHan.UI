@@ -161,13 +161,7 @@ actionOnClick 让点行触发行主操作（看详情），勾选只由行首方
 
 | 部件 | 取值 |
 | --- | --- |
-| `row` | 'checked' \| 'unchecked' |
 | `row-selection-indicator` | 'checked' \| 'unchecked' |
-| `row-content` | 'checked' \| 'unchecked' |
-| `row-text` | 'checked' \| 'unchecked' |
-| `row-description` | 'checked' \| 'unchecked' |
-| `row-actions` | 'checked' \| 'unchecked' |
-| `row-action` | 'checked' \| 'unchecked' |
 
 以下名称仅用于内部状态机。
 
@@ -276,34 +270,35 @@ actionOnClick 让点行触发行主操作（看详情），勾选只由行首方
 | `row` | `data-disabled` | ''（条件成立时才出现） |
 | `row` | `data-highlighted` | ''（条件成立时才出现） |
 | `row` | `data-pressed` | ''（条件成立时才出现） |
-| `row` | `data-state` | 'checked' \| 'unchecked' |
+| `row` | `data-selected` | ''（条件成立时才出现） |
 | `row` | `data-tone` | metaOf.get(row.value)?.tone |
 | `row` | `data-xh-collection-context` | 'page' |
 | `row` | `data-xh-collection-item` | '' |
 | `row` | `data-xh-collection-size` | props.size |
 | `row-selection-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `row-selection-indicator` | `data-highlighted` | ''（条件成立时才出现） |
+| `row-selection-indicator` | `data-selected` | undefined |
 | `row-selection-indicator` | `data-state` | 'checked' \| 'unchecked' |
 | `row-selection-indicator` | `data-xh-check-mark` | 'checked' \| 'unchecked' |
 | `row-selection-indicator` | `data-xh-check-mark-profile` | 'box' |
 | `row-selection-indicator` | `data-xh-collection-slot` | 'prefix' |
 | `row-content` | `data-disabled` | ''（条件成立时才出现） |
 | `row-content` | `data-highlighted` | ''（条件成立时才出现） |
-| `row-content` | `data-state` | 'checked' \| 'unchecked' |
+| `row-content` | `data-selected` | ''（条件成立时才出现） |
 | `row-text` | `data-disabled` | ''（条件成立时才出现） |
 | `row-text` | `data-highlighted` | ''（条件成立时才出现） |
-| `row-text` | `data-state` | 'checked' \| 'unchecked' |
+| `row-text` | `data-selected` | ''（条件成立时才出现） |
 | `row-text` | `data-xh-collection-slot` | 'text' |
 | `row-description` | `data-disabled` | ''（条件成立时才出现） |
 | `row-description` | `data-highlighted` | ''（条件成立时才出现） |
-| `row-description` | `data-state` | 'checked' \| 'unchecked' |
+| `row-description` | `data-selected` | ''（条件成立时才出现） |
 | `row-description` | `data-xh-collection-slot` | 'description' |
 | `row-actions` | `data-disabled` | ''（条件成立时才出现） |
 | `row-actions` | `data-highlighted` | ''（条件成立时才出现） |
-| `row-actions` | `data-state` | 'checked' \| 'unchecked' |
+| `row-actions` | `data-selected` | ''（条件成立时才出现） |
 | `row-action` | `data-disabled` | ''（条件成立时才出现） |
 | `row-action` | `data-highlighted` | ''（条件成立时才出现） |
-| `row-action` | `data-state` | 'checked' \| 'unchecked' |
+| `row-action` | `data-selected` | ''（条件成立时才出现） |
 | `row-action` | `data-xh-action-control` | '' |
 | `row-action` | `data-xh-action-display` | 'always' |
 | `row-action` | `data-xh-action-profile` | 'text' |

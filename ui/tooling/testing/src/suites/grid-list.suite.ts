@@ -44,7 +44,7 @@ const FIXTURE: FixtureNode = {
 function selected(...values: string[]): readonly AttrExpectation[] {
   return ['a', 'b', 'c'].map(value => ({
     'aria-selected': values.includes(value) ? 'true' : 'false',
-    'data-state': values.includes(value) ? 'checked' : 'unchecked',
+    'data-selected': values.includes(value) ? '' : null,
   }))
 }
 
