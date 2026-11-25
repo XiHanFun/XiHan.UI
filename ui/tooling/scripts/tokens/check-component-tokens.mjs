@@ -38,9 +38,24 @@ if (JSON.stringify(publicSurface.cssSlots) !== JSON.stringify(expectedNames))
 
 // 状态后缀一词一义：-active 曾同时指按下、展开路径与当前项，已退役。
 // 按下 -pressed、展开路径 -open、当前项 -current、选中 -selected、开着（开关类）-on
+// 属性后缀同样一套写法：内衬 -p / -px / -py，尺寸 -w / -h / -size / -min-* / -max-*，字重 -font-weight，
+// 行距 -leading，线粗 -thickness，只读 -readonly
+const SUFFIX_RULES = [
+  [/-padding$/, '内衬写 -p / -px / -py'],
+  [/(?<!line|stroke|border)-(height|width)$/, '尺寸写 -h / -w'],
+  [/-(block|inline)-size$/, '尺寸写 -h / -w（最小、最大写 -min-h / -max-w）'],
+  [/-line-height$/, '行距写 -leading'],
+  [/-(line|link)-width$/, '线粗写 -thickness'],
+  [/(?<!font)-weight$/, '字重写 -font-weight'],
+  [/-read-only(-|$)/, '只读写 -readonly'],
+]
 for (const name of expectedNames) {
   if (/-active(-|$)/.test(name))
     problems.push(`${name} 用了退役的状态后缀 -active：按下写 -pressed，展开路径写 -open，当前项写 -current，选中写 -selected`)
+  for (const [re, hint] of SUFFIX_RULES) {
+    if (re.test(name))
+      problems.push(`${name} 的属性后缀不成套：${hint}`)
+  }
 }
 
 const cemPath = new URL('../../../packages/adapters/web-components/custom-elements.json', import.meta.url)

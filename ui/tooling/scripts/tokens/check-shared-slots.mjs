@@ -172,6 +172,7 @@ for (const [key, comps] of publicGroups) {
 /** 后缀相同但概念不同的，逐条写明理由；名单之外一律受管。 */
 const DISTINCT = {
   rows: '栅格的 rows 是一份行轨道表，日志的 rows 是可见行数',
+  h: '跑马灯的 h 是纵向滚动时视口的高（10rem），迷你图的 h 是图形跟着正文行高走（1lh），两个高度不是一回事',
 }
 const divergent = [...bySuffix].filter(([suffix, byComp]) => !(suffix in DISTINCT) && byComp.size >= 2 && new Set(byComp.values()).size >= 2)
 for (const suffix of Object.keys(DISTINCT)) {

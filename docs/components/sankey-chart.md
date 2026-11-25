@@ -66,7 +66,7 @@ linkColor="gradient" 让流带从源节点的颜色渐变到目标节点的颜�
 
 - 数据是流带（`links`，每条写 `source`、`target` 与 `value`）；节点（`nodes`，每个写 `id`，可选 `name` 与 `group`）缺省按流带里出现的先后推断，名字即身份。成环、自环、端点不存在或节点重复时报 `chart.sankey-shape`，流量为负时报 `chart.negative-share`，根上写 `data-state="error"`。
 - 节点的值取流入与流出里较大的那个；节点分到哪一列由 `nodeAlign` 决定：`justify`（缺省）两端对齐、没有出边的节点贴到最后一列，`start` 靠源头，`end` 靠汇点，`center` 居中。列内次序缺省由布局按相连节点的位置排，`nodeSort="input"` 保持数据次序。
-- `orientation` 取 `horizontal`（缺省，自左而右）或 `vertical`（自上而下）。节点的厚度取组件槽 `--xh-sankey-chart-node-width`，同一列相邻节点至少隔一行字。
+- `orientation` 取 `horizontal`（缺省，自左而右）或 `vertical`（自上而下）。节点的厚度取组件槽 `--xh-sankey-chart-node-w`，同一列相邻节点至少隔一行字。
 - 颜色：节点按 `group` 第一次出现的先后分配分类色 1–8，没有分组时全部用色槽 1；多于 8 组时报 `chart.too-many-series`。流带缺省是半透明的中性色；`linkColor` 取 `source` / `target` 时用源或目标节点的颜色，取 `gradient` 时从源节点渐变到目标节点。
 - 名字写在节点侧面、列间的空当里：前半程写在下游一侧，后半程写在上游一侧，放不下时截断；一列里挨得太近的名字只留前一个，其余交给提示框与数据表。
 - 有两组及以上时显示图例，点图例项切换这一组的显隐：隐藏的节点与连着它们的流带不画，其余重新排布；悬停图例项时只留这一组。
@@ -347,13 +347,13 @@ linkColor="gradient" 让流带从源节点的颜色渐变到目标节点的颜�
 | --- | --- | --- | --- | --- | --- |
 | `--xh-sankey-chart-empty-gap` | `empty` | `gap` | `state=loading` | `--xh-space-2` | sankey-chart 的 empty 部件 gap 覆盖槽。 |
 | `--xh-sankey-chart-gap` | `root` | `gap` | `default` | `--xh-space-3` | sankey-chart 的 root 部件 gap 覆盖槽。 |
-| `--xh-sankey-chart-height` | `viewport` | `block-size` | `default` | `--xh-chart-height` | sankey-chart 的 viewport 部件 block-size 覆盖槽。 |
+| `--xh-sankey-chart-h` | `viewport` | `block-size` | `default` | `--xh-chart-height` | sankey-chart 的 viewport 部件 block-size 覆盖槽。 |
 | `--xh-sankey-chart-legend-gap` | `legend` | `gap` | `default` | `--xh-space-1` | sankey-chart 的 legend 部件 gap 覆盖槽。 |
 | `--xh-sankey-chart-legend-swatch-radius` | `legend-swatch` | `border-radius` | `default` | `--xh-shape-inset` | sankey-chart 的 legend-swatch 部件 border-radius 覆盖槽。 |
 | `--xh-sankey-chart-link-alpha` | `link` | `fill-opacity` | `default` | `--xh-chart-link-alpha` | sankey-chart 的 link 部件 fill-opacity 覆盖槽。 |
 | `--xh-sankey-chart-link-color` | `link` | `fill` | `default` | `--xh-chart-categorical-other` | sankey-chart 的 link 部件 fill 覆盖槽。 |
 | `--xh-sankey-chart-node-radius` | `root` | `--xh-_chart-metric-radius` | `default` | `--xh-shape-inset` | sankey-chart 的 root 部件 --xh-_chart-metric-radius 覆盖槽。 |
-| `--xh-sankey-chart-node-width` | `root` | `--xh-_chart-metric-bar-max` | `default` | `--xh-space-3` | sankey-chart 的 root 部件 --xh-_chart-metric-bar-max 覆盖槽。 |
+| `--xh-sankey-chart-node-w` | `root` | `--xh-_chart-metric-bar-max` | `default` | `--xh-space-3` | sankey-chart 的 root 部件 --xh-_chart-metric-bar-max 覆盖槽。 |
 | `--xh-sankey-chart-series-color` | `gradient-stop`<br>`legend-swatch`<br>`link`<br>`node`<br>`pattern-line`<br>`tooltip-swatch` | `background`<br>`border`<br>`fill`<br>`stop-color`<br>`stroke` | `@media (forced-colors: active)`<br>`@media print`<br>`mark=line`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=1`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns`<br>`xh-chart-slot`<br>`xh-chart-slot=1`<br>`xh-chart-slot=2`<br>`xh-chart-slot=3`<br>`xh-chart-slot=4`<br>`xh-chart-slot=5`<br>`xh-chart-slot=6`<br>`xh-chart-slot=7`<br>`xh-chart-slot=8` | `--xh-chart-categorical-1`<br>`--xh-chart-categorical-2`<br>`--xh-chart-categorical-3`<br>`--xh-chart-categorical-4`<br>`--xh-chart-categorical-5`<br>`--xh-chart-categorical-6`<br>`--xh-chart-categorical-7`<br>`--xh-chart-categorical-8` | sankey-chart 的 gradient-stop、legend-swatch、link、node、pattern-line、tooltip-swatch 部件 background、border、fill、stop-color、stroke 覆盖槽。 |
 | `--xh-sankey-chart-tooltip-gap` | `tooltip` | `gap` | `default` | `--xh-space-1` | sankey-chart 的 tooltip 部件 gap 覆盖槽。 |
 | `--xh-sankey-chart-tooltip-px` | `tooltip` | `padding-inline` | `default` | `--xh-surface-pad-sm` | sankey-chart 的 tooltip 部件 padding-inline 覆盖槽。 |

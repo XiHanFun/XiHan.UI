@@ -100,7 +100,7 @@
     --xh-_marquee-gap-inline: 0;
     --xh-_marquee-gap-block: var(--xh-marquee-gap, var(--xh-space-6));
 
-    block-size: var(--xh-marquee-block-size, 10rem);
+    block-size: var(--xh-marquee-h, 10rem);
   }
 
   /* 往右、往下是同一条轨迹倒过来走 */

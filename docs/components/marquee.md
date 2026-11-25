@@ -26,7 +26,7 @@
 
 ### 方向
 
-四档：左右沿横轴，上下沿纵轴。轴另写为 data-orientation，竖向滚动的窗口依靠 --xh-marquee-block-size 定高
+四档：左右沿横轴，上下沿纵轴。轴另写为 data-orientation，竖向滚动的窗口依靠 --xh-marquee-h 定高
 
 <XhDemo src="marquee/02-direction" />
 
@@ -205,9 +205,9 @@ fade 让内容从窗口一端淡入、从另一端淡出，边缘不再生硬地
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-marquee-block-size` | `root` | `block-size` | `orientation=vertical` | `10rem` | marquee 的 root 部件 block-size 覆盖槽。 |
 | `--xh-marquee-fade-size` | `root` | `-webkit-mask-image`<br>`mask-image` | `fade` | `--xh-space-6` | marquee 的 root 部件 -webkit-mask-image、mask-image 覆盖槽。 |
 | `--xh-marquee-gap` | `content`<br>`root` | `padding-block-end`<br>`padding-inline-end` | `orientation=vertical`<br>`xh-copy` | `--xh-space-6` | marquee 的 content、root 部件 padding-block-end、padding-inline-end 覆盖槽。 |
+| `--xh-marquee-h` | `root` | `block-size` | `orientation=vertical` | `10rem` | marquee 的 root 部件 block-size 覆盖槽。 |
 | `--xh-marquee-icon-size` | `autoplay-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | marquee 的 autoplay-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-marquee-span` | `content`<br>`root` | `animation-duration` | `auto-fill`<br>`default` | `--xh-_marquee-measured-span` | marquee 的 content、root 部件 animation-duration 覆盖槽。 |
 | `--xh-marquee-speed` | `content`<br>`root` | `animation-duration` | `auto-fill`<br>`default` | `60` | marquee 的 content、root 部件 animation-duration 覆盖槽。 |

@@ -207,7 +207,7 @@
 | `--xh-anchor-font-size` | `link`<br>`root` | `font-size` | `default` | `--xh-_anchor-font-size` | anchor 的 link、root 部件 font-size 覆盖槽。 |
 | `--xh-anchor-gap` | `list` | `gap` | `default` | `--xh-space-1` | anchor 的 list 部件 gap 覆盖槽。 |
 | `--xh-anchor-gap-horizontal` | `list` | `gap` | `orientation=horizontal` | `--xh-space-2` | anchor 的 list 部件 gap 覆盖槽。 |
-| `--xh-anchor-indicator-color` | `indicator`<br>`link` | `background` | `current`<br>`default` | `--xh-_anchor-accent` | anchor 的 indicator、link 部件 background 覆盖槽。 |
+| `--xh-anchor-indicator-bg` | `indicator`<br>`link` | `background` | `current`<br>`default` | `--xh-_anchor-accent` | anchor 的 indicator、link 部件 background 覆盖槽。 |
 | `--xh-anchor-indicator-radius` | `indicator`<br>`link` | `border-radius` | `current`<br>`default` | `--xh-shape-pill` | anchor 的 indicator、link 部件 border-radius 覆盖槽。 |
 | `--xh-anchor-indicator-thickness` | `indicator`<br>`link`<br>`list` | `block-size`<br>`inline-size`<br>`inset-block-end`<br>`inset-inline-start` | `current`<br>`default`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thick` | anchor 的 indicator、link、list 部件 block-size、inline-size、inset-block-end、inset-inline-start 覆盖槽。 |
 | `--xh-anchor-leading` | `link`<br>`root` | `line-height` | `default` | `--xh-leading-normal` | anchor 的 link、root 部件 line-height 覆盖槽。 |

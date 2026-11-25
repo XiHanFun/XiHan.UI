@@ -52,7 +52,7 @@ function scrollAwayFromBottom(ctx: RawStepContext): void {
 function expectRowsHeight(rows: number) {
   return (ctx: RawStepContext): void => {
     const value = queryViewport(ctx).style.blockSize
-    if (!value.includes('--xh-log-line-height'))
+    if (!value.includes('--xh-log-leading'))
       throw new Error(`viewport 的高度是「${value}」，没走行高槽位，皮肤改行高就白改了`)
     if (!value.includes(`* ${rows}`))
       throw new Error(`viewport 的高度是「${value}」，没按 ${rows} 行算`)

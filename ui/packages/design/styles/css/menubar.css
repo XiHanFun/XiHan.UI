@@ -471,7 +471,7 @@
     --xh-collection-separator-thickness: var(--xh-menubar-separator-thickness, var(--xh-stroke-thin));
     --xh-collection-separator-block-margin: var(--xh-menubar-separator-my, var(--xh-space-0_5));
     --xh-collection-separator-radius: var(--xh-menubar-separator-radius, var(--xh-shape-pill));
-    --xh-collection-separator-color: var(--xh-menubar-separator-color, var(--xh-material-frosted-separator));
+    --xh-collection-separator-color: var(--xh-menubar-separator-bg, var(--xh-material-frosted-separator));
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中。

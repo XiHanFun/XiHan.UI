@@ -100,7 +100,7 @@
     grid-area: sider;
     inline-size: var(--xh-_layout-sider-w);
     overflow: hidden;
-    padding: var(--xh-layout-sider-padding, var(--xh-_layout-sider-padding));
+    padding: var(--xh-layout-sider-p, var(--xh-_layout-sider-padding));
     background: var(--xh-layout-sider-bg, var(--xh-bg-surface));
     transition: inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
@@ -128,12 +128,12 @@
     grid-area: content;
     /* 内容列已是 minmax(0, 1fr)，这里再声明一次，宽表格与长串文本才撑不破列 */
     min-inline-size: 0;
-    padding: var(--xh-layout-content-padding, var(--xh-space-4));
+    padding: var(--xh-layout-content-p, var(--xh-space-4));
   }
 
   [data-scope='layout'][data-part='footer'] {
     grid-area: footer;
-    padding: var(--xh-layout-footer-padding, var(--xh-space-3) var(--xh-space-4));
+    padding: var(--xh-layout-footer-p, var(--xh-space-3) var(--xh-space-4));
     background: var(--xh-layout-footer-bg, var(--xh-bg-surface));
     color: var(--xh-fg-muted);
     font-size: var(--xh-text-secondary-size);
@@ -277,10 +277,10 @@
     /* 贴死视口的那一档，内衬与安全区取大的一头：刘海、圆角与底部横条压住的那一段由系统给出。
        桌面上 env() 恒为 0，取值与内衬槽完全一致。安全区只有物理方向的四个名字，
        行内轴上两侧同取较宽的那一段，RTL 下不会翻错边 */
-    padding-block-start: max(var(--xh-layout-sider-padding, var(--xh-_layout-sider-padding)), env(safe-area-inset-top));
-    padding-block-end: max(var(--xh-layout-sider-padding, var(--xh-_layout-sider-padding)), env(safe-area-inset-bottom));
+    padding-block-start: max(var(--xh-layout-sider-p, var(--xh-_layout-sider-padding)), env(safe-area-inset-top));
+    padding-block-end: max(var(--xh-layout-sider-p, var(--xh-_layout-sider-padding)), env(safe-area-inset-bottom));
     padding-inline: max(
-      var(--xh-layout-sider-padding, var(--xh-_layout-sider-padding)),
+      var(--xh-layout-sider-p, var(--xh-_layout-sider-padding)),
       env(safe-area-inset-left),
       env(safe-area-inset-right)
     );

@@ -870,7 +870,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `--xh-table-resize-line` | `column-resize-trigger` | `inline-size` | `default` | `--xh-stroke-thin` | table 的 column-resize-trigger 部件 inline-size 覆盖槽。 |
 | `--xh-table-resize-line-length` | `column-resize-trigger` | `block-size` | `default` | `60%` | table 的 column-resize-trigger 部件 block-size 覆盖槽。 |
 | `--xh-table-resize-radius` | `column-resize-trigger` | `border-radius` | `default` | `--xh-shape-pill` | table 的 column-resize-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-table-resize-width` | `column-resize-trigger` | `inline-size` | `default` | `--xh-space-2` | table 的 column-resize-trigger 部件 inline-size 覆盖槽。 |
+| `--xh-table-resize-w` | `column-resize-trigger` | `inline-size` | `default` | `--xh-space-2` | table 的 column-resize-trigger 部件 inline-size 覆盖槽。 |
 | `--xh-table-row-bg` | `row` | `background-color` | `default` | `--xh-bg-surface` | table 的 row 部件 background-color 覆盖槽。 |
 | `--xh-table-row-bg-hover` | `row` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])` | `--xh-bg-subtle-opaque` | table 的 row 部件 background-color 覆盖槽。 |
 | `--xh-table-row-bg-pressed` | `row` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed` | `--xh-bg-subtle-hover-opaque` | table 的 row 部件 background-color 覆盖槽。 |

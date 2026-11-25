@@ -5,7 +5,7 @@ import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/react";
 export default function Demo(): ReactNode {
   return (
     <XhSkeletonRoot style={{ inlineSize: "260px" }}>
-      <XhSkeletonItem shape="rect" style={{ "--xh-skeleton-rect-block-size": "120px" } as CSSProperties} />
+      <XhSkeletonItem shape="rect" style={{ "--xh-skeleton-rect-min-h": "120px" } as CSSProperties} />
       <XhSkeletonItem style={{ inlineSize: "60%" }} />
       <XhSkeletonItem style={{ inlineSize: "80%" }} />
       <XhSkeletonItem style={{ inlineSize: "40%" }} />

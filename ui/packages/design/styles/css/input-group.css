@@ -111,7 +111,7 @@
      只认带字段外壳的那一段，组里单独禁用一颗按钮不让整组变灰。
      只读用 :where() 压低特指度，拿到焦点时与字段外壳一样让位给聚焦态 */
   [data-scope='input-group'][data-part='root']:has(:where([data-xh-field-chrome][data-readonly])) {
-    --xh-_input-group-face: var(--xh-input-group-bg-read-only, var(--xh-bg-subtle));
+    --xh-_input-group-face: var(--xh-input-group-bg-readonly, var(--xh-bg-subtle));
   }
 
   [data-scope='input-group'][data-part='root']:has([data-xh-field-chrome][data-disabled]) {

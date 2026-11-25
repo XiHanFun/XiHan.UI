@@ -26,7 +26,7 @@ root / viewport / content / line 四层；一行写什么由作者决定，组�
 
 ### 按行数定高
 
-rows 决定可见几行，一行的高度归皮肤，修改 --xh-log-line-height 两者一起变化
+rows 决定可见几行，一行的高度归皮肤，修改 --xh-log-leading 两者一起变化
 
 <XhDemo src="log/02-rows" />
 
@@ -292,7 +292,7 @@ levels 只显示所选级别的行，用切换按钮组选；没写级别的行�
 | --- | --- | --- | --- | --- | --- |
 | `--xh-log-ansi-black` | `segment` | `color` | `fg=black` | `--xh-fg-default` | log 的 segment 部件 color 覆盖槽。 |
 | `--xh-log-ansi-blue` | `segment` | `color` | `fg=blue` | `--xh-fg-info` | log 的 segment 部件 color 覆盖槽。 |
-| `--xh-log-ansi-bold-weight` | `segment` | `font-weight` | `bold` | `--xh-font-weight-semibold` | log 的 segment 部件 font-weight 覆盖槽。 |
+| `--xh-log-ansi-bold-font-weight` | `segment` | `font-weight` | `bold` | `--xh-font-weight-semibold` | log 的 segment 部件 font-weight 覆盖槽。 |
 | `--xh-log-ansi-cyan` | `segment` | `color` | `fg=cyan` | `--xh-syntax-string` | log 的 segment 部件 color 覆盖槽。 |
 | `--xh-log-ansi-dim-fg` | `segment` | `color` | `faint`<br>`fg`<br>`not([data-fg])` | `--xh-fg-subtle` | log 的 segment 部件 color 覆盖槽。 |
 | `--xh-log-ansi-green` | `segment` | `color` | `fg=green` | `--xh-fg-success` | log 的 segment 部件 color 覆盖槽。 |
@@ -307,11 +307,11 @@ levels 只显示所选级别的行，用切换按钮组选；没写级别的行�
 | `--xh-log-font` | `content`<br>`viewport` | `font-family` | `default`<br>`xh-virtualized` | `--xh-font-family-mono` | log 的 content、viewport 部件 font-family 覆盖槽。 |
 | `--xh-log-font-size` | `content`<br>`viewport` | `font-size` | `default`<br>`xh-virtualized` | `--xh-_log-font-size` | log 的 content、viewport 部件 font-size 覆盖槽。 |
 | `--xh-log-icon-size` | `scroll-to-end-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | log 的 scroll-to-end-trigger 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-log-leading` | `line`<br>`root`<br>`viewport` | `block-size`<br>`line-height` | `default` | `--xh-text-code-leading` | log 的 line、root、viewport 部件 block-size、line-height 覆盖槽。 |
 | `--xh-log-level-debug-fg` | `line` | `color` | `level=debug` | `--xh-fg-subtle` | log 的 line 部件 color 覆盖槽。 |
 | `--xh-log-level-error-fg` | `line` | `color` | `level=error` | `--xh-fg-danger` | log 的 line 部件 color 覆盖槽。 |
 | `--xh-log-level-info-fg` | `line` | `color` | `level=info` | `--xh-fg-default` | log 的 line 部件 color 覆盖槽。 |
 | `--xh-log-level-warn-fg` | `line` | `color` | `level=warn` | `--xh-fg-warning` | log 的 line 部件 color 覆盖槽。 |
-| `--xh-log-line-height` | `line`<br>`root`<br>`viewport` | `block-size`<br>`line-height` | `default` | `--xh-text-code-leading` | log 的 line、root、viewport 部件 block-size、line-height 覆盖槽。 |
 | `--xh-log-line-px` | `line`<br>`viewport` | `padding-inline` | `xh-virtualized` | `--xh-log-content-px` | log 的 line、viewport 部件 padding-inline 覆盖槽。 |
 | `--xh-log-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | log 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-log-rows` | `viewport` | `block-size` | `default` | `16` | log 的 viewport 部件 block-size 覆盖槽。 |

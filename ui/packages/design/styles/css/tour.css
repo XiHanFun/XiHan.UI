@@ -162,7 +162,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--xh-tour-positioner-padding, var(--xh-space-4));
+    padding: var(--xh-tour-positioner-p, var(--xh-space-4));
   }
 
   /* 必须排在 data-position='center' 之后：两条选择器的特指度相同（都是三个属性），

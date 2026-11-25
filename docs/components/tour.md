@@ -364,7 +364,7 @@
 | `--xh-tour-next-fg` | `next-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | tour 的 next-trigger 部件 color 覆盖槽。 |
 | `--xh-tour-next-shadow` | `next-trigger` | `box-shadow` | `default` | `none` | tour 的 next-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-tour-positioner-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | tour 的 positioner 部件 z-index 覆盖槽。 |
-| `--xh-tour-positioner-padding` | `positioner` | `padding` | `position=center` | `--xh-space-4` | tour 的 positioner 部件 padding 覆盖槽。 |
+| `--xh-tour-positioner-p` | `positioner` | `padding` | `position=center` | `--xh-space-4` | tour 的 positioner 部件 padding 覆盖槽。 |
 | `--xh-tour-progress-dot-bg` | `progress-dot` | `background` | `default` | `--xh-border-default` | tour 的 progress-dot 部件 background 覆盖槽。 |
 | `--xh-tour-progress-dot-bg-complete` | `progress-dot` | `background` | `complete` | `--xh-border-strong` | tour 的 progress-dot 部件 background 覆盖槽。 |
 | `--xh-tour-progress-dot-bg-current` | `progress-dot` | `background` | `current` | `--xh-bg-brand` | tour 的 progress-dot 部件 background 覆盖槽。 |

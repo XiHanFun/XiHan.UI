@@ -1,4 +1,4 @@
-// 方向 | 四档：左右沿横轴，上下沿纵轴。轴另写为 data-orientation，竖向滚动的窗口依靠 --xh-marquee-block-size 定高
+// 方向 | 四档：左右沿横轴，上下沿纵轴。轴另写为 data-orientation，竖向滚动的窗口依靠 --xh-marquee-h 定高
 import type { CSSProperties, ReactNode } from "react";
 import { XhMarqueeContent, XhMarqueeRoot } from "@xihan-ui/react";
 
@@ -6,7 +6,7 @@ const directions = ["left", "right", "up", "down"] as const;
 
 // 竖着滚的窗口靠自定义属性定高，自定义属性写在样式对象里
 const box = {
-  "--xh-marquee-block-size": "5rem",
+  "--xh-marquee-h": "5rem",
   "border": "var(--xh-stroke-thin) solid var(--xh-border-default)",
   "borderRadius": "6px",
 } as CSSProperties;

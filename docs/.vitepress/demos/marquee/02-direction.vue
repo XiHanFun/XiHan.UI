@@ -1,4 +1,4 @@
-<!-- 方向 | 四档：左右沿横轴，上下沿纵轴。轴另写为 data-orientation，竖向滚动的窗口依靠 --xh-marquee-block-size 定高 -->
+<!-- 方向 | 四档：左右沿横轴，上下沿纵轴。轴另写为 data-orientation，竖向滚动的窗口依靠 --xh-marquee-h 定高 -->
 <script setup lang="ts">
 import { XhMarqueeContent, XhMarqueeRoot } from "@xihan-ui/vue";
 
@@ -12,7 +12,7 @@ const directions = ["left", "right", "up", "down"] as const;
       <XhMarqueeRoot
         :direction="d"
         style="
-          --xh-marquee-block-size: 5rem;
+          --xh-marquee-h: 5rem;
           border: var(--xh-stroke-thin) solid var(--xh-border-default);
           border-radius: var(--xh-shape-surface);
         "

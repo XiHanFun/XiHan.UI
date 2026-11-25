@@ -27,7 +27,7 @@ const revenue = [86, 92, 88, 97, 104, 99, 112, 118, 115, 126, 131, 138];
         :data="revenue"
         variant="area"
         aria-label="近 12 个月营收"
-        :style="{ '--xh-sparkline-width': '100%', '--xh-sparkline-height': 'var(--xh-space-8)' }"
+        :style="{ '--xh-sparkline-w': '100%', '--xh-sparkline-h': 'var(--xh-space-8)' }"
       />
     </XhCardContent>
   </XhCardRoot>

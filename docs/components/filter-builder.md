@@ -278,7 +278,7 @@
 | `--xh-filter-builder-add-border-hover` | `add-condition-trigger`<br>`add-group-trigger` | `border-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-border-hover` | filter-builder 的 add-condition-trigger、add-group-trigger 部件 border-color 覆盖槽。 |
 | `--xh-filter-builder-add-fg` | `add-condition-trigger`<br>`add-group-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-brand` | filter-builder 的 add-condition-trigger、add-group-trigger 部件 color 覆盖槽。 |
 | `--xh-filter-builder-add-font-size` | `add-condition-trigger`<br>`add-group-trigger` | `font-size` | `default` | `--xh-text-label-size` | filter-builder 的 add-condition-trigger、add-group-trigger 部件 font-size 覆盖槽。 |
-| `--xh-filter-builder-add-height` | `add-condition-trigger`<br>`add-group-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | filter-builder 的 add-condition-trigger、add-group-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-filter-builder-add-h` | `add-condition-trigger`<br>`add-group-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | filter-builder 的 add-condition-trigger、add-group-trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-filter-builder-add-px` | `add-condition-trigger`<br>`add-group-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | filter-builder 的 add-condition-trigger、add-group-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-filter-builder-add-radius` | `add-condition-trigger`<br>`add-group-trigger` | `border-radius` | `default` | `--xh-shape-control` | filter-builder 的 add-condition-trigger、add-group-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-filter-builder-condition-gap` | `condition` | `gap` | `default` | `--xh-space-2` | filter-builder 的 condition 部件 gap 覆盖槽。 |
@@ -296,7 +296,7 @@
 | `--xh-filter-builder-footer-gap` | `group-footer` | `gap` | `default` | `--xh-space-2` | filter-builder 的 group-footer 部件 gap 覆盖槽。 |
 | `--xh-filter-builder-gap` | `root` | `gap` | `default` | `--xh-space-2` | filter-builder 的 root 部件 gap 覆盖槽。 |
 | `--xh-filter-builder-group-gap` | `group` | `gap` | `default` | `--xh-space-2` | filter-builder 的 group 部件 gap 覆盖槽。 |
-| `--xh-filter-builder-guide-color` | `group` | `border-inline-start` | `depth=0`<br>`not([data-depth='0'])` | `--xh-border-subtle` | filter-builder 的 group 部件 border-inline-start 覆盖槽。 |
+| `--xh-filter-builder-guide-border` | `group` | `border-inline-start` | `depth=0`<br>`not([data-depth='0'])` | `--xh-border-subtle` | filter-builder 的 group 部件 border-inline-start 覆盖槽。 |
 | `--xh-filter-builder-header-gap` | `group-header` | `gap` | `default` | `--xh-space-2` | filter-builder 的 group-header 部件 gap 覆盖槽。 |
 | `--xh-filter-builder-icon-size` | `condition-delete-trigger`<br>`group-delete-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | filter-builder 的 condition-delete-trigger、group-delete-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-filter-builder-indent` | `group` | `padding-inline-start` | `depth=0`<br>`not([data-depth='0'])` | `--xh-space-4` | filter-builder 的 group 部件 padding-inline-start 覆盖槽。 |

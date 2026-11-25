@@ -35,7 +35,7 @@
   /* —— 家族配方的组件槽：标题、视口、图例、提示框与空态由 family/chart.css 画，本图表的覆盖槽写在
      对应部件上接进配方的私有槽，作者在部件或它的祖先上覆盖都生效 —— */
   [data-scope='graph-chart'][data-part='viewport'] {
-    --xh-_chart-height: var(--xh-graph-chart-height, var(--xh-chart-height));
+    --xh-_chart-height: var(--xh-graph-chart-h, var(--xh-chart-height));
   }
 
   [data-scope='graph-chart'][data-part='legend'] {
@@ -112,7 +112,7 @@
   [data-scope='graph-chart'][data-part='link'] {
     fill: none;
     stroke: var(--xh-_graph-link);
-    stroke-width: var(--xh-_graph-link-width, var(--xh-graph-chart-link-width, var(--xh-stroke-thin)));
+    stroke-width: var(--xh-_graph-link-width, var(--xh-graph-chart-link-thickness, var(--xh-stroke-thin)));
     stroke-linecap: round;
   }
 

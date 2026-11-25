@@ -261,7 +261,7 @@
     flex: none;
     align-self: center;
     border-radius: var(--xh-toolbar-separator-radius, var(--xh-shape-pill));
-    background: var(--xh-toolbar-separator-color, var(--xh-border-default));
+    background: var(--xh-toolbar-separator-bg, var(--xh-border-default));
   }
 
   [data-scope='toolbar'][data-part='separator'][data-orientation='vertical'] {
@@ -281,7 +281,7 @@
 
   /* 组内分隔线覆盖在相邻分段的接缝上，不占额外宽度；半高弱线保留整体连续感。 */
   [data-scope='toolbar'][data-part='group'] > [data-scope='toolbar'][data-part='separator'] {
-    background: var(--xh-toolbar-separator-color, var(--xh-fg-default));
+    background: var(--xh-toolbar-separator-bg, var(--xh-fg-default));
     opacity: var(--xh-toolbar-separator-opacity, var(--xh-control-separator-opacity));
     pointer-events: none;
   }

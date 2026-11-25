@@ -260,7 +260,7 @@ open 交给宿主：外部一个按钮统一开合几段思考，自动开合让
 | `--xh-reasoning-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | reasoning 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-reasoning-rail` | `content` | `border-inline-start` | `default` | `--xh-border-subtle` | reasoning 的 content 部件 border-inline-start 覆盖槽。 |
 | `--xh-reasoning-rail-inset` | `content` | `margin-inline-start` | `default` | `--xh-reasoning-px` | reasoning 的 content 部件 margin-inline-start 覆盖槽。 |
-| `--xh-reasoning-rail-width` | `content` | `border-inline-start` | `default` | `--xh-stroke-thin` | reasoning 的 content 部件 border-inline-start 覆盖槽。 |
+| `--xh-reasoning-rail-thickness` | `content` | `border-inline-start` | `default` | `--xh-stroke-thin` | reasoning 的 content 部件 border-inline-start 覆盖槽。 |
 | `--xh-reasoning-shadow` | `root` | `box-shadow` | `default`<br>`tone` | `0 0 0 transparent`<br>`none` | reasoning 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-reasoning-shimmer-duration` | `label` | `animation` | `streaming` | `--xh-motion-loop-shimmer` | reasoning 的 label 部件 animation 覆盖槽。 |
 | `--xh-reasoning-shimmer-from` | `label` | `background-image` | `streaming` | `--xh-fg-subtle` | reasoning 的 label 部件 background-image 覆盖槽。 |

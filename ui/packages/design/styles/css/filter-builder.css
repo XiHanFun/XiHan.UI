@@ -47,7 +47,7 @@
   /* 子组缩进一段，起始缘一条细线标出它管到哪一行 */
   [data-scope='filter-builder'][data-part='group']:not([data-depth='0']) {
     padding-inline-start: var(--xh-filter-builder-indent, var(--xh-space-4));
-    border-inline-start: var(--xh-stroke-thin) solid var(--xh-filter-builder-guide-color, var(--xh-border-subtle));
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-filter-builder-guide-border, var(--xh-border-subtle));
   }
 
   /* 组头：逻辑切换在起始端，子组的删除钮推到行尾 */
@@ -188,7 +188,7 @@
      虚线描边把它们和行里的实心控件区分开：它们加的是行，不是行里的值 */
   [data-scope='filter-builder'][data-part='add-condition-trigger'],
   [data-scope='filter-builder'][data-part='add-group-trigger'] {
-    --xh-action-visual-size: var(--xh-filter-builder-add-height, var(--xh-_action-profile-visual-size));
+    --xh-action-visual-size: var(--xh-filter-builder-add-h, var(--xh-_action-profile-visual-size));
     --xh-action-padding-inline: var(--xh-filter-builder-add-px, var(--xh-_action-profile-padding-inline));
     --xh-action-radius: var(--xh-filter-builder-add-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-filter-builder-add-bg, var(--xh-_action-variant-bg-rest));

@@ -106,7 +106,7 @@ describe('layout 侧栏里的 SideNav', () => {
   })
 
   it('写了内衬槽就按槽走', () => {
-    const { sider } = mount({ withNav: true, style: '--xh-layout-sider-padding: 8px' })
+    const { sider } = mount({ withNav: true, style: '--xh-layout-sider-p: 8px' })
     expect(getComputedStyle(sider).paddingInlineStart).toBe('8px')
   })
 })

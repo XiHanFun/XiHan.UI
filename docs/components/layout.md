@@ -66,7 +66,7 @@
 ### 组合
 
 - 侧栏可放[侧栏导航](./side-nav)，页头可放[菜单栏](./menubar)或[工具栏](./toolbar)。
-- 侧栏里放了侧栏导航时，侧栏内衬缺省为 0：导航自带内衬，两者宽度同取侧栏令牌，放进去正好铺满、不被裁。侧栏里其余内容也随之贴边，需要留白时写 `--xh-layout-sider-padding`。
+- 侧栏里放了侧栏导航时，侧栏内衬缺省为 0：导航自带内衬，两者宽度同取侧栏令牌，放进去正好铺满、不被裁。侧栏里其余内容也随之贴边，需要留白时写 `--xh-layout-sider-p`。
 
 ### 最佳实践
 
@@ -210,10 +210,10 @@
 | --- | --- | --- | --- | --- | --- |
 | `--xh-layout-bg` | `root` | `background` | `default` | `--xh-bg-page` | layout 的 root 部件 background 覆盖槽。 |
 | `--xh-layout-border` | `footer`<br>`header`<br>`root`<br>`sider` | `border-block-end`<br>`border-block-start`<br>`border-inline-end`<br>`border-inline-start` | `default`<br>`fixed`<br>`material=liquid`<br>`placement=end`<br>`placement=start`<br>`presentation=sheet`<br>`split`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-border-default`<br>`--xh-border-subtle`<br>`--xh-material-elevated-border`<br>`--xh-material-liquid-border` | layout 的 footer、header、root、sider 部件 border-block-end、border-block-start、border-inline-end、border-inline-start 覆盖槽。 |
-| `--xh-layout-content-padding` | `content` | `padding` | `default` | `--xh-space-4` | layout 的 content 部件 padding 覆盖槽。 |
+| `--xh-layout-content-p` | `content` | `padding` | `default` | `--xh-space-4` | layout 的 content 部件 padding 覆盖槽。 |
 | `--xh-layout-fg` | `root` | `color` | `default` | `--xh-fg-default` | layout 的 root 部件 color 覆盖槽。 |
 | `--xh-layout-footer-bg` | `footer` | `background` | `default` | `--xh-bg-surface` | layout 的 footer 部件 background 覆盖槽。 |
-| `--xh-layout-footer-padding` | `footer` | `padding` | `default` | `--xh-space-3` | layout 的 footer 部件 padding 覆盖槽。 |
+| `--xh-layout-footer-p` | `footer` | `padding` | `default` | `--xh-space-3` | layout 的 footer 部件 padding 覆盖槽。 |
 | `--xh-layout-header-bg` | `header` | `background` | `default`<br>`fixed`<br>`material=liquid`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-_liquid-bg`<br>`--xh-bg-surface` | layout 的 header 部件 background 覆盖槽。 |
 | `--xh-layout-header-gap` | `header` | `gap` | `default` | `--xh-space-3` | layout 的 header 部件 gap 覆盖槽。 |
 | `--xh-layout-header-h` | `header`<br>`root`<br>`sider` | `block-size`<br>`grid-template-rows`<br>`inset-block-start`<br>`max-block-size` | `default`<br>`fixed`<br>`header-fixed`<br>`sider-fixed` | `--xh-app-header-h` | layout 的 header、root、sider 部件 block-size、grid-template-rows、inset-block-start、max-block-size 覆盖槽。 |
@@ -225,7 +225,7 @@
 | `--xh-layout-sider-bg` | `sider` | `background` | `default`<br>`presentation=sheet` | `--xh-bg-surface`<br>`--xh-material-elevated-bg` | layout 的 sider 部件 background 覆盖槽。 |
 | `--xh-layout-sider-collapsed-w` | `root`<br>`sider` | `inline-size` | `collapsed`<br>`sider-breakpoint` | `--xh-sider-collapsed-w` | layout 的 root、sider 部件 inline-size 覆盖槽。 |
 | `--xh-layout-sider-layer` | `sider` | `z-index` | `presentation=sheet` | `--xh-layer-drawer` | layout 的 sider 部件 z-index 覆盖槽。 |
-| `--xh-layout-sider-padding` | `sider` | `padding`<br>`padding-block-end`<br>`padding-block-start`<br>`padding-inline` | `default`<br>`presentation=sheet` | `--xh-_layout-sider-padding` | layout 的 sider 部件 padding、padding-block-end、padding-block-start、padding-inline 覆盖槽。 |
+| `--xh-layout-sider-p` | `sider` | `padding`<br>`padding-block-end`<br>`padding-block-start`<br>`padding-inline` | `default`<br>`presentation=sheet` | `--xh-_layout-sider-padding` | layout 的 sider 部件 padding、padding-block-end、padding-block-start、padding-inline 覆盖槽。 |
 | `--xh-layout-sider-shadow` | `sider` | `box-shadow` | `presentation=sheet` | `--xh-material-elevated-shadow` | layout 的 sider 部件 box-shadow 覆盖槽。 |
 | `--xh-layout-sider-trigger-bg` | `sider-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | layout 的 sider-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-layout-sider-trigger-bg-hover` | `sider-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | layout 的 sider-trigger 部件 background-color 覆盖槽。 |

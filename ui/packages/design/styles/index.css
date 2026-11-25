@@ -4071,7 +4071,7 @@
     align-self: center;
     z-index: 1;
     border-radius: var(--xh-button-group-separator-radius, var(--xh-shape-pill));
-    background: var(--xh-button-group-separator-color, var(--xh-fg-default));
+    background: var(--xh-button-group-separator-bg, var(--xh-fg-default));
     opacity: var(--xh-button-group-separator-opacity, var(--xh-control-separator-opacity));
     pointer-events: none;
     transition:
@@ -4149,17 +4149,17 @@
   /* 组的形态由适配器下发到每一段（段自己写了的优先），段的颜色由家族形态矩阵给出；
      这里只定段间那条线在各档面上的颜色与浓淡，用哪族颜色由根上的 data-tone 决定 */
   .xh-scope-button-group[data-part='root'][data-variant='solid'] {
-    --xh-button-group-separator-color: var(--xh-_tone-on, var(--xh-fg-on-brand));
+    --xh-button-group-separator-bg: var(--xh-_tone-on, var(--xh-fg-on-brand));
     --xh-button-group-separator-opacity: 0.24;
   }
 
   .xh-scope-button-group[data-part='root'][data-variant='subtle'] {
-    --xh-button-group-separator-color: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-button-group-separator-bg: var(--xh-_tone-fg, var(--xh-fg-default));
     --xh-button-group-separator-opacity: 0.16;
   }
 
   .xh-scope-button-group[data-part='root'][data-variant='outline'] {
-    --xh-button-group-separator-color: var(--xh-_tone-border-control, var(--xh-border-control));
+    --xh-button-group-separator-bg: var(--xh-_tone-border-control, var(--xh-border-control));
     --xh-button-group-separator-opacity: 1;
 
     position: relative;
@@ -4172,13 +4172,13 @@
     z-index: 2;
     inset: 0;
     border: var(--xh-stroke-thin) solid
-      var(--xh-button-group-outline-color, var(--xh-_tone-border-control, var(--xh-border-control)));
+      var(--xh-button-group-outline-border, var(--xh-_tone-border-control, var(--xh-border-control)));
     border-radius: inherit;
     pointer-events: none;
   }
 
   .xh-scope-button-group[data-part='root'][data-variant='ghost'] {
-    --xh-button-group-separator-color: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-button-group-separator-bg: var(--xh-_tone-fg, var(--xh-fg-default));
     --xh-button-group-separator-opacity: 0.16;
   }
 
@@ -4689,7 +4689,7 @@
     display: block;
     font-family: var(--xh-diff-view-font, var(--xh-font-family-mono));
     font-size: var(--xh-diff-view-font-size, var(--xh-_diff-view-font-size));
-    line-height: var(--xh-diff-view-line-height, var(--xh-text-code-leading));
+    line-height: var(--xh-diff-view-leading, var(--xh-text-code-leading));
     min-inline-size: max-content;
   }
 
@@ -4701,7 +4701,7 @@
   .xh-scope-diff-view[data-part='row'],
   .xh-scope-diff-view[data-part='gap'] {
     display: flex;
-    min-block-size: var(--xh-diff-view-line-height, var(--xh-text-code-leading));
+    min-block-size: var(--xh-diff-view-leading, var(--xh-text-code-leading));
   }
 
   .xh-scope-diff-view[data-part='row'][hidden],
@@ -4857,7 +4857,7 @@
 
   .xh-scope-diff-view[data-part='token'][data-kind='keyword'] {
     color: var(--xh-diff-view-keyword-fg, var(--xh-syntax-keyword));
-    font-weight: var(--xh-diff-view-keyword-weight, var(--xh-font-weight-semibold));
+    font-weight: var(--xh-diff-view-keyword-font-weight, var(--xh-font-weight-semibold));
   }
 
   .xh-scope-diff-view[data-part='token'][data-kind='punctuation'] {
@@ -4886,7 +4886,7 @@
      高度锚在代码行高上让折叠格与相邻代码行同高，字号跟着正文走 */
   .xh-scope-diff-view[data-part='gap-trigger'] {
     --xh-action-radius: 0;
-    --xh-action-visual-size: var(--xh-diff-view-line-height, var(--xh-text-code-leading));
+    --xh-action-visual-size: var(--xh-diff-view-leading, var(--xh-text-code-leading));
     --xh-action-padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
     --xh-action-padding-block: 0;
     --xh-action-font-size: var(--xh-diff-view-font-size, var(--xh-_diff-view-font-size));
@@ -4949,7 +4949,7 @@
 
   /* 行评论：每格正文让出一列（一行高的正方格）给评论钮，没有钮的空侧也让，两侧代码才对得齐 */
   .xh-scope-diff-view[data-part='root'][data-commentable] {
-    --xh-_diff-view-comment-col: var(--xh-diff-view-comment-col, var(--xh-diff-view-line-height, var(--xh-text-code-leading)));
+    --xh-_diff-view-comment-col: var(--xh-diff-view-comment-col, var(--xh-diff-view-leading, var(--xh-text-code-leading)));
   }
 
   .xh-scope-diff-view[data-part='root'][data-commentable] [data-part='line-content']:where(.xh-scope-diff-view) {
@@ -5291,7 +5291,7 @@
     display: flex;
     align-items: center;
     gap: var(--xh-field-array-item-gap, var(--xh-space-2));
-    padding: var(--xh-field-array-item-padding, var(--xh-space-0));
+    padding: var(--xh-field-array-item-p, var(--xh-space-0));
     border-radius: var(--xh-field-array-item-radius, var(--xh-shape-surface));
     /* 增删与上移下移带来的换位：由列表动效先反向补偿、再沿这条过渡滑到新位置 */
     transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
@@ -5436,7 +5436,7 @@
      带文案的离散动作钮，走 text outline 档（中性描边、透明底，hover 100 → pressed 200），高一个控件；
      虚线描边把它和行里的实心控件区分开：它加的是行，不是行里的值——家族只写 border-color，线型由这里给 */
   .xh-scope-field-array[data-part='add-trigger'] {
-    --xh-action-visual-size: var(--xh-field-array-add-height, var(--xh-_action-profile-visual-size));
+    --xh-action-visual-size: var(--xh-field-array-add-h, var(--xh-_action-profile-visual-size));
     --xh-action-padding-inline: var(--xh-field-array-add-px, var(--xh-_action-profile-padding-inline));
     --xh-action-gap: var(--xh-field-array-action-gap, var(--xh-space-1));
     --xh-action-radius: var(--xh-field-array-add-radius, var(--xh-shape-control));
@@ -8451,7 +8451,7 @@
     place-self: stretch;
     margin-block-end: calc(-1 * var(--xh-_grid-line));
     margin-inline-end: calc(-1 * var(--xh-_grid-line));
-    padding: var(--xh-grid-split-padding, var(--xh-space-1_5) var(--xh-space-5));
+    padding: var(--xh-grid-split-p, var(--xh-space-1_5) var(--xh-space-5));
     border-block-end: var(--xh-_grid-line) solid var(--xh-grid-divider, var(--xh-border-default));
     border-inline-end: var(--xh-_grid-line) solid var(--xh-grid-divider, var(--xh-border-default));
   }
@@ -9783,7 +9783,7 @@
      只认带字段外壳的那一段，组里单独禁用一颗按钮不让整组变灰。
      只读用 :where() 压低特指度，拿到焦点时与字段外壳一样让位给聚焦态 */
   .xh-scope-input-group[data-part='root']:has(:where([data-xh-field-chrome][data-readonly])) {
-    --xh-_input-group-face: var(--xh-input-group-bg-read-only, var(--xh-bg-subtle));
+    --xh-_input-group-face: var(--xh-input-group-bg-readonly, var(--xh-bg-subtle));
   }
 
   .xh-scope-input-group[data-part='root']:has([data-xh-field-chrome][data-disabled]) {
@@ -10647,7 +10647,7 @@
     grid-area: sider;
     inline-size: var(--xh-_layout-sider-w);
     overflow: hidden;
-    padding: var(--xh-layout-sider-padding, var(--xh-_layout-sider-padding));
+    padding: var(--xh-layout-sider-p, var(--xh-_layout-sider-padding));
     background: var(--xh-layout-sider-bg, var(--xh-bg-surface));
     transition: inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
@@ -10675,12 +10675,12 @@
     grid-area: content;
     /* 内容列已是 minmax(0, 1fr)，这里再声明一次，宽表格与长串文本才撑不破列 */
     min-inline-size: 0;
-    padding: var(--xh-layout-content-padding, var(--xh-space-4));
+    padding: var(--xh-layout-content-p, var(--xh-space-4));
   }
 
   .xh-scope-layout[data-part='footer'] {
     grid-area: footer;
-    padding: var(--xh-layout-footer-padding, var(--xh-space-3) var(--xh-space-4));
+    padding: var(--xh-layout-footer-p, var(--xh-space-3) var(--xh-space-4));
     background: var(--xh-layout-footer-bg, var(--xh-bg-surface));
     color: var(--xh-fg-muted);
     font-size: var(--xh-text-secondary-size);
@@ -10824,10 +10824,10 @@
     /* 贴死视口的那一档，内衬与安全区取大的一头：刘海、圆角与底部横条压住的那一段由系统给出。
        桌面上 env() 恒为 0，取值与内衬槽完全一致。安全区只有物理方向的四个名字，
        行内轴上两侧同取较宽的那一段，RTL 下不会翻错边 */
-    padding-block-start: max(var(--xh-layout-sider-padding, var(--xh-_layout-sider-padding)), env(safe-area-inset-top));
-    padding-block-end: max(var(--xh-layout-sider-padding, var(--xh-_layout-sider-padding)), env(safe-area-inset-bottom));
+    padding-block-start: max(var(--xh-layout-sider-p, var(--xh-_layout-sider-padding)), env(safe-area-inset-top));
+    padding-block-end: max(var(--xh-layout-sider-p, var(--xh-_layout-sider-padding)), env(safe-area-inset-bottom));
     padding-inline: max(
-      var(--xh-layout-sider-padding, var(--xh-_layout-sider-padding)),
+      var(--xh-layout-sider-p, var(--xh-_layout-sider-padding)),
       env(safe-area-inset-left),
       env(safe-area-inset-right)
     );
@@ -11093,7 +11093,7 @@
   /* 行高是本组件的定尺基准：视口按行数定高、每行排版，都从这一个槽位来。
      它的兜底值须与连接层内联高度里用的那份逐字一致，否则 rows 算出来的高度对不上行。 */
   .xh-scope-log[data-part='root'] {
-    --xh-_log-line-h: var(--xh-log-line-height, var(--xh-text-code-leading));
+    --xh-_log-line-h: var(--xh-log-leading, var(--xh-text-code-leading));
 
     /* 尺寸缺省档：不写 data-size 时的取值。三档只改这两个私有槽，
        公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明。
@@ -11236,7 +11236,7 @@
   }
 
   .xh-scope-log[data-part='segment'][data-bold] {
-    font-weight: var(--xh-log-ansi-bold-weight, var(--xh-font-weight-semibold));
+    font-weight: var(--xh-log-ansi-bold-font-weight, var(--xh-font-weight-semibold));
   }
 
   /* 暗淡只在没指定颜色时换成次要前景：指定了颜色的那一段保留自己的颜色 */
@@ -11640,7 +11640,7 @@
     --xh-_marquee-gap-inline: 0;
     --xh-_marquee-gap-block: var(--xh-marquee-gap, var(--xh-space-6));
 
-    block-size: var(--xh-marquee-block-size, 10rem);
+    block-size: var(--xh-marquee-h, 10rem);
   }
 
   /* 往右、往下是同一条轨迹倒过来走 */
@@ -13827,7 +13827,7 @@
     grid-template-rows: 1fr;
     overflow: clip;
     margin-inline-start: var(--xh-reasoning-rail-inset, var(--xh-reasoning-px, var(--xh-_reasoning-px)));
-    border-inline-start: var(--xh-reasoning-rail-width, var(--xh-stroke-thin)) solid var(--xh-reasoning-rail, var(--xh-border-subtle));
+    border-inline-start: var(--xh-reasoning-rail-thickness, var(--xh-stroke-thin)) solid var(--xh-reasoning-rail, var(--xh-border-subtle));
     padding-inline-start: var(--xh-reasoning-content-ps, var(--xh-space-3));
     padding-inline-end: var(--xh-reasoning-content-pe, var(--xh-reasoning-px, var(--xh-_reasoning-px)));
     padding-block-end: var(--xh-reasoning-py, var(--xh-_reasoning-py));
@@ -15912,7 +15912,7 @@
   /* 代码块自己成一片面，长行横向滚动而不是把整块正文撑宽 */
   .xh-scope-typography[data-part='prose'] :where(pre) {
     overflow-x: auto;
-    padding: var(--xh-typography-prose-pre-padding, var(--xh-space-4));
+    padding: var(--xh-typography-prose-pre-p, var(--xh-space-4));
     border-radius: var(--xh-typography-prose-pre-radius, var(--xh-shape-surface));
     background: var(--xh-typography-prose-pre-bg, var(--xh-bg-subtle));
     font-family: var(--xh-typography-code-font, var(--xh-font-family-mono));
@@ -16909,7 +16909,7 @@
 
   /* 一行文字的高度取一行正文的行框，小圆角的方条，看起来就是一行还没排出来的字 */
   .xh-scope-skeleton[data-part='item'][data-shape='text'] {
-    block-size: var(--xh-skeleton-text-block-size, var(--xh-text-body-line-h));
+    block-size: var(--xh-skeleton-text-h, var(--xh-text-body-line-h));
     border-radius: var(--xh-skeleton-text-radius, var(--xh-shape-inset));
   }
 
@@ -16923,7 +16923,7 @@
 
   /* 图片、卡片这类成块的占位：给个最小高度，撑开由作者决定 */
   .xh-scope-skeleton[data-part='item'][data-shape='rect'] {
-    min-block-size: var(--xh-skeleton-rect-block-size, var(--xh-control-h-lg));
+    min-block-size: var(--xh-skeleton-rect-min-h, var(--xh-control-h-lg));
     border-radius: var(--xh-skeleton-rect-radius, var(--xh-shape-surface));
   }
 
@@ -17170,7 +17170,7 @@
   .xh-scope-spinner[data-part='label'] {
     color: var(--xh-spinner-label-fg, var(--xh-fg-brand));
     font-size: var(--xh-spinner-label-size, var(--xh-text-body-size));
-    font-weight: var(--xh-spinner-label-weight, var(--xh-font-weight-medium));
+    font-weight: var(--xh-spinner-label-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
   }
 
@@ -17711,7 +17711,7 @@
     inline-size: var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick));
     block-size: var(--xh-_anchor-indicator-h);
     border-radius: var(--xh-anchor-indicator-radius, var(--xh-shape-pill));
-    background: var(--xh-anchor-indicator-color, var(--xh-_anchor-accent));
+    background: var(--xh-anchor-indicator-bg, var(--xh-_anchor-accent));
     translate: 0 var(--xh-_anchor-indicator-y);
     transition:
       translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
@@ -17781,7 +17781,7 @@
     position: absolute;
     pointer-events: none;
     border-radius: var(--xh-anchor-indicator-radius, var(--xh-shape-pill));
-    background: var(--xh-anchor-indicator-color, var(--xh-_anchor-accent));
+    background: var(--xh-anchor-indicator-bg, var(--xh-_anchor-accent));
     /* 当前项换了，线在新的那一枚上淡入，与字色的淡变同拍（不滑动，滑动归 indicator 部件） */
     animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -17880,7 +17880,7 @@
     inline-size: var(--xh-approval-pending-indicator-size, var(--xh-space-2));
     block-size: var(--xh-approval-pending-indicator-size, var(--xh-space-2));
     border-radius: var(--xh-approval-pending-indicator-radius, var(--xh-shape-circle));
-    background: var(--xh-approval-pending-indicator-color, var(--xh-_tone-soft, var(--xh-_approval-pending-fill)));
+    background: var(--xh-approval-pending-indicator-bg, var(--xh-_tone-soft, var(--xh-_approval-pending-fill)));
     animation: xh-breathe var(--xh-motion-loop-breathe) var(--xh-motion-ease-breathe) infinite;
   }
 
@@ -21645,7 +21645,7 @@
   .xh-scope-cartesian-chart[data-part='root'] {
     --xh-_chart-metric-bar-max: var(--xh-cartesian-chart-bar-max, var(--xh-chart-bar-max));
     --xh-_chart-metric-gap: var(--xh-chart-gap);
-    --xh-_chart-metric-line-width: var(--xh-cartesian-chart-line-width, var(--xh-chart-line-width));
+    --xh-_chart-metric-line-width: var(--xh-cartesian-chart-line-thickness, var(--xh-chart-line-width));
     --xh-_chart-metric-point-size: var(--xh-cartesian-chart-point-size, var(--xh-chart-point-size));
     --xh-_chart-metric-hit-min: var(--xh-chart-hit-min);
     --xh-_chart-metric-tick-length: var(--xh-chart-tick-length);
@@ -21659,7 +21659,7 @@
   /* —— 家族配方的组件槽：标题、视口、图例、提示框与空态由 family/chart.css 画，本图表的覆盖槽写在
      对应部件上接进配方的私有槽，作者在部件或它的祖先上覆盖都生效 —— */
   .xh-scope-cartesian-chart[data-part='viewport'] {
-    --xh-_chart-height: var(--xh-cartesian-chart-height, var(--xh-chart-height));
+    --xh-_chart-height: var(--xh-cartesian-chart-h, var(--xh-chart-height));
   }
 
   .xh-scope-cartesian-chart[data-part='legend'] {
@@ -21754,7 +21754,7 @@
   }
 
   .xh-scope-cartesian-chart[data-part='legend-scale-bar'] {
-    inline-size: var(--xh-cartesian-chart-legend-scale-width, var(--xh-chart-legend-scale-width));
+    inline-size: var(--xh-cartesian-chart-legend-scale-w, var(--xh-chart-legend-scale-width));
     block-size: var(--xh-space-2);
     border-radius: var(--xh-cartesian-chart-legend-scale-bar-radius, var(--xh-shape-inset));
     background: linear-gradient(to right, var(--xh-_chart-scale-from), var(--xh-_chart-seq-mid) 28.6%, var(--xh-_chart-seq-end));
@@ -22867,7 +22867,7 @@
   .xh-scope-cascader[data-part='group'] + .xh-scope-cascader[data-part='group'] {
     padding-block-start: var(--xh-cascader-group-spacing, var(--xh-space-1_5));
     border-block-start: var(--xh-stroke-thin) solid
-      var(--xh-cascader-group-separator-color, var(--xh-material-solid-separator));
+      var(--xh-cascader-group-separator-border, var(--xh-material-solid-separator));
   }
 
   /* 分组标题不是条目、进不了导航，画成小号次要文字，
@@ -24962,7 +24962,7 @@
   }
 
   /* margin: 0 去掉 UA 给 <pre> 的默认外边距。
-     --xh-code-view-line-height 的兜底须与连接层内联 min-block-size 用的一致，
+     --xh-code-view-leading 的兜底须与连接层内联 min-block-size 用的一致，
      且因参与 calc 乘法必须是长度而非无单位倍数。 */
   .xh-scope-code-view[data-part='pre'] {
     /* 逻辑属性 overflow-inline 尚无可用实现，写物理轴 */
@@ -24970,7 +24970,7 @@
     padding-block: var(--xh-code-view-py, var(--xh-space-3));
     /* 等宽字体自己声明：浏览器给 pre 的那份由基线层统一收掉了，行与行之间的空白也要按等宽算 */
     font-family: var(--xh-code-view-font, var(--xh-font-family-mono));
-    line-height: var(--xh-code-view-line-height, var(--xh-text-code-leading));
+    line-height: var(--xh-code-view-leading, var(--xh-text-code-leading));
   }
 
   /* 折叠时 <pre> 的高度被连接层写死，超出部分沿圆角收边 */
@@ -24990,7 +24990,7 @@
   /* 一行是一个块：行号槽与正文并排，空行也要占满一行高 */
   .xh-scope-code-view[data-part='line'] {
     display: flex;
-    min-block-size: var(--xh-code-view-line-height, var(--xh-text-code-leading));
+    min-block-size: var(--xh-code-view-leading, var(--xh-text-code-leading));
     padding-inline-end: var(--xh-code-view-px, var(--xh-space-3));
     /* 标出来的那几行换的是底色与那条内阴影色条，两样一起过渡才是同一个动作 */
     transition:
@@ -25119,7 +25119,7 @@
   /* 按块折叠：每行正文都让出一列（一行高的正方格），块头的折叠钮定位在这一列里；
      没有钮的行也让，缩进才对得齐 */
   .xh-scope-code-view[data-part='root'][data-block-folding] {
-    --xh-_code-view-fold-col: var(--xh-code-view-fold-col, var(--xh-code-view-line-height, var(--xh-text-code-leading)));
+    --xh-_code-view-fold-col: var(--xh-code-view-fold-col, var(--xh-code-view-leading, var(--xh-text-code-leading)));
   }
 
   .xh-scope-code-view[data-part='root'][data-block-folding] [data-part='line-content']:where(.xh-scope-code-view) {
@@ -25216,7 +25216,7 @@
 
   .xh-scope-code-view[data-part='token'][data-kind='keyword'] {
     color: var(--xh-code-view-keyword-fg, var(--xh-syntax-keyword));
-    font-weight: var(--xh-code-view-keyword-weight, var(--xh-font-weight-semibold));
+    font-weight: var(--xh-code-view-keyword-font-weight, var(--xh-font-weight-semibold));
   }
 
   .xh-scope-code-view[data-part='token'][data-kind='punctuation'] {
@@ -27345,7 +27345,7 @@
   .xh-scope-combobox[data-part='group'] + .xh-scope-combobox[data-part='group'] {
     padding-block-start: var(--xh-combobox-group-spacing, var(--xh-space-1_5));
     border-block-start: var(--xh-stroke-thin) solid
-      var(--xh-combobox-group-separator-color, var(--xh-material-frosted-separator));
+      var(--xh-combobox-group-separator-border, var(--xh-material-frosted-separator));
   }
 
   /* 分组标题不是候选、进不了导航，画成小号次要文字，内缩与候选对齐（同一个 padding-inline） */
@@ -28382,7 +28382,7 @@
     --xh-collection-separator-thickness: var(--xh-context-menu-separator-thickness, var(--xh-stroke-thin));
     --xh-collection-separator-block-margin: var(--xh-context-menu-separator-my, var(--xh-space-0_5));
     --xh-collection-separator-radius: var(--xh-context-menu-separator-radius, var(--xh-shape-pill));
-    --xh-collection-separator-color: var(--xh-context-menu-separator-color, var(--xh-material-frosted-separator));
+    --xh-collection-separator-color: var(--xh-context-menu-separator-bg, var(--xh-material-frosted-separator));
   }
 
   .xh-scope-context-menu[data-part='separator'][hidden] {
@@ -30832,10 +30832,10 @@
        刘海、圆角与底部横条压住的那一段由系统给出，内衬比它窄时面板的一角会被切掉。
        桌面上 env() 恒为 0，取值与内衬槽完全一致。安全区只有物理方向的四个名字，
        行内轴上两侧同取较宽的那一段，RTL 下不会翻错边。 */
-    padding-block-start: max(var(--xh-dialog-positioner-padding, var(--xh-space-4)), env(safe-area-inset-top));
-    padding-block-end: max(var(--xh-dialog-positioner-padding, var(--xh-space-4)), env(safe-area-inset-bottom));
+    padding-block-start: max(var(--xh-dialog-positioner-p, var(--xh-space-4)), env(safe-area-inset-top));
+    padding-block-end: max(var(--xh-dialog-positioner-p, var(--xh-space-4)), env(safe-area-inset-bottom));
     padding-inline: max(
-      var(--xh-dialog-positioner-padding, var(--xh-space-4)),
+      var(--xh-dialog-positioner-p, var(--xh-space-4)),
       env(safe-area-inset-left),
       env(safe-area-inset-right)
     );
@@ -30909,7 +30909,7 @@
      四边都贴着视口：不取圆角，不画描边与投影——没有露在外面的边界要交代，也没有底可以投影。
      宽度档在这一档不生效。 */
   .xh-scope-dialog[data-part='positioner'][data-fullscreen] {
-    --xh-dialog-positioner-padding: var(--xh-space-0);
+    --xh-dialog-positioner-p: var(--xh-space-0);
 
     align-items: stretch;
   }
@@ -33269,7 +33269,7 @@
   /* 子组缩进一段，起始缘一条细线标出它管到哪一行 */
   .xh-scope-filter-builder[data-part='group']:not([data-depth='0']) {
     padding-inline-start: var(--xh-filter-builder-indent, var(--xh-space-4));
-    border-inline-start: var(--xh-stroke-thin) solid var(--xh-filter-builder-guide-color, var(--xh-border-subtle));
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-filter-builder-guide-border, var(--xh-border-subtle));
   }
 
   /* 组头：逻辑切换在起始端，子组的删除钮推到行尾 */
@@ -33410,7 +33410,7 @@
      虚线描边把它们和行里的实心控件区分开：它们加的是行，不是行里的值 */
   .xh-scope-filter-builder[data-part='add-condition-trigger'],
   .xh-scope-filter-builder[data-part='add-group-trigger'] {
-    --xh-action-visual-size: var(--xh-filter-builder-add-height, var(--xh-_action-profile-visual-size));
+    --xh-action-visual-size: var(--xh-filter-builder-add-h, var(--xh-_action-profile-visual-size));
     --xh-action-padding-inline: var(--xh-filter-builder-add-px, var(--xh-_action-profile-padding-inline));
     --xh-action-radius: var(--xh-filter-builder-add-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-filter-builder-add-bg, var(--xh-_action-variant-bg-rest));
@@ -34055,7 +34055,7 @@
   /* —— 家族配方的组件槽：标题、视口、提示框与空态由 family/chart.css 画，本图表的覆盖槽写在
      对应部件上接进配方的私有槽，作者在部件或它的祖先上覆盖都生效 —— */
   .xh-scope-funnel-chart[data-part='viewport'] {
-    --xh-_chart-height: var(--xh-funnel-chart-height, var(--xh-chart-height));
+    --xh-_chart-height: var(--xh-funnel-chart-h, var(--xh-chart-height));
   }
 
   .xh-scope-funnel-chart[data-part='tooltip'] {
@@ -34158,7 +34158,7 @@
   /* —— 家族配方的组件槽：标题、视口、图例、提示框与空态由 family/chart.css 画，本图表的覆盖槽写在
      对应部件上接进配方的私有槽，作者在部件或它的祖先上覆盖都生效 —— */
   .xh-scope-graph-chart[data-part='viewport'] {
-    --xh-_chart-height: var(--xh-graph-chart-height, var(--xh-chart-height));
+    --xh-_chart-height: var(--xh-graph-chart-h, var(--xh-chart-height));
   }
 
   .xh-scope-graph-chart[data-part='legend'] {
@@ -34235,7 +34235,7 @@
   .xh-scope-graph-chart[data-part='link'] {
     fill: none;
     stroke: var(--xh-_graph-link);
-    stroke-width: var(--xh-_graph-link-width, var(--xh-graph-chart-link-width, var(--xh-stroke-thin)));
+    stroke-width: var(--xh-_graph-link-width, var(--xh-graph-chart-link-thickness, var(--xh-stroke-thin)));
     stroke-linecap: round;
   }
 
@@ -34593,7 +34593,7 @@
   /* —— 家族配方的组件槽：标题、视口、提示框与空态由 family/chart.css 画，本图表的覆盖槽写在
      对应部件上接进配方的私有槽，作者在部件或它的祖先上覆盖都生效 —— */
   .xh-scope-hierarchy-chart[data-part='viewport'] {
-    --xh-_chart-height: var(--xh-hierarchy-chart-height, var(--xh-chart-height));
+    --xh-_chart-height: var(--xh-hierarchy-chart-h, var(--xh-chart-height));
   }
 
   .xh-scope-hierarchy-chart[data-part='legend'] {
@@ -34815,7 +34815,7 @@
   }
 
   .xh-scope-hierarchy-chart[data-part='legend-scale-bar'] {
-    inline-size: var(--xh-hierarchy-chart-legend-scale-width, var(--xh-chart-legend-scale-width));
+    inline-size: var(--xh-hierarchy-chart-legend-scale-w, var(--xh-chart-legend-scale-width));
     block-size: var(--xh-space-2);
     border-radius: var(--xh-hierarchy-chart-legend-scale-bar-radius, var(--xh-shape-inset));
     /* 低端在行首：角度乘方向符号，rtl 下渐变从右往左 */
@@ -35613,7 +35613,7 @@
     display: flex;
     align-items: center;
     gap: var(--xh-image-viewer-toolbar-gap, var(--xh-space-1));
-    padding: var(--xh-image-viewer-toolbar-padding, var(--xh-space-1_5) var(--xh-space-4));
+    padding: var(--xh-image-viewer-toolbar-p, var(--xh-space-1_5) var(--xh-space-4));
     border: var(--xh-stroke-thin) solid var(--xh-_image-viewer-page-border);
     border-radius: var(--xh-image-viewer-toolbar-radius-outer, var(--xh-image-viewer-overlay-radius, var(--xh-shape-surface)));
     background: var(--xh-image-viewer-toolbar-bg, var(--xh-_image-viewer-page-surface));
@@ -35656,7 +35656,7 @@
     inset-block-start: max(var(--xh-space-6), env(safe-area-inset-top));
     inset-inline-start: 50%;
     translate: -50% 0;
-    padding: var(--xh-image-viewer-counter-padding, var(--xh-space-1) var(--xh-space-3));
+    padding: var(--xh-image-viewer-counter-p, var(--xh-space-1) var(--xh-space-3));
     border-radius: var(--xh-image-viewer-counter-radius, var(--xh-image-viewer-overlay-radius, var(--xh-shape-control)));
     font-size: var(--xh-text-secondary-size);
   }
@@ -36939,7 +36939,7 @@
     --xh-collection-separator-thickness: var(--xh-menu-separator-thickness, var(--xh-stroke-thin));
     --xh-collection-separator-block-margin: var(--xh-menu-separator-my, var(--xh-space-0_5));
     --xh-collection-separator-radius: var(--xh-menu-separator-radius, var(--xh-shape-pill));
-    --xh-collection-separator-color: var(--xh-menu-separator-color, var(--xh-material-frosted-separator));
+    --xh-collection-separator-color: var(--xh-menu-separator-bg, var(--xh-material-frosted-separator));
   }
 
   /* 箭头的底色与描边色，几何在 overlay-arrow.css。
@@ -37454,7 +37454,7 @@
     --xh-collection-separator-thickness: var(--xh-menubar-separator-thickness, var(--xh-stroke-thin));
     --xh-collection-separator-block-margin: var(--xh-menubar-separator-my, var(--xh-space-0_5));
     --xh-collection-separator-radius: var(--xh-menubar-separator-radius, var(--xh-shape-pill));
-    --xh-collection-separator-color: var(--xh-menubar-separator-color, var(--xh-material-frosted-separator));
+    --xh-collection-separator-color: var(--xh-menubar-separator-bg, var(--xh-material-frosted-separator));
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中。
@@ -37568,7 +37568,7 @@
     margin-block-end: var(--xh-message-feed-p, var(--xh-_message-feed-p));
     margin-inline-start: var(--xh-message-feed-p, var(--xh-_message-feed-p));
     border-radius: var(--xh-message-feed-pending-indicator-radius, var(--xh-shape-circle));
-    background: var(--xh-message-feed-pending-indicator-color, var(--xh-fg-muted));
+    background: var(--xh-message-feed-pending-indicator-bg, var(--xh-fg-muted));
     animation: xh-breathe var(--xh-motion-loop-breathe) var(--xh-motion-ease-breathe) infinite;
   }
 
@@ -38174,7 +38174,7 @@
     inset-block: var(--xh-space-1);
     inline-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
     border-radius: var(--xh-navigation-menu-indicator-radius, var(--xh-shape-pill));
-    background: var(--xh-navigation-menu-indicator-color, var(--xh-_navigation-menu-accent));
+    background: var(--xh-navigation-menu-indicator-bg, var(--xh-_navigation-menu-accent));
     pointer-events: none;
     /* 当前项换了，线在新的那一枚上淡入，与字色的淡变同拍（不滑动，滑动归 indicator 部件） */
     animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -38211,7 +38211,7 @@
     inline-size: var(--xh-_navigation-menu-indicator-w);
     block-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
     border-radius: var(--xh-navigation-menu-indicator-radius, var(--xh-shape-pill));
-    background: var(--xh-navigation-menu-indicator-color, var(--xh-_navigation-menu-accent));
+    background: var(--xh-navigation-menu-indicator-bg, var(--xh-_navigation-menu-accent));
     translate: var(--xh-_navigation-menu-indicator-x) 0;
     transition:
       translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
@@ -39953,7 +39953,7 @@
   /* —— 家族配方的组件槽：标题、视口、图例、提示框与空态由 family/chart.css 画，本图表的覆盖槽写在
      对应部件上接进配方的私有槽，作者在部件或它的祖先上覆盖都生效 —— */
   .xh-scope-pie-chart[data-part='viewport'] {
-    --xh-_chart-height: var(--xh-pie-chart-height, var(--xh-chart-height));
+    --xh-_chart-height: var(--xh-pie-chart-h, var(--xh-chart-height));
   }
 
   .xh-scope-pie-chart[data-part='legend'] {
@@ -41138,7 +41138,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--xh-question-flow-gap, var(--xh-_question-flow-gap));
-    padding: var(--xh-question-flow-padding, var(--xh-_question-flow-p));
+    padding: var(--xh-question-flow-p, var(--xh-_question-flow-p));
     border: var(--xh-stroke-thin) solid var(--xh-question-flow-border, var(--xh-border-default));
     border-radius: var(--xh-question-flow-radius, var(--xh-shape-surface));
     background: var(--xh-question-flow-bg, var(--xh-bg-surface));
@@ -41508,7 +41508,7 @@
   .xh-scope-question-flow[data-part='prev-trigger'],
   .xh-scope-question-flow[data-part='next-trigger'] {
     --xh-action-visual-size: var(--xh-question-flow-step-size, var(--xh-_action-profile-visual-size));
-    --xh-action-padding-inline: var(--xh-question-flow-step-padding, var(--xh-_action-profile-padding-inline));
+    --xh-action-padding-inline: var(--xh-question-flow-step-px, var(--xh-_action-profile-padding-inline));
     --xh-action-radius: var(--xh-question-flow-step-radius, var(--xh-shape-inset));
     --xh-action-bg-rest: var(--xh-question-flow-step-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-question-flow-step-bg-hover, var(--xh-_action-variant-bg-hover));
@@ -41693,7 +41693,7 @@
   .xh-scope-radar-chart[data-part='root'] {
     --xh-_chart-metric-bar-max: var(--xh-chart-bar-max);
     --xh-_chart-metric-gap: var(--xh-chart-gap);
-    --xh-_chart-metric-line-width: var(--xh-radar-chart-line-width, var(--xh-chart-line-width));
+    --xh-_chart-metric-line-width: var(--xh-radar-chart-line-thickness, var(--xh-chart-line-width));
     --xh-_chart-metric-point-size: var(--xh-radar-chart-point-size, var(--xh-chart-point-size));
     --xh-_chart-metric-hit-min: var(--xh-chart-hit-min);
     --xh-_chart-metric-tick-length: var(--xh-chart-tick-length);
@@ -41707,7 +41707,7 @@
   /* —— 家族配方的组件槽：标题、视口、图例、提示框与空态由 family/chart.css 画，本图表的覆盖槽写在
      对应部件上接进配方的私有槽，作者在部件或它的祖先上覆盖都生效 —— */
   .xh-scope-radar-chart[data-part='viewport'] {
-    --xh-_chart-height: var(--xh-radar-chart-height, var(--xh-chart-height));
+    --xh-_chart-height: var(--xh-radar-chart-h, var(--xh-chart-height));
   }
 
   .xh-scope-radar-chart[data-part='legend'] {
@@ -42213,7 +42213,7 @@
     display: inline-flex;
     flex-wrap: wrap;
     gap: 0;
-    padding: var(--xh-radio-group-track-padding, var(--xh-space-0_5));
+    padding: var(--xh-radio-group-track-p, var(--xh-space-0_5));
     border: var(--xh-stroke-thin) solid var(--xh-radio-group-track-border, var(--xh-border-control));
     border-radius: var(--xh-radio-group-track-radius, var(--xh-shape-control));
     background: var(--xh-radio-group-track-bg, var(--xh-bg-field));
@@ -42318,7 +42318,7 @@
     block-size: auto;
     min-block-size: calc(
       var(--xh-radio-group-segment-h, var(--xh-_radio-group-segment-h)) - 2 *
-        var(--xh-radio-group-track-padding, var(--xh-space-0_5)) - 2 * var(--xh-stroke-thin)
+        var(--xh-radio-group-track-p, var(--xh-space-0_5)) - 2 * var(--xh-stroke-thin)
     );
   }
 
@@ -42500,7 +42500,7 @@
         0px,
         max(
           (100% - var(--xh-control-hit-coarse)) / 2,
-          -1 * (var(--xh-radio-group-track-padding, var(--xh-space-0_5)) + var(--xh-stroke-thin) + var(--xh-space-2))
+          -1 * (var(--xh-radio-group-track-p, var(--xh-space-0_5)) + var(--xh-stroke-thin) + var(--xh-space-2))
         )
       );
       inset-inline: min(0px, (100% - var(--xh-control-hit-coarse)) / 2);
@@ -42899,7 +42899,7 @@
   /* 几何要用的像素值以这里的私有槽为真源：机器挂载后从计算样式读它们，作者覆盖组件槽即改变几何。
      节点的厚度借柱的最大厚度那一格传进去 */
   .xh-scope-sankey-chart[data-part='root'] {
-    --xh-_chart-metric-bar-max: var(--xh-sankey-chart-node-width, var(--xh-space-3));
+    --xh-_chart-metric-bar-max: var(--xh-sankey-chart-node-w, var(--xh-space-3));
     --xh-_chart-metric-gap: var(--xh-chart-gap);
     --xh-_chart-metric-line-width: var(--xh-chart-line-width);
     --xh-_chart-metric-point-size: var(--xh-chart-point-size);
@@ -42915,7 +42915,7 @@
   /* —— 家族配方的组件槽：标题、视口、图例、提示框与空态由 family/chart.css 画，本图表的覆盖槽写在
      对应部件上接进配方的私有槽，作者在部件或它的祖先上覆盖都生效 —— */
   .xh-scope-sankey-chart[data-part='viewport'] {
-    --xh-_chart-height: var(--xh-sankey-chart-height, var(--xh-chart-height));
+    --xh-_chart-height: var(--xh-sankey-chart-h, var(--xh-chart-height));
   }
 
   .xh-scope-sankey-chart[data-part='legend'] {
@@ -43754,7 +43754,7 @@
   .xh-scope-select[data-part='group'] + .xh-scope-select[data-part='group'] {
     padding-block-start: var(--xh-select-group-spacing, var(--xh-space-1_5));
     border-block-start: var(--xh-stroke-thin) solid
-      var(--xh-select-group-separator-color, var(--xh-material-frosted-separator));
+      var(--xh-select-group-separator-border, var(--xh-material-frosted-separator));
   }
 
   /* 分组标题不是选项、进不了导航，画成小号次要文字，
@@ -43975,7 +43975,7 @@
    * 各自取用：换档只改槽，画在哪个节点上互不影响。
    */
   .xh-scope-separator[data-part='root'] {
-    --xh-_separator-color: var(--xh-separator-color, var(--xh-border-default));
+    --xh-_separator-color: var(--xh-separator-bg, var(--xh-border-default));
     --xh-_separator-dash: var(--xh-separator-dash-length, var(--xh-space-1_5));
     --xh-_separator-dash-gap: var(--xh-separator-dash-gap, var(--xh-space-1_5));
     --xh-_separator-paint: var(--xh-_separator-color);
@@ -44005,13 +44005,13 @@
 
   /* —— 形态 ——
      三档只换线的深浅，缺省档写在上面的基础规则里。使用者槽排在档值前面，
-     写了 --xh-separator-color 的那一条仍然压过档值 */
+     写了 --xh-separator-bg 的那一条仍然压过档值 */
   .xh-scope-separator[data-part='root'][data-variant='subtle'] {
-    --xh-_separator-color: var(--xh-separator-color, var(--xh-material-soft-separator));
+    --xh-_separator-color: var(--xh-separator-bg, var(--xh-material-soft-separator));
   }
 
   .xh-scope-separator[data-part='root'][data-variant='strong'] {
-    --xh-_separator-color: var(--xh-separator-color, var(--xh-border-strong));
+    --xh-_separator-color: var(--xh-separator-bg, var(--xh-border-strong));
   }
 
   /* —— 虚线 ——
@@ -44563,10 +44563,10 @@
     --xh-collection-font-weight-current-hover: var(--xh-side-nav-row-font-weight-current, var(--xh-font-weight-semibold));
     --xh-collection-font-weight-current-highlight: var(--xh-side-nav-row-font-weight-current, var(--xh-font-weight-semibold));
     --xh-collection-font-weight-current-pressed: var(--xh-side-nav-row-font-weight-current, var(--xh-font-weight-semibold));
-    --xh-collection-indicator-fg-current: var(--xh-side-nav-indicator-color, var(--xh-fg-brand));
-    --xh-collection-indicator-fg-current-hover: var(--xh-side-nav-indicator-color, var(--xh-fg-brand));
-    --xh-collection-indicator-fg-current-highlight: var(--xh-side-nav-indicator-color, var(--xh-fg-brand));
-    --xh-collection-indicator-fg-current-pressed: var(--xh-side-nav-indicator-color, var(--xh-fg-brand));
+    --xh-collection-indicator-fg-current: var(--xh-side-nav-indicator-fg, var(--xh-fg-brand));
+    --xh-collection-indicator-fg-current-hover: var(--xh-side-nav-indicator-fg, var(--xh-fg-brand));
+    --xh-collection-indicator-fg-current-highlight: var(--xh-side-nav-indicator-fg, var(--xh-fg-brand));
+    --xh-collection-indicator-fg-current-pressed: var(--xh-side-nav-indicator-fg, var(--xh-fg-brand));
     /* 展开路径：中性面，字色缺省由品牌色改回行的常态色 */
     --xh-collection-bg-open-path: var(--xh-side-nav-row-bg-in-path, var(--xh-bg-subtle));
     --xh-collection-fg-open-path: var(--xh-side-nav-row-fg-in-path, var(--xh-side-nav-row-fg, currentColor));
@@ -45458,7 +45458,7 @@
   /* 根就是 <svg>：随文排版，宽度缺省 6rem，高度缺省一行字高，放进表格单元格与指标卡都不撑高一行。
      几何要用的像素值以这里的私有槽为真源：机器挂载后从计算样式读它们，作者覆盖组件槽即改变几何 */
   .xh-scope-sparkline[data-part='root'] {
-    --xh-_chart-metric-line-width: var(--xh-sparkline-line-width, var(--xh-chart-line-width));
+    --xh-_chart-metric-line-width: var(--xh-sparkline-line-thickness, var(--xh-chart-line-width));
     --xh-_chart-metric-point-size: var(--xh-sparkline-marker-size, var(--xh-chart-point-size));
     --xh-_chart-metric-gap: var(--xh-chart-gap);
     --xh-_chart-metric-bar-max: var(--xh-sparkline-bar-max, var(--xh-chart-bar-max));
@@ -45475,11 +45475,11 @@
     --xh-_sparkline-accent: var(--xh-sparkline-accent-color, var(--xh-chart-categorical-1));
 
     display: inline-block;
-    inline-size: var(--xh-sparkline-width, 6rem);
+    inline-size: var(--xh-sparkline-w, 6rem);
     /* 级联兜底：先写一行正文的行框令牌（正文字号 × 正文行距），再写 1lh。
        1lh 晚于本库声明的浏览器地板，取不到时旧引擎丢掉后一条、留下前一条。 */
-    block-size: var(--xh-sparkline-height, var(--xh-text-body-line-h));
-    block-size: var(--xh-sparkline-height, 1lh);
+    block-size: var(--xh-sparkline-h, var(--xh-text-body-line-h));
+    block-size: var(--xh-sparkline-h, 1lh);
     /* 高度正好是一个行盒：顶边贴行盒顶边，行高不被撑开；居中对齐会按字的 x 高度再挪半格，行盒就多出一截 */
     vertical-align: top;
   }
@@ -45837,7 +45837,7 @@
 
   /* 面板的换行基准：一行正文的宽度。步骤列的内容宽加上这一格放不下，两者就分成两行 */
   .xh-scope-steps[data-part='root'][data-orientation='vertical'] > .xh-scope-steps[data-part='content'] {
-    flex: 1 1 var(--xh-steps-content-min-inline-size, var(--xh-measure-prose));
+    flex: 1 1 var(--xh-steps-content-min-w, var(--xh-measure-prose));
   }
 
   /* —— 尺寸 —— */
@@ -45923,7 +45923,7 @@
 
   /* 横排始终留在同一条轴上，标题与说明负责在自己的格内省略。 */
   .xh-scope-steps[data-part='item'][data-orientation='horizontal']:not(:last-child) {
-    min-inline-size: var(--xh-steps-item-min-inline-size, var(--xh-space-0));
+    min-inline-size: var(--xh-steps-item-min-w, var(--xh-space-0));
   }
 
   .xh-scope-steps[data-part='item'][data-orientation='vertical'] {
@@ -47522,7 +47522,7 @@
     display: inline-flex;
     flex: none;
     align-self: stretch;
-    inline-size: var(--xh-table-resize-width, var(--xh-space-2));
+    inline-size: var(--xh-table-resize-w, var(--xh-space-2));
     /* 推到行尾侧。把手在标记里是表头格的最后一个孩子，auto 外边距把它顶到那一头，
        不必给每个表头格加定位上下文——那条会落到所有既有表格上 */
     margin-inline-start: auto;
@@ -48599,7 +48599,7 @@
     inline-size: var(--xh-_tabs-indicator-w);
     block-size: var(--xh-tabs-indicator-thickness, var(--xh-stroke-thick));
     border-radius: var(--xh-tabs-indicator-radius, var(--xh-shape-pill));
-    background: var(--xh-tabs-indicator-color, var(--xh-_tabs-accent));
+    background: var(--xh-tabs-indicator-bg, var(--xh-_tabs-accent));
     transform: translate(var(--xh-_tabs-indicator-x), 0);
     transition:
       transform var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
@@ -48662,7 +48662,7 @@
     position: absolute;
     pointer-events: none;
     border-radius: var(--xh-tabs-indicator-radius, var(--xh-shape-pill));
-    background: var(--xh-tabs-indicator-color, var(--xh-_tabs-accent));
+    background: var(--xh-tabs-indicator-bg, var(--xh-_tabs-accent));
     /* 当前项换了，线在新的那一枚上淡入，与字色的淡变同拍（不滑动，滑动归 indicator 部件） */
     animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -48723,7 +48723,7 @@
     inline-size: var(--xh-tabs-separator-thickness, var(--xh-stroke-thin));
     block-size: var(--xh-tabs-separator-size, var(--xh-space-4));
     border-radius: var(--xh-tabs-separator-radius, var(--xh-shape-pill));
-    background: var(--xh-tabs-separator-color, var(--xh-border-default));
+    background: var(--xh-tabs-separator-bg, var(--xh-border-default));
   }
 
   .xh-scope-tabs[data-part='separator'][data-orientation='vertical'] {
@@ -52115,7 +52115,7 @@
     z-index: 2;
     inset: 0;
     border: var(--xh-stroke-thin) solid
-      var(--xh-toggle-group-outline-color, var(--xh-_tone-border-control, var(--xh-border-control)));
+      var(--xh-toggle-group-outline-border, var(--xh-_tone-border-control, var(--xh-border-control)));
     border-radius: inherit;
     pointer-events: none;
   }
@@ -52357,7 +52357,7 @@
     align-self: center;
     z-index: 2;
     border-radius: var(--xh-toggle-group-separator-radius, var(--xh-shape-pill));
-    background: var(--xh-toggle-group-separator-color, var(--xh-fg-default));
+    background: var(--xh-toggle-group-separator-bg, var(--xh-fg-default));
     opacity: var(--xh-toggle-group-separator-opacity, var(--xh-control-separator-opacity));
     pointer-events: none;
     transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -53148,7 +53148,7 @@
     flex: none;
     align-self: center;
     border-radius: var(--xh-toolbar-separator-radius, var(--xh-shape-pill));
-    background: var(--xh-toolbar-separator-color, var(--xh-border-default));
+    background: var(--xh-toolbar-separator-bg, var(--xh-border-default));
   }
 
   .xh-scope-toolbar[data-part='separator'][data-orientation='vertical'] {
@@ -53168,7 +53168,7 @@
 
   /* 组内分隔线覆盖在相邻分段的接缝上，不占额外宽度；半高弱线保留整体连续感。 */
   .xh-scope-toolbar[data-part='group'] > .xh-scope-toolbar[data-part='separator'] {
-    background: var(--xh-toolbar-separator-color, var(--xh-fg-default));
+    background: var(--xh-toolbar-separator-bg, var(--xh-fg-default));
     opacity: var(--xh-toolbar-separator-opacity, var(--xh-control-separator-opacity));
     pointer-events: none;
   }
@@ -53452,7 +53452,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--xh-tour-positioner-padding, var(--xh-space-4));
+    padding: var(--xh-tour-positioner-p, var(--xh-space-4));
   }
 
   /* 必须排在 data-position='center' 之后：两条选择器的特指度相同（都是三个属性），

@@ -172,7 +172,7 @@
   [data-scope='spinner'][data-part='label'] {
     color: var(--xh-spinner-label-fg, var(--xh-fg-brand));
     font-size: var(--xh-spinner-label-size, var(--xh-text-body-size));
-    font-weight: var(--xh-spinner-label-weight, var(--xh-font-weight-medium));
+    font-weight: var(--xh-spinner-label-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
   }
 

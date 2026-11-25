@@ -532,7 +532,7 @@
     inline-size: var(--xh-_tabs-indicator-w);
     block-size: var(--xh-tabs-indicator-thickness, var(--xh-stroke-thick));
     border-radius: var(--xh-tabs-indicator-radius, var(--xh-shape-pill));
-    background: var(--xh-tabs-indicator-color, var(--xh-_tabs-accent));
+    background: var(--xh-tabs-indicator-bg, var(--xh-_tabs-accent));
     transform: translate(var(--xh-_tabs-indicator-x), 0);
     transition:
       transform var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
@@ -595,7 +595,7 @@
     position: absolute;
     pointer-events: none;
     border-radius: var(--xh-tabs-indicator-radius, var(--xh-shape-pill));
-    background: var(--xh-tabs-indicator-color, var(--xh-_tabs-accent));
+    background: var(--xh-tabs-indicator-bg, var(--xh-_tabs-accent));
     /* 当前项换了，线在新的那一枚上淡入，与字色的淡变同拍（不滑动，滑动归 indicator 部件） */
     animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -656,7 +656,7 @@
     inline-size: var(--xh-tabs-separator-thickness, var(--xh-stroke-thin));
     block-size: var(--xh-tabs-separator-size, var(--xh-space-4));
     border-radius: var(--xh-tabs-separator-radius, var(--xh-shape-pill));
-    background: var(--xh-tabs-separator-color, var(--xh-border-default));
+    background: var(--xh-tabs-separator-bg, var(--xh-border-default));
   }
 
   [data-scope='tabs'][data-part='separator'][data-orientation='vertical'] {

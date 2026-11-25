@@ -1045,7 +1045,7 @@ const notificationTranslations = { close: "关闭" };
 }
 
 .xh-preview__skeleton-cover {
-  --xh-skeleton-rect-block-size: calc(var(--xh-control-h-lg) * 2);
+  --xh-skeleton-rect-min-h: calc(var(--xh-control-h-lg) * 2);
 }
 
 .xh-preview__skeleton-long {

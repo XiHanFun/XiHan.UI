@@ -141,7 +141,7 @@ outline 画描边输入面，subtle 用淡底嵌入已有表面
 | `--xh-input-group-bg-focus` | `root` | `background` | `focus-within` | `--xh-_input-group-bg-focus` | input-group 的 root 部件 background 覆盖槽。 |
 | `--xh-input-group-bg-hover` | `root` | `background` | `disabled`<br>`hover`<br>`invalid`<br>`not(:focus-within)`<br>`not(:has([data-xh-field-chrome]:is([data-disabled], [data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_input-group-bg-hover` | input-group 的 root 部件 background 覆盖槽。 |
 | `--xh-input-group-bg-invalid` | `root` | `background` | `has([data-invalid], [aria-invalid='true'])`<br>`invalid` | `--xh-bg-field-invalid` | input-group 的 root 部件 background 覆盖槽。 |
-| `--xh-input-group-bg-read-only` | `root` | `background` | `has(:where([data-xh-field-chrome][data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-bg-subtle` | input-group 的 root 部件 background 覆盖槽。 |
+| `--xh-input-group-bg-readonly` | `root` | `background` | `has(:where([data-xh-field-chrome][data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-bg-subtle` | input-group 的 root 部件 background 覆盖槽。 |
 | `--xh-input-group-border` | `root` | `border` | `default` | `--xh-_input-group-border` | input-group 的 root 部件 border 覆盖槽。 |
 | `--xh-input-group-border-disabled` | `root` | `border-color` | `disabled`<br>`has([data-xh-field-chrome][data-disabled])`<br>`xh-field-chrome` | `--xh-border-default` | input-group 的 root 部件 border-color 覆盖槽。 |
 | `--xh-input-group-border-focus` | `root` | `border-color`<br>`box-shadow` | `focus-within` | `--xh-_input-group-border-focus` | input-group 的 root 部件 border-color、box-shadow 覆盖槽。 |

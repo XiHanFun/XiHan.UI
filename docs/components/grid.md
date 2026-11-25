@@ -201,7 +201,7 @@ split 画外框与格与格之间的横竖线，跨行跨列的格子里不出�
 | `--xh-grid-gap` | `root` | `gap` | `default`<br>`gap=lg`<br>`gap=md`<br>`gap=sm`<br>`gap=xl`<br>`gap=xs` | `--xh-layout-gap-lg`<br>`--xh-layout-gap-md`<br>`--xh-layout-gap-sm`<br>`--xh-layout-gap-xl`<br>`--xh-layout-gap-xs`<br>`--xh-space-0` | grid 的 root 部件 gap 覆盖槽。 |
 | `--xh-grid-row-gap` | `root` | `row-gap` | `row-gap=lg`<br>`row-gap=md`<br>`row-gap=sm`<br>`row-gap=xl`<br>`row-gap=xs` | `--xh-layout-gap-lg`<br>`--xh-layout-gap-md`<br>`--xh-layout-gap-sm`<br>`--xh-layout-gap-xl`<br>`--xh-layout-gap-xs` | grid 的 root 部件 row-gap 覆盖槽。 |
 | `--xh-grid-rows` | `root` | `grid-template-rows` | `rows` | `--xh-_grid-rows` | grid 的 root 部件 grid-template-rows 覆盖槽。 |
-| `--xh-grid-split-padding` | `item`<br>`root` | `padding` | `split` | `--xh-space-1_5` | grid 的 item、root 部件 padding 覆盖槽。 |
+| `--xh-grid-split-p` | `item`<br>`root` | `padding` | `split` | `--xh-space-1_5` | grid 的 item、root 部件 padding 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

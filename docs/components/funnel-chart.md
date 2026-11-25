@@ -304,7 +304,7 @@ direction="up" 画成金字塔：第一阶段在最下面，往上逐级收窄�
 | --- | --- | --- | --- | --- | --- |
 | `--xh-funnel-chart-empty-gap` | `empty` | `gap` | `state=loading` | `--xh-space-2` | funnel-chart 的 empty 部件 gap 覆盖槽。 |
 | `--xh-funnel-chart-gap` | `root` | `gap` | `default` | `--xh-space-3` | funnel-chart 的 root 部件 gap 覆盖槽。 |
-| `--xh-funnel-chart-height` | `viewport` | `block-size` | `default` | `--xh-chart-height` | funnel-chart 的 viewport 部件 block-size 覆盖槽。 |
+| `--xh-funnel-chart-h` | `viewport` | `block-size` | `default` | `--xh-chart-height` | funnel-chart 的 viewport 部件 block-size 覆盖槽。 |
 | `--xh-funnel-chart-stage-gap` | `root` | `--xh-_chart-metric-gap` | `default` | `--xh-chart-gap` | funnel-chart 的 root 部件 --xh-_chart-metric-gap 覆盖槽。 |
 | `--xh-funnel-chart-tooltip-gap` | `tooltip` | `gap` | `default` | `--xh-space-1` | funnel-chart 的 tooltip 部件 gap 覆盖槽。 |
 | `--xh-funnel-chart-tooltip-px` | `tooltip` | `padding-inline` | `default` | `--xh-surface-pad-sm` | funnel-chart 的 tooltip 部件 padding-inline 覆盖槽。 |

@@ -12,7 +12,7 @@ export default function Demo(): ReactNode {
         <div key={animation} style={{ display: "grid", gap: "8px" }}>
           <span>{animation}</span>
           <XhSkeletonRoot animation={animation} style={{ inlineSize: "140px" }}>
-            <XhSkeletonItem shape="rect" style={{ "--xh-skeleton-rect-block-size": "64px" } as CSSProperties} />
+            <XhSkeletonItem shape="rect" style={{ "--xh-skeleton-rect-min-h": "64px" } as CSSProperties} />
             <XhSkeletonItem style={{ inlineSize: "70%" }} />
           </XhSkeletonRoot>
         </div>

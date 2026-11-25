@@ -539,7 +539,7 @@
 | `--xh-combobox-group-label-font-weight` | `group-label` | `font-weight` | `default` | `--xh-font-weight-medium` | combobox 的 group-label 部件 font-weight 覆盖槽。 |
 | `--xh-combobox-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_combobox-item-px` | combobox 的 group-label 部件 padding-inline 覆盖槽。 |
 | `--xh-combobox-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | combobox 的 group-label 部件 padding-block 覆盖槽。 |
-| `--xh-combobox-group-separator-color` | `group` | `border-block-start` | `default` | `--xh-material-frosted-separator` | combobox 的 group 部件 border-block-start 覆盖槽。 |
+| `--xh-combobox-group-separator-border` | `group` | `border-block-start` | `default` | `--xh-material-frosted-separator` | combobox 的 group 部件 border-block-start 覆盖槽。 |
 | `--xh-combobox-group-spacing` | `group` | `padding-block-start` | `default` | `--xh-space-1_5` | combobox 的 group 部件 padding-block-start 覆盖槽。 |
 | `--xh-combobox-icon-size` | `control`<br>`positioner`<br>`root` | `--xh-icon-size` | `is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | combobox 的 control、positioner、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-combobox-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-bg-canvas` | combobox 的 input 部件 box-shadow 覆盖槽。 |

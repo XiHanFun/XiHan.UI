@@ -384,7 +384,7 @@
     --xh-collection-separator-thickness: var(--xh-menu-separator-thickness, var(--xh-stroke-thin));
     --xh-collection-separator-block-margin: var(--xh-menu-separator-my, var(--xh-space-0_5));
     --xh-collection-separator-radius: var(--xh-menu-separator-radius, var(--xh-shape-pill));
-    --xh-collection-separator-color: var(--xh-menu-separator-color, var(--xh-material-frosted-separator));
+    --xh-collection-separator-color: var(--xh-menu-separator-bg, var(--xh-material-frosted-separator));
   }
 
   /* 箭头的底色与描边色，几何在 overlay-arrow.css。

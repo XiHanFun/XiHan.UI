@@ -154,7 +154,7 @@
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-separator-align-length` | `line`<br>`root` | `flex` | `align=end`<br>`align=start`<br>`first-child`<br>`last-child` | `--xh-space-6` | separator 的 line、root 部件 flex 覆盖槽。 |
-| `--xh-separator-color` | `line`<br>`root` | `background` | `dashed`<br>`default`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`variant=strong`<br>`variant=subtle` | `--xh-border-default`<br>`--xh-border-strong`<br>`--xh-material-soft-separator` | separator 的 line、root 部件 background 覆盖槽。 |
+| `--xh-separator-bg` | `line`<br>`root` | `background` | `dashed`<br>`default`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`variant=strong`<br>`variant=subtle` | `--xh-border-default`<br>`--xh-border-strong`<br>`--xh-material-soft-separator` | separator 的 line、root 部件 background 覆盖槽。 |
 | `--xh-separator-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | separator 的 content 部件 color 覆盖槽。 |
 | `--xh-separator-content-font-size` | `content` | `font-size` | `default` | `--xh-text-body-size` | separator 的 content 部件 font-size 覆盖槽。 |
 | `--xh-separator-content-font-weight` | `content` | `font-weight` | `default` | `--xh-font-weight-medium` | separator 的 content 部件 font-weight 覆盖槽。 |

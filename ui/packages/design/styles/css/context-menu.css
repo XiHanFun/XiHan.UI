@@ -414,7 +414,7 @@
     --xh-collection-separator-thickness: var(--xh-context-menu-separator-thickness, var(--xh-stroke-thin));
     --xh-collection-separator-block-margin: var(--xh-context-menu-separator-my, var(--xh-space-0_5));
     --xh-collection-separator-radius: var(--xh-context-menu-separator-radius, var(--xh-shape-pill));
-    --xh-collection-separator-color: var(--xh-context-menu-separator-color, var(--xh-material-frosted-separator));
+    --xh-collection-separator-color: var(--xh-context-menu-separator-bg, var(--xh-material-frosted-separator));
   }
 
   [data-scope='context-menu'][data-part='separator'][hidden] {

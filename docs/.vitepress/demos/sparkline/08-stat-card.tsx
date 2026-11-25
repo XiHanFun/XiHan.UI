@@ -27,7 +27,7 @@ export default function Demo(): ReactNode {
           data={revenue}
           variant="area"
           aria-label="近 12 个月营收"
-          style={{ "--xh-sparkline-width": "100%", "--xh-sparkline-height": "var(--xh-space-8)" } as CSSProperties}
+          style={{ "--xh-sparkline-w": "100%", "--xh-sparkline-h": "var(--xh-space-8)" } as CSSProperties}
         />
       </XhCardContent>
     </XhCardRoot>

@@ -33,7 +33,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--xh-question-flow-gap, var(--xh-_question-flow-gap));
-    padding: var(--xh-question-flow-padding, var(--xh-_question-flow-p));
+    padding: var(--xh-question-flow-p, var(--xh-_question-flow-p));
     border: var(--xh-stroke-thin) solid var(--xh-question-flow-border, var(--xh-border-default));
     border-radius: var(--xh-question-flow-radius, var(--xh-shape-surface));
     background: var(--xh-question-flow-bg, var(--xh-bg-surface));
@@ -403,7 +403,7 @@
   [data-scope='question-flow'][data-part='prev-trigger'],
   [data-scope='question-flow'][data-part='next-trigger'] {
     --xh-action-visual-size: var(--xh-question-flow-step-size, var(--xh-_action-profile-visual-size));
-    --xh-action-padding-inline: var(--xh-question-flow-step-padding, var(--xh-_action-profile-padding-inline));
+    --xh-action-padding-inline: var(--xh-question-flow-step-px, var(--xh-_action-profile-padding-inline));
     --xh-action-radius: var(--xh-question-flow-step-radius, var(--xh-shape-inset));
     --xh-action-bg-rest: var(--xh-question-flow-step-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-question-flow-step-bg-hover, var(--xh-_action-variant-bg-hover));

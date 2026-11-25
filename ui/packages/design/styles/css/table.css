@@ -758,7 +758,7 @@
     display: inline-flex;
     flex: none;
     align-self: stretch;
-    inline-size: var(--xh-table-resize-width, var(--xh-space-2));
+    inline-size: var(--xh-table-resize-w, var(--xh-space-2));
     /* 推到行尾侧。把手在标记里是表头格的最后一个孩子，auto 外边距把它顶到那一头，
        不必给每个表头格加定位上下文——那条会落到所有既有表格上 */
     margin-inline-start: auto;

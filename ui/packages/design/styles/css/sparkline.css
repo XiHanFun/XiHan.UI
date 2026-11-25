@@ -18,7 +18,7 @@
   /* 根就是 <svg>：随文排版，宽度缺省 6rem，高度缺省一行字高，放进表格单元格与指标卡都不撑高一行。
      几何要用的像素值以这里的私有槽为真源：机器挂载后从计算样式读它们，作者覆盖组件槽即改变几何 */
   [data-scope='sparkline'][data-part='root'] {
-    --xh-_chart-metric-line-width: var(--xh-sparkline-line-width, var(--xh-chart-line-width));
+    --xh-_chart-metric-line-width: var(--xh-sparkline-line-thickness, var(--xh-chart-line-width));
     --xh-_chart-metric-point-size: var(--xh-sparkline-marker-size, var(--xh-chart-point-size));
     --xh-_chart-metric-gap: var(--xh-chart-gap);
     --xh-_chart-metric-bar-max: var(--xh-sparkline-bar-max, var(--xh-chart-bar-max));
@@ -35,11 +35,11 @@
     --xh-_sparkline-accent: var(--xh-sparkline-accent-color, var(--xh-chart-categorical-1));
 
     display: inline-block;
-    inline-size: var(--xh-sparkline-width, 6rem);
+    inline-size: var(--xh-sparkline-w, 6rem);
     /* 级联兜底：先写一行正文的行框令牌（正文字号 × 正文行距），再写 1lh。
        1lh 晚于本库声明的浏览器地板，取不到时旧引擎丢掉后一条、留下前一条。 */
-    block-size: var(--xh-sparkline-height, var(--xh-text-body-line-h));
-    block-size: var(--xh-sparkline-height, 1lh);
+    block-size: var(--xh-sparkline-h, var(--xh-text-body-line-h));
+    block-size: var(--xh-sparkline-h, 1lh);
     /* 高度正好是一个行盒：顶边贴行盒顶边，行高不被撑开；居中对齐会按字的 x 高度再挪半格，行盒就多出一截 */
     vertical-align: top;
   }

@@ -311,7 +311,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | `--xh-message-feed-label-fg` | `item-label` | `color` | `default` | `--xh-fg-muted` | message-feed 的 item-label 部件 color 覆盖槽。 |
 | `--xh-message-feed-label-font-size` | `item-label` | `font-size` | `default` | `--xh-text-caption-size` | message-feed 的 item-label 部件 font-size 覆盖槽。 |
 | `--xh-message-feed-p` | `list`<br>`pending-indicator` | `margin-block-end`<br>`margin-inline-start`<br>`padding` | `default` | `--xh-_message-feed-p` | message-feed 的 list、pending-indicator 部件 margin-block-end、margin-inline-start、padding 覆盖槽。 |
-| `--xh-message-feed-pending-indicator-color` | `pending-indicator` | `background` | `default` | `--xh-fg-muted` | message-feed 的 pending-indicator 部件 background 覆盖槽。 |
+| `--xh-message-feed-pending-indicator-bg` | `pending-indicator` | `background` | `default` | `--xh-fg-muted` | message-feed 的 pending-indicator 部件 background 覆盖槽。 |
 | `--xh-message-feed-pending-indicator-radius` | `pending-indicator` | `border-radius` | `default` | `--xh-shape-circle` | message-feed 的 pending-indicator 部件 border-radius 覆盖槽。 |
 | `--xh-message-feed-pending-indicator-size` | `pending-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-space-2` | message-feed 的 pending-indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-message-feed-scroll-to-end-trigger-bg` | `scroll-to-end-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`xh-ink-surface` | `--xh-_material-bg`<br>`--xh-_material-bg-focus` | message-feed 的 scroll-to-end-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |

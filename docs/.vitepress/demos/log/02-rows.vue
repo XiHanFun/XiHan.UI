@@ -1,4 +1,4 @@
-<!-- 按行数定高 | rows 决定可见几行，一行的高度归皮肤，修改 --xh-log-line-height 两者一起变化 -->
+<!-- 按行数定高 | rows 决定可见几行，一行的高度归皮肤，修改 --xh-log-leading 两者一起变化 -->
 <script setup lang="ts">
 import { XhLogContent, XhLogLine, XhLogRoot, XhLogViewport } from "@xihan-ui/vue";
 
@@ -27,7 +27,7 @@ const lines = Array.from(
     </XhLogRoot>
 
     <!-- 同样 4 行，行高调宽一档，视口跟着一起长高 -->
-    <XhLogRoot :rows="4" style="--xh-log-line-height: 1.75rem">
+    <XhLogRoot :rows="4" style="--xh-log-leading: 1.75rem">
       <XhLogViewport>
         <XhLogContent>
           <XhLogLine v-for="(line, i) in lines" :key="i">{{ line }}</XhLogLine>

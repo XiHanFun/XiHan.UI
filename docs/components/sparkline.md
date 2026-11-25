@@ -103,7 +103,7 @@ reference 画一条横贯的虚线：写目标值看每天达没达标，写 mea
 - `band` 把正常区间 `[下界, 上界]` 画成一条横贯的淡底，纵向范围会扩到把它包进来，越界的点一眼可见。下界大于上界或不是有限数时报错。盈亏形态不画参考带。
 - `reference` 画一条横贯的细虚线（部件 `reference-line`）：写一个数是目标或阈值，写 `mean` / `median` 按有值的点算出均值 / 中位数。纵向范围同样扩到把它包进来；摘要里一并读出它的值，读屏用户也知道这条尺子在哪。既不是有限数也不是 `mean` / `median` 时报错。盈亏形态不画参考线，它的中线已经是 0。
 - 缺省语气 `neutral`：线与柱取弱化色 `--xh-chart-deemphasis`，标记点与强调的柱取品牌色相的分类色 1。写了其他 `tone` 时整条取语气色：颜色本身带好坏含义（错误率、合格率）时用它，并在旁边用文字说明好坏。
-- 尺寸由组件槽决定：宽 `--xh-sparkline-width`（缺省 6rem），高 `--xh-sparkline-height`（缺省一行字高，`1lh`）。放进指标卡时把宽改成 `100%`、高改成一格间距令牌即可铺满；几何在尺寸变化后重新计算，线宽与标记点大小不随之缩放。
+- 尺寸由组件槽决定：宽 `--xh-sparkline-w`（缺省 6rem），高 `--xh-sparkline-h`（缺省一行字高，`1lh`）。放进指标卡时把宽改成 `100%`、高改成一格间距令牌即可铺满；几何在尺寸变化后重新计算，线宽与标记点大小不随之缩放。
 - 首次出现时折线从头描到尾，标记点等描线的笔尖到了才出现，柱从基线长出，数据晚于挂载到达（异步取数，或 Web Components 连上之后才赋 `data`）时同样播这段入场；之后数据变化时从当前位置插值到新位置，数据整体平移一格（滚动窗口）时折线跟着滑动而不是变形。`animated={false}`（Web Components 写 `animated="false"`）关闭过渡；系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入。
 - 三个适配器的作者侧写法不同，最终 DOM 一致：Vue 与 React 渲染一个 `<svg>`；Web Components 侧作者写一个空的 `<svg data-xh-part="root">`，摘要与图形由元素生成进去。数据、参考带与数值格式只走 JS property；参考线另有同名属性（`reference="180"` 或 `reference="mean"`）。
 
@@ -231,11 +231,11 @@ reference 画一条横贯的虚线：写目标值看每天达没达标，写 mea
 | `--xh-sparkline-bar-max` | `root` | `--xh-_chart-metric-bar-max` | `default` | `--xh-chart-bar-max` | sparkline 的 root 部件 --xh-_chart-metric-bar-max 覆盖槽。 |
 | `--xh-sparkline-bar-radius` | `root` | `--xh-_chart-metric-radius` | `default` | `--xh-shape-inset` | sparkline 的 root 部件 --xh-_chart-metric-radius 覆盖槽。 |
 | `--xh-sparkline-color` | `area-fill`<br>`bar`<br>`line`<br>`root` | `fill`<br>`stroke` | `default`<br>`not([data-tone='neutral'])`<br>`tone`<br>`tone=neutral` | `--xh-_tone`<br>`--xh-chart-deemphasis` | sparkline 的 area-fill、bar、line、root 部件 fill、stroke 覆盖槽。 |
-| `--xh-sparkline-height` | `root` | `block-size` | `default` | `--xh-text-body-line-h`<br>`1lh` | sparkline 的 root 部件 block-size 覆盖槽。 |
-| `--xh-sparkline-line-width` | `legend-swatch`<br>`line`<br>`root`<br>`tooltip-swatch` | `--xh-_chart-dash`<br>`background`<br>`block-size`<br>`stroke-width` | `@media (forced-colors: active)`<br>`@media print`<br>`default`<br>`mark=line`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns` | `--xh-chart-line-width` | sparkline 的 legend-swatch、line、root、tooltip-swatch 部件 --xh-_chart-dash、background、block-size、stroke-width 覆盖槽。 |
+| `--xh-sparkline-h` | `root` | `block-size` | `default` | `--xh-text-body-line-h`<br>`1lh` | sparkline 的 root 部件 block-size 覆盖槽。 |
+| `--xh-sparkline-line-thickness` | `legend-swatch`<br>`line`<br>`root`<br>`tooltip-swatch` | `--xh-_chart-dash`<br>`background`<br>`block-size`<br>`stroke-width` | `@media (forced-colors: active)`<br>`@media print`<br>`default`<br>`mark=line`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns` | `--xh-chart-line-width` | sparkline 的 legend-swatch、line、root、tooltip-swatch 部件 --xh-_chart-dash、background、block-size、stroke-width 覆盖槽。 |
 | `--xh-sparkline-marker-size` | `legend-swatch`<br>`root`<br>`tooltip-swatch` | `background` | `@media (forced-colors: active)`<br>`@media print`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=1`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns` | `--xh-chart-point-size` | sparkline 的 legend-swatch、root、tooltip-swatch 部件 background 覆盖槽。 |
 | `--xh-sparkline-reference-color` | `reference-line` | `stroke` | `default` | `--xh-chart-label` | sparkline 的 reference-line 部件 stroke 覆盖槽。 |
-| `--xh-sparkline-width` | `root` | `inline-size` | `default` | `6rem` | sparkline 的 root 部件 inline-size 覆盖槽。 |
+| `--xh-sparkline-w` | `root` | `inline-size` | `default` | `6rem` | sparkline 的 root 部件 inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

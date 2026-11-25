@@ -74,7 +74,7 @@
     align-self: center;
     z-index: 1;
     border-radius: var(--xh-button-group-separator-radius, var(--xh-shape-pill));
-    background: var(--xh-button-group-separator-color, var(--xh-fg-default));
+    background: var(--xh-button-group-separator-bg, var(--xh-fg-default));
     opacity: var(--xh-button-group-separator-opacity, var(--xh-control-separator-opacity));
     pointer-events: none;
     transition:
@@ -152,17 +152,17 @@
   /* 组的形态由适配器下发到每一段（段自己写了的优先），段的颜色由家族形态矩阵给出；
      这里只定段间那条线在各档面上的颜色与浓淡，用哪族颜色由根上的 data-tone 决定 */
   [data-scope='button-group'][data-part='root'][data-variant='solid'] {
-    --xh-button-group-separator-color: var(--xh-_tone-on, var(--xh-fg-on-brand));
+    --xh-button-group-separator-bg: var(--xh-_tone-on, var(--xh-fg-on-brand));
     --xh-button-group-separator-opacity: 0.24;
   }
 
   [data-scope='button-group'][data-part='root'][data-variant='subtle'] {
-    --xh-button-group-separator-color: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-button-group-separator-bg: var(--xh-_tone-fg, var(--xh-fg-default));
     --xh-button-group-separator-opacity: 0.16;
   }
 
   [data-scope='button-group'][data-part='root'][data-variant='outline'] {
-    --xh-button-group-separator-color: var(--xh-_tone-border-control, var(--xh-border-control));
+    --xh-button-group-separator-bg: var(--xh-_tone-border-control, var(--xh-border-control));
     --xh-button-group-separator-opacity: 1;
 
     position: relative;
@@ -175,13 +175,13 @@
     z-index: 2;
     inset: 0;
     border: var(--xh-stroke-thin) solid
-      var(--xh-button-group-outline-color, var(--xh-_tone-border-control, var(--xh-border-control)));
+      var(--xh-button-group-outline-border, var(--xh-_tone-border-control, var(--xh-border-control)));
     border-radius: inherit;
     pointer-events: none;
   }
 
   [data-scope='button-group'][data-part='root'][data-variant='ghost'] {
-    --xh-button-group-separator-color: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-button-group-separator-bg: var(--xh-_tone-fg, var(--xh-fg-default));
     --xh-button-group-separator-opacity: 0.16;
   }
 

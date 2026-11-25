@@ -445,7 +445,7 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `--xh-question-flow-note-px` | `note` | `padding-inline` | `default` | `--xh-space-2` | question-flow 的 note 部件 padding-inline 覆盖槽。 |
 | `--xh-question-flow-note-py` | `note` | `padding-block` | `default` | `--xh-space-1_5` | question-flow 的 note 部件 padding-block 覆盖槽。 |
 | `--xh-question-flow-note-radius` | `note` | `border-radius` | `default` | `--xh-shape-control` | question-flow 的 note 部件 border-radius 覆盖槽。 |
-| `--xh-question-flow-padding` | `root` | `padding` | `default` | `--xh-_question-flow-p` | question-flow 的 root 部件 padding 覆盖槽。 |
+| `--xh-question-flow-p` | `root` | `padding` | `default` | `--xh-_question-flow-p` | question-flow 的 root 部件 padding 覆盖槽。 |
 | `--xh-question-flow-placeholder-fg` | `note` | `color` | `placeholder` | `--xh-fg-subtle` | question-flow 的 note 部件 color 覆盖槽。 |
 | `--xh-question-flow-prompt-fg` | `prompt` | `color` | `default` | `--xh-fg-default` | question-flow 的 prompt 部件 color 覆盖槽。 |
 | `--xh-question-flow-prompt-font-size` | `prompt` | `font-size` | `default` | `--xh-text-label-size` | question-flow 的 prompt 部件 font-size 覆盖槽。 |
@@ -470,7 +470,7 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `--xh-question-flow-step-bg-hover` | `next-trigger`<br>`prev-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | question-flow 的 next-trigger、prev-trigger 部件 background-color 覆盖槽。 |
 | `--xh-question-flow-step-fg` | `next-trigger`<br>`prev-trigger` | `color` | `default` | `--xh-fg-subtle` | question-flow 的 next-trigger、prev-trigger 部件 color 覆盖槽。 |
 | `--xh-question-flow-step-fg-hover` | `next-trigger`<br>`prev-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | question-flow 的 next-trigger、prev-trigger 部件 color 覆盖槽。 |
-| `--xh-question-flow-step-padding` | `next-trigger`<br>`prev-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | question-flow 的 next-trigger、prev-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-question-flow-step-px` | `next-trigger`<br>`prev-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | question-flow 的 next-trigger、prev-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-question-flow-step-radius` | `next-trigger`<br>`prev-trigger` | `border-radius` | `default` | `--xh-shape-inset` | question-flow 的 next-trigger、prev-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-question-flow-step-size` | `next-trigger`<br>`prev-trigger` | `block-size`<br>`inline-size`<br>`min-block-size` | `default`<br>`xh-action-profile=icon`<br>`xh-action-profile=row` | `--xh-_action-profile-visual-size` | question-flow 的 next-trigger、prev-trigger 部件 block-size、inline-size、min-block-size 覆盖槽。 |
 | `--xh-question-flow-submit-bg` | `submit-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | question-flow 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |

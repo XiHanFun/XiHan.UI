@@ -405,7 +405,7 @@
   /* 代码块自己成一片面，长行横向滚动而不是把整块正文撑宽 */
   [data-scope='typography'][data-part='prose'] :where(pre) {
     overflow-x: auto;
-    padding: var(--xh-typography-prose-pre-padding, var(--xh-space-4));
+    padding: var(--xh-typography-prose-pre-p, var(--xh-space-4));
     border-radius: var(--xh-typography-prose-pre-radius, var(--xh-shape-surface));
     background: var(--xh-typography-prose-pre-bg, var(--xh-bg-subtle));
     font-family: var(--xh-typography-code-font, var(--xh-font-family-mono));

@@ -5,7 +5,7 @@ import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
 
 <template>
   <XhSkeletonRoot style="inline-size: 260px">
-    <XhSkeletonItem shape="rect" style="--xh-skeleton-rect-block-size: 120px" />
+    <XhSkeletonItem shape="rect" style="--xh-skeleton-rect-min-h: 120px" />
     <XhSkeletonItem style="inline-size: 60%" />
     <XhSkeletonItem style="inline-size: 80%" />
     <XhSkeletonItem style="inline-size: 40%" />

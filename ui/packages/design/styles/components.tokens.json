@@ -1132,7 +1132,7 @@
       "description": "anchor 的 list 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-anchor-indicator-color",
+      "name": "--xh-anchor-indicator-bg",
       "component": "anchor",
       "part": [
         "indicator",
@@ -2498,7 +2498,7 @@
       "description": "approval 的 pending-indicator、root 部件 inset-block-start、inset-inline-end、padding 覆盖槽。"
     },
     {
-      "name": "--xh-approval-pending-indicator-color",
+      "name": "--xh-approval-pending-indicator-bg",
       "component": "approval",
       "part": [
         "pending-indicator"
@@ -4540,7 +4540,7 @@
       "description": "button 的 indicator 部件 animation 覆盖槽。"
     },
     {
-      "name": "--xh-button-group-outline-color",
+      "name": "--xh-button-group-outline-border",
       "component": "button-group",
       "part": [
         "root"
@@ -4584,7 +4584,7 @@
       "description": "button-group 的 root 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。"
     },
     {
-      "name": "--xh-button-group-separator-color",
+      "name": "--xh-button-group-separator-bg",
       "component": "button-group",
       "part": [
         "root"
@@ -8719,7 +8719,7 @@
       "description": "cartesian-chart 的 root 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-cartesian-chart-height",
+      "name": "--xh-cartesian-chart-h",
       "component": "cartesian-chart",
       "part": [
         "viewport"
@@ -8791,7 +8791,7 @@
       "description": "cartesian-chart 的 legend-scale 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-cartesian-chart-legend-scale-width",
+      "name": "--xh-cartesian-chart-legend-scale-w",
       "component": "cartesian-chart",
       "part": [
         "legend-scale-bar"
@@ -8845,7 +8845,7 @@
       "description": "cartesian-chart 的 legend-swatch 部件 border-radius 覆盖槽。"
     },
     {
-      "name": "--xh-cartesian-chart-line-width",
+      "name": "--xh-cartesian-chart-line-thickness",
       "component": "cartesian-chart",
       "part": [
         "annotation",
@@ -10433,7 +10433,7 @@
       "description": "cascader 的 group-label 部件 padding-block 覆盖槽。"
     },
     {
-      "name": "--xh-cascader-group-separator-color",
+      "name": "--xh-cascader-group-separator-border",
       "component": "cascader",
       "part": [
         "group"
@@ -14926,7 +14926,7 @@
         "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-code-view-line-height"
+        "--xh-code-view-leading"
       ],
       "visibility": "public",
       "description": "code-view 的 line-content、line-fold-trigger、root 部件 block-size、inline-size、min-block-size、min-inline-size、padding-inline-start 覆盖槽。"
@@ -15309,7 +15309,7 @@
       "description": "code-view 的 token 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-code-view-keyword-weight",
+      "name": "--xh-code-view-keyword-font-weight",
       "component": "code-view",
       "part": [
         "token"
@@ -15363,6 +15363,38 @@
       "description": "code-view 的 lang-label 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-code-view-leading",
+      "component": "code-view",
+      "part": [
+        "line",
+        "line-content",
+        "line-fold-trigger",
+        "pre",
+        "root"
+      ],
+      "property": [
+        "block-size",
+        "inline-size",
+        "line-height",
+        "min-block-size",
+        "min-inline-size",
+        "padding-inline-start"
+      ],
+      "state": [
+        "block-folding",
+        "default",
+        "line-numbers",
+        "not([data-line-numbers])",
+        "xh-action-profile=disclosure-trigger",
+        "xh-action-profile=icon"
+      ],
+      "defaultToken": [
+        "--xh-text-code-leading"
+      ],
+      "visibility": "public",
+      "description": "code-view 的 line、line-content、line-fold-trigger、pre、root 部件 block-size、inline-size、line-height、min-block-size、min-inline-size、padding-inline-start 覆盖槽。"
+    },
+    {
       "name": "--xh-code-view-line-fold-trigger-fg",
       "component": "code-view",
       "part": [
@@ -15397,38 +15429,6 @@
       ],
       "visibility": "public",
       "description": "code-view 的 line-fold-trigger 部件 border-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-code-view-line-height",
-      "component": "code-view",
-      "part": [
-        "line",
-        "line-content",
-        "line-fold-trigger",
-        "pre",
-        "root"
-      ],
-      "property": [
-        "block-size",
-        "inline-size",
-        "line-height",
-        "min-block-size",
-        "min-inline-size",
-        "padding-inline-start"
-      ],
-      "state": [
-        "block-folding",
-        "default",
-        "line-numbers",
-        "not([data-line-numbers])",
-        "xh-action-profile=disclosure-trigger",
-        "xh-action-profile=icon"
-      ],
-      "defaultToken": [
-        "--xh-text-code-leading"
-      ],
-      "visibility": "public",
-      "description": "code-view 的 line、line-content、line-fold-trigger、pre、root 部件 block-size、inline-size、line-height、min-block-size、min-inline-size、padding-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-code-view-number-fg",
@@ -20454,7 +20454,7 @@
       "description": "combobox 的 group-label 部件 padding-block 覆盖槽。"
     },
     {
-      "name": "--xh-combobox-group-separator-color",
+      "name": "--xh-combobox-group-separator-border",
       "component": "combobox",
       "part": [
         "group"
@@ -22933,7 +22933,7 @@
       "description": "context-menu 的 content 部件 min-inline-size 覆盖槽。"
     },
     {
-      "name": "--xh-context-menu-separator-color",
+      "name": "--xh-context-menu-separator-bg",
       "component": "context-menu",
       "part": [
         "separator"
@@ -29109,7 +29109,7 @@
       "description": "dialog 的 content 部件 max-inline-size 覆盖槽。"
     },
     {
-      "name": "--xh-dialog-positioner-padding",
+      "name": "--xh-dialog-positioner-p",
       "component": "dialog",
       "part": [
         "positioner"
@@ -29397,7 +29397,7 @@
         "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-diff-view-line-height"
+        "--xh-diff-view-leading"
       ],
       "visibility": "public",
       "description": "diff-view 的 comment-trigger、line-content、root 部件 block-size、inline-size、min-block-size、min-inline-size、padding-inline-start 覆盖槽。"
@@ -29890,7 +29890,7 @@
       "description": "diff-view 的 token 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-diff-view-keyword-weight",
+      "name": "--xh-diff-view-keyword-font-weight",
       "component": "diff-view",
       "part": [
         "token"
@@ -29908,7 +29908,7 @@
       "description": "diff-view 的 token 部件 font-weight 覆盖槽。"
     },
     {
-      "name": "--xh-diff-view-line-height",
+      "name": "--xh-diff-view-leading",
       "component": "diff-view",
       "part": [
         "body",
@@ -35043,7 +35043,7 @@
       "description": "field-array 的 add-trigger 部件 font-size 覆盖槽。"
     },
     {
-      "name": "--xh-field-array-add-height",
+      "name": "--xh-field-array-add-h",
       "component": "field-array",
       "part": [
         "add-trigger"
@@ -35476,7 +35476,7 @@
       "description": "field-array 的 item-label 部件 font-size 覆盖槽。"
     },
     {
-      "name": "--xh-field-array-item-padding",
+      "name": "--xh-field-array-item-p",
       "component": "field-array",
       "part": [
         "item"
@@ -37855,7 +37855,7 @@
       "description": "filter-builder 的 add-condition-trigger、add-group-trigger 部件 font-size 覆盖槽。"
     },
     {
-      "name": "--xh-filter-builder-add-height",
+      "name": "--xh-filter-builder-add-h",
       "component": "filter-builder",
       "part": [
         "add-condition-trigger",
@@ -38211,7 +38211,7 @@
       "description": "filter-builder 的 group 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-filter-builder-guide-color",
+      "name": "--xh-filter-builder-guide-border",
       "component": "filter-builder",
       "part": [
         "group"
@@ -40796,7 +40796,7 @@
       "description": "funnel-chart 的 root 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-funnel-chart-height",
+      "name": "--xh-funnel-chart-h",
       "component": "funnel-chart",
       "part": [
         "viewport"
@@ -40994,7 +40994,7 @@
       "description": "graph-chart 的 root 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-graph-chart-height",
+      "name": "--xh-graph-chart-h",
       "component": "graph-chart",
       "part": [
         "viewport"
@@ -41068,7 +41068,7 @@
       "description": "graph-chart 的 arrow、link 部件 fill、stroke 覆盖槽。"
     },
     {
-      "name": "--xh-graph-chart-link-width",
+      "name": "--xh-graph-chart-link-thickness",
       "component": "graph-chart",
       "part": [
         "link"
@@ -41420,7 +41420,7 @@
       "description": "grid 的 root 部件 grid-template-rows 覆盖槽。"
     },
     {
-      "name": "--xh-grid-split-padding",
+      "name": "--xh-grid-split-p",
       "component": "grid",
       "part": [
         "item",
@@ -42950,7 +42950,7 @@
       "description": "hierarchy-chart 的 root 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-hierarchy-chart-height",
+      "name": "--xh-hierarchy-chart-h",
       "component": "hierarchy-chart",
       "part": [
         "viewport"
@@ -43040,7 +43040,7 @@
       "description": "hierarchy-chart 的 legend-scale 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-hierarchy-chart-legend-scale-width",
+      "name": "--xh-hierarchy-chart-legend-scale-w",
       "component": "hierarchy-chart",
       "part": [
         "legend-scale-bar"
@@ -45200,7 +45200,7 @@
       "description": "image-viewer 的 close-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
-      "name": "--xh-image-viewer-counter-padding",
+      "name": "--xh-image-viewer-counter-p",
       "component": "image-viewer",
       "part": [
         "counter"
@@ -45422,7 +45422,7 @@
       "description": "image-viewer 的 toolbar 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-image-viewer-toolbar-padding",
+      "name": "--xh-image-viewer-toolbar-p",
       "component": "image-viewer",
       "part": [
         "toolbar"
@@ -45841,7 +45841,7 @@
       "description": "input-group 的 root 部件 background 覆盖槽。"
     },
     {
-      "name": "--xh-input-group-bg-read-only",
+      "name": "--xh-input-group-bg-readonly",
       "component": "input-group",
       "part": [
         "root"
@@ -47269,7 +47269,7 @@
       "description": "layout 的 footer、header、root、sider 部件 border-block-end、border-block-start、border-inline-end、border-inline-start 覆盖槽。"
     },
     {
-      "name": "--xh-layout-content-padding",
+      "name": "--xh-layout-content-p",
       "component": "layout",
       "part": [
         "content"
@@ -47323,7 +47323,7 @@
       "description": "layout 的 footer 部件 background 覆盖槽。"
     },
     {
-      "name": "--xh-layout-footer-padding",
+      "name": "--xh-layout-footer-p",
       "component": "layout",
       "part": [
         "footer"
@@ -47558,7 +47558,7 @@
       "description": "layout 的 sider 部件 z-index 覆盖槽。"
     },
     {
-      "name": "--xh-layout-sider-padding",
+      "name": "--xh-layout-sider-p",
       "component": "layout",
       "part": [
         "sider"
@@ -49390,7 +49390,7 @@
       "description": "log 的 segment 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-log-ansi-bold-weight",
+      "name": "--xh-log-ansi-bold-font-weight",
       "component": "log",
       "part": [
         "segment"
@@ -49669,6 +49669,27 @@
       "description": "log 的 scroll-to-end-trigger 部件 --xh-icon-size 覆盖槽。"
     },
     {
+      "name": "--xh-log-leading",
+      "component": "log",
+      "part": [
+        "line",
+        "root",
+        "viewport"
+      ],
+      "property": [
+        "block-size",
+        "line-height"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-code-leading"
+      ],
+      "visibility": "public",
+      "description": "log 的 line、root、viewport 部件 block-size、line-height 覆盖槽。"
+    },
+    {
       "name": "--xh-log-level-debug-fg",
       "component": "log",
       "part": [
@@ -49739,27 +49760,6 @@
       ],
       "visibility": "public",
       "description": "log 的 line 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-log-line-height",
-      "component": "log",
-      "part": [
-        "line",
-        "root",
-        "viewport"
-      ],
-      "property": [
-        "block-size",
-        "line-height"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-text-code-leading"
-      ],
-      "visibility": "public",
-      "description": "log 的 line、root、viewport 部件 block-size、line-height 覆盖槽。"
     },
     {
       "name": "--xh-log-line-px",
@@ -50274,24 +50274,6 @@
       "description": "markdown-stream 的 block 部件 font-family 覆盖槽。"
     },
     {
-      "name": "--xh-marquee-block-size",
-      "component": "marquee",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "block-size"
-      ],
-      "state": [
-        "orientation=vertical"
-      ],
-      "defaultToken": [
-        "10rem"
-      ],
-      "visibility": "public",
-      "description": "marquee 的 root 部件 block-size 覆盖槽。"
-    },
-    {
       "name": "--xh-marquee-fade-size",
       "component": "marquee",
       "part": [
@@ -50330,6 +50312,24 @@
       ],
       "visibility": "public",
       "description": "marquee 的 content、root 部件 padding-block-end、padding-inline-end 覆盖槽。"
+    },
+    {
+      "name": "--xh-marquee-h",
+      "component": "marquee",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "block-size"
+      ],
+      "state": [
+        "orientation=vertical"
+      ],
+      "defaultToken": [
+        "10rem"
+      ],
+      "visibility": "public",
+      "description": "marquee 的 root 部件 block-size 覆盖槽。"
     },
     {
       "name": "--xh-marquee-icon-size",
@@ -52473,7 +52473,7 @@
       "description": "menu 的 content 部件 min-inline-size 覆盖槽。"
     },
     {
-      "name": "--xh-menu-separator-color",
+      "name": "--xh-menu-separator-bg",
       "component": "menu",
       "part": [
         "separator"
@@ -53441,7 +53441,7 @@
       "description": "menubar 的 root 部件 border-radius 覆盖槽。"
     },
     {
-      "name": "--xh-menubar-separator-color",
+      "name": "--xh-menubar-separator-bg",
       "component": "menubar",
       "part": [
         "separator"
@@ -53852,7 +53852,7 @@
       "description": "message-feed 的 list、pending-indicator 部件 margin-block-end、margin-inline-start、padding 覆盖槽。"
     },
     {
-      "name": "--xh-message-feed-pending-indicator-color",
+      "name": "--xh-message-feed-pending-indicator-bg",
       "component": "message-feed",
       "part": [
         "pending-indicator"
@@ -54610,7 +54610,7 @@
       "description": "navigation-menu 的 root 部件 --xh-icon-size 覆盖槽。"
     },
     {
-      "name": "--xh-navigation-menu-indicator-color",
+      "name": "--xh-navigation-menu-indicator-bg",
       "component": "navigation-menu",
       "part": [
         "indicator",
@@ -59314,7 +59314,7 @@
       "description": "pie-chart 的 root 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-pie-chart-height",
+      "name": "--xh-pie-chart-h",
       "component": "pie-chart",
       "part": [
         "viewport"
@@ -63435,7 +63435,7 @@
       "description": "question-flow 的 note 部件 border-radius 覆盖槽。"
     },
     {
-      "name": "--xh-question-flow-padding",
+      "name": "--xh-question-flow-p",
       "component": "question-flow",
       "part": [
         "root"
@@ -63913,7 +63913,7 @@
       "description": "question-flow 的 next-trigger、prev-trigger 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-question-flow-step-padding",
+      "name": "--xh-question-flow-step-px",
       "component": "question-flow",
       "part": [
         "next-trigger",
@@ -64201,7 +64201,7 @@
       "description": "radar-chart 的 root 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-radar-chart-height",
+      "name": "--xh-radar-chart-h",
       "component": "radar-chart",
       "part": [
         "viewport"
@@ -64255,7 +64255,7 @@
       "description": "radar-chart 的 legend-swatch 部件 border-radius 覆盖槽。"
     },
     {
-      "name": "--xh-radar-chart-line-width",
+      "name": "--xh-radar-chart-line-thickness",
       "component": "radar-chart",
       "part": [
         "legend-swatch",
@@ -65608,7 +65608,7 @@
       "description": "radio-group 的 root 部件 border-color 覆盖槽。"
     },
     {
-      "name": "--xh-radio-group-track-padding",
+      "name": "--xh-radio-group-track-p",
       "component": "radio-group",
       "part": [
         "item",
@@ -66377,7 +66377,7 @@
       "description": "reasoning 的 content 部件 margin-inline-start 覆盖槽。"
     },
     {
-      "name": "--xh-reasoning-rail-width",
+      "name": "--xh-reasoning-rail-thickness",
       "component": "reasoning",
       "part": [
         "content"
@@ -66865,7 +66865,7 @@
       "description": "sankey-chart 的 root 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-sankey-chart-height",
+      "name": "--xh-sankey-chart-h",
       "component": "sankey-chart",
       "part": [
         "viewport"
@@ -66973,7 +66973,7 @@
       "description": "sankey-chart 的 root 部件 --xh-_chart-metric-radius 覆盖槽。"
     },
     {
-      "name": "--xh-sankey-chart-node-width",
+      "name": "--xh-sankey-chart-node-w",
       "component": "sankey-chart",
       "part": [
         "root"
@@ -68425,7 +68425,7 @@
       "description": "select 的 group-label 部件 padding-block 覆盖槽。"
     },
     {
-      "name": "--xh-select-group-separator-color",
+      "name": "--xh-select-group-separator-border",
       "component": "select",
       "part": [
         "group"
@@ -69133,7 +69133,7 @@
       "description": "separator 的 line、root 部件 flex 覆盖槽。"
     },
     {
-      "name": "--xh-separator-color",
+      "name": "--xh-separator-bg",
       "component": "separator",
       "part": [
         "line",
@@ -69637,7 +69637,7 @@
       "description": "side-nav 的 branch-content 部件 padding-inline-start 覆盖槽。"
     },
     {
-      "name": "--xh-side-nav-indicator-color",
+      "name": "--xh-side-nav-indicator-fg",
       "component": "side-nav",
       "part": [
         "branch-trigger",
@@ -71125,7 +71125,7 @@
       "description": "skeleton 的 item 部件 border-radius 覆盖槽。"
     },
     {
-      "name": "--xh-skeleton-rect-block-size",
+      "name": "--xh-skeleton-rect-min-h",
       "component": "skeleton",
       "part": [
         "item"
@@ -71179,7 +71179,7 @@
       "description": "skeleton 的 item 部件 background-image 覆盖槽。"
     },
     {
-      "name": "--xh-skeleton-text-block-size",
+      "name": "--xh-skeleton-text-h",
       "component": "skeleton",
       "part": [
         "item"
@@ -72425,7 +72425,7 @@
       "description": "sparkline 的 area-fill、bar、line、root 部件 fill、stroke 覆盖槽。"
     },
     {
-      "name": "--xh-sparkline-height",
+      "name": "--xh-sparkline-h",
       "component": "sparkline",
       "part": [
         "root"
@@ -72444,7 +72444,7 @@
       "description": "sparkline 的 root 部件 block-size 覆盖槽。"
     },
     {
-      "name": "--xh-sparkline-line-width",
+      "name": "--xh-sparkline-line-thickness",
       "component": "sparkline",
       "part": [
         "legend-swatch",
@@ -72531,7 +72531,7 @@
       "description": "sparkline 的 reference-line 部件 stroke 覆盖槽。"
     },
     {
-      "name": "--xh-sparkline-width",
+      "name": "--xh-sparkline-w",
       "component": "sparkline",
       "part": [
         "root"
@@ -72634,6 +72634,24 @@
       "description": "spinner 的 label 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-spinner-label-font-weight",
+      "component": "spinner",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-medium"
+      ],
+      "visibility": "public",
+      "description": "spinner 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
       "name": "--xh-spinner-label-size",
       "component": "spinner",
       "part": [
@@ -72650,24 +72668,6 @@
       ],
       "visibility": "public",
       "description": "spinner 的 label 部件 font-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-spinner-label-weight",
-      "component": "spinner",
-      "part": [
-        "label"
-      ],
-      "property": [
-        "font-weight"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-font-weight-medium"
-      ],
-      "visibility": "public",
-      "description": "spinner 的 label 部件 font-weight 覆盖槽。"
     },
     {
       "name": "--xh-spinner-radius",
@@ -73154,7 +73154,7 @@
       "description": "steps 的 content 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-steps-content-min-inline-size",
+      "name": "--xh-steps-content-min-w",
       "component": "steps",
       "part": [
         "content",
@@ -73899,7 +73899,7 @@
       "description": "steps 的 item 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-steps-item-min-inline-size",
+      "name": "--xh-steps-item-min-w",
       "component": "steps",
       "part": [
         "item"
@@ -76137,7 +76137,7 @@
       "description": "table 的 column-resize-trigger 部件 border-radius 覆盖槽。"
     },
     {
-      "name": "--xh-table-resize-width",
+      "name": "--xh-table-resize-w",
       "component": "table",
       "part": [
         "column-resize-trigger"
@@ -77345,7 +77345,7 @@
       "description": "tabs 的 root 部件 column-gap、gap、row-gap 覆盖槽。"
     },
     {
-      "name": "--xh-tabs-indicator-color",
+      "name": "--xh-tabs-indicator-bg",
       "component": "tabs",
       "part": [
         "indicator",
@@ -77591,7 +77591,7 @@
       "description": "tabs 的 next-trigger、prev-trigger 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-tabs-separator-color",
+      "name": "--xh-tabs-separator-bg",
       "component": "tabs",
       "part": [
         "separator"
@@ -87665,7 +87665,7 @@
       "description": "toggle-group 的 item、root 部件 box-shadow 覆盖槽。"
     },
     {
-      "name": "--xh-toggle-group-outline-color",
+      "name": "--xh-toggle-group-outline-border",
       "component": "toggle-group",
       "part": [
         "root"
@@ -87683,7 +87683,7 @@
       "description": "toggle-group 的 root 部件 border 覆盖槽。"
     },
     {
-      "name": "--xh-toggle-group-separator-color",
+      "name": "--xh-toggle-group-separator-bg",
       "component": "toggle-group",
       "part": [
         "root"
@@ -89161,7 +89161,7 @@
       "description": "toolbar 的 root 部件 border-radius 覆盖槽。"
     },
     {
-      "name": "--xh-toolbar-separator-color",
+      "name": "--xh-toolbar-separator-bg",
       "component": "toolbar",
       "part": [
         "group",
@@ -90048,7 +90048,7 @@
       "description": "tour 的 positioner 部件 z-index 覆盖槽。"
     },
     {
-      "name": "--xh-tour-positioner-padding",
+      "name": "--xh-tour-positioner-p",
       "component": "tour",
       "part": [
         "positioner"
@@ -96476,7 +96476,7 @@
       "description": "typography 的 prose 部件 background 覆盖槽。"
     },
     {
-      "name": "--xh-typography-prose-pre-padding",
+      "name": "--xh-typography-prose-pre-p",
       "component": "typography",
       "part": [
         "prose"

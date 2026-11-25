@@ -148,7 +148,7 @@ describe('属性投影', () => {
   it('pre 占一个 Tab 位并按行数撑高', () => {
     const pre = api({ code: 'a\nb\nc' }).getPreProps() as Dict
     expect(pre.tabindex).toBe(0)
-    expect((pre.style as Dict).minBlockSize).toBe('calc(var(--xh-code-view-line-height, var(--xh-text-code-leading)) * 3)')
+    expect((pre.style as Dict).minBlockSize).toBe('calc(var(--xh-code-view-leading, var(--xh-text-code-leading)) * 3)')
     expect((pre.style as Dict).maxBlockSize).toBeUndefined()
   })
 
@@ -192,7 +192,7 @@ describe('折叠', () => {
   it('折叠时 min 与 max 一起降到阈值行：只叠 max 的话高度纹丝不动', () => {
     // CSS 用值是 max(min, min(max, …))，min-block-size 恒压过 max-block-size
     const pre = api({ code: 'a\nb\nc\nd', clamp: 2, clamped: true }).getPreProps() as Dict
-    const height = 'calc(var(--xh-code-view-line-height, var(--xh-text-code-leading)) * 2)'
+    const height = 'calc(var(--xh-code-view-leading, var(--xh-text-code-leading)) * 2)'
     expect((pre.style as Dict).minBlockSize).toBe(height)
     expect((pre.style as Dict).maxBlockSize).toBe(height)
   })

@@ -343,12 +343,12 @@ colorBy="value" 让颜色深浅对应数值，palette 换色相；图例每层�
 | --- | --- | --- | --- | --- | --- |
 | `--xh-hierarchy-chart-empty-gap` | `empty` | `gap` | `state=loading` | `--xh-space-2` | hierarchy-chart 的 empty 部件 gap 覆盖槽。 |
 | `--xh-hierarchy-chart-gap` | `root` | `gap` | `default` | `--xh-space-3` | hierarchy-chart 的 root 部件 gap 覆盖槽。 |
-| `--xh-hierarchy-chart-height` | `viewport` | `block-size` | `default` | `--xh-chart-height` | hierarchy-chart 的 viewport 部件 block-size 覆盖槽。 |
+| `--xh-hierarchy-chart-h` | `viewport` | `block-size` | `default` | `--xh-chart-height` | hierarchy-chart 的 viewport 部件 block-size 覆盖槽。 |
 | `--xh-hierarchy-chart-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-sm` | hierarchy-chart 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-hierarchy-chart-legend-gap` | `legend` | `gap` | `default` | `--xh-space-4` | hierarchy-chart 的 legend 部件 gap 覆盖槽。 |
 | `--xh-hierarchy-chart-legend-scale-bar-radius` | `legend-scale-bar` | `border-radius` | `default` | `--xh-shape-inset` | hierarchy-chart 的 legend-scale-bar 部件 border-radius 覆盖槽。 |
 | `--xh-hierarchy-chart-legend-scale-gap` | `legend-scale` | `gap` | `default` | `--xh-space-2` | hierarchy-chart 的 legend-scale 部件 gap 覆盖槽。 |
-| `--xh-hierarchy-chart-legend-scale-width` | `legend-scale-bar` | `inline-size` | `default` | `--xh-chart-legend-scale-width` | hierarchy-chart 的 legend-scale-bar 部件 inline-size 覆盖槽。 |
+| `--xh-hierarchy-chart-legend-scale-w` | `legend-scale-bar` | `inline-size` | `default` | `--xh-chart-legend-scale-width` | hierarchy-chart 的 legend-scale-bar 部件 inline-size 覆盖槽。 |
 | `--xh-hierarchy-chart-node-gap` | `root` | `--xh-_chart-metric-gap` | `default` | `--xh-chart-gap` | hierarchy-chart 的 root 部件 --xh-_chart-metric-gap 覆盖槽。 |
 | `--xh-hierarchy-chart-node-radius` | `root` | `--xh-_chart-metric-radius` | `default` | `--xh-shape-inset` | hierarchy-chart 的 root 部件 --xh-_chart-metric-radius 覆盖槽。 |
 | `--xh-hierarchy-chart-path-column-gap` | `path` | `column-gap` | `default` | `--xh-icon-size` | hierarchy-chart 的 path 部件 column-gap 覆盖槽。 |

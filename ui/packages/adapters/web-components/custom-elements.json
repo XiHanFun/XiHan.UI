@@ -1224,7 +1224,7 @@
               "name": "--xh-anchor-gap-horizontal"
             },
             {
-              "name": "--xh-anchor-indicator-color"
+              "name": "--xh-anchor-indicator-bg"
             },
             {
               "name": "--xh-anchor-indicator-radius"
@@ -1899,7 +1899,7 @@
               "name": "--xh-approval-p"
             },
             {
-              "name": "--xh-approval-pending-indicator-color"
+              "name": "--xh-approval-pending-indicator-bg"
             },
             {
               "name": "--xh-approval-pending-indicator-radius"
@@ -3728,13 +3728,13 @@
           "customElement": true,
           "cssProperties": [
             {
-              "name": "--xh-button-group-outline-color"
+              "name": "--xh-button-group-outline-border"
             },
             {
               "name": "--xh-button-group-radius"
             },
             {
-              "name": "--xh-button-group-separator-color"
+              "name": "--xh-button-group-separator-bg"
             },
             {
               "name": "--xh-button-group-separator-color-disabled"
@@ -7375,7 +7375,7 @@
               "name": "--xh-cartesian-chart-gap"
             },
             {
-              "name": "--xh-cartesian-chart-height"
+              "name": "--xh-cartesian-chart-h"
             },
             {
               "name": "--xh-cartesian-chart-legend-gap"
@@ -7387,7 +7387,7 @@
               "name": "--xh-cartesian-chart-legend-scale-gap"
             },
             {
-              "name": "--xh-cartesian-chart-legend-scale-width"
+              "name": "--xh-cartesian-chart-legend-scale-w"
             },
             {
               "name": "--xh-cartesian-chart-legend-swatch-line-radius"
@@ -7396,7 +7396,7 @@
               "name": "--xh-cartesian-chart-legend-swatch-radius"
             },
             {
-              "name": "--xh-cartesian-chart-line-width"
+              "name": "--xh-cartesian-chart-line-thickness"
             },
             {
               "name": "--xh-cartesian-chart-point-size"
@@ -8949,7 +8949,7 @@
               "name": "--xh-cascader-group-label-py"
             },
             {
-              "name": "--xh-cascader-group-separator-color"
+              "name": "--xh-cascader-group-separator-border"
             },
             {
               "name": "--xh-cascader-group-spacing"
@@ -11764,7 +11764,7 @@
               "name": "--xh-code-view-keyword-fg"
             },
             {
-              "name": "--xh-code-view-keyword-weight"
+              "name": "--xh-code-view-keyword-font-weight"
             },
             {
               "name": "--xh-code-view-label-fg"
@@ -11773,13 +11773,13 @@
               "name": "--xh-code-view-label-font-size"
             },
             {
+              "name": "--xh-code-view-leading"
+            },
+            {
               "name": "--xh-code-view-line-fold-trigger-fg"
             },
             {
               "name": "--xh-code-view-line-fold-trigger-radius"
-            },
-            {
-              "name": "--xh-code-view-line-height"
             },
             {
               "name": "--xh-code-view-number-fg"
@@ -16681,7 +16681,7 @@
               "name": "--xh-combobox-group-label-py"
             },
             {
-              "name": "--xh-combobox-group-separator-color"
+              "name": "--xh-combobox-group-separator-border"
             },
             {
               "name": "--xh-combobox-group-spacing"
@@ -18849,7 +18849,7 @@
               "name": "--xh-context-menu-min-w"
             },
             {
-              "name": "--xh-context-menu-separator-color"
+              "name": "--xh-context-menu-separator-bg"
             },
             {
               "name": "--xh-context-menu-separator-my"
@@ -23794,7 +23794,7 @@
               "name": "--xh-dialog-max-w"
             },
             {
-              "name": "--xh-dialog-positioner-padding"
+              "name": "--xh-dialog-positioner-p"
             },
             {
               "name": "--xh-dialog-px"
@@ -24337,10 +24337,10 @@
               "name": "--xh-diff-view-keyword-fg"
             },
             {
-              "name": "--xh-diff-view-keyword-weight"
+              "name": "--xh-diff-view-keyword-font-weight"
             },
             {
-              "name": "--xh-diff-view-line-height"
+              "name": "--xh-diff-view-leading"
             },
             {
               "name": "--xh-diff-view-max-h"
@@ -28123,7 +28123,7 @@
               "name": "--xh-field-array-add-font-size"
             },
             {
-              "name": "--xh-field-array-add-height"
+              "name": "--xh-field-array-add-h"
             },
             {
               "name": "--xh-field-array-add-px"
@@ -28189,7 +28189,7 @@
               "name": "--xh-field-array-item-label-font-size"
             },
             {
-              "name": "--xh-field-array-item-padding"
+              "name": "--xh-field-array-item-p"
             },
             {
               "name": "--xh-field-array-item-radius"
@@ -30695,7 +30695,7 @@
               "name": "--xh-filter-builder-add-font-size"
             },
             {
-              "name": "--xh-filter-builder-add-height"
+              "name": "--xh-filter-builder-add-h"
             },
             {
               "name": "--xh-filter-builder-add-px"
@@ -30749,7 +30749,7 @@
               "name": "--xh-filter-builder-group-gap"
             },
             {
-              "name": "--xh-filter-builder-guide-color"
+              "name": "--xh-filter-builder-guide-border"
             },
             {
               "name": "--xh-filter-builder-header-gap"
@@ -34186,7 +34186,7 @@
               "name": "--xh-funnel-chart-gap"
             },
             {
-              "name": "--xh-funnel-chart-height"
+              "name": "--xh-funnel-chart-h"
             },
             {
               "name": "--xh-funnel-chart-stage-gap"
@@ -34955,7 +34955,7 @@
               "name": "--xh-graph-chart-gap"
             },
             {
-              "name": "--xh-graph-chart-height"
+              "name": "--xh-graph-chart-h"
             },
             {
               "name": "--xh-graph-chart-legend-gap"
@@ -34967,7 +34967,7 @@
               "name": "--xh-graph-chart-link-color"
             },
             {
-              "name": "--xh-graph-chart-link-width"
+              "name": "--xh-graph-chart-link-thickness"
             },
             {
               "name": "--xh-graph-chart-node-size"
@@ -35835,7 +35835,7 @@
               "name": "--xh-grid-rows"
             },
             {
-              "name": "--xh-grid-split-padding"
+              "name": "--xh-grid-split-p"
             }
           ]
         }
@@ -37367,7 +37367,7 @@
               "name": "--xh-hierarchy-chart-gap"
             },
             {
-              "name": "--xh-hierarchy-chart-height"
+              "name": "--xh-hierarchy-chart-h"
             },
             {
               "name": "--xh-hierarchy-chart-icon-size"
@@ -37382,7 +37382,7 @@
               "name": "--xh-hierarchy-chart-legend-scale-gap"
             },
             {
-              "name": "--xh-hierarchy-chart-legend-scale-width"
+              "name": "--xh-hierarchy-chart-legend-scale-w"
             },
             {
               "name": "--xh-hierarchy-chart-node-gap"
@@ -39746,7 +39746,7 @@
               "name": "--xh-image-viewer-close-size"
             },
             {
-              "name": "--xh-image-viewer-counter-padding"
+              "name": "--xh-image-viewer-counter-p"
             },
             {
               "name": "--xh-image-viewer-counter-radius"
@@ -39779,7 +39779,7 @@
               "name": "--xh-image-viewer-toolbar-gap"
             },
             {
-              "name": "--xh-image-viewer-toolbar-padding"
+              "name": "--xh-image-viewer-toolbar-p"
             },
             {
               "name": "--xh-image-viewer-toolbar-radius"
@@ -40341,7 +40341,7 @@
               "name": "--xh-input-group-bg-invalid"
             },
             {
-              "name": "--xh-input-group-bg-read-only"
+              "name": "--xh-input-group-bg-readonly"
             },
             {
               "name": "--xh-input-group-border"
@@ -41948,7 +41948,7 @@
               "name": "--xh-layout-border"
             },
             {
-              "name": "--xh-layout-content-padding"
+              "name": "--xh-layout-content-p"
             },
             {
               "name": "--xh-layout-fg"
@@ -41957,7 +41957,7 @@
               "name": "--xh-layout-footer-bg"
             },
             {
-              "name": "--xh-layout-footer-padding"
+              "name": "--xh-layout-footer-p"
             },
             {
               "name": "--xh-layout-header-bg"
@@ -41993,7 +41993,7 @@
               "name": "--xh-layout-sider-layer"
             },
             {
-              "name": "--xh-layout-sider-padding"
+              "name": "--xh-layout-sider-p"
             },
             {
               "name": "--xh-layout-sider-shadow"
@@ -43536,7 +43536,7 @@
               "name": "--xh-log-ansi-blue"
             },
             {
-              "name": "--xh-log-ansi-bold-weight"
+              "name": "--xh-log-ansi-bold-font-weight"
             },
             {
               "name": "--xh-log-ansi-cyan"
@@ -43581,6 +43581,9 @@
               "name": "--xh-log-icon-size"
             },
             {
+              "name": "--xh-log-leading"
+            },
+            {
               "name": "--xh-log-level-debug-fg"
             },
             {
@@ -43591,9 +43594,6 @@
             },
             {
               "name": "--xh-log-level-warn-fg"
-            },
-            {
-              "name": "--xh-log-line-height"
             },
             {
               "name": "--xh-log-line-px"
@@ -44144,13 +44144,13 @@
           "customElement": true,
           "cssProperties": [
             {
-              "name": "--xh-marquee-block-size"
-            },
-            {
               "name": "--xh-marquee-fade-size"
             },
             {
               "name": "--xh-marquee-gap"
+            },
+            {
+              "name": "--xh-marquee-h"
             },
             {
               "name": "--xh-marquee-icon-size"
@@ -46517,7 +46517,7 @@
               "name": "--xh-menu-min-w"
             },
             {
-              "name": "--xh-menu-separator-color"
+              "name": "--xh-menu-separator-bg"
             },
             {
               "name": "--xh-menu-separator-my"
@@ -47459,7 +47459,7 @@
               "name": "--xh-menubar-radius"
             },
             {
-              "name": "--xh-menubar-separator-color"
+              "name": "--xh-menubar-separator-bg"
             },
             {
               "name": "--xh-menubar-separator-my"
@@ -47836,7 +47836,7 @@
               "name": "--xh-message-feed-p"
             },
             {
-              "name": "--xh-message-feed-pending-indicator-color"
+              "name": "--xh-message-feed-pending-indicator-bg"
             },
             {
               "name": "--xh-message-feed-pending-indicator-radius"
@@ -48457,7 +48457,7 @@
               "name": "--xh-navigation-menu-icon-size"
             },
             {
-              "name": "--xh-navigation-menu-indicator-color"
+              "name": "--xh-navigation-menu-indicator-bg"
             },
             {
               "name": "--xh-navigation-menu-indicator-radius"
@@ -52852,7 +52852,7 @@
               "name": "--xh-pie-chart-gap"
             },
             {
-              "name": "--xh-pie-chart-height"
+              "name": "--xh-pie-chart-h"
             },
             {
               "name": "--xh-pie-chart-legend-gap"
@@ -56233,7 +56233,7 @@
               "name": "--xh-question-flow-note-radius"
             },
             {
-              "name": "--xh-question-flow-padding"
+              "name": "--xh-question-flow-p"
             },
             {
               "name": "--xh-question-flow-placeholder-fg"
@@ -56308,7 +56308,7 @@
               "name": "--xh-question-flow-step-fg-hover"
             },
             {
-              "name": "--xh-question-flow-step-padding"
+              "name": "--xh-question-flow-step-px"
             },
             {
               "name": "--xh-question-flow-step-radius"
@@ -57109,7 +57109,7 @@
               "name": "--xh-radar-chart-gap"
             },
             {
-              "name": "--xh-radar-chart-height"
+              "name": "--xh-radar-chart-h"
             },
             {
               "name": "--xh-radar-chart-legend-gap"
@@ -57118,7 +57118,7 @@
               "name": "--xh-radar-chart-legend-swatch-radius"
             },
             {
-              "name": "--xh-radar-chart-line-width"
+              "name": "--xh-radar-chart-line-thickness"
             },
             {
               "name": "--xh-radar-chart-point-size"
@@ -57853,7 +57853,7 @@
               "name": "--xh-radio-group-track-border-invalid"
             },
             {
-              "name": "--xh-radio-group-track-padding"
+              "name": "--xh-radio-group-track-p"
             },
             {
               "name": "--xh-radio-group-track-radius"
@@ -58809,7 +58809,7 @@
               "name": "--xh-reasoning-rail-inset"
             },
             {
-              "name": "--xh-reasoning-rail-width"
+              "name": "--xh-reasoning-rail-thickness"
             },
             {
               "name": "--xh-reasoning-shadow"
@@ -59975,7 +59975,7 @@
               "name": "--xh-sankey-chart-gap"
             },
             {
-              "name": "--xh-sankey-chart-height"
+              "name": "--xh-sankey-chart-h"
             },
             {
               "name": "--xh-sankey-chart-legend-gap"
@@ -59993,7 +59993,7 @@
               "name": "--xh-sankey-chart-node-radius"
             },
             {
-              "name": "--xh-sankey-chart-node-width"
+              "name": "--xh-sankey-chart-node-w"
             },
             {
               "name": "--xh-sankey-chart-series-color"
@@ -62160,7 +62160,7 @@
               "name": "--xh-select-group-label-py"
             },
             {
-              "name": "--xh-select-group-separator-color"
+              "name": "--xh-select-group-separator-border"
             },
             {
               "name": "--xh-select-group-spacing"
@@ -62425,7 +62425,7 @@
               "name": "--xh-separator-align-length"
             },
             {
-              "name": "--xh-separator-color"
+              "name": "--xh-separator-bg"
             },
             {
               "name": "--xh-separator-content-fg"
@@ -63246,7 +63246,7 @@
               "name": "--xh-side-nav-indent"
             },
             {
-              "name": "--xh-side-nav-indicator-color"
+              "name": "--xh-side-nav-indicator-fg"
             },
             {
               "name": "--xh-side-nav-input-autofill-bg"
@@ -64046,7 +64046,7 @@
               "name": "--xh-skeleton-radius"
             },
             {
-              "name": "--xh-skeleton-rect-block-size"
+              "name": "--xh-skeleton-rect-min-h"
             },
             {
               "name": "--xh-skeleton-rect-radius"
@@ -64055,7 +64055,7 @@
               "name": "--xh-skeleton-sheen"
             },
             {
-              "name": "--xh-skeleton-text-block-size"
+              "name": "--xh-skeleton-text-h"
             },
             {
               "name": "--xh-skeleton-text-radius"
@@ -65629,10 +65629,10 @@
               "name": "--xh-sparkline-color"
             },
             {
-              "name": "--xh-sparkline-height"
+              "name": "--xh-sparkline-h"
             },
             {
-              "name": "--xh-sparkline-line-width"
+              "name": "--xh-sparkline-line-thickness"
             },
             {
               "name": "--xh-sparkline-marker-size"
@@ -65641,7 +65641,7 @@
               "name": "--xh-sparkline-reference-color"
             },
             {
-              "name": "--xh-sparkline-width"
+              "name": "--xh-sparkline-w"
             }
           ]
         }
@@ -65835,10 +65835,10 @@
               "name": "--xh-spinner-label-fg"
             },
             {
-              "name": "--xh-spinner-label-size"
+              "name": "--xh-spinner-label-font-weight"
             },
             {
-              "name": "--xh-spinner-label-weight"
+              "name": "--xh-spinner-label-size"
             },
             {
               "name": "--xh-spinner-radius"
@@ -66769,7 +66769,7 @@
               "name": "--xh-steps-content-fg"
             },
             {
-              "name": "--xh-steps-content-min-inline-size"
+              "name": "--xh-steps-content-min-w"
             },
             {
               "name": "--xh-steps-content-py"
@@ -66877,7 +66877,7 @@
               "name": "--xh-steps-item-gap"
             },
             {
-              "name": "--xh-steps-item-min-inline-size"
+              "name": "--xh-steps-item-min-w"
             },
             {
               "name": "--xh-steps-list-gap"
@@ -68773,7 +68773,7 @@
               "name": "--xh-table-resize-radius"
             },
             {
-              "name": "--xh-table-resize-width"
+              "name": "--xh-table-resize-w"
             },
             {
               "name": "--xh-table-row-bg"
@@ -69435,7 +69435,7 @@
               "name": "--xh-tabs-gap"
             },
             {
-              "name": "--xh-tabs-indicator-color"
+              "name": "--xh-tabs-indicator-bg"
             },
             {
               "name": "--xh-tabs-indicator-radius"
@@ -69468,7 +69468,7 @@
               "name": "--xh-tabs-scroll-trigger-fg"
             },
             {
-              "name": "--xh-tabs-separator-color"
+              "name": "--xh-tabs-separator-bg"
             },
             {
               "name": "--xh-tabs-separator-radius"
@@ -76471,10 +76471,10 @@
               "name": "--xh-toggle-group-item-shadow"
             },
             {
-              "name": "--xh-toggle-group-outline-color"
+              "name": "--xh-toggle-group-outline-border"
             },
             {
-              "name": "--xh-toggle-group-separator-color"
+              "name": "--xh-toggle-group-separator-bg"
             },
             {
               "name": "--xh-toggle-group-separator-color-disabled"
@@ -77630,7 +77630,7 @@
               "name": "--xh-toolbar-radius"
             },
             {
-              "name": "--xh-toolbar-separator-color"
+              "name": "--xh-toolbar-separator-bg"
             },
             {
               "name": "--xh-toolbar-separator-gap"
@@ -79025,7 +79025,7 @@
               "name": "--xh-tour-positioner-layer"
             },
             {
-              "name": "--xh-tour-positioner-padding"
+              "name": "--xh-tour-positioner-p"
             },
             {
               "name": "--xh-tour-progress-dot-bg"
@@ -83092,7 +83092,7 @@
               "name": "--xh-typography-prose-pre-bg"
             },
             {
-              "name": "--xh-typography-prose-pre-padding"
+              "name": "--xh-typography-prose-pre-p"
             },
             {
               "name": "--xh-typography-prose-pre-radius"

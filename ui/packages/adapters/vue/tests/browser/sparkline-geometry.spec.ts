@@ -84,7 +84,7 @@ describe('尺寸', () => {
   })
 
   it('组件槽改宽高后几何重新计算，线宽不随之缩放', async () => {
-    mount({ style: '--xh-sparkline-width: 300px; --xh-sparkline-height: 60px' }, false)
+    mount({ style: '--xh-sparkline-w: 300px; --xh-sparkline-h: 60px' }, false)
     await settle()
     const root = one('root').getBoundingClientRect()
     expect(root.width).toBeCloseTo(300, 1)

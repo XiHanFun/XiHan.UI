@@ -252,7 +252,7 @@ tone 换成语气色板，覆盖槽改写两端颜色与走向
 | `--xh-typography-prose-link-underline-offset` | `prose` | `text-underline-offset` | `where(a)` | `--xh-typography-link-underline-offset` | typography 的 prose 部件 text-underline-offset 覆盖槽。 |
 | `--xh-typography-prose-list-ps` | `prose` | `padding-inline-start` | `where(ul, ol)` | `--xh-space-5` | typography 的 prose 部件 padding-inline-start 覆盖槽。 |
 | `--xh-typography-prose-pre-bg` | `prose` | `background` | `where(pre)` | `--xh-bg-subtle` | typography 的 prose 部件 background 覆盖槽。 |
-| `--xh-typography-prose-pre-padding` | `prose` | `padding` | `where(pre)` | `--xh-space-4` | typography 的 prose 部件 padding 覆盖槽。 |
+| `--xh-typography-prose-pre-p` | `prose` | `padding` | `where(pre)` | `--xh-space-4` | typography 的 prose 部件 padding 覆盖槽。 |
 | `--xh-typography-prose-pre-radius` | `prose` | `border-radius` | `where(pre)` | `--xh-shape-surface` | typography 的 prose 部件 border-radius 覆盖槽。 |
 | `--xh-typography-prose-quote-border` | `prose` | `border-inline-start` | `where(blockquote)` | `--xh-border-strong` | typography 的 prose 部件 border-inline-start 覆盖槽。 |
 | `--xh-typography-prose-quote-fg` | `prose` | `color` | `where(blockquote)` | `inherit` | typography 的 prose 部件 color 覆盖槽。 |

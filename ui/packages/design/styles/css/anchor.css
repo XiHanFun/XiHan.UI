@@ -150,7 +150,7 @@
     inline-size: var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick));
     block-size: var(--xh-_anchor-indicator-h);
     border-radius: var(--xh-anchor-indicator-radius, var(--xh-shape-pill));
-    background: var(--xh-anchor-indicator-color, var(--xh-_anchor-accent));
+    background: var(--xh-anchor-indicator-bg, var(--xh-_anchor-accent));
     translate: 0 var(--xh-_anchor-indicator-y);
     transition:
       translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
@@ -220,7 +220,7 @@
     position: absolute;
     pointer-events: none;
     border-radius: var(--xh-anchor-indicator-radius, var(--xh-shape-pill));
-    background: var(--xh-anchor-indicator-color, var(--xh-_anchor-accent));
+    background: var(--xh-anchor-indicator-bg, var(--xh-_anchor-accent));
     /* 当前项换了，线在新的那一枚上淡入，与字色的淡变同拍（不滑动，滑动归 indicator 部件） */
     animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }

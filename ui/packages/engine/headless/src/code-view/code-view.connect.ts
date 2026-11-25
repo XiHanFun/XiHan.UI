@@ -44,10 +44,10 @@ function visibleFoldTriggers(from: HTMLElement): HTMLElement[] {
 }
 
 /**
- * 行高槽位与它的兜底值，兜底须与皮肤里 --xh-code-view-line-height 的兜底逐字一致，
+ * 行高槽位与它的兜底值，兜底须与皮肤里 --xh-code-view-leading 的兜底逐字一致，
  * 否则按行数算出的高度对不上行。
  */
-const LINE_HEIGHT = 'var(--xh-code-view-line-height, var(--xh-text-code-leading))'
+const LINE_HEIGHT = 'var(--xh-code-view-leading, var(--xh-text-code-leading))'
 
 // 机器只承载按压通道：代码文本、着色结果与折叠态都来自 props，这里把它们投影成各 part 的属性。
 export function connectCodeView<T extends PropTypes>(

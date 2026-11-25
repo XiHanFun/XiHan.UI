@@ -87,8 +87,6 @@ const CROSS_PART = {
   // 面板里一枝子级的开关与面板里的链接是同一种行：内衬、圆角、字号、字色与悬停 / 按下面读链接那一组槽，
   // 作者改一处两种行一起改，面板里的行才等高、左缘才齐
   'navigation-menu.link': ['branch-trigger'],
-  // --xh-code-view-line-height 是整块代码的行距，line 只是它头一个词，与行部件无关
-  'code-view.line': ['pre'],
   // 折叠条与文件头是同一条横栏的两端，描边与字号取同一族才连成一条
   'code-view.header': ['fold-trigger'],
   // 条目是两列网格，第一列的宽度与列间距由它自己排，槽按被排的那一列取名

@@ -71,10 +71,10 @@
        刘海、圆角与底部横条压住的那一段由系统给出，内衬比它窄时面板的一角会被切掉。
        桌面上 env() 恒为 0，取值与内衬槽完全一致。安全区只有物理方向的四个名字，
        行内轴上两侧同取较宽的那一段，RTL 下不会翻错边。 */
-    padding-block-start: max(var(--xh-dialog-positioner-padding, var(--xh-space-4)), env(safe-area-inset-top));
-    padding-block-end: max(var(--xh-dialog-positioner-padding, var(--xh-space-4)), env(safe-area-inset-bottom));
+    padding-block-start: max(var(--xh-dialog-positioner-p, var(--xh-space-4)), env(safe-area-inset-top));
+    padding-block-end: max(var(--xh-dialog-positioner-p, var(--xh-space-4)), env(safe-area-inset-bottom));
     padding-inline: max(
-      var(--xh-dialog-positioner-padding, var(--xh-space-4)),
+      var(--xh-dialog-positioner-p, var(--xh-space-4)),
       env(safe-area-inset-left),
       env(safe-area-inset-right)
     );
@@ -148,7 +148,7 @@
      四边都贴着视口：不取圆角，不画描边与投影——没有露在外面的边界要交代，也没有底可以投影。
      宽度档在这一档不生效。 */
   [data-scope='dialog'][data-part='positioner'][data-fullscreen] {
-    --xh-dialog-positioner-padding: var(--xh-space-0);
+    --xh-dialog-positioner-p: var(--xh-space-0);
 
     align-items: stretch;
   }

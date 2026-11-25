@@ -79,7 +79,7 @@
 
   /* 面板的换行基准：一行正文的宽度。步骤列的内容宽加上这一格放不下，两者就分成两行 */
   [data-scope='steps'][data-part='root'][data-orientation='vertical'] > [data-scope='steps'][data-part='content'] {
-    flex: 1 1 var(--xh-steps-content-min-inline-size, var(--xh-measure-prose));
+    flex: 1 1 var(--xh-steps-content-min-w, var(--xh-measure-prose));
   }
 
   /* —— 尺寸 —— */
@@ -165,7 +165,7 @@
 
   /* 横排始终留在同一条轴上，标题与说明负责在自己的格内省略。 */
   [data-scope='steps'][data-part='item'][data-orientation='horizontal']:not(:last-child) {
-    min-inline-size: var(--xh-steps-item-min-inline-size, var(--xh-space-0));
+    min-inline-size: var(--xh-steps-item-min-w, var(--xh-space-0));
   }
 
   [data-scope='steps'][data-part='item'][data-orientation='vertical'] {

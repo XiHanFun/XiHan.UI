@@ -245,7 +245,7 @@
     grid-template-rows: 1fr;
     overflow: clip;
     margin-inline-start: var(--xh-reasoning-rail-inset, var(--xh-reasoning-px, var(--xh-_reasoning-px)));
-    border-inline-start: var(--xh-reasoning-rail-width, var(--xh-stroke-thin)) solid var(--xh-reasoning-rail, var(--xh-border-subtle));
+    border-inline-start: var(--xh-reasoning-rail-thickness, var(--xh-stroke-thin)) solid var(--xh-reasoning-rail, var(--xh-border-subtle));
     padding-inline-start: var(--xh-reasoning-content-ps, var(--xh-space-3));
     padding-inline-end: var(--xh-reasoning-content-pe, var(--xh-reasoning-px, var(--xh-_reasoning-px)));
     padding-block-end: var(--xh-reasoning-py, var(--xh-_reasoning-py));

@@ -397,7 +397,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `--xh-field-array-add-border-hover` | `add-trigger` | `border-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-border-hover` | field-array 的 add-trigger 部件 border-color 覆盖槽。 |
 | `--xh-field-array-add-fg` | `add-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-brand` | field-array 的 add-trigger 部件 color 覆盖槽。 |
 | `--xh-field-array-add-font-size` | `add-trigger` | `font-size` | `default` | `--xh-text-label-size` | field-array 的 add-trigger 部件 font-size 覆盖槽。 |
-| `--xh-field-array-add-height` | `add-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | field-array 的 add-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-field-array-add-h` | `add-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | field-array 的 add-trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-field-array-add-px` | `add-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | field-array 的 add-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-field-array-add-radius` | `add-trigger` | `border-radius` | `default` | `--xh-shape-control` | field-array 的 add-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-field-array-cell-control-h` | `item-action`<br>`item-cell`<br>`item-label` | `min-block-size` | `is([data-part='item-cell'], [data-part='item-label'], [data-part='item-action'])`<br>`layout=table` | `--xh-_field-array-cell-control-h` | field-array 的 item-action、item-cell、item-label 部件 min-block-size 覆盖槽。 |
@@ -419,7 +419,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `--xh-field-array-item-gap` | `item` | `gap` | `default` | `--xh-space-2` | field-array 的 item 部件 gap 覆盖槽。 |
 | `--xh-field-array-item-label-fg` | `item-label` | `color` | `default` | `--xh-fg-muted` | field-array 的 item-label 部件 color 覆盖槽。 |
 | `--xh-field-array-item-label-font-size` | `item-label` | `font-size` | `default` | `--xh-text-secondary-size` | field-array 的 item-label 部件 font-size 覆盖槽。 |
-| `--xh-field-array-item-padding` | `item` | `padding` | `default` | `--xh-space-0` | field-array 的 item 部件 padding 覆盖槽。 |
+| `--xh-field-array-item-p` | `item` | `padding` | `default` | `--xh-space-0` | field-array 的 item 部件 padding 覆盖槽。 |
 | `--xh-field-array-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-surface` | field-array 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-field-array-item-shadow-dragging` | `item` | `box-shadow` | `dragging` | `--xh-elevation-lifted` | field-array 的 item 部件 box-shadow 覆盖槽。 |
 | `--xh-field-array-row-divider` | `header`<br>`item` | `border-block-end`<br>`border-block-start` | `layout=table` | `--xh-border-subtle` | field-array 的 header、item 部件 border-block-end、border-block-start 覆盖槽。 |

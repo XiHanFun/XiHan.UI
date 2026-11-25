@@ -313,7 +313,7 @@
     display: inline-flex;
     flex-wrap: wrap;
     gap: 0;
-    padding: var(--xh-radio-group-track-padding, var(--xh-space-0_5));
+    padding: var(--xh-radio-group-track-p, var(--xh-space-0_5));
     border: var(--xh-stroke-thin) solid var(--xh-radio-group-track-border, var(--xh-border-control));
     border-radius: var(--xh-radio-group-track-radius, var(--xh-shape-control));
     background: var(--xh-radio-group-track-bg, var(--xh-bg-field));
@@ -418,7 +418,7 @@
     block-size: auto;
     min-block-size: calc(
       var(--xh-radio-group-segment-h, var(--xh-_radio-group-segment-h)) - 2 *
-        var(--xh-radio-group-track-padding, var(--xh-space-0_5)) - 2 * var(--xh-stroke-thin)
+        var(--xh-radio-group-track-p, var(--xh-space-0_5)) - 2 * var(--xh-stroke-thin)
     );
   }
 
@@ -600,7 +600,7 @@
         0px,
         max(
           (100% - var(--xh-control-hit-coarse)) / 2,
-          -1 * (var(--xh-radio-group-track-padding, var(--xh-space-0_5)) + var(--xh-stroke-thin) + var(--xh-space-2))
+          -1 * (var(--xh-radio-group-track-p, var(--xh-space-0_5)) + var(--xh-stroke-thin) + var(--xh-space-2))
         )
       );
       inset-inline: min(0px, (100% - var(--xh-control-hit-coarse)) / 2);

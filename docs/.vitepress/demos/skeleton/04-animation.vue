@@ -11,7 +11,7 @@ const animations: SkeletonAnimation[] = ["shimmer", "pulse", "none"];
     <div v-for="animation in animations" :key="animation" style="display: grid; gap: 8px">
       <span>{{ animation }}</span>
       <XhSkeletonRoot :animation="animation" style="inline-size: 140px">
-        <XhSkeletonItem shape="rect" style="--xh-skeleton-rect-block-size: 64px" />
+        <XhSkeletonItem shape="rect" style="--xh-skeleton-rect-min-h: 64px" />
         <XhSkeletonItem style="inline-size: 70%" />
       </XhSkeletonRoot>
     </div>

@@ -323,7 +323,7 @@
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-steps-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | steps 的 content 部件 color 覆盖槽。 |
-| `--xh-steps-content-min-inline-size` | `content`<br>`root` | `flex` | `orientation=vertical` | `--xh-measure-prose` | steps 的 content、root 部件 flex 覆盖槽。 |
+| `--xh-steps-content-min-w` | `content`<br>`root` | `flex` | `orientation=vertical` | `--xh-measure-prose` | steps 的 content、root 部件 flex 覆盖槽。 |
 | `--xh-steps-content-py` | `content` | `padding-block` | `default` | `--xh-stack-gap-md` | steps 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-steps-description-fg` | `description` | `color` | `default` | `--xh-fg-subtle` | steps 的 description 部件 color 覆盖槽。 |
 | `--xh-steps-description-font-size` | `description` | `font-size` | `default` | `--xh-text-caption-size` | steps 的 description 部件 font-size 覆盖槽。 |
@@ -359,7 +359,7 @@
 | `--xh-steps-indicator-shadow` | `indicator` | `box-shadow` | `state=current` | `none` | steps 的 indicator 部件 box-shadow 覆盖槽。 |
 | `--xh-steps-indicator-size` | `indicator`<br>`separator` | `block-size`<br>`inline-size`<br>`margin-inline-start` | `default`<br>`orientation=vertical` | `--xh-_steps-indicator-size` | steps 的 indicator、separator 部件 block-size、inline-size、margin-inline-start 覆盖槽。 |
 | `--xh-steps-item-gap` | `item` | `gap` | `default` | `--xh-space-2` | steps 的 item 部件 gap 覆盖槽。 |
-| `--xh-steps-item-min-inline-size` | `item` | `min-inline-size` | `not(:last-child)`<br>`orientation=horizontal` | `--xh-space-0` | steps 的 item 部件 min-inline-size 覆盖槽。 |
+| `--xh-steps-item-min-w` | `item` | `min-inline-size` | `not(:last-child)`<br>`orientation=horizontal` | `--xh-space-0` | steps 的 item 部件 min-inline-size 覆盖槽。 |
 | `--xh-steps-list-gap` | `list` | `gap` | `default` | `--xh-space-0` | steps 的 list 部件 gap 覆盖槽。 |
 | `--xh-steps-separator-bg` | `separator` | `background` | `default` | `--xh-border-default` | steps 的 separator 部件 background 覆盖槽。 |
 | `--xh-steps-separator-bg-completed` | `separator` | `background` | `default` | `--xh-_steps-accent` | steps 的 separator 部件 background 覆盖槽。 |

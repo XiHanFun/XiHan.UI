@@ -176,10 +176,10 @@ loading 期间容器报告 aria-busy；切换为 false 后骨架让出位置，�
 | `--xh-skeleton-gap` | `root` | `gap` | `default` | `--xh-space-4` | skeleton 的 root 部件 gap 覆盖槽。 |
 | `--xh-skeleton-pulse-duration` | `item`<br>`root` | `animation` | `animation=pulse` | `--xh-motion-loop-shimmer` | skeleton 的 item、root 部件 animation 覆盖槽。 |
 | `--xh-skeleton-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | skeleton 的 item 部件 border-radius 覆盖槽。 |
-| `--xh-skeleton-rect-block-size` | `item` | `min-block-size` | `shape=rect` | `--xh-control-h-lg` | skeleton 的 item 部件 min-block-size 覆盖槽。 |
+| `--xh-skeleton-rect-min-h` | `item` | `min-block-size` | `shape=rect` | `--xh-control-h-lg` | skeleton 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-skeleton-rect-radius` | `item` | `border-radius` | `shape=rect` | `--xh-shape-surface` | skeleton 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-skeleton-sheen` | `item` | `background-image` | `default` | `--xh-bg-subtle` | skeleton 的 item 部件 background-image 覆盖槽。 |
-| `--xh-skeleton-text-block-size` | `item` | `block-size` | `shape=text` | `--xh-text-body-line-h` | skeleton 的 item 部件 block-size 覆盖槽。 |
+| `--xh-skeleton-text-h` | `item` | `block-size` | `shape=text` | `--xh-text-body-line-h` | skeleton 的 item 部件 block-size 覆盖槽。 |
 | `--xh-skeleton-text-radius` | `item` | `border-radius` | `shape=text` | `--xh-shape-inset` | skeleton 的 item 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

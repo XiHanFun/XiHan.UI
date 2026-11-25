@@ -472,7 +472,7 @@
   [data-scope='select'][data-part='group'] + [data-scope='select'][data-part='group'] {
     padding-block-start: var(--xh-select-group-spacing, var(--xh-space-1_5));
     border-block-start: var(--xh-stroke-thin) solid
-      var(--xh-select-group-separator-color, var(--xh-material-frosted-separator));
+      var(--xh-select-group-separator-border, var(--xh-material-frosted-separator));
   }
 
   /* 分组标题不是选项、进不了导航，画成小号次要文字，

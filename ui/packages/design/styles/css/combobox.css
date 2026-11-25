@@ -399,7 +399,7 @@
   [data-scope='combobox'][data-part='group'] + [data-scope='combobox'][data-part='group'] {
     padding-block-start: var(--xh-combobox-group-spacing, var(--xh-space-1_5));
     border-block-start: var(--xh-stroke-thin) solid
-      var(--xh-combobox-group-separator-color, var(--xh-material-frosted-separator));
+      var(--xh-combobox-group-separator-border, var(--xh-material-frosted-separator));
   }
 
   /* 分组标题不是候选、进不了导航，画成小号次要文字，内缩与候选对齐（同一个 padding-inline） */

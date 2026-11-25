@@ -442,7 +442,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `--xh-menubar-px` | `root` | `padding-inline` | `default` | `--xh-space-1` | menubar 的 root 部件 padding-inline 覆盖槽。 |
 | `--xh-menubar-py` | `root` | `padding-block` | `default` | `--xh-space-1` | menubar 的 root 部件 padding-block 覆盖槽。 |
 | `--xh-menubar-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | menubar 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-menubar-separator-color` | `separator` | `background-color` | `xh-collection-separator` | `--xh-material-frosted-separator` | menubar 的 separator 部件 background-color 覆盖槽。 |
+| `--xh-menubar-separator-bg` | `separator` | `background-color` | `xh-collection-separator` | `--xh-material-frosted-separator` | menubar 的 separator 部件 background-color 覆盖槽。 |
 | `--xh-menubar-separator-my` | `separator` | `margin-block` | `xh-collection-separator` | `--xh-space-0_5` | menubar 的 separator 部件 margin-block 覆盖槽。 |
 | `--xh-menubar-separator-radius` | `separator` | `border-radius` | `xh-collection-separator` | `--xh-shape-pill` | menubar 的 separator 部件 border-radius 覆盖槽。 |
 | `--xh-menubar-separator-thickness` | `separator` | `block-size` | `xh-collection-separator` | `--xh-stroke-thin` | menubar 的 separator 部件 block-size 覆盖槽。 |

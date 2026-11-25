@@ -378,7 +378,7 @@ open 与 index 双受控；translations 更换工具条的可及名与计数文�
 | `--xh-image-viewer-close-fg` | `close-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`material=liquid`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-material-liquid-fg`<br>`currentColor` | image-viewer 的 close-trigger 部件 color 覆盖槽。 |
 | `--xh-image-viewer-close-radius` | `close-trigger` | `border-radius` | `default`<br>`material=liquid`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-shape-circle` | image-viewer 的 close-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-image-viewer-close-size` | `close-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=floating`<br>`xh-action-profile=icon` | `--xh-_image-viewer-nav-size` | image-viewer 的 close-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
-| `--xh-image-viewer-counter-padding` | `counter` | `padding` | `default` | `--xh-space-1` | image-viewer 的 counter 部件 padding 覆盖槽。 |
+| `--xh-image-viewer-counter-p` | `counter` | `padding` | `default` | `--xh-space-1` | image-viewer 的 counter 部件 padding 覆盖槽。 |
 | `--xh-image-viewer-counter-radius` | `counter` | `border-radius` | `default`<br>`material=liquid`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-image-viewer-overlay-radius` | image-viewer 的 counter 部件 border-radius 覆盖槽。 |
 | `--xh-image-viewer-error-fg` | `viewport` | `background-color` | `error` | `--xh-fg-danger` | image-viewer 的 viewport 部件 background-color 覆盖槽。 |
 | `--xh-image-viewer-fg` | `content` | `color` | `default` | `--xh-fg-on-media-chrome` | image-viewer 的 content 部件 color 覆盖槽。 |
@@ -389,7 +389,7 @@ open 与 index 双受控；translations 更换工具条的可及名与计数文�
 | `--xh-image-viewer-status-size` | `viewport` | `--xh-icon-size` | `default` | `--xh-glyph-size-lg` | image-viewer 的 viewport 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-image-viewer-toolbar-bg` | `toolbar` | `--xh-ink-surface`<br>`background` | `default` | `--xh-_image-viewer-page-surface` | image-viewer 的 toolbar 部件 --xh-ink-surface、background 覆盖槽。 |
 | `--xh-image-viewer-toolbar-gap` | `toolbar` | `gap` | `default` | `--xh-space-1` | image-viewer 的 toolbar 部件 gap 覆盖槽。 |
-| `--xh-image-viewer-toolbar-padding` | `toolbar` | `padding` | `default` | `--xh-space-1_5` | image-viewer 的 toolbar 部件 padding 覆盖槽。 |
+| `--xh-image-viewer-toolbar-p` | `toolbar` | `padding` | `default` | `--xh-space-1_5` | image-viewer 的 toolbar 部件 padding 覆盖槽。 |
 | `--xh-image-viewer-toolbar-radius` | `toolbar` | `border-radius` | `default` | `--xh-_action-profile-radius` | image-viewer 的 toolbar 部件 border-radius 覆盖槽。 |
 | `--xh-image-viewer-toolbar-radius-outer` | `toolbar` | `border-radius` | `default`<br>`material=liquid`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-image-viewer-overlay-radius` | image-viewer 的 toolbar 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->

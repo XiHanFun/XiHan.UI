@@ -239,10 +239,10 @@
     --xh-collection-font-weight-current-hover: var(--xh-side-nav-row-font-weight-current, var(--xh-font-weight-semibold));
     --xh-collection-font-weight-current-highlight: var(--xh-side-nav-row-font-weight-current, var(--xh-font-weight-semibold));
     --xh-collection-font-weight-current-pressed: var(--xh-side-nav-row-font-weight-current, var(--xh-font-weight-semibold));
-    --xh-collection-indicator-fg-current: var(--xh-side-nav-indicator-color, var(--xh-fg-brand));
-    --xh-collection-indicator-fg-current-hover: var(--xh-side-nav-indicator-color, var(--xh-fg-brand));
-    --xh-collection-indicator-fg-current-highlight: var(--xh-side-nav-indicator-color, var(--xh-fg-brand));
-    --xh-collection-indicator-fg-current-pressed: var(--xh-side-nav-indicator-color, var(--xh-fg-brand));
+    --xh-collection-indicator-fg-current: var(--xh-side-nav-indicator-fg, var(--xh-fg-brand));
+    --xh-collection-indicator-fg-current-hover: var(--xh-side-nav-indicator-fg, var(--xh-fg-brand));
+    --xh-collection-indicator-fg-current-highlight: var(--xh-side-nav-indicator-fg, var(--xh-fg-brand));
+    --xh-collection-indicator-fg-current-pressed: var(--xh-side-nav-indicator-fg, var(--xh-fg-brand));
     /* 展开路径：中性面，字色缺省由品牌色改回行的常态色 */
     --xh-collection-bg-open-path: var(--xh-side-nav-row-bg-in-path, var(--xh-bg-subtle));
     --xh-collection-fg-open-path: var(--xh-side-nav-row-fg-in-path, var(--xh-side-nav-row-fg, currentColor));

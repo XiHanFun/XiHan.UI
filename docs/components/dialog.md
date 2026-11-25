@@ -401,7 +401,7 @@ fullscreen 让面板铺满视口：头尾定在原处，正文吃掉剩下的高
 | `--xh-dialog-indicator-size` | `indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-glyph-size-md` | dialog 的 indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-dialog-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | dialog 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-dialog-max-w` | `content` | `max-inline-size` | `default` | `--xh-_dialog-max-w` | dialog 的 content 部件 max-inline-size 覆盖槽。 |
-| `--xh-dialog-positioner-padding` | `positioner` | `padding-block-end`<br>`padding-block-start`<br>`padding-inline` | `default` | `--xh-space-4` | dialog 的 positioner 部件 padding-block-end、padding-block-start、padding-inline 覆盖槽。 |
+| `--xh-dialog-positioner-p` | `positioner` | `padding-block-end`<br>`padding-block-start`<br>`padding-inline` | `default` | `--xh-space-4` | dialog 的 positioner 部件 padding-block-end、padding-block-start、padding-inline 覆盖槽。 |
 | `--xh-dialog-px` | `content` | `padding-inline` | `default` | `--xh-overlay-sheet-px` | dialog 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-dialog-py` | `content` | `padding-block-end`<br>`padding-block-start` | `default` | `--xh-_dialog-header-pt`<br>`--xh-overlay-sheet-body-py` | dialog 的 content 部件 padding-block-end、padding-block-start 覆盖槽。 |
 | `--xh-dialog-radius` | `content` | `border-radius` | `default` | `--xh-shape-sheet` | dialog 的 content 部件 border-radius 覆盖槽。 |

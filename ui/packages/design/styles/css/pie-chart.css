@@ -35,7 +35,7 @@
   /* —— 家族配方的组件槽：标题、视口、图例、提示框与空态由 family/chart.css 画，本图表的覆盖槽写在
      对应部件上接进配方的私有槽，作者在部件或它的祖先上覆盖都生效 —— */
   [data-scope='pie-chart'][data-part='viewport'] {
-    --xh-_chart-height: var(--xh-pie-chart-height, var(--xh-chart-height));
+    --xh-_chart-height: var(--xh-pie-chart-h, var(--xh-chart-height));
   }
 
   [data-scope='pie-chart'][data-part='legend'] {

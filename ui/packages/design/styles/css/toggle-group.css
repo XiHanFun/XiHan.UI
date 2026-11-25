@@ -115,7 +115,7 @@
     z-index: 2;
     inset: 0;
     border: var(--xh-stroke-thin) solid
-      var(--xh-toggle-group-outline-color, var(--xh-_tone-border-control, var(--xh-border-control)));
+      var(--xh-toggle-group-outline-border, var(--xh-_tone-border-control, var(--xh-border-control)));
     border-radius: inherit;
     pointer-events: none;
   }
@@ -357,7 +357,7 @@
     align-self: center;
     z-index: 2;
     border-radius: var(--xh-toggle-group-separator-radius, var(--xh-shape-pill));
-    background: var(--xh-toggle-group-separator-color, var(--xh-fg-default));
+    background: var(--xh-toggle-group-separator-bg, var(--xh-fg-default));
     opacity: var(--xh-toggle-group-separator-opacity, var(--xh-control-separator-opacity));
     pointer-events: none;
     transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);

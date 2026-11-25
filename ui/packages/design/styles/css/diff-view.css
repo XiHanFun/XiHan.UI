@@ -85,7 +85,7 @@
     display: block;
     font-family: var(--xh-diff-view-font, var(--xh-font-family-mono));
     font-size: var(--xh-diff-view-font-size, var(--xh-_diff-view-font-size));
-    line-height: var(--xh-diff-view-line-height, var(--xh-text-code-leading));
+    line-height: var(--xh-diff-view-leading, var(--xh-text-code-leading));
     min-inline-size: max-content;
   }
 
@@ -97,7 +97,7 @@
   [data-scope='diff-view'][data-part='row'],
   [data-scope='diff-view'][data-part='gap'] {
     display: flex;
-    min-block-size: var(--xh-diff-view-line-height, var(--xh-text-code-leading));
+    min-block-size: var(--xh-diff-view-leading, var(--xh-text-code-leading));
   }
 
   [data-scope='diff-view'][data-part='row'][hidden],
@@ -253,7 +253,7 @@
 
   [data-scope='diff-view'][data-part='token'][data-kind='keyword'] {
     color: var(--xh-diff-view-keyword-fg, var(--xh-syntax-keyword));
-    font-weight: var(--xh-diff-view-keyword-weight, var(--xh-font-weight-semibold));
+    font-weight: var(--xh-diff-view-keyword-font-weight, var(--xh-font-weight-semibold));
   }
 
   [data-scope='diff-view'][data-part='token'][data-kind='punctuation'] {
@@ -282,7 +282,7 @@
      高度锚在代码行高上让折叠格与相邻代码行同高，字号跟着正文走 */
   [data-scope='diff-view'][data-part='gap-trigger'] {
     --xh-action-radius: 0;
-    --xh-action-visual-size: var(--xh-diff-view-line-height, var(--xh-text-code-leading));
+    --xh-action-visual-size: var(--xh-diff-view-leading, var(--xh-text-code-leading));
     --xh-action-padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
     --xh-action-padding-block: 0;
     --xh-action-font-size: var(--xh-diff-view-font-size, var(--xh-_diff-view-font-size));
@@ -345,7 +345,7 @@
 
   /* 行评论：每格正文让出一列（一行高的正方格）给评论钮，没有钮的空侧也让，两侧代码才对得齐 */
   [data-scope='diff-view'][data-part='root'][data-commentable] {
-    --xh-_diff-view-comment-col: var(--xh-diff-view-comment-col, var(--xh-diff-view-line-height, var(--xh-text-code-leading)));
+    --xh-_diff-view-comment-col: var(--xh-diff-view-comment-col, var(--xh-diff-view-leading, var(--xh-text-code-leading)));
   }
 
   [data-scope='diff-view'][data-part='root'][data-commentable] [data-part='line-content']:where([data-scope='diff-view']) {

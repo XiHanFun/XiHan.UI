@@ -69,7 +69,7 @@
     inline-size: var(--xh-approval-pending-indicator-size, var(--xh-space-2));
     block-size: var(--xh-approval-pending-indicator-size, var(--xh-space-2));
     border-radius: var(--xh-approval-pending-indicator-radius, var(--xh-shape-circle));
-    background: var(--xh-approval-pending-indicator-color, var(--xh-_tone-soft, var(--xh-_approval-pending-fill)));
+    background: var(--xh-approval-pending-indicator-bg, var(--xh-_tone-soft, var(--xh-_approval-pending-fill)));
     animation: xh-breathe var(--xh-motion-loop-breathe) var(--xh-motion-ease-breathe) infinite;
   }
 

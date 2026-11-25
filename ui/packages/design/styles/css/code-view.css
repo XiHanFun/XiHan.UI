@@ -81,7 +81,7 @@
   }
 
   /* margin: 0 去掉 UA 给 <pre> 的默认外边距。
-     --xh-code-view-line-height 的兜底须与连接层内联 min-block-size 用的一致，
+     --xh-code-view-leading 的兜底须与连接层内联 min-block-size 用的一致，
      且因参与 calc 乘法必须是长度而非无单位倍数。 */
   [data-scope='code-view'][data-part='pre'] {
     /* 逻辑属性 overflow-inline 尚无可用实现，写物理轴 */
@@ -89,7 +89,7 @@
     padding-block: var(--xh-code-view-py, var(--xh-space-3));
     /* 等宽字体自己声明：浏览器给 pre 的那份由基线层统一收掉了，行与行之间的空白也要按等宽算 */
     font-family: var(--xh-code-view-font, var(--xh-font-family-mono));
-    line-height: var(--xh-code-view-line-height, var(--xh-text-code-leading));
+    line-height: var(--xh-code-view-leading, var(--xh-text-code-leading));
   }
 
   /* 折叠时 <pre> 的高度被连接层写死，超出部分沿圆角收边 */
@@ -109,7 +109,7 @@
   /* 一行是一个块：行号槽与正文并排，空行也要占满一行高 */
   [data-scope='code-view'][data-part='line'] {
     display: flex;
-    min-block-size: var(--xh-code-view-line-height, var(--xh-text-code-leading));
+    min-block-size: var(--xh-code-view-leading, var(--xh-text-code-leading));
     padding-inline-end: var(--xh-code-view-px, var(--xh-space-3));
     /* 标出来的那几行换的是底色与那条内阴影色条，两样一起过渡才是同一个动作 */
     transition:
@@ -238,7 +238,7 @@
   /* 按块折叠：每行正文都让出一列（一行高的正方格），块头的折叠钮定位在这一列里；
      没有钮的行也让，缩进才对得齐 */
   [data-scope='code-view'][data-part='root'][data-block-folding] {
-    --xh-_code-view-fold-col: var(--xh-code-view-fold-col, var(--xh-code-view-line-height, var(--xh-text-code-leading)));
+    --xh-_code-view-fold-col: var(--xh-code-view-fold-col, var(--xh-code-view-leading, var(--xh-text-code-leading)));
   }
 
   [data-scope='code-view'][data-part='root'][data-block-folding] [data-part='line-content']:where([data-scope='code-view']) {
@@ -335,7 +335,7 @@
 
   [data-scope='code-view'][data-part='token'][data-kind='keyword'] {
     color: var(--xh-code-view-keyword-fg, var(--xh-syntax-keyword));
-    font-weight: var(--xh-code-view-keyword-weight, var(--xh-font-weight-semibold));
+    font-weight: var(--xh-code-view-keyword-font-weight, var(--xh-font-weight-semibold));
   }
 
   [data-scope='code-view'][data-part='token'][data-kind='punctuation'] {
