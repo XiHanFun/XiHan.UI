@@ -1,4 +1,4 @@
-// expandTrigger='hover'：指针扫过同一列的父项时，子列换一批内容，不重播列的进场（淡入 + 错开）；
+// expandOnHover：指针扫过同一列的父项时，子列换一批内容，不重播列的进场（淡入 + 错开）；
 // 只有子列头一次出现（此前收着）时才播。
 import type { CascaderLevel } from '@xihan-ui/headless'
 import type { App } from 'vue'
@@ -47,7 +47,7 @@ async function mount(): Promise<void> {
   host.style.setProperty('--xh-motion-duration-enter', '10s')
   document.body.append(host)
   app = createApp({
-    render: () => h(XhCascaderRoot, { collection: COLLECTION, open: true, expandTrigger: 'hover' }, {
+    render: () => h(XhCascaderRoot, { collection: COLLECTION, open: true, expandOnHover: true }, {
       default: ({ levels }: { levels: CascaderLevel[] }) => [
         h(XhCascaderControl, null, () => [h(XhCascaderTrigger, null, () => '选择')]),
         h(XhCascaderPositioner, null, () => [

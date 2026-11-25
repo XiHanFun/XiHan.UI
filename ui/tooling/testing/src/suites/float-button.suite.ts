@@ -162,7 +162,7 @@ export const floatButtonSuite: ConformanceSuite = {
     {
       name: '悬停展开：进出的是整个壳，指针走得到展开的那一组上去',
       spec: { apg: APG },
-      props: { expandTrigger: 'hover' },
+      props: { expandOnHover: true },
       steps: [
         pointerStep('pointerenter', {
           parts: {
@@ -181,7 +181,7 @@ export const floatButtonSuite: ConformanceSuite = {
     {
       name: '悬停展开时点一下照样开合：触摸与键盘只有这一条路',
       spec: { apg: APG },
-      props: { expandTrigger: 'hover' },
+      props: { expandOnHover: true },
       steps: [
         {
           kind: 'click',

@@ -39,7 +39,7 @@ afterEach(() => {
 /** 悬浮按钮跑的是 collapsible 机器，落位与外形不入机器、直接进 connect。 */
 function makeRig(initial: Props = {}, look: FloatButtonAppearance = {}): Rig {
   const runtime = createVanillaRuntime()
-  const props = runtime.signal<Props>({ ...initial, expandTrigger: look.expandTrigger })
+  const props = runtime.signal<Props>({ ...initial, expandOnHover: look.expandOnHover })
   const service = createService(floatButtonMachine, { props: () => props.get(), runtime })
   const rootEl = document.createElement('div')
   document.body.append(rootEl)
@@ -202,7 +202,7 @@ describe('float-button 开合', () => {
   it('click 模式不接指针进出，hover 模式才接', () => {
     expect(makeRig().root().onPointerEnter).toBeUndefined()
 
-    const hover = makeRig({}, { expandTrigger: 'hover' })
+    const hover = makeRig({}, { expandOnHover: true })
     ;(hover.root().onPointerEnter as () => void)()
     expect(hover.api().open).toBe(true)
     ;(hover.root().onPointerLeave as () => void)()
@@ -210,7 +210,7 @@ describe('float-button 开合', () => {
   })
 
   it('hover 模式下点一下照样开合：触摸与键盘只有这一条路', () => {
-    const rig = makeRig({}, { expandTrigger: 'hover' })
+    const rig = makeRig({}, { expandOnHover: true })
     ;(rig.trigger().onClick as () => void)()
     expect(rig.api().open).toBe(true)
   })
@@ -253,10 +253,10 @@ describe('float-button 开合', () => {
   })
 
   it.each([
-    ['hover 展开不经按下，压在别的层上面不代表开在里面：按在根内，下面无关的层照常收起', 'hover', ['pointer-down-outside']],
-    ['click 展开经按下打开，照旧按栈序挡住下面的层：按在根内，下面的层不动', 'click', []],
-  ] as const)('%s', async (_label, expandTrigger, expected) => {
-    const rig = makeRig({}, { expandTrigger })
+    ['hover 展开不经按下，压在别的层上面不代表开在里面：按在根内，下面无关的层照常收起', true, ['pointer-down-outside']],
+    ['click 展开经按下打开，照旧按栈序挡住下面的层：按在根内，下面的层不动', false, []],
+  ] as const)('%s', async (_label, expandOnHover, expected) => {
+    const rig = makeRig({}, { expandOnHover })
     // 先开着的一层，与悬浮按钮没有嵌套关系
     const lower = document.createElement('div')
     document.body.append(lower)
@@ -281,12 +281,12 @@ describe('float-button 开合', () => {
     const inside = document.createElement('button')
     rig.rootEl.append(inside)
 
-    if (expandTrigger === 'hover')
+    if (expandOnHover)
       (rig.root().onPointerEnter as () => void)()
     else
       (rig.trigger().onClick as () => void)()
     await armDismissLayer()
-    expect(rig.registry.top()?.opensOnHover).toBe(expandTrigger === 'hover')
+    expect(rig.registry.top()?.opensOnHover).toBe(expandOnHover)
 
     pointerDown(inside)
 
@@ -354,7 +354,7 @@ describe('float-button 开合', () => {
     const seen: boolean[] = []
     const rig = makeRig(
       { disabled: true, onOpenChange: d => seen.push(d.open) },
-      { expandTrigger: 'hover' },
+      { expandOnHover: true },
     )
     expect(rig.trigger().disabled).toBe(true)
     expect(rig.trigger()['data-disabled']).toBe('')
@@ -394,7 +394,7 @@ describe('float-button 开合', () => {
     const seen: boolean[] = []
     const rig = makeRig(
       { open: true, onOpenChange: d => seen.push(d.open) },
-      { expandTrigger: 'hover' },
+      { expandOnHover: true },
     )
     await armDismissLayer()
     const outside = document.createElement('button')

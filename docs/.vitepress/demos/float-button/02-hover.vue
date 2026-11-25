@@ -5,7 +5,7 @@ import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger, XhIcon } fr
 </script>
 
 <template>
-  <XhFloatButtonRoot style="position: static" expand-trigger="hover">
+  <XhFloatButtonRoot style="position: static" expand-on-hover>
     <XhFloatButtonTrigger />
     <XhFloatButtonList>
       <button type="button" aria-label="消息"><XhIcon :icon="MessageCircleIcon" /></button>

@@ -15,9 +15,6 @@ import type { CollapsibleOpenChangeDetails } from '../collapsible'
  */
 export type FloatButtonPlacement = 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end'
 
-/** 展开动作组的方式：指针悬停，或点击。 */
-export type FloatButtonExpandTrigger = 'hover' | 'click'
-
 /**
  * 拖动松手后贴向哪里：inline 贴左右两边里离得近的那条，block 贴上下两边，
  * nearest 贴四条边里最近的那条，none 不贴、停在松手的地方。
@@ -97,8 +94,8 @@ export interface FloatButtonAppearance {
   placement?: FloatButtonPlacement
   /** 距两条边的距离（px），默认 24。 */
   offset?: number
-  /** 展开方式，默认 click。 */
-  expandTrigger?: FloatButtonExpandTrigger
+  /** 指针悬停就展开动作组，默认关（点击才展开）。 */
+  expandOnHover?: boolean
   /** 变体：solid / subtle / outline / ghost，默认 outline（缺省中性，描边 + 磨砂面；solid 才品牌实心）。 */
   variant?: ActionVariant
   /** 颜色：brand / neutral / success / warning / danger / info。 */
@@ -154,7 +151,7 @@ export interface FloatButtonRefs {
 
 /** FloatButton 专用状态机：开合、禁用、位置与拖动和消解层资源都由 Headless 持有。 */
 export interface FloatButtonSchema extends MachineSchema {
-  props: FloatButtonDisclosureProps & FloatButtonPositionProps & FloatButtonNotifiers & Pick<FloatButtonAppearance, 'expandTrigger' | 'offset'>
+  props: FloatButtonDisclosureProps & FloatButtonPositionProps & FloatButtonNotifiers & Pick<FloatButtonAppearance, 'expandOnHover' | 'offset'>
   context: {
     /** 提交了的位置；null 表示还停在 placement 那一角。 */
     position: FloatButtonPosition | null

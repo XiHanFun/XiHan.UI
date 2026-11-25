@@ -155,9 +155,6 @@ export interface CascaderLevel {
  */
 export type CascaderFocusIntent = 'selected' | 'first' | 'last' | 'next' | 'prev'
 
-/** 子列的展开方式：点击条目，或指针划过条目。键盘一律使用右方向键，不受该开关影响。 */
-export type CascaderExpandTrigger = 'click' | 'hover'
-
 /**
  * 选中路径。单条路径（`['zhejiang','hangzhou']`）是简写，内部一律归一为路径集合
  * （`[['zhejiang','hangzhou']]`）。空数组即无选中。
@@ -292,8 +289,8 @@ export interface CascaderSchema extends MachineSchema {
     /** 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 */
     open?: boolean
     defaultOpen?: boolean
-    /** 子列的展开方式，默认 click。 */
-    expandTrigger?: CascaderExpandTrigger
+    /** 指针划过条目就展开子列，默认关（点击条目才展开）。键盘一律使用右方向键，不受该开关影响。 */
+    expandOnHover?: boolean
     /** 中间层（分支）也可以落值。关闭时点击分支只展开子列，不改变选中值。 */
     changeOnSelect?: boolean
     /** 多选：选中为路径集合，选中后浮层不收起、焦点留在列中以便继续选择；已选路径在触发器里排成标签。 */

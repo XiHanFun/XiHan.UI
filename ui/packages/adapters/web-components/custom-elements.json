@@ -7728,12 +7728,12 @@
             },
             {
               "kind": "field",
-              "name": "expandTrigger",
+              "name": "expandOnHover",
               "privacy": "public",
               "type": {
-                "text": "CascaderExpandTrigger | undefined"
+                "text": "boolean | undefined"
               },
-              "attribute": "expand-trigger"
+              "attribute": "expand-on-hover"
             },
             {
               "kind": "field",
@@ -8583,11 +8583,10 @@
             },
             {
               "type": {
-                "text": "CascaderExpandTrigger | undefined"
+                "text": "'click'|'hover'"
               },
               "description": "子列由点击还是悬停展开，默认 click",
-              "name": "expand-trigger",
-              "fieldName": "expandTrigger"
+              "name": "expand-trigger"
             },
             {
               "type": {
@@ -8756,6 +8755,13 @@
               "description": "文字方向，只对调左右方向键的进入子列 / 返回上一列语义，默认 ltr",
               "name": "dir",
               "fieldName": "direction"
+            },
+            {
+              "name": "expand-on-hover",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "fieldName": "expandOnHover"
             }
           ],
           "superclass": {
@@ -31089,12 +31095,12 @@
             },
             {
               "kind": "field",
-              "name": "expandTrigger",
+              "name": "expandOnHover",
               "privacy": "public",
               "type": {
-                "text": "FloatButtonExpandTrigger | undefined"
+                "text": "boolean | undefined"
               },
-              "attribute": "expand-trigger"
+              "attribute": "expand-on-hover"
             },
             {
               "kind": "field",
@@ -31322,11 +31328,10 @@
             },
             {
               "type": {
-                "text": "FloatButtonExpandTrigger | undefined"
+                "text": "'hover'|'click'"
               },
               "description": "展开方式，默认 click",
-              "name": "expand-trigger",
-              "fieldName": "expandTrigger"
+              "name": "expand-trigger"
             },
             {
               "type": {
@@ -31351,6 +31356,13 @@
               "description": "尺寸，默认与 lg 同档",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "name": "expand-on-hover",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "fieldName": "expandOnHover"
             }
           ],
           "superclass": {

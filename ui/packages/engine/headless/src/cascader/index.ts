@@ -42,7 +42,6 @@ export type {
   CascaderBranchLoadStartDetails,
   CascaderColumn,
   CascaderColumnProps,
-  CascaderExpandTrigger,
   CascaderFilter,
   CascaderFocusIntent,
   CascaderGroupProps,

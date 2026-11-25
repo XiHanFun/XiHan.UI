@@ -376,7 +376,7 @@ export const floatButtonMachine = createMachine({
                   isModal: () => false,
                   surfaces: () => [],
                   // 悬停展开的那一档不经按下就出现：压在别的层上面不代表开在里面，只护着它所在的层
-                  opensOnHover: prop('expandTrigger') === 'hover',
+                  opensOnHover: !!prop('expandOnHover'),
                 })
               : null,
             flush,
@@ -388,7 +388,7 @@ export const floatButtonMachine = createMachine({
               }
               // hover 的层外 pointer/focus 与 root pointerleave 属于同一离场动作；只让
               // pointerleave 发意图，避免受控父级尚未写回时同一手势重复通知。
-              if (prop('expandTrigger') !== 'hover')
+              if (!prop('expandOnHover'))
                 send({ type: 'CLOSE', src: 'interact-outside' })
             },
           })

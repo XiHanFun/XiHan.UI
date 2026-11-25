@@ -762,8 +762,8 @@ describe('列的展开与截断', () => {
 })
 
 describe('悬停展开', () => {
-  it('expandTrigger=hover：划过条目就开子列，但不抢键盘焦点', () => {
-    const h = mount({ defaultOpen: true, expandTrigger: 'hover' })
+  it('expandOnHover：划过条目就开子列，但不抢键盘焦点', () => {
+    const h = mount({ defaultOpen: true, expandOnHover: true })
     const before = h.focusedPath()
     hover(h.item('jiangsu').item)
     expect(h.activePath()).toEqual(['jiangsu'])
@@ -771,7 +771,7 @@ describe('悬停展开', () => {
     expect(h.focusedPath()).toEqual(before)
   })
 
-  it('expandTrigger=click（缺省）时划过不改变任何列', () => {
+  it('不开 expandOnHover（缺省）时划过不改变任何列', () => {
     const h = mount({ defaultOpen: true })
     click(h.item('zhejiang').item)
     hover(h.item('jiangsu').item)
@@ -780,7 +780,7 @@ describe('悬停展开', () => {
   })
 
   it('悬停禁用条目不改列', () => {
-    const h = mount({ defaultOpen: true, expandTrigger: 'hover' })
+    const h = mount({ defaultOpen: true, expandOnHover: true })
     hover(h.item('zhejiang').item)
     hover(h.item('wenzhou').item)
     expect(h.activePath()).toEqual(['zhejiang'])

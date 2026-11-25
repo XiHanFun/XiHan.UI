@@ -63,7 +63,7 @@ export function connectCascader<T extends PropTypes>(
   const interactive = !disabled && !readOnly
   const loop = prop('loop') ?? true
   const dir = prop('dir') ?? 'ltr'
-  const expandTrigger = prop('expandTrigger') ?? 'click'
+  const expandOnHover = !!prop('expandOnHover')
   const separator = prop('separator') ?? CASCADER_DEFAULT_SEPARATOR
   const placeholder = prop('placeholder') ?? null
   const stateAttr = open ? 'open' : 'closed'
@@ -1051,9 +1051,9 @@ export function connectCascader<T extends PropTypes>(
           if (visible && meta)
             send({ type: 'ITEM.FOCUS', level: meta.level, value: meta.value })
         },
-        // 悬停展开只改展开路径，不碰焦点；expandTrigger=click 时整条让开
+        // 悬停展开只改展开路径，不碰焦点；没开 expandOnHover 时整条让开
         'onPointerEnter': () => {
-          if (!interactive || expandTrigger !== 'hover' || !meta || !visible || isDisabled(meta))
+          if (!interactive || !expandOnHover || !meta || !visible || isDisabled(meta))
             return
           send({ type: 'ITEM.EXPAND', level: meta.level, value: meta.value })
         },

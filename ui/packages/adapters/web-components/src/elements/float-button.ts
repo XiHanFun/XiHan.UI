@@ -9,7 +9,6 @@ import type { ActionVariant, Direction, IdGenerator, Layer, RuntimeConfig, Servi
 import type {
   CollapsibleOpenChangeDetails,
   FloatButtonAppearance,
-  FloatButtonExpandTrigger,
   FloatButtonPlacement,
   FloatButtonPosition,
   FloatButtonPositionChangeDetails,
@@ -77,7 +76,7 @@ export class XhFloatButtonElement extends XhElement {
     // 位置是对象，只走 property
     position: { attribute: false },
     defaultPosition: { attribute: false },
-    expandTrigger: { converter: STRING_CONVERTER, attribute: 'expand-trigger' },
+    expandOnHover: { converter: BOOLEAN_CONVERTER, attribute: 'expand-on-hover' },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
@@ -95,7 +94,7 @@ export class XhFloatButtonElement extends XhElement {
   declare snap?: FloatButtonSnap
   declare position?: FloatButtonPosition
   declare defaultPosition?: FloatButtonPosition
-  declare expandTrigger?: FloatButtonExpandTrigger
+  declare expandOnHover?: boolean
   declare variant?: ActionVariant
   declare tone?: Tone
   declare size?: Size
@@ -126,7 +125,7 @@ export class XhFloatButtonElement extends XhElement {
       defaultOpen: this.defaultOpen ?? false,
       disabled: this.disabled ?? false,
       dir: this.direction,
-      expandTrigger: this.expandTrigger,
+      expandOnHover: this.expandOnHover,
       offset: this.offset,
       draggable: this.buttonDraggable ?? false,
       snap: this.snap,
@@ -159,7 +158,7 @@ export class XhFloatButtonElement extends XhElement {
     return {
       placement: this.placement,
       offset: this.offset,
-      expandTrigger: this.expandTrigger,
+      expandOnHover: this.expandOnHover,
       variant: this.variant,
       tone: this.tone,
       size: this.size,

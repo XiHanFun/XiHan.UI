@@ -8,7 +8,6 @@
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
 import type {
   CascaderApi,
-  CascaderExpandTrigger,
   CascaderGroupProps,
   CascaderItemProps,
   CascaderNode,
@@ -112,7 +111,7 @@ export const XhCascaderRoot = defineComponent({
     form: { type: String },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    expandTrigger: { type: String as PropType<CascaderExpandTrigger> },
+    expandOnHover: { type: Boolean, default: undefined },
     changeOnSelect: Boolean,
     multiple: Boolean,
     /** 多选标签最多显示的数量，其余折进 +N；默认 3。 */

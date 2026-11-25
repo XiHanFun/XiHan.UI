@@ -143,7 +143,7 @@ const hoverMenu: HoverSubject = {
 
 const hoverFloatButton: HoverSubject = {
   name: '悬停展开的浮动按钮',
-  render: () => h(XhFloatButtonRoot, { expandTrigger: 'hover' }, () => [
+  render: () => h(XhFloatButtonRoot, { expandOnHover: true }, () => [
     h(XhFloatButtonTrigger, { 'data-test': 'hover-trigger' }, () => '操作'),
     h(XhFloatButtonList, null, () => h('button', { 'type': 'button', 'data-test': 'hover-content' }, '编辑')),
   ]),

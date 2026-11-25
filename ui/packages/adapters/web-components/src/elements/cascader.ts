@@ -11,7 +11,6 @@ import type {
   CascaderBranchLoadDetails,
   CascaderBranchLoadErrorDetails,
   CascaderBranchLoadStartDetails,
-  CascaderExpandTrigger,
   CascaderItemProps,
   CascaderNode,
   CascaderOpenChangeDetails,
@@ -167,7 +166,7 @@ export class XhCascaderElement extends XhPortalHostElement {
     form: { converter: STRING_CONVERTER },
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
-    expandTrigger: { converter: STRING_CONVERTER, attribute: 'expand-trigger' },
+    expandOnHover: { converter: BOOLEAN_CONVERTER, attribute: 'expand-on-hover' },
     changeOnSelect: { converter: BOOLEAN_CONVERTER, attribute: 'change-on-select' },
     multiple: { converter: BOOLEAN_CONVERTER },
     maxTagCount: { converter: NUMBER_CONVERTER, attribute: 'max-tag-count' },
@@ -205,7 +204,7 @@ export class XhCascaderElement extends XhPortalHostElement {
   declare form?: string
   declare open?: boolean
   declare defaultOpen?: boolean
-  declare expandTrigger?: CascaderExpandTrigger
+  declare expandOnHover?: boolean
   declare changeOnSelect?: boolean
   declare multiple?: boolean
   declare maxTagCount?: number
@@ -422,7 +421,7 @@ export class XhCascaderElement extends XhPortalHostElement {
       form: this.form,
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
-      expandTrigger: this.expandTrigger,
+      expandOnHover: this.expandOnHover,
       changeOnSelect: this.changeOnSelect ?? false,
       multiple: this.multiple ?? false,
       maxTagCount: this.maxTagCount,

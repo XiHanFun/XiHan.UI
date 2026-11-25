@@ -23,7 +23,6 @@ export type {
   FloatButtonDrag,
   FloatButtonEdge,
   FloatButtonEdgePosition,
-  FloatButtonExpandTrigger,
   FloatButtonNotifiers,
   FloatButtonPlacement,
   FloatButtonPoint,

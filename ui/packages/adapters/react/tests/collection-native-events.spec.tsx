@@ -189,7 +189,7 @@ describe('cascader 的不冒泡事件按 DOM 语义送达', () => {
   ]
 
   const TREE = (
-    <XhCascaderRoot defaultOpen expandTrigger="hover" collection={COLLECTION}>
+    <XhCascaderRoot defaultOpen expandOnHover collection={COLLECTION}>
       <XhCascaderControl>
         <XhCascaderTrigger><XhCascaderValueText /></XhCascaderTrigger>
       </XhCascaderControl>

@@ -45,7 +45,7 @@ export function useFloatButton(
     open: props.open,
     defaultOpen: props.defaultOpen,
     disabled: props.disabled,
-    expandTrigger: props.expandTrigger,
+    expandOnHover: props.expandOnHover,
     offset: props.offset,
     draggable: props.draggable,
     snap: props.snap,

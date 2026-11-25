@@ -118,7 +118,7 @@
 | `defaultPosition` | `FloatButtonPosition` |  | 初始位置，例如 `{ edge: 'inline-end', ratio: 0.75 }`：贴右边（LTR）、中心在视口 75% 高处。 |
 | `onOpenChange` | `(details: CollapsibleOpenChangeDetails) => void` |  | open 变化意图；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onPositionChange` | `(details: FloatButtonPositionChangeDetails) => void` |  | 拖动落定后的新位置：贴边时给贴边位置（按比例，换个视口尺寸照样成立），snap 为 none 时给像素坐标。 落定才通知一次，拖动途中不发；要记住位置就在这里存。 |
-| `expandTrigger` | `FloatButtonExpandTrigger` |  | 展开方式，默认 click。 |
+| `expandOnHover` | `boolean` |  | 指针悬停就展开动作组，默认关（点击才展开）。 |
 | `offset` | `number` |  | 距两条边的距离（px），默认 24。 |
 | `placement` | `FloatButtonPlacement` |  | 固定在哪一角，默认 bottom-end。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg（28 / 40 / 44px），缺省 md：悬浮按钮需要易于触达，起始即比行内按钮大一档。 |

@@ -1045,9 +1045,9 @@ export const cascaderSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'expandTrigger=hover：指针划过条目就换列，但不把键盘焦点抢走',
+      name: 'expandOnHover：指针划过条目就换列，但不把键盘焦点抢走',
       spec: { adr: 'cascader-expand-trigger' },
-      props: props({ expandTrigger: 'hover' }),
+      props: props({ expandOnHover: true }),
       steps: [
         // 键盘打开预落锚点，才验得出「悬停不抢焦点」
         { kind: 'focus', part: 'trigger' },

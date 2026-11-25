@@ -5,7 +5,7 @@ import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger, XhIcon } fr
 
 export default function Demo(): ReactNode {
   return (
-    <XhFloatButtonRoot style={{ position: "static" }} expandTrigger="hover">
+    <XhFloatButtonRoot style={{ position: "static" }} expandOnHover>
       <XhFloatButtonTrigger />
       <XhFloatButtonList>
         <button type="button" aria-label="消息"><XhIcon icon={MessageCircleIcon} /></button>

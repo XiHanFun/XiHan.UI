@@ -130,7 +130,7 @@ const CASES: readonly Case[] = [
   {
     name: 'float-button',
     render: () => (
-      <XhFloatButtonRoot className="mine" style={PROBE} offset={24} expandTrigger="hover" />
+      <XhFloatButtonRoot className="mine" style={PROBE} offset={24} expandOnHover />
     ),
     leaks: ['offset', 'expandtrigger'],
   },

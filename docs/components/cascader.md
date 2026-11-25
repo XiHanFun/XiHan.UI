@@ -70,7 +70,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 ### 特性
 
 - `changeOnSelect` 允许选择中间层。
-- `expandTrigger` 支持点击或悬停展开。
+- 缺省点击展开子列，`expandOnHover` 改为指针划过就展开。
 - `multiple`、`cascade` 与 `checkedStrategy` 控制多选及路径收敛方式。多选时列里的条目用行首勾选框标出勾选，级联半选在方框里画横杠；单选仍是行尾对号。搜索候选是整条路径的一行，仍在行尾标勾。
 - 多选的已选路径在触发器里排成标签，与[选择器](./select)同一套呈现：文字是整条路径（按 `separator` 连缀），超出 `maxTagCount`（默认 3）合并为 `+N`；标签身份写路径的比较键（`api.tags` 里的 `key`），触发器外可放带删除钮的标签，value-text 仍留在 DOM 里给触发器的可及名。
 - `maxSelected` 给多选设上限，只在不开 `cascade` 时生效（理由同[树选择](./tree-select)）。选满后没选中的叶子转 `aria-disabled`、点击与确认键都选不进去，但方向键照样落得上去；分支照常铺开子列——`changeOnSelect` 下它只是不落值、勾选框降级，行不换禁用面。搜索结果是平铺的列表，没选中的候选按禁用处理。已选的照旧可以点掉，点掉一条即腾出名额；只拦用户这一路的加选，小于 1 时不设上限，单选下不生效。
@@ -127,7 +127,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `form` | `string` |  | 关联的原生表单 ID；指定后覆盖祖先表单归属。 |
 | `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
-| `expandTrigger` | `CascaderExpandTrigger` |  | 子列的展开方式，默认 click。 |
+| `expandOnHover` | `boolean` |  | 指针划过条目就展开子列，默认关（点击条目才展开）。键盘一律使用右方向键，不受该开关影响。 |
 | `changeOnSelect` | `boolean` |  | 中间层（分支）也可以落值。关闭时点击分支只展开子列，不改变选中值。 |
 | `multiple` | `boolean` |  | 多选：选中为路径集合，选中后浮层不收起、焦点留在列中以便继续选择；已选路径在触发器里排成标签。 |
 | `maxTagCount` | `number` |  | 多选标签最多显示的数量，其余折叠进 overflowCount、合成 +N 标签；默认 3。 |

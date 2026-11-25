@@ -66,7 +66,7 @@ export function connectFloatButton<T extends PropTypes>(
     '--xh-_float-button-x': at ? `${at.x}px` : undefined,
     '--xh-_float-button-y': at ? `${at.y}px` : undefined,
   }
-  const hover = prop('expandTrigger') === 'hover'
+  const hover = !!prop('expandOnHover')
   // 缺省 outline：描边 + 磨砂面的中性圆钮（只有 Button 缺省品牌实心）
   const variant = props.variant ?? 'outline'
   // 键盘 / 触屏按住期间的按压面；指针按住由 :active 表出，皮肤两者同一档
