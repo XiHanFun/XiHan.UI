@@ -81,7 +81,7 @@ export interface CalendarRangePickerSchema extends MachineSchema {
      * 关闭时落下起点之后，可选范围被夹在起点两侧最近的不可用日之间：
      * 一段区间内不会夹有不可选的日期；开启时不夹，只是这些日期不铺轨道。
      */
-    allowsNonContiguousRanges?: boolean
+    allowNonContiguousRanges?: boolean
     /**
      * 下一次点选落在区间的哪一端，缺省 0：点一下落起点、再点一下落终点。
      * 为 1 且已有起点时只改终点：起点当锚，点在起点那一天或之后即落终点、起点原样留着；

@@ -32,7 +32,7 @@ visible-count=2：起止常跨月，并排查看两页更便于选择；翻页�
 
 ### 不可用的日期
 
-allows-non-contiguous-ranges 允许区间跨过周末，只是这些日期不铺设轨道；isDateUnavailable 可得到起点，据此限制区间长度
+allow-non-contiguous-ranges 允许区间跨过周末，只是这些日期不铺设轨道；isDateUnavailable 可得到起点，据此限制区间长度
 
 <XhDemo src="calendar-range-picker/03-unavailable" />
 
@@ -66,7 +66,7 @@ activeIndex=1 时起点当锚：点在起点之后只改终点，点在起点之
 - 支持按住拖选：按下即落起点，拖到另一格松开即完成；按住已选区间的一端拖动可以直接改写该端；触屏按住片刻才开始拖动，轻点仍是普通点选。
 - 焦点离开网格时，未完成的区间在起点到聚焦日之间就地收口，不留悬空的起点。
 - `activeIndex={1}` 时只改终点：已有起点当锚，点在起点当天或之后即落终点、起点不动；点在起点之前的日子从那一天重新开始挑。与 antd 的「从终点输入框继续改」一致；React Aria 的区间日历每次点选都重新开始，没有这一档。
-- 落起点后可选范围默认被夹在两侧最近的不可用日之间，`allowsNonContiguousRanges` 允许跨过它们；`isDateUnavailable` 的第二个参数是当前起点，可据此限制区间长度。
+- 落起点后可选范围默认被夹在两侧最近的不可用日之间，`allowNonContiguousRanges` 允许跨过它们；`isDateUnavailable` 的第二个参数是当前起点，可据此限制区间长度。
 - 已选区间的任一端越界或不可用即标记为不合法，也可以用 `invalid` 显式声明。
 - `granularity` 决定周期格的生成方式；周、月、季度和年区间共用同一套 Period 边界判断。
 - 周、月、季度与年这几层同样按行渲染：插槽里的 `rows`（多面板读 `panels[i].rows`）已按列数切好——周一行一格，月与年一行三格，季度一行四格；一行写一个 `week-row`，格子放进行里。网格是 `role=grid`，行承担 `role=row`，格子不直接铺进网格。
@@ -111,7 +111,7 @@ activeIndex=1 时起点当锚：点在起点之后只改终点，点在起点之
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `isDateUnavailable` | `(value: string, anchor: string \| null) => boolean` |  | 作者提供的不可用判定，接收 ISO 串。返回真的日期与界外日期同等处理。 第二个参数是区间选到一半时的起点（周期首日的 ISO 串），其余时候为 null： 据此可以实现落下起点之后只允许选择 7 天内这类判定。 |
-| `allowsNonContiguousRanges` | `boolean` |  | 区间允许跨过不可用的日期，默认关闭。 关闭时落下起点之后，可选范围被夹在起点两侧最近的不可用日之间： 一段区间内不会夹有不可选的日期；开启时不夹，只是这些日期不铺轨道。 |
+| `allowNonContiguousRanges` | `boolean` |  | 区间允许跨过不可用的日期，默认关闭。 关闭时落下起点之后，可选范围被夹在起点两侧最近的不可用日之间： 一段区间内不会夹有不可选的日期；开启时不夹，只是这些日期不铺轨道。 |
 | `activeIndex` | `0 \| 1` |  | 下一次点选落在区间的哪一端，缺省 0：点一下落起点、再点一下落终点。 为 1 且已有起点时只改终点：起点当锚，点在起点那一天或之后即落终点、起点原样留着； 点在起点之前的日子从那一天重新开始挑（它成为新的起点，再点一下落终点）。 日期范围选择器从终点那组段位展开时就是这一档。 |
 | `translations` | `Partial<CalendarRangePickerTranslations>` |  |  |
 | `onValueChange` | `(details: CalendarRangePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |

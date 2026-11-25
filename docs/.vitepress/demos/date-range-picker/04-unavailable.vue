@@ -25,7 +25,7 @@ import {
   XhDateRangePickerWeekRow,
 } from "@xihan-ui/vue";
 
-// 周六、周日不可选；起点参数用不上，区间能不能跨过不可用日由 allowsNonContiguousRanges 决定
+// 周六、周日不可选；起点参数用不上，区间能不能跨过不可用日由 allowNonContiguousRanges 决定
 function isWeekend(value: string): boolean {
   const day = new Date(`${value}T00:00:00Z`).getUTCDay();
   return day === 0 || day === 6;
@@ -36,7 +36,7 @@ function isWeekend(value: string): boolean {
   <XhDateRangePickerRoot
     v-slot="{ weeks, weekDays }"
     :is-date-unavailable="isWeekend"
-    allows-non-contiguous-ranges
+    allow-non-contiguous-ranges
     locale="zh-CN"
   >
     <XhDateRangePickerLabel>工作日区间</XhDateRangePickerLabel>

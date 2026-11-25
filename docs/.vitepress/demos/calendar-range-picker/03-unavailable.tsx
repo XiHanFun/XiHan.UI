@@ -1,4 +1,4 @@
-// 不可用的日期 | allows-non-contiguous-ranges 允许区间跨过周末，只是这些日期不铺设轨道；isDateUnavailable 可得到起点，据此限制区间长度
+// 不可用的日期 | allow-non-contiguous-ranges 允许区间跨过周末，只是这些日期不铺设轨道；isDateUnavailable 可得到起点，据此限制区间长度
 import type { ReactNode } from "react";
 import {
   XhCalendarRangePickerCell,
@@ -41,7 +41,7 @@ export default function Demo(): ReactNode {
         onValueChange={details => setValue(details.value)}
         locale="zh-CN"
         isDateUnavailable={isUnavailable}
-        allowsNonContiguousRanges
+        allowNonContiguousRanges
         fixedWeeks
         style={{ maxInlineSize: "280px" }}
       >

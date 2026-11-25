@@ -221,7 +221,7 @@ export function dateRangePickerCalendarProps(service: Service<DateRangePickerSch
     firstDayOfWeek: prop('firstDayOfWeek'),
     timeZone: prop('timeZone'),
     isDateUnavailable: prop('isDateUnavailable'),
-    allowsNonContiguousRanges: prop('allowsNonContiguousRanges'),
+    allowNonContiguousRanges: prop('allowNonContiguousRanges'),
     // 正在编辑终点且已有起点：日历只改终点
     activeIndex: context.get('activeIndex') === 1 && hasStart ? 1 : 0,
     disabled: prop('disabled'),

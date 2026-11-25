@@ -1049,13 +1049,13 @@ describe('区间的校验与可选范围', () => {
     expect(mount({ defaultValue: ['2026-08-10'] }).api().invalid).toBe(false)
   })
 
-  it('allowsNonContiguousRanges 与 isDateUnavailable 的起点参数原样交给内嵌日历', () => {
+  it('allowNonContiguousRanges 与 isDateUnavailable 的起点参数原样交给内嵌日历', () => {
     const anchors: (string | null)[] = []
     const h = mount({
       defaultOpen: true,
       visibleCount: 2,
       defaultFocusedValue: '2026-08-10',
-      allowsNonContiguousRanges: true,
+      allowNonContiguousRanges: true,
       isDateUnavailable: (value, anchor) => {
         anchors.push(anchor)
         return value === '2026-08-12'

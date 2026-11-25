@@ -145,7 +145,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {boolean} disabled - 整个控件禁用：trigger 为原生 disabled，段位退出 Tab 序列
  * @attr {boolean} read-only - 只读：浮层照常展开、日历照常浏览，但选中值不可修改
  * @attr {boolean} invalid - 校验失败标注；未提供时也会自行判定：任一端越界，或终点早于起点
- * @attr {boolean} allows-non-contiguous-ranges - 允许跨过不可用的日期；默认关闭，落下起点后只能选到两侧最近的不可用日为止
+ * @attr {boolean} allow-non-contiguous-ranges - 允许跨过不可用的日期；默认关闭，落下起点后只能选到两侧最近的不可用日为止
  * @attr {boolean} required - 必填标注，写入每段的 aria-required
  * @attr {string} name - 起点隐藏输入的表单字段名；提供后才带 name
  * @attr {string} start-placeholder - 起点那组段位的整条占位：一段都没填、焦点也不在段上时显示这句文字
@@ -258,7 +258,7 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
-    allowsNonContiguousRanges: { converter: BOOLEAN_CONVERTER, attribute: 'allows-non-contiguous-ranges' },
+    allowNonContiguousRanges: { converter: BOOLEAN_CONVERTER, attribute: 'allow-non-contiguous-ranges' },
     required: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
     endName: { converter: STRING_CONVERTER, attribute: 'end-name' },
@@ -308,7 +308,7 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
-  declare allowsNonContiguousRanges?: boolean
+  declare allowNonContiguousRanges?: boolean
   declare required?: boolean
   declare name?: string
   declare endName?: string
@@ -479,7 +479,7 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
       fixedWeeks: this.fixedWeeks,
       defaultFocusedValue: this.defaultFocusedValue,
       isDateUnavailable: this.isDateUnavailable,
-      allowsNonContiguousRanges: this.allowsNonContiguousRanges,
+      allowNonContiguousRanges: this.allowNonContiguousRanges,
       disabled: control.disabled,
       readOnly: control.readOnly,
       invalid: control.invalid,

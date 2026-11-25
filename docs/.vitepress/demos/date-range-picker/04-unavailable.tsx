@@ -25,7 +25,7 @@ import {
   XhDateRangePickerWeekRow,
 } from "@xihan-ui/react";
 
-// 周六、周日不可选；起点参数用不上，区间能不能跨过不可用日由 allowsNonContiguousRanges 决定
+// 周六、周日不可选；起点参数用不上，区间能不能跨过不可用日由 allowNonContiguousRanges 决定
 function isWeekend(value: string): boolean {
   const day = new Date(`${value}T00:00:00Z`).getUTCDay();
   return day === 0 || day === 6;
@@ -35,7 +35,7 @@ export default function Demo(): ReactNode {
   return (
     <XhDateRangePickerRoot
       isDateUnavailable={isWeekend}
-      allowsNonContiguousRanges
+      allowNonContiguousRanges
       locale="zh-CN"
     >
       {({ weeks, weekDays }) => (

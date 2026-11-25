@@ -147,7 +147,7 @@ export interface XhDateRangePickerRootProps extends Omit<ComponentPropsWithRef<'
   presets?: DateRangePickerPreset[]
   isDateUnavailable?: (value: string, anchor: string | null) => boolean
   /** 允许跨过不可用的日期；默认关闭，落下起点后只能选到两侧最近的不可用日为止。 */
-  allowsNonContiguousRanges?: boolean
+  allowNonContiguousRanges?: boolean
   disabled?: boolean
   readOnly?: boolean
   invalid?: boolean
@@ -218,7 +218,7 @@ export function XhDateRangePickerRoot({
   defaultFocusedValue,
   presets,
   isDateUnavailable,
-  allowsNonContiguousRanges,
+  allowNonContiguousRanges,
   disabled,
   readOnly,
   invalid,
@@ -271,7 +271,7 @@ export function XhDateRangePickerRoot({
     defaultFocusedValue,
     presets,
     isDateUnavailable,
-    allowsNonContiguousRanges,
+    allowNonContiguousRanges,
     disabled,
     readOnly,
     invalid,

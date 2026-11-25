@@ -58,7 +58,7 @@ function declaredIndex(el: Element | null | undefined, fallback = 0): number {
  * @attr {boolean} disabled - 整张禁用：翻月按钮为原生 disabled，格子全部为 aria-disabled
  * @attr {boolean} read-only - 只读：翻月与移动焦点照常，只是不可选择值
  * @attr {boolean} invalid - 校验失败：根带 data-invalid，区间中的格子报告 aria-invalid；已选区间某一端越界或不可用时也会自行判定
- * @attr {boolean} allows-non-contiguous-ranges - 区间允许跨过不可用的日期；默认关闭，落下起点后只能选到两侧最近的不可用日为止
+ * @attr {boolean} allow-non-contiguous-ranges - 区间允许跨过不可用的日期；默认关闭，落下起点后只能选到两侧最近的不可用日为止
  * @prop {Partial<CalendarRangePickerTranslations>} translations - 读屏文案（选择区间的提示、区间两端的名字、今天），只能通过 property 设置
  * @attr {'narrow'|'short'} weekday-format - 表头缩写粒度，默认 narrow（中文「一 二 三」）；short 是「周一」
  * @attr {boolean} fixed-weeks - 恒渲染六行
@@ -107,7 +107,7 @@ export class XhCalendarRangePickerElement extends XhElement {
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     fixedWeeks: { converter: BOOLEAN_CONVERTER, attribute: 'fixed-weeks' },
     invalid: { converter: BOOLEAN_CONVERTER },
-    allowsNonContiguousRanges: { converter: BOOLEAN_CONVERTER, attribute: 'allows-non-contiguous-ranges' },
+    allowNonContiguousRanges: { converter: BOOLEAN_CONVERTER, attribute: 'allow-non-contiguous-ranges' },
     activeIndex: { converter: END_INDEX_CONVERTER, attribute: 'active-index' },
     granularity: { converter: STRING_CONVERTER },
     activeView: { converter: STRING_CONVERTER, attribute: 'active-view' },
@@ -132,7 +132,7 @@ export class XhCalendarRangePickerElement extends XhElement {
   declare readOnly?: boolean
   declare fixedWeeks?: boolean
   declare invalid?: boolean
-  declare allowsNonContiguousRanges?: boolean
+  declare allowNonContiguousRanges?: boolean
   declare activeIndex?: 0 | 1
   declare granularity?: CalendarGranularity
   declare activeView?: CalendarView
@@ -176,7 +176,7 @@ export class XhCalendarRangePickerElement extends XhElement {
       min: this.min,
       max: this.max,
       isDateUnavailable: this.isDateUnavailable,
-      allowsNonContiguousRanges: this.allowsNonContiguousRanges ?? false,
+      allowNonContiguousRanges: this.allowNonContiguousRanges ?? false,
       activeIndex: this.activeIndex,
       invalid: this.invalid ?? false,
       locale: this.locale,

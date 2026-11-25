@@ -503,11 +503,11 @@ describe('区间模式', () => {
     expect(h.cell('2024-02-20').getAttribute('aria-disabled')).toBe('false')
   })
 
-  it('allowsNonContiguousRanges：可以跨过不可用日，只是那些日子不铺轨道', () => {
+  it('allowNonContiguousRanges：可以跨过不可用日，只是那些日子不铺轨道', () => {
     const h = mount({
       defaultFocusedValue: '2024-02-15',
 
-      allowsNonContiguousRanges: true,
+      allowNonContiguousRanges: true,
       isDateUnavailable: value => value === '2024-02-12',
     })
     click(h.cell('2024-02-10'))

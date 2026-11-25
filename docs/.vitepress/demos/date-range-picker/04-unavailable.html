@@ -2,7 +2,7 @@
 <div id="date-range-picker-unavailable-mount"></div>
 
 <template id="date-range-picker-unavailable-template">
-  <xh-date-range-picker locale="zh-CN" allows-non-contiguous-ranges>
+  <xh-date-range-picker locale="zh-CN" allow-non-contiguous-ranges>
     <div data-xh-part="root">
       <span data-xh-part="label">工作日区间</span>
       <div data-xh-part="control">
@@ -26,7 +26,7 @@
   const picker = fragment.querySelector("xh-date-range-picker");
   const groups = picker.querySelectorAll('[data-xh-part="segment-group"]');
   const content = picker.querySelector('[data-xh-part="content"]');
-  // 判定函数只走 property：周六、周日不可选；区间能不能跨过不可用日由 allows-non-contiguous-ranges 决定
+  // 判定函数只走 property：周六、周日不可选；区间能不能跨过不可用日由 allow-non-contiguous-ranges 决定
   picker.isDateUnavailable = (value) => {
     const day = new Date(`${value}T00:00:00Z`).getUTCDay();
     return day === 0 || day === 6;

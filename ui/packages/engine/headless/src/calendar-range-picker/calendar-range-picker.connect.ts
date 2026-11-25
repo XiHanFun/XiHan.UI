@@ -79,7 +79,7 @@ export function connectCalendarRangePicker<T extends PropTypes>(
    * 只在不许跨过不可用日、且作者真给了判定时才算；扫描以视窗跨度为界，不无限走下去。
    */
   const spanAround = (rangeStart: string | null): [string, string] | null => {
-    if (rangeStart == null || prop('allowsNonContiguousRanges') || !isDateUnavailable)
+    if (rangeStart == null || prop('allowNonContiguousRanges') || !isDateUnavailable)
       return null
     const origin = periodAt(rangeStart)
     if (!origin)

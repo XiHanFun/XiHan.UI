@@ -193,7 +193,7 @@ export interface DateRangePickerSchema extends MachineSchema {
      */
     isDateUnavailable?: (value: string, anchor: string | null) => boolean
     /** 区间允许跨过不可用的日期，默认关闭；关闭时落下起点之后只能选到两侧最近的不可用日为止。 */
-    allowsNonContiguousRanges?: boolean
+    allowNonContiguousRanges?: boolean
     /** 整个控件禁用：trigger 为原生 disabled，段位退出 Tab 序列，日历格子全部为 aria-disabled。 */
     disabled?: boolean
     /** 只读：浮层照常展开、日历照常翻月浏览，但选中值不可修改。 */

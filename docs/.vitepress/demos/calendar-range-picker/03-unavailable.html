@@ -1,10 +1,10 @@
-<!-- 不可用的日期 | allows-non-contiguous-ranges 允许区间跨过周末，只是这些日期不铺设轨道；isDateUnavailable 可得到起点，据此限制区间长度 -->
+<!-- 不可用的日期 | allow-non-contiguous-ranges 允许区间跨过周末，只是这些日期不铺设轨道；isDateUnavailable 可得到起点，据此限制区间长度 -->
 <div id="calendar-range-picker-unavailable-mount"></div>
 <span style="font-size: 13px">区间：<span id="calendar-range-picker-unavailable-value">（未选）</span></span>
 
 <!-- 结构先收在模板里：必需的格子要在元素接线前就位，所以网格填好了才入页 -->
 <template id="calendar-range-picker-unavailable-template">
-  <xh-calendar-range-picker locale="zh-CN" allows-non-contiguous-ranges fixed-weeks>
+  <xh-calendar-range-picker locale="zh-CN" allow-non-contiguous-ranges fixed-weeks>
     <div data-xh-part="root" style="max-inline-size: 280px">
       <div data-xh-part="header">
         <button data-xh-part="prev-trigger" aria-label="上个月"></button>

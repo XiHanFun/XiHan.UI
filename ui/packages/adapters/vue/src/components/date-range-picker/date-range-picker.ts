@@ -149,7 +149,7 @@ export const XhDateRangePickerRoot = defineComponent({
     presets: { type: Array as PropType<DateRangePickerPreset[]> },
     isDateUnavailable: { type: Function as PropType<(value: string, anchor: string | null) => boolean> },
     /** 允许跨过不可用的日期；默认关闭，落下起点后只能选到两侧最近的不可用日为止。 */
-    allowsNonContiguousRanges: { type: Boolean, default: undefined },
+    allowNonContiguousRanges: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },

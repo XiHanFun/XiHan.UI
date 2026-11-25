@@ -1,4 +1,4 @@
-<!-- 不可用的日期 | allows-non-contiguous-ranges 允许区间跨过周末，只是这些日期不铺设轨道；isDateUnavailable 可得到起点，据此限制区间长度 -->
+<!-- 不可用的日期 | allow-non-contiguous-ranges 允许区间跨过周末，只是这些日期不铺设轨道；isDateUnavailable 可得到起点，据此限制区间长度 -->
 <script setup lang="ts">
 import {
   XhCalendarRangePickerCell,
@@ -40,7 +40,7 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
     v-model:value="value"
     locale="zh-CN"
     :is-date-unavailable="isUnavailable"
-    allows-non-contiguous-ranges
+    allow-non-contiguous-ranges
     fixed-weeks
     style="max-inline-size: 280px"
   >

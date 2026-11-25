@@ -5053,12 +5053,12 @@
             },
             {
               "kind": "field",
-              "name": "allowsNonContiguousRanges",
+              "name": "allowNonContiguousRanges",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "allows-non-contiguous-ranges"
+              "attribute": "allow-non-contiguous-ranges"
             },
             {
               "kind": "field",
@@ -5373,8 +5373,8 @@
                 "text": "boolean | undefined"
               },
               "description": "区间允许跨过不可用的日期；默认关闭，落下起点后只能选到两侧最近的不可用日为止",
-              "name": "allows-non-contiguous-ranges",
-              "fieldName": "allowsNonContiguousRanges"
+              "name": "allow-non-contiguous-ranges",
+              "fieldName": "allowNonContiguousRanges"
             },
             {
               "type": {
@@ -21528,12 +21528,12 @@
             },
             {
               "kind": "field",
-              "name": "allowsNonContiguousRanges",
+              "name": "allowNonContiguousRanges",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "allows-non-contiguous-ranges"
+              "attribute": "allow-non-contiguous-ranges"
             },
             {
               "kind": "field",
@@ -22303,8 +22303,8 @@
                 "text": "boolean | undefined"
               },
               "description": "允许跨过不可用的日期；默认关闭，落下起点后只能选到两侧最近的不可用日为止",
-              "name": "allows-non-contiguous-ranges",
-              "fieldName": "allowsNonContiguousRanges"
+              "name": "allow-non-contiguous-ranges",
+              "fieldName": "allowNonContiguousRanges"
             },
             {
               "type": {

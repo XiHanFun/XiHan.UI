@@ -13462,7 +13462,7 @@
     "calendar-range-picker": [
       "activeIndex",
       "activeView",
-      "allowsNonContiguousRanges",
+      "allowNonContiguousRanges",
       "defaultActiveView",
       "defaultFocusedValue",
       "defaultValue",
@@ -13947,7 +13947,7 @@
     "date-range-picker": [
       "activeIndex",
       "activeView",
-      "allowsNonContiguousRanges",
+      "allowNonContiguousRanges",
       "ariaLabel",
       "closeOnSelect",
       "defaultFocusedValue",
@@ -22200,7 +22200,7 @@
       "attributes": [
         "active-index",
         "active-view",
-        "allows-non-contiguous-ranges",
+        "allow-non-contiguous-ranges",
         "default-active-view",
         "default-focused-value",
         "default-value",
@@ -22721,7 +22721,7 @@
       "attributes": [
         "active-index",
         "active-view",
-        "allows-non-contiguous-ranges",
+        "allow-non-contiguous-ranges",
         "close-on-select",
         "default-focused-value",
         "default-open",
