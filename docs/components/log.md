@@ -265,11 +265,11 @@ levels 只显示所选级别的行，用切换按钮组选；没写级别的行�
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-sticking` | ''（条件成立时才出现） |
-| `viewport` | `data-virtualized` | ''（条件成立时才出现） |
+| `viewport` | `data-xh-virtualized` | ''（条件成立时才出现） |
 | `line` | `data-level` | line?.level |
 | `segment` | `data-bold` | ''（条件成立时才出现） |
 | `segment` | `data-bright` | ''（条件成立时才出现） |
-| `segment` | `data-dim` | ''（条件成立时才出现） |
+| `segment` | `data-faint` | ''（条件成立时才出现） |
 | `segment` | `data-fg` | segment.fg |
 | `segment` | `data-italic` | ''（条件成立时才出现） |
 | `segment` | `data-underline` | ''（条件成立时才出现） |
@@ -294,7 +294,7 @@ levels 只显示所选级别的行，用切换按钮组选；没写级别的行�
 | `--xh-log-ansi-blue` | `segment` | `color` | `fg=blue` | `--xh-fg-info` | log 的 segment 部件 color 覆盖槽。 |
 | `--xh-log-ansi-bold-weight` | `segment` | `font-weight` | `bold` | `--xh-font-weight-semibold` | log 的 segment 部件 font-weight 覆盖槽。 |
 | `--xh-log-ansi-cyan` | `segment` | `color` | `fg=cyan` | `--xh-syntax-string` | log 的 segment 部件 color 覆盖槽。 |
-| `--xh-log-ansi-dim-fg` | `segment` | `color` | `dim`<br>`fg`<br>`not([data-fg])` | `--xh-fg-subtle` | log 的 segment 部件 color 覆盖槽。 |
+| `--xh-log-ansi-dim-fg` | `segment` | `color` | `faint`<br>`fg`<br>`not([data-fg])` | `--xh-fg-subtle` | log 的 segment 部件 color 覆盖槽。 |
 | `--xh-log-ansi-green` | `segment` | `color` | `fg=green` | `--xh-fg-success` | log 的 segment 部件 color 覆盖槽。 |
 | `--xh-log-ansi-magenta` | `segment` | `color` | `fg=magenta` | `--xh-syntax-keyword` | log 的 segment 部件 color 覆盖槽。 |
 | `--xh-log-ansi-red` | `segment` | `color` | `fg=red` | `--xh-fg-danger` | log 的 segment 部件 color 覆盖槽。 |
@@ -302,17 +302,17 @@ levels 只显示所选级别的行，用切换按钮组选；没写级别的行�
 | `--xh-log-ansi-yellow` | `segment` | `color` | `fg=yellow` | `--xh-fg-warning` | log 的 segment 部件 color 覆盖槽。 |
 | `--xh-log-bg` | `root` | `background` | `default` | `--xh-bg-surface` | log 的 root 部件 background 覆盖槽。 |
 | `--xh-log-border` | `root` | `border` | `default` | `--xh-border-default` | log 的 root 部件 border 覆盖槽。 |
-| `--xh-log-content-px` | `content`<br>`line`<br>`viewport` | `padding-inline` | `default`<br>`virtualized` | `--xh-_log-content-px` | log 的 content、line、viewport 部件 padding-inline 覆盖槽。 |
+| `--xh-log-content-px` | `content`<br>`line`<br>`viewport` | `padding-inline` | `default`<br>`xh-virtualized` | `--xh-_log-content-px` | log 的 content、line、viewport 部件 padding-inline 覆盖槽。 |
 | `--xh-log-fg` | `root` | `color` | `default` | `--xh-fg-default` | log 的 root 部件 color 覆盖槽。 |
-| `--xh-log-font` | `content`<br>`viewport` | `font-family` | `default`<br>`virtualized` | `--xh-font-family-mono` | log 的 content、viewport 部件 font-family 覆盖槽。 |
-| `--xh-log-font-size` | `content`<br>`viewport` | `font-size` | `default`<br>`virtualized` | `--xh-_log-font-size` | log 的 content、viewport 部件 font-size 覆盖槽。 |
+| `--xh-log-font` | `content`<br>`viewport` | `font-family` | `default`<br>`xh-virtualized` | `--xh-font-family-mono` | log 的 content、viewport 部件 font-family 覆盖槽。 |
+| `--xh-log-font-size` | `content`<br>`viewport` | `font-size` | `default`<br>`xh-virtualized` | `--xh-_log-font-size` | log 的 content、viewport 部件 font-size 覆盖槽。 |
 | `--xh-log-icon-size` | `scroll-to-end-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | log 的 scroll-to-end-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-log-level-debug-fg` | `line` | `color` | `level=debug` | `--xh-fg-subtle` | log 的 line 部件 color 覆盖槽。 |
 | `--xh-log-level-error-fg` | `line` | `color` | `level=error` | `--xh-fg-danger` | log 的 line 部件 color 覆盖槽。 |
 | `--xh-log-level-info-fg` | `line` | `color` | `level=info` | `--xh-fg-default` | log 的 line 部件 color 覆盖槽。 |
 | `--xh-log-level-warn-fg` | `line` | `color` | `level=warn` | `--xh-fg-warning` | log 的 line 部件 color 覆盖槽。 |
 | `--xh-log-line-height` | `line`<br>`root`<br>`viewport` | `block-size`<br>`line-height` | `default` | `--xh-text-code-leading` | log 的 line、root、viewport 部件 block-size、line-height 覆盖槽。 |
-| `--xh-log-line-px` | `line`<br>`viewport` | `padding-inline` | `virtualized` | `--xh-log-content-px` | log 的 line、viewport 部件 padding-inline 覆盖槽。 |
+| `--xh-log-line-px` | `line`<br>`viewport` | `padding-inline` | `xh-virtualized` | `--xh-log-content-px` | log 的 line、viewport 部件 padding-inline 覆盖槽。 |
 | `--xh-log-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | log 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-log-rows` | `viewport` | `block-size` | `default` | `16` | log 的 viewport 部件 block-size 覆盖槽。 |
 | `--xh-log-scroll-to-end-trigger-bg` | `scroll-to-end-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`xh-ink-surface` | `--xh-_material-bg`<br>`--xh-_material-bg-focus` | log 的 scroll-to-end-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |

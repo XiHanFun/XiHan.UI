@@ -283,7 +283,7 @@ describe('connectLog 着色与过滤', () => {
 })
 
 describe('log 与虚拟滚动接线', () => {
-  it('接了 Virtualizer：视口不占 Tab 位、带 data-virtualized，粘底跟 Virtualizer 的滚动层走', async () => {
+  it('接了 Virtualizer：视口不占 Tab 位、带 data-xh-virtualized，粘底跟 Virtualizer 的滚动层走', async () => {
     const scroller = document.createElement('div')
     const inner = document.createElement('div')
     scroller.append(inner)
@@ -310,7 +310,7 @@ describe('log 与虚拟滚动接线', () => {
     await flush()
     const viewport = l.api().getViewportProps() as Record<string, unknown>
     expect(viewport.tabindex).toBeUndefined()
-    expect(viewport['data-virtualized']).toBe('')
+    expect(viewport['data-xh-virtualized']).toBe('')
     expect(l.api().virtualized).toBe(true)
 
     // 在 Virtualizer 的视口里上滚：日志离底、回底钮冒出来

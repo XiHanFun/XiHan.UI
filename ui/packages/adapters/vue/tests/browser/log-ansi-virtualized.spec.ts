@@ -88,7 +88,7 @@ describe('log 与虚拟滚动接线', () => {
     expect(host.textContent).toContain('第 500 行')
     // 日志视口只定高不滚动：滚动的是里面那层
     const viewport = host.querySelector<HTMLElement>('[data-scope="log"][data-part="viewport"]')!
-    expect(viewport.hasAttribute('data-virtualized')).toBe(true)
+    expect(viewport.hasAttribute('data-xh-virtualized')).toBe(true)
     expect(getComputedStyle(viewport).overflowY).toBe('hidden')
 
     count = 520

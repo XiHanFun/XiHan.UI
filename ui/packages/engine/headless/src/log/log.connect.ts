@@ -78,7 +78,7 @@ export function connectLog<T extends PropTypes>(
       'aria-busy': loading ? 'true' : undefined,
       // 接了虚拟滚动时滚动的是里面那层 Virtualizer 视口，Tab 位与原生按键滚动归它
       'tabindex': virtualized ? undefined : 0,
-      'data-virtualized': dataAttr(virtualized),
+      'data-xh-virtualized': dataAttr(virtualized),
       // 按行数定高：行高本身是皮肤的槽位，这里只做乘法；rows 缺席时写空串把高度还给皮肤。
       // 写成 style 而非 CSS 自定义属性，WC 侧的属性铺设写不进 --* 变量
       'style': { blockSize: rows ? `calc(${LINE_HEIGHT} * ${rows})` : '' },
@@ -102,7 +102,7 @@ export function connectLog<T extends PropTypes>(
       'data-fg': segment.fg,
       'data-bright': dataAttr(segment.bright),
       'data-bold': dataAttr(segment.bold),
-      'data-dim': dataAttr(segment.dim),
+      'data-faint': dataAttr(segment.dim),
       'data-italic': dataAttr(segment.italic),
       'data-underline': dataAttr(segment.underline),
     }),

@@ -11070,7 +11070,7 @@
 
 /* 接了虚拟滚动：视口只定高、不滚动，里面那层 Virtualizer 视口铺满它、由它滚；
    行放在 Virtualizer 的条目里没有 content 包裹层，等宽排版落在视口上由行继承 */
-.xh-scope-log[data-part='viewport'][data-virtualized] {
+.xh-scope-log[data-part='viewport'][data-xh-virtualized] {
   display: grid;
   grid-template-rows: minmax(0, 1fr);
   overflow: hidden;
@@ -11084,7 +11084,7 @@
   display: none;
 }
 
-.xh-scope-log[data-part='viewport'][data-virtualized] .xh-scope-log[data-part='line'] {
+.xh-scope-log[data-part='viewport'][data-xh-virtualized] .xh-scope-log[data-part='line'] {
   padding-inline: var(--xh-log-line-px, var(--xh-log-content-px, var(--xh-_log-content-px)));
 }
 
@@ -11170,7 +11170,7 @@
 }
 
 /* 暗淡只在没指定颜色时换成次要前景：指定了颜色的那一段保留自己的颜色 */
-.xh-scope-log[data-part='segment'][data-dim]:not([data-fg]) {
+.xh-scope-log[data-part='segment'][data-faint]:not([data-fg]) {
   color: var(--xh-log-ansi-dim-fg, var(--xh-fg-subtle));
 }
 

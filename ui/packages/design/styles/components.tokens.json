@@ -49495,7 +49495,7 @@
         "color"
       ],
       "state": [
-        "dim",
+        "faint",
         "fg",
         "not([data-fg])"
       ],
@@ -49644,7 +49644,7 @@
       ],
       "state": [
         "default",
-        "virtualized"
+        "xh-virtualized"
       ],
       "defaultToken": [
         "--xh-_log-content-px"
@@ -49682,7 +49682,7 @@
       ],
       "state": [
         "default",
-        "virtualized"
+        "xh-virtualized"
       ],
       "defaultToken": [
         "--xh-font-family-mono"
@@ -49702,7 +49702,7 @@
       ],
       "state": [
         "default",
-        "virtualized"
+        "xh-virtualized"
       ],
       "defaultToken": [
         "--xh-_log-font-size"
@@ -49832,7 +49832,7 @@
         "padding-inline"
       ],
       "state": [
-        "virtualized"
+        "xh-virtualized"
       ],
       "defaultToken": [
         "--xh-log-content-px"
