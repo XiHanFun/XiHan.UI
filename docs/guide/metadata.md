@@ -75,10 +75,10 @@ printMetadataDetails();
 
 ```ts
 // vite.config.ts
-import { xihanUiBanner } from "@xihan-ui/core/vite";
+import { xihanUIBanner } from "@xihan-ui/core/vite";
 import { defineConfig } from "vite";
 
-export default defineConfig({ plugins: [xihanUiBanner()] });
+export default defineConfig({ plugins: [xihanUIBanner()] });
 ```
 
 ```text
@@ -95,7 +95,7 @@ XiHan.UI 曦寒视图 v<当前版本>
               —— 致她
 ```
 
-同一入口另导出两个与 Vite 无关的函数，任何 Node 脚本都可调用：`getXiHanUiBanner()` 只返回文本，`printXiHanUiBanner()` 输出到 stdout。这一份不从 `index` 再导出，浏览器产物中不包含它。
+同一入口另导出两个与 Vite 无关的函数，任何 Node 脚本都可调用：`getXiHanUIBanner()` 只返回文本，`printXiHanUIBanner()` 输出到 stdout。这一份不从 `index` 再导出，浏览器产物中不包含它。
 
 是否上色的判据与 `picocolors` 逐条对齐：Vite 自身的输出即用它上色，遵循同一判据横幅才与周围输出一致；`NO_COLOR` 与 `--no-color` 一票否决。横幅排在 Vite 打印本地地址之后（打印该段时会清屏），使用 `server.config.logger`，因此受 `--silent` 与 `logLevel` 控制。
 

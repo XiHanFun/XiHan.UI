@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { XIHAN_UI_METADATA } from '../src/kernel/metadata'
-import { getXiHanUiBanner, printXiHanUiBanner, xihanUiBanner } from '../src/kernel/vite'
+import { getXiHanUIBanner, printXiHanUIBanner, xihanUIBanner } from '../src/kernel/vite'
 
 afterEach(() => {
   vi.restoreAllMocks()
@@ -26,7 +26,7 @@ const ESC = '\u001B'
 
 describe('终端启动横幅', () => {
   it('标志、名称版本、描述与寄语都在一段里', () => {
-    const text = getXiHanUiBanner({ color: false })
+    const text = getXiHanUIBanner({ color: false })
     expect(text).toContain('_/|_/___/_/')
     expect(text).toContain(`${XIHAN_UI_METADATA.name} ${XIHAN_UI_METADATA.displayName} v${XIHAN_UI_METADATA.version}`)
     expect(text).toContain(XIHAN_UI_METADATA.description)
@@ -34,23 +34,23 @@ describe('终端启动横幅', () => {
   })
 
   it('不报运行时宿主：终端里适配器还没启动，报出来恒是「未登记」', () => {
-    expect(getXiHanUiBanner({ color: false })).not.toContain('宿主')
+    expect(getXiHanUIBanner({ color: false })).not.toContain('宿主')
   })
 
   it('color 决定要不要转义序列，上色只加序列不改正文', () => {
-    const plain = getXiHanUiBanner({ color: false })
+    const plain = getXiHanUIBanner({ color: false })
     expect(plain).not.toContain(ESC)
 
-    const painted = getXiHanUiBanner({ color: true })
+    const painted = getXiHanUIBanner({ color: true })
     expect(painted).toContain(ESC)
     // 转义序列本身就是控制字符，这条正则要的正是它
     // eslint-disable-next-line no-control-regex
     expect(painted.replaceAll(/\u001B\[[\d;]*m/g, '')).toBe(plain)
   })
 
-  it('printXiHanUiBanner 打到 console.info；enabled: false 一个字都不打', () => {
-    expect(capture(() => printXiHanUiBanner({ color: false }))).toHaveLength(1)
-    expect(capture(() => printXiHanUiBanner({ enabled: false }))).toHaveLength(0)
+  it('printXiHanUIBanner 打到 console.info；enabled: false 一个字都不打', () => {
+    expect(capture(() => printXiHanUIBanner({ color: false }))).toHaveLength(1)
+    expect(capture(() => printXiHanUIBanner({ enabled: false }))).toHaveLength(0)
   })
 })
 
@@ -61,10 +61,10 @@ describe('上色判据', () => {
     ;(globalThis as { process?: unknown }).process = real
   })
 
-  /** 换一份假进程，量 getXiHanUiBanner 不给 color 时自己怎么判。 */
+  /** 换一份假进程，量 getXiHanUIBanner 不给 color 时自己怎么判。 */
   function withProcess(fake: unknown): boolean {
     ;(globalThis as { process?: unknown }).process = fake
-    return getXiHanUiBanner().includes(ESC)
+    return getXiHanUIBanner().includes(ESC)
   }
 
   it('管道里也上色：跑在 turbo 底下 stdout 不是 TTY，而 Vite 那几行照样是彩的', () => {
@@ -112,7 +112,7 @@ describe('vite 插件', () => {
 
   it('排在 Vite 打完地址之后，且不许清屏', () => {
     const { server, logged, order } = fakeServer()
-    xihanUiBanner({ color: false }).configureServer(server)
+    xihanUIBanner({ color: false }).configureServer(server)
 
     // 只是包了一层，此刻还没打
     expect(order).toEqual([])
@@ -126,7 +126,7 @@ describe('vite 插件', () => {
 
   it('走 Vite 的日志通道而不是 console：--silent 才管得住', () => {
     const { server } = fakeServer()
-    const plugin = xihanUiBanner({ color: false })
+    const plugin = xihanUIBanner({ color: false })
     plugin.configureServer(server)
     expect(capture(() => server.printUrls())).toHaveLength(0)
   })
@@ -134,7 +134,7 @@ describe('vite 插件', () => {
   it('没有 printUrls 时退回端口就绪；两者都没有就当场打', () => {
     let listened: string | null = null
     let fire: (() => void) | null = null
-    const plugin = xihanUiBanner({ color: false })
+    const plugin = xihanUIBanner({ color: false })
 
     plugin.configureServer({
       httpServer: {
@@ -152,12 +152,12 @@ describe('vite 插件', () => {
 
   it('enabled: false 时插件一层都不包', () => {
     const { server, order } = fakeServer()
-    xihanUiBanner({ enabled: false }).configureServer(server)
+    xihanUIBanner({ enabled: false }).configureServer(server)
     server.printUrls()
     expect(order).toEqual(['urls'])
   })
 
   it('插件名带命名空间前缀', () => {
-    expect(xihanUiBanner().name).toBe('xihan-ui:banner')
+    expect(xihanUIBanner().name).toBe('xihan-ui:banner')
   })
 })

@@ -6118,8 +6118,8 @@
       "XIHAN_UI_METADATA",
       "XIHAN_UI_SEND_WORD",
       "XIHAN_UI_VERSION",
-      "XiHanUiBannerOptions",
-      "XiHanUiBannerPlugin",
+      "XiHanUIBannerOptions",
+      "XiHanUIBannerPlugin",
       "ZonedDateTime",
       "ZonedDateTimeFormatOptions",
       "ZonedDateTimeFromOptions",
@@ -6253,7 +6253,7 @@
       "getTimeZoneOffset",
       "getWeekInfo",
       "getWindowStack",
-      "getXiHanUiBanner",
+      "getXiHanUIBanner",
       "glideBy",
       "glideFrom",
       "groupAdjacentRuns",
@@ -6327,7 +6327,7 @@
       "printMetadataBannerOnce",
       "printMetadataDetails",
       "printMetadataSummary",
-      "printXiHanUiBanner",
+      "printXiHanUIBanner",
       "quarterOf",
       "queryItems",
       "rangeBetween",
@@ -6395,7 +6395,7 @@
       "weeksInMonth",
       "whenOverlayKit",
       "writeToClipboard",
-      "xihanUiBanner"
+      "xihanUIBanner"
     ],
     "@xihan-ui/expression": [
       "ArrayNode",

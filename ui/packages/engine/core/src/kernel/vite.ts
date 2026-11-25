@@ -28,12 +28,12 @@ interface ViteDevServerLike {
   httpServer?: { once: (event: string, listener: () => void) => void } | null
 }
 
-export interface XiHanUiBannerPlugin {
+export interface XiHanUIBannerPlugin {
   name: string
   configureServer: (server: ViteDevServerLike) => void
 }
 
-export interface XiHanUiBannerOptions {
+export interface XiHanUIBannerOptions {
   /** 打不打，默认打。 */
   enabled?: boolean
   /** 上不上色，默认在支持的终端上色。 */
@@ -145,7 +145,7 @@ function dim(text: string, color: boolean): string {
  * 横幅文本。不复用 getMetadataSummary()：那一份末尾报的是运行时宿主，
  * 而宿主要等适配器在浏览器里启动才登记得上，在终端里恒是「未登记」。
  */
-export function getXiHanUiBanner(options: XiHanUiBannerOptions = {}): string {
+export function getXiHanUIBanner(options: XiHanUIBannerOptions = {}): string {
   const color = options.color ?? supportsColor()
   const m = XIHAN_UI_METADATA
   return [
@@ -163,28 +163,28 @@ export function getXiHanUiBanner(options: XiHanUiBannerOptions = {}): string {
  * 把启动横幅打到当前进程的标准输出上。不认识 Vite，任何 Node 脚本都能调。
  *
  * 在 `vite.config.ts` 顶层直接调会被 Vite 的 clearScreen 清掉，
- * 那种场合用下面的 xihanUiBanner()，它挑好了时机。
+ * 那种场合用下面的 xihanUIBanner()，它挑好了时机。
  */
-export function printXiHanUiBanner(options: XiHanUiBannerOptions = {}): void {
+export function printXiHanUIBanner(options: XiHanUIBannerOptions = {}): void {
   if (options.enabled === false)
     return
   // eslint-disable-next-line no-console
-  console.info(getXiHanUiBanner(options))
+  console.info(getXiHanUIBanner(options))
 }
 
 /**
  * 开发服务器启动时在终端打一次启动横幅。
  *
  * ```ts
- * import { xihanUiBanner } from '@xihan-ui/core/vite'
+ * import { xihanUIBanner } from '@xihan-ui/core/vite'
  *
- * export default defineConfig({ plugins: [xihanUiBanner()] })
+ * export default defineConfig({ plugins: [xihanUIBanner()] })
  * ```
  *
  * 只在 `vite serve` 起作用——`configureServer` 构建时根本不调，
  * 因此不必再判 mode（mode 是任意字符串，判它会漏掉 `--mode staging` 这类）。
  */
-export function xihanUiBanner(options: XiHanUiBannerOptions = {}): XiHanUiBannerPlugin {
+export function xihanUIBanner(options: XiHanUIBannerOptions = {}): XiHanUIBannerPlugin {
   return {
     name: 'xihan-ui:banner',
     configureServer(server) {
@@ -192,14 +192,14 @@ export function xihanUiBanner(options: XiHanUiBannerOptions = {}): XiHanUiBanner
         return
 
       const write = (): void => {
-        const text = getXiHanUiBanner(options)
+        const text = getXiHanUIBanner(options)
         // 走 Vite 自己的日志通道，--silent 与 logLevel 才管得住它；
         // clear: false 是要紧的，默认那一档会把上面的输出整屏清掉
         const logger = server.config?.logger
         if (logger)
           logger.info(text, { clear: false, timestamp: false })
         else
-          printXiHanUiBanner(options)
+          printXiHanUIBanner(options)
       }
 
       // 排在 Vite 打完本地地址之后。Vite 打那一段时会清屏，
