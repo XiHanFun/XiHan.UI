@@ -14171,7 +14171,6 @@
     ],
     "file-upload": [
       "accept",
-      "allowDrop",
       "allowPaste",
       "ariaLabel",
       "autoUpload",
@@ -14180,6 +14179,7 @@
       "defaultRemoteFiles",
       "directory",
       "disabled",
+      "droppable",
       "files",
       "invalid",
       "labelled",
@@ -22976,13 +22976,13 @@
     "xh-file-upload": {
       "attributes": [
         "accept",
-        "allow-drop",
         "allow-paste",
         "auto-upload",
         "capture",
         "clearable",
         "directory",
         "disabled",
+        "droppable",
         "invalid",
         "label",
         "link-target",

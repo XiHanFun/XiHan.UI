@@ -158,7 +158,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `name` | `string` |  | 表单字段名；提供后隐藏输入才参与提交。 |
 | `files` | `File[]` |  | 已选文件。提供即受控：cell 直读 prop，写入只发 onFilesChange 不落内部值。 |
 | `defaultFiles` | `File[]` |  |  |
-| `allowDrop` | `boolean` |  | 是否接受拖拽投放，默认 true。关闭后投放区不再拦截默认行为，也不再输出 data-dragging。 |
+| `droppable` | `boolean` |  | 是否接受拖拽投放，默认 true。关闭后投放区不再拦截默认行为，也不再输出 data-dragging。 |
 | `allowPaste` | `boolean` |  | 是否接受粘贴，默认 true：焦点在组件里（投放区、选择钮、删除钮）时 Ctrl / Cmd+V 收下剪贴板里的文件， 与选择、投放走同一道校验。剪贴板里没有文件时不拦截，文字照常粘贴到别处。 |
 | `validate` | `(file: File, context: FileUploadValidateContext) => string \| string[] \| null \| undefined` |  | 作者自己的准入判定，在类型与大小校验通过之后、数量上限之前逐个调用：返回拒绝码（一个或一组）即拒收， 拒收的文件连同返回的码一起进 onFileReject，不占数量名额；返回 null / undefined / 空数组即放行。 只接受同步判定；要读图片尺寸之类的异步检查放进 upload，失败时抛错走 onUploadError。 |
 | `maxConcurrentUploads` | `number` |  | 同时在传的文件数上限，默认不限。到了上限的文件报 queued 排队，前面的传完、失败或被取消后按列表顺序补上。 |

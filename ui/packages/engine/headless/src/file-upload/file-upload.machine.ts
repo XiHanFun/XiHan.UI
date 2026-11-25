@@ -430,7 +430,7 @@ export const fileUploadMachine = createMachine({
     guards: {
       canChange: ({ prop }) => !prop('disabled') && !prop('readOnly'),
       canTransfer: ({ prop }) => !prop('disabled'),
-      canDrop: ({ prop }) => !prop('disabled') && !prop('readOnly') && (prop('allowDrop') ?? true),
+      canDrop: ({ prop }) => !prop('disabled') && !prop('readOnly') && (prop('droppable') ?? true),
       canPaste: ({ prop }) => !prop('disabled') && !prop('readOnly') && (prop('allowPaste') ?? true),
     },
     actions: {

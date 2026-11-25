@@ -65,7 +65,7 @@ export const XhFileUploadRoot = defineComponent({
     readOnly: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
     name: { type: String },
-    allowDrop: { type: Boolean, default: undefined },
+    droppable: { type: Boolean, default: undefined },
     allowPaste: { type: Boolean, default: undefined },
     validate: { type: Function as PropType<FileUploadProps['validate']> },
     maxConcurrentUploads: { type: Number },

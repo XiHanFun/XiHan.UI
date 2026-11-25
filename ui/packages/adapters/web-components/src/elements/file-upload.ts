@@ -72,7 +72,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {boolean} read-only - 只读：选择、拖放、粘贴、删除与清空都不收，投放区与按钮仍可聚焦
  * @attr {boolean} required - 必填：标题画星号，列表为空时文件输入带原生 required
  * @attr {string} name - 表单字段名；提供后隐藏输入才参与提交
- * @attr {boolean} allow-drop - 是否接受拖拽投放，默认 true；写 allow-drop="false" 关闭
+ * @attr {boolean} droppable - 是否接受拖拽投放，默认 true；写 droppable="false" 关闭
  * @attr {boolean} allow-paste - 是否接受粘贴，默认 true：焦点在组件里时 Ctrl / Cmd+V 收下剪贴板里的文件；写 allow-paste="false" 关闭
  * @attr {number} max-concurrent-uploads - 同时在传的文件数上限，默认不限；到了上限的报 queued 排队
  * @attr {boolean} directory - 选择目录而不是文件（隐藏输入带 webkitdirectory）
@@ -135,7 +135,7 @@ export class XhFileUploadElement extends XhElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     invalid: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
-    allowDrop: { converter: BOOLEAN_CONVERTER, attribute: 'allow-drop' },
+    droppable: { converter: BOOLEAN_CONVERTER },
     allowPaste: { converter: BOOLEAN_CONVERTER, attribute: 'allow-paste' },
     // 作者的准入判定是函数，只走 property
     validate: { attribute: false },
@@ -163,7 +163,7 @@ export class XhFileUploadElement extends XhElement {
   declare readOnly?: boolean
   declare required?: boolean
   declare name?: string
-  declare allowDrop?: boolean
+  declare droppable?: boolean
   declare allowPaste?: boolean
   declare validate?: FileUploadSchema['props']['validate']
   declare maxConcurrentUploads?: number
@@ -244,7 +244,7 @@ export class XhFileUploadElement extends XhElement {
       readOnly: control.readOnly,
       required: control.required,
       name: this.name,
-      allowDrop: this.allowDrop,
+      droppable: this.droppable,
       allowPaste: this.allowPaste,
       validate: this.validate,
       maxConcurrentUploads: this.maxConcurrentUploads,

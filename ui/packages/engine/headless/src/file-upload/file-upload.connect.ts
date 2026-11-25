@@ -48,8 +48,8 @@ export function connectFileUpload<T extends PropTypes>(
   const required = !!prop('required')
   // 只读与禁用一样改不动列表，只是不置灰、不退出 Tab 序列
   const editable = !disabled && !readOnly
-  const allowDrop = prop('allowDrop') ?? true
-  const canDrop = allowDrop && editable
+  const droppable = prop('droppable') ?? true
+  const canDrop = droppable && editable
   const canPaste = (prop('allowPaste') ?? true) && editable
   const maxFiles = normalizeMaxFiles(prop('maxFiles'))
   const empty = acceptedFiles.length === 0 && remoteFiles.length === 0

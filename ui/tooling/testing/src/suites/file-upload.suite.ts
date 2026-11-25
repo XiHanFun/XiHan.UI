@@ -455,10 +455,10 @@ export const fileUploadSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'allowDrop=false：投放区不再接管拖拽，也不出 data-dragging',
+      name: 'droppable=false：投放区不再接管拖拽，也不出 data-dragging',
       spec: { apg: APG },
       fixture: withItems(1),
-      props: { maxFiles: 3, allowDrop: false },
+      props: { maxFiles: 3, droppable: false },
       steps: [
         {
           kind: 'raw',
@@ -469,12 +469,12 @@ export const fileUploadSuite: ConformanceSuite = {
             Object.defineProperty(over, 'dataTransfer', { value: { files: [] } })
             zone.dispatchEvent(over)
             if (over.defaultPrevented)
-              throw new Error('allowDrop=false 时不该拦下 dragover：拦了等于对浏览器说"这儿能放"')
+              throw new Error('droppable=false 时不该拦下 dragover：拦了等于对浏览器说"这儿能放"')
             const drop = new Event('drop', { bubbles: true, cancelable: true })
             Object.defineProperty(drop, 'dataTransfer', { value: { files: [PHOTO] } })
             zone.dispatchEvent(drop)
             if (drop.defaultPrevented)
-              throw new Error('allowDrop=false 时不该拦下 drop')
+              throw new Error('droppable=false 时不该拦下 drop')
             await flush()
           },
           expect: {

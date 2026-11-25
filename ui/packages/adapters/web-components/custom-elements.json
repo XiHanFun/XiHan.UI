@@ -29100,12 +29100,12 @@
             },
             {
               "kind": "field",
-              "name": "allowDrop",
+              "name": "droppable",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "allow-drop"
+              "attribute": "droppable"
             },
             {
               "kind": "field",
@@ -29665,9 +29665,9 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "是否接受拖拽投放，默认 true；写 allow-drop=\"false\" 关闭",
-              "name": "allow-drop",
-              "fieldName": "allowDrop"
+              "description": "是否接受拖拽投放，默认 true；写 droppable=\"false\" 关闭",
+              "name": "droppable",
+              "fieldName": "droppable"
             },
             {
               "type": {

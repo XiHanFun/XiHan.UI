@@ -198,7 +198,7 @@ export interface FileUploadSchema extends MachineSchema {
     files?: File[]
     defaultFiles?: File[]
     /** 是否接受拖拽投放，默认 true。关闭后投放区不再拦截默认行为，也不再输出 data-dragging。 */
-    allowDrop?: boolean
+    droppable?: boolean
     /**
      * 是否接受粘贴，默认 true：焦点在组件里（投放区、选择钮、删除钮）时 Ctrl / Cmd+V 收下剪贴板里的文件，
      * 与选择、投放走同一道校验。剪贴板里没有文件时不拦截，文字照常粘贴到别处。

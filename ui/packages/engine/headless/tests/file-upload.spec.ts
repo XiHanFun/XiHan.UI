@@ -420,8 +420,8 @@ describe('fileUploadMachine', () => {
     expect(s.context.get('acceptedFiles')).toEqual([file])
   })
 
-  it('allowDrop=false / disabled：既不进 dragging，投放也收不下文件', () => {
-    for (const props of [{ allowDrop: false }, { disabled: true }]) {
+  it('droppable=false / disabled：既不进 dragging，投放也收不下文件', () => {
+    for (const props of [{ droppable: false }, { disabled: true }]) {
       const s = service({ maxFiles: 3, ...props })
       s.send({ type: 'DRAG.OVER' })
       expect(s.state.get()).toBe('idle')
@@ -431,13 +431,13 @@ describe('fileUploadMachine', () => {
   })
 
   it('悬停期间关掉投放：DROP 收不下文件，但状态位必须回到 idle', () => {
-    let allowDrop = true
+    let droppable = true
     const runtime = createVanillaRuntime()
-    const s = createService(fileUploadMachine, { props: () => ({ maxFiles: 3, allowDrop }), runtime })
+    const s = createService(fileUploadMachine, { props: () => ({ maxFiles: 3, droppable }), runtime })
     runtime.start()
     s.send({ type: 'DRAG.OVER' })
     expect(s.state.get()).toBe('dragging')
-    allowDrop = false
+    droppable = false
     s.send({ type: 'DROP', files: [makeFile('a.txt')] })
     expect(s.context.get('acceptedFiles')).toEqual([])
     // 指针已经离开，高亮边框不能一直亮着
@@ -735,8 +735,8 @@ describe('connectFileUpload 拖拽', () => {
     expect(onFileReject).toHaveBeenCalledWith({ files: [{ file: pdf, reasons: ['type'] }] })
   })
 
-  it('allowDrop=false：不拦默认行为、不出 data-dragging、投放也收不下', () => {
-    const m = open({ maxFiles: 3, allowDrop: false })
+  it('droppable=false：不拦默认行为、不出 data-dragging、投放也收不下', () => {
+    const m = open({ maxFiles: 3, droppable: false })
     const over = dragEvent('dragover')
     m.dropzone.dispatchEvent(over)
     expect(over.defaultPrevented).toBe(false)

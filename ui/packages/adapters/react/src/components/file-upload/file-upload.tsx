@@ -71,7 +71,7 @@ export interface XhFileUploadRootProps extends Omit<ComponentPropsWithRef<'div'>
   /** 表单字段名；提供后影子输入才带 name。 */
   name?: string
   /** 是否接受拖放，默认接受。 */
-  allowDrop?: boolean
+  droppable?: boolean
   /** 是否接受粘贴，默认接受：焦点在组件里时 Ctrl / Cmd+V 收下剪贴板里的文件。 */
   allowPaste?: boolean
   /** 作者的准入判定：类型与大小通过后逐个调用，返回拒绝码即拒收并进 onFileReject。 */
@@ -119,7 +119,7 @@ export function XhFileUploadRoot({
   readOnly,
   required,
   name,
-  allowDrop,
+  droppable,
   allowPaste,
   validate,
   maxConcurrentUploads,
@@ -158,7 +158,7 @@ export function XhFileUploadRoot({
     readOnly,
     required,
     name,
-    allowDrop,
+    droppable,
     allowPaste,
     validate,
     maxConcurrentUploads,
