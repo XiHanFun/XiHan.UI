@@ -247,13 +247,13 @@
     --xh-collection-fg-hover: var(--xh-tabs-trigger-fg-hover, var(--xh-fg-default));
     --xh-collection-bg-pressed: var(--xh-tabs-trigger-bg-pressed, var(--xh-bg-subtle-hover));
     --xh-collection-fg-pressed: var(--xh-tabs-trigger-fg-pressed, var(--xh-fg-default));
-    --xh-collection-bg-current: var(--xh-tabs-trigger-bg-active, transparent);
-    --xh-collection-bg-current-hover: var(--xh-tabs-trigger-bg-active-hover, var(--xh-bg-subtle));
-    --xh-collection-fg-current: var(--xh-tabs-trigger-fg-active, var(--xh-_tabs-accent-text));
-    --xh-collection-fg-current-hover: var(--xh-tabs-trigger-fg-active, var(--xh-_tabs-accent-text-strong));
-    --xh-collection-fg-current-highlight: var(--xh-tabs-trigger-fg-active, var(--xh-_tabs-accent-text-strong));
-    --xh-collection-fg-current-pressed: var(--xh-tabs-trigger-fg-active, var(--xh-_tabs-accent-text-strong));
-    --xh-collection-font-weight-current: var(--xh-tabs-trigger-font-weight-active, var(--xh-font-weight-medium));
+    --xh-collection-bg-current: var(--xh-tabs-trigger-bg-current, transparent);
+    --xh-collection-bg-current-hover: var(--xh-tabs-trigger-bg-current-hover, var(--xh-bg-subtle));
+    --xh-collection-fg-current: var(--xh-tabs-trigger-fg-current, var(--xh-_tabs-accent-text));
+    --xh-collection-fg-current-hover: var(--xh-tabs-trigger-fg-current, var(--xh-_tabs-accent-text-strong));
+    --xh-collection-fg-current-highlight: var(--xh-tabs-trigger-fg-current, var(--xh-_tabs-accent-text-strong));
+    --xh-collection-fg-current-pressed: var(--xh-tabs-trigger-fg-current, var(--xh-_tabs-accent-text-strong));
+    --xh-collection-font-weight-current: var(--xh-tabs-trigger-font-weight-current, var(--xh-font-weight-medium));
   }
 
   /* card / segment 档不归族：面、字色、字重、光标与过渡写在标签自己身上 */
@@ -326,11 +326,11 @@
      由卡片面 / 抬起面表达当前；line 档的当前页由家族按 data-current 给 */
   [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segmented'])
     [data-scope='tabs'][data-part='trigger'][data-state='active'] {
-    border-color: var(--xh-tabs-trigger-border-active, var(--xh-_tabs-trigger-border-active));
-    background: var(--xh-tabs-trigger-bg-active, var(--xh-_tabs-trigger-bg-active));
-    color: var(--xh-tabs-trigger-fg-active, var(--xh-_tabs-accent-text));
-    box-shadow: var(--xh-tabs-trigger-shadow-active, var(--xh-_tabs-trigger-shadow-active));
-    font-weight: var(--xh-tabs-trigger-font-weight-active, var(--xh-font-weight-medium));
+    border-color: var(--xh-tabs-trigger-border-current, var(--xh-_tabs-trigger-border-active));
+    background: var(--xh-tabs-trigger-bg-current, var(--xh-_tabs-trigger-bg-active));
+    color: var(--xh-tabs-trigger-fg-current, var(--xh-_tabs-accent-text));
+    box-shadow: var(--xh-tabs-trigger-shadow-current, var(--xh-_tabs-trigger-shadow-active));
+    font-weight: var(--xh-tabs-trigger-font-weight-current, var(--xh-font-weight-medium));
   }
 
   /* segment 档的选中标签就是那块白色抬起的滑块面（有滑块开关）：surface-raised 底 +
@@ -338,9 +338,9 @@
      这块面搬到部件上跟着滑（见下面的 indicator 规则），标签自己透空、只留字 */
   [data-scope='tabs'][data-part='root'][data-variant='segmented']
     [data-scope='tabs'][data-part='trigger'][data-state='active'] {
-    border-color: var(--xh-tabs-trigger-border-active, var(--xh-_tone-border, var(--xh-border-default)));
-    background: var(--xh-tabs-trigger-bg-active, var(--xh-_tone-subtle, var(--xh-bg-surface-raised)));
-    box-shadow: var(--xh-tabs-trigger-shadow-active, var(--xh-elevation-raised));
+    border-color: var(--xh-tabs-trigger-border-current, var(--xh-_tone-border, var(--xh-border-default)));
+    background: var(--xh-tabs-trigger-bg-current, var(--xh-_tone-subtle, var(--xh-bg-surface-raised)));
+    box-shadow: var(--xh-tabs-trigger-shadow-current, var(--xh-elevation-raised));
   }
 
   /* segment 档的标签压在抬起面之上：面是绝对定位的部件，写在标签之后也不许盖住字。
@@ -361,7 +361,7 @@
      不单列一条的话指针一压到选中项上，形态档的选中底就被轻档吃掉 */
   [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segmented'])
     [data-scope='tabs'][data-part='trigger']:not([data-disabled])[data-state='active']:hover {
-    background: var(--xh-tabs-trigger-bg-active-hover, var(--xh-_tabs-trigger-bg-active-hover));
+    background: var(--xh-tabs-trigger-bg-current-hover, var(--xh-_tabs-trigger-bg-active-hover));
   }
 
   /* line 档的禁用字色由家族按 aria-disabled 给 */
@@ -428,7 +428,7 @@
 
   [data-scope='tabs'][data-part='tab-drag-trigger']:not([data-disabled]):hover,
   [data-scope='tabs'][data-part='tab-drag-trigger'][data-dragging] {
-    color: var(--xh-tabs-drag-fg-active, var(--xh-fg-default));
+    color: var(--xh-tabs-drag-fg-dragging, var(--xh-fg-default));
   }
 
   [data-scope='tabs'][data-part='tab-drag-trigger'][data-dragging] {
@@ -561,10 +561,10 @@
     inline-size: var(--xh-_tabs-indicator-w);
     block-size: var(--xh-_tabs-indicator-h);
     box-sizing: border-box;
-    border: var(--xh-stroke-thin) solid var(--xh-tabs-trigger-border-active, var(--xh-_tone-border, var(--xh-border-default)));
+    border: var(--xh-stroke-thin) solid var(--xh-tabs-trigger-border-current, var(--xh-_tone-border, var(--xh-border-default)));
     border-radius: var(--xh-tabs-trigger-radius, var(--xh-shape-inset));
-    background: var(--xh-tabs-trigger-bg-active, var(--xh-_tone-subtle, var(--xh-bg-surface-raised)));
-    box-shadow: var(--xh-tabs-trigger-shadow-active, var(--xh-elevation-raised));
+    background: var(--xh-tabs-trigger-bg-current, var(--xh-_tone-subtle, var(--xh-bg-surface-raised)));
+    box-shadow: var(--xh-tabs-trigger-shadow-current, var(--xh-elevation-raised));
     pointer-events: none;
     transform: translate(var(--xh-_tabs-indicator-x), var(--xh-_tabs-indicator-y));
     transition:

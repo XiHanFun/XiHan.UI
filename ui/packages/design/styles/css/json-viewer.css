@@ -163,7 +163,7 @@
   /* 按下只换面不缩放：白底承载 hover 100 → pressed 200（集合行不允许零反馈）；
      指针按住由 :active 表出，Space / Enter 与触屏按住由 Headless 投影 data-pressed，三种输入同一副面 */
   [data-scope='json-viewer'][data-part='branch-control']:not([data-disabled]):is(:active, [data-pressed]) {
-    background: var(--xh-json-viewer-row-bg-active, var(--xh-bg-subtle-hover));
+    background: var(--xh-json-viewer-row-bg-pressed, var(--xh-bg-subtle-hover));
   }
 
   /* 键名不参与压缩：它短且必须完整可读，被挤掉的应该是值 */

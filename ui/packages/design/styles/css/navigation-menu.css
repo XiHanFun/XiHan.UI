@@ -122,7 +122,7 @@
     --xh-collection-fg-rest: var(--xh-navigation-menu-trigger-fg, var(--xh-fg-muted));
     --xh-collection-font-weight-rest: var(--xh-navigation-menu-trigger-font-weight, var(--xh-font-weight-regular));
     --xh-collection-bg-hover: var(--xh-navigation-menu-trigger-bg-hover, var(--xh-_navigation-menu-highlight-bg));
-    --xh-collection-bg-open-path: var(--xh-navigation-menu-trigger-bg-active, var(--xh-_navigation-menu-highlight-bg));
+    --xh-collection-bg-open-path: var(--xh-navigation-menu-trigger-bg-open, var(--xh-_navigation-menu-highlight-bg));
     --xh-collection-bg-pressed: var(--xh-navigation-menu-trigger-bg-pressed, var(--xh-bg-subtle-hover));
 
     display: inline-flex;

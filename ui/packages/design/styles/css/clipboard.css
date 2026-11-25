@@ -159,7 +159,7 @@
   [data-scope='clipboard'][data-part='copy-trigger'] {
     --xh-action-bg-rest: var(--xh-clipboard-copy-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-clipboard-copy-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-clipboard-copy-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-clipboard-copy-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-clipboard-copy-trigger-bg, var(--xh-_action-variant-bg-focus-visible));
     --xh-action-bg-loading: var(--xh-clipboard-copy-trigger-bg, var(--xh-_action-variant-bg-loading));
     --xh-action-bg-disabled: var(--xh-clipboard-copy-trigger-bg-disabled, var(--xh-_action-variant-bg-disabled));
@@ -217,7 +217,7 @@
   [data-scope='clipboard'][data-part='control'] > [data-scope='clipboard'][data-part='copy-trigger']:focus-visible,
   [data-scope='clipboard'][data-part='control'] > [data-scope='clipboard'][data-part='copy-trigger']:hover {
     position: relative;
-    z-index: var(--xh-clipboard-control-active-layer, 1);
+    z-index: var(--xh-clipboard-control-layer-focus, 1);
   }
 
   /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */

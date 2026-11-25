@@ -325,10 +325,10 @@ preview-mode="hover" 把预览放进 positioner，锚定在引用编号旁：指
 | `--xh-citation-font-size` | `positioner`<br>`root` | `font-size` | `default`<br>`preview-mode=hover` | `--xh-_citation-font-size` | citation 的 positioner、root 部件 font-size 覆盖槽。 |
 | `--xh-citation-gap` | `preview`<br>`root` | `gap`<br>`margin-block-start` | `@keyframes xh-citation-preview-collapse`<br>`@keyframes xh-citation-preview-expand`<br>`default`<br>`not([data-xh-material])`<br>`xh-material` | `--xh-_citation-gap` | citation 的 preview、root 部件 gap、margin-block-start 覆盖槽。 |
 | `--xh-citation-icon-size` | `positioner`<br>`root` | `--xh-icon-size` | `is([data-part='root'], [data-part='positioner'])` | `--xh-_citation-icon-size` | citation 的 positioner、root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-citation-index-active-bg` | `source`<br>`source-index` | `background` | `state=active` | `--xh-bg-brand` | citation 的 source、source-index 部件 background 覆盖槽。 |
-| `--xh-citation-index-active-fg` | `source`<br>`source-index` | `color` | `state=active` | `--xh-fg-on-brand` | citation 的 source、source-index 部件 color 覆盖槽。 |
 | `--xh-citation-index-bg` | `source-index` | `background` | `default` | `--xh-bg-subtle` | citation 的 source-index 部件 background 覆盖槽。 |
+| `--xh-citation-index-bg-current` | `source`<br>`source-index` | `background` | `state=active` | `--xh-bg-brand` | citation 的 source、source-index 部件 background 覆盖槽。 |
 | `--xh-citation-index-fg` | `source-index` | `color` | `default` | `--xh-fg-muted` | citation 的 source-index 部件 color 覆盖槽。 |
+| `--xh-citation-index-fg-current` | `source`<br>`source-index` | `color` | `state=active` | `--xh-fg-on-brand` | citation 的 source、source-index 部件 color 覆盖槽。 |
 | `--xh-citation-index-font-size` | `source-index` | `font-size` | `default` | `--xh-text-caption-size` | citation 的 source-index 部件 font-size 覆盖槽。 |
 | `--xh-citation-index-radius` | `source-index` | `border-radius` | `default` | `--xh-shape-circle` | citation 的 source-index 部件 border-radius 覆盖槽。 |
 | `--xh-citation-index-size` | `source-index` | `block-size`<br>`min-inline-size` | `default` | `--xh-control-box-sm` | citation 的 source-index 部件 block-size、min-inline-size 覆盖槽。 |

@@ -354,7 +354,7 @@
   [data-scope='form'][data-part='reset-trigger'] {
     --xh-action-bg-rest: var(--xh-form-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-form-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-form-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-form-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-disabled: var(--xh-form-trigger-bg-disabled, var(--xh-_action-variant-bg-disabled));
     --xh-action-fg-rest: var(--xh-form-trigger-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-form-trigger-fg, var(--xh-_action-variant-fg-hover));
@@ -372,14 +372,14 @@
   [data-scope='form'][data-part='submit-trigger'] {
     --xh-action-bg-rest: var(--xh-form-submit-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-form-submit-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-form-submit-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-form-submit-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-disabled: var(--xh-form-trigger-bg-disabled, var(--xh-_action-variant-bg-disabled));
     --xh-action-fg-rest: var(--xh-form-submit-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-form-submit-fg, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-form-submit-fg, var(--xh-_action-variant-fg-pressed));
     --xh-action-border-rest: var(--xh-form-submit-border, var(--xh-_action-variant-border-rest));
     --xh-action-border-hover: var(--xh-form-submit-border-hover, var(--xh-_action-variant-border-hover));
-    --xh-action-border-pressed: var(--xh-form-submit-border-active, var(--xh-_action-variant-border-pressed));
+    --xh-action-border-pressed: var(--xh-form-submit-border-pressed, var(--xh-_action-variant-border-pressed));
     --xh-action-border-disabled: var(--xh-form-trigger-border-disabled, var(--xh-_action-variant-border-disabled));
     --xh-action-highlight-rest: transparent;
     --xh-action-shadow-rest: var(--xh-form-submit-shadow, var(--xh-_highlight-brand));

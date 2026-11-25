@@ -498,12 +498,12 @@
     --xh-action-border-pressed: var(--xh-transfer-trigger-border, var(--xh-_action-variant-border-pressed));
     --xh-action-bg-rest: var(--xh-transfer-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-transfer-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-transfer-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-transfer-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-transfer-trigger-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-transfer-trigger-fg, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-transfer-trigger-fg, var(--xh-_action-variant-fg-pressed));
     --xh-action-shadow-hover: var(--xh-transfer-trigger-shadow-hover, none);
-    --xh-action-shadow-pressed: var(--xh-transfer-trigger-shadow-active, none);
+    --xh-action-shadow-pressed: var(--xh-transfer-trigger-shadow-pressed, none);
     --xh-action-font-size: var(--xh-transfer-trigger-font-size, var(--xh-text-label-size));
     /* 作者塞进钮里的图标与皮肤画的兜底箭头同一把尺：按 icon 档取字形尺寸。
        配方尚未把 profile 字形档灌进 --xh-icon-size，钮内字形先按 icon 档逐钮取值 */

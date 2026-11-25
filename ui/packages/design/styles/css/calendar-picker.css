@@ -393,7 +393,7 @@
     --xh-_ring-gap: var(--xh-ring-gap);
     --xh-action-bg-rest: var(--xh-calendar-picker-cell-bg-selected, var(--xh-bg-brand));
     --xh-action-bg-hover: var(--xh-calendar-picker-cell-bg-selected, var(--xh-bg-brand));
-    --xh-action-bg-pressed: var(--xh-calendar-picker-cell-bg-selected-active, var(--xh-bg-brand-active));
+    --xh-action-bg-pressed: var(--xh-calendar-picker-cell-bg-selected-pressed, var(--xh-bg-brand-active));
     --xh-action-bg-focus-visible: var(--xh-calendar-picker-cell-bg-selected, var(--xh-bg-brand));
     --xh-action-border-rest: transparent;
     --xh-action-border-hover: transparent;

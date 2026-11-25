@@ -150,7 +150,7 @@
     --xh-action-radius: var(--xh-layout-sider-trigger-radius, var(--xh-_action-profile-radius));
     --xh-action-bg-rest: var(--xh-layout-sider-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-layout-sider-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-layout-sider-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-layout-sider-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-layout-sider-trigger-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-layout-sider-trigger-fg, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-layout-sider-trigger-fg, var(--xh-_action-variant-fg-pressed));

@@ -234,7 +234,7 @@
     --xh-collection-bg-hover: var(--xh-context-menu-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-keyboard-highlight: var(--xh-context-menu-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-pressed: var(--xh-context-menu-item-bg-pressed, var(--xh-bg-subtle-hover));
-    --xh-collection-bg-open-path: var(--xh-context-menu-item-bg-active, var(--xh-bg-subtle));
+    --xh-collection-bg-open-path: var(--xh-context-menu-item-bg-open, var(--xh-bg-subtle));
     /* data-highlighted 同时覆盖指针与键盘路径：指针只换面，焦点环在 :focus-visible 下再接回 */
     --xh-collection-outline-keyboard-highlight: transparent;
 

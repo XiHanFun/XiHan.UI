@@ -19,7 +19,7 @@
   [data-scope='button'][data-part='root'] {
     --xh-action-bg-rest: var(--xh-button-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-button-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-button-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-button-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-button-bg, var(--xh-_action-variant-bg-focus-visible));
     --xh-action-bg-loading: var(--xh-button-bg, var(--xh-_action-variant-bg-loading));
     --xh-action-fg-rest: var(--xh-button-fg, var(--xh-_action-variant-fg-rest));

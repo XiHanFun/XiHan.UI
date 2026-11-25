@@ -178,7 +178,7 @@
     --xh-action-radius: 0;
     --xh-action-bg-rest: var(--xh-toggle-group-item-bg, var(--xh-_toggle-group-item-bg));
     --xh-action-bg-hover: var(--xh-toggle-group-item-bg-hover, var(--xh-_toggle-group-item-bg-hover));
-    --xh-action-bg-pressed: var(--xh-toggle-group-item-bg-active, var(--xh-_toggle-group-item-bg-active));
+    --xh-action-bg-pressed: var(--xh-toggle-group-item-bg-pressed, var(--xh-_toggle-group-item-bg-active));
     --xh-action-bg-focus-visible: var(--xh-toggle-group-item-bg, var(--xh-_toggle-group-item-bg));
     --xh-action-bg-disabled: var(--xh-toggle-group-item-bg-disabled, var(--xh-bg-subtle));
     --xh-action-fg-rest: var(--xh-toggle-group-item-fg, var(--xh-_toggle-group-item-fg));
@@ -261,7 +261,7 @@
   [data-scope='toggle-group'][data-part='item'][data-state='on'] {
     --xh-action-bg-rest: var(--xh-toggle-group-item-bg-on, var(--xh-_toggle-group-item-bg-on));
     --xh-action-bg-hover: var(--xh-toggle-group-item-bg-on-hover, var(--xh-_toggle-group-item-bg-on-hover));
-    --xh-action-bg-pressed: var(--xh-toggle-group-item-bg-on-active, var(--xh-_toggle-group-item-bg-on-active));
+    --xh-action-bg-pressed: var(--xh-toggle-group-item-bg-on-pressed, var(--xh-_toggle-group-item-bg-on-active));
     --xh-action-bg-focus-visible: var(--xh-toggle-group-item-bg-on, var(--xh-_toggle-group-item-bg-on));
     --xh-action-bg-disabled: var(
       --xh-toggle-group-item-bg-on-disabled,

@@ -36,6 +36,13 @@ const expectedNames = expected.tokens.map(token => token.name).sort()
 if (JSON.stringify(publicSurface.cssSlots) !== JSON.stringify(expectedNames))
   problems.push('tooling/public-surface.json 的 cssSlots 与组件令牌 manifest 不一致')
 
+// 状态后缀一词一义：-active 曾同时指按下、展开路径与当前项，已退役。
+// 按下 -pressed、展开路径 -open、当前项 -current、选中 -selected、开着（开关类）-on
+for (const name of expectedNames) {
+  if (/-active(-|$)/.test(name))
+    problems.push(`${name} 用了退役的状态后缀 -active：按下写 -pressed，展开路径写 -open，当前项写 -current，选中写 -selected`)
+}
+
 const cemPath = new URL('../../../packages/adapters/web-components/custom-elements.json', import.meta.url)
 const cem = JSON.parse(await readFile(cemPath, 'utf8'))
 const cemByTag = new Map()

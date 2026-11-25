@@ -300,7 +300,7 @@
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-cascader-action-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-cascader-action-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-cascader-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-cascader-action-bg-pressed, var(--xh-_action-variant-bg-pressed));
     /* 清空钮（设计真源 §8.3）：圆形钮，静息字形取次级前景兑 50%，指到钮上换满色 */
     --xh-action-fg-rest: var(--xh-cascader-action-fg, var(--xh-fg-field-clear));
     --xh-action-fg-hover: var(--xh-cascader-action-fg-hover, var(--xh-fg-default));
@@ -475,14 +475,14 @@
     --xh-collection-fg-selected-hover: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-material-frosted-fg)));
     --xh-collection-fg-selected-pressed: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-material-frosted-fg)));
     --xh-collection-fg-pressed: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
-    --xh-collection-font-weight-open-path: var(--xh-cascader-item-active-font-weight, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-open-path: var(--xh-cascader-item-font-weight-open, var(--xh-font-weight-regular));
     --xh-collection-font-weight-selected: var(--xh-cascader-item-font-weight-selected, var(--xh-font-weight-medium));
     --xh-collection-font-weight-selected-highlight: var(--xh-cascader-item-font-weight-selected, var(--xh-font-weight-medium));
     --xh-collection-font-weight-selected-hover: var(--xh-cascader-item-font-weight-selected, var(--xh-font-weight-medium));
     --xh-collection-font-weight-selected-pressed: var(--xh-cascader-item-font-weight-selected, var(--xh-font-weight-medium));
     --xh-collection-bg-hover: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-keyboard-highlight: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
-    --xh-collection-bg-open-path: var(--xh-cascader-item-bg-active, var(--xh-bg-subtle));
+    --xh-collection-bg-open-path: var(--xh-cascader-item-bg-open, var(--xh-bg-subtle));
     --xh-collection-bg-selected-highlight: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-selected-hover: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-pressed: var(--xh-cascader-item-bg-pressed, var(--xh-bg-subtle-hover));

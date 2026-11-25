@@ -129,7 +129,7 @@
     --xh-action-radius: var(--xh-field-array-trigger-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-field-array-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-field-array-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-field-array-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-field-array-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-field-array-trigger-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-field-array-trigger-fg-hover, var(--xh-fg-default));
     --xh-action-fg-pressed: var(--xh-field-array-trigger-fg-hover, var(--xh-fg-default));
@@ -186,7 +186,7 @@
     --xh-action-radius: var(--xh-field-array-add-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-field-array-add-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-field-array-add-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-field-array-add-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-field-array-add-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-field-array-add-fg, var(--xh-fg-brand));
     --xh-action-fg-hover: var(--xh-field-array-add-fg, var(--xh-fg-brand));
     --xh-action-fg-pressed: var(--xh-field-array-add-fg, var(--xh-fg-brand));

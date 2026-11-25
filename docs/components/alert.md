@@ -225,8 +225,8 @@ banner 把提示贴在页面顶部铺满整行：不取圆角，只在朝向页�
 | `--xh-alert-action-gap` | `action` | `gap` | `default` | `--xh-space-2` | alert 的 action 部件 gap 覆盖槽。 |
 | `--xh-alert-bg` | `root` | `background` | `default` | `--xh-_tone-subtle` | alert 的 root 部件 background 覆盖槽。 |
 | `--xh-alert-border` | `root` | `border` | `default` | `--xh-_tone-border` | alert 的 root 部件 border 覆盖槽。 |
-| `--xh-alert-close-bg-active` | `close-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_tone-subtle-active` | alert 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-alert-close-bg-hover` | `close-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_tone-subtle-hover` | alert 的 close-trigger 部件 background-color 覆盖槽。 |
+| `--xh-alert-close-bg-pressed` | `close-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_tone-subtle-active` | alert 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-alert-close-fg` | `close-trigger` | `color` | `default` | `--xh-fg-muted` | alert 的 close-trigger 部件 color 覆盖槽。 |
 | `--xh-alert-close-fg-hover` | `close-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | alert 的 close-trigger 部件 color 覆盖槽。 |
 | `--xh-alert-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | alert 的 close-trigger 部件 border-radius 覆盖槽。 |

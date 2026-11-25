@@ -91,7 +91,7 @@
     --xh-action-font-size: var(--xh-pagination-font-size, var(--xh-_pagination-font-size));
     --xh-action-bg-rest: var(--xh-pagination-item-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-pagination-item-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-pagination-item-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-pagination-item-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-border-rest: var(--xh-pagination-item-border, var(--xh-border-default));
     --xh-action-border-hover: var(--xh-pagination-item-border-hover, var(--xh-border-strong));
     --xh-action-border-pressed: var(--xh-pagination-item-border-hover, var(--xh-border-strong));
@@ -127,7 +127,7 @@
   [data-scope='pagination'][data-part='item'][data-current] {
     --xh-action-bg-rest: var(--xh-pagination-item-bg-selected, var(--xh-_pagination-selected-bg));
     --xh-action-bg-hover: var(--xh-pagination-item-bg-selected-hover, var(--xh-_pagination-selected-bg-hover));
-    --xh-action-bg-pressed: var(--xh-pagination-item-bg-selected-active, var(--xh-_pagination-selected-bg-active));
+    --xh-action-bg-pressed: var(--xh-pagination-item-bg-selected-pressed, var(--xh-_pagination-selected-bg-active));
     --xh-action-bg-focus-visible: var(--xh-pagination-item-bg-selected, var(--xh-_pagination-selected-bg));
     --xh-action-fg-rest: var(--xh-pagination-item-fg-selected, var(--xh-_pagination-selected-fg));
     --xh-action-fg-hover: var(--xh-pagination-item-fg-selected, var(--xh-_pagination-selected-fg));
@@ -135,7 +135,7 @@
     --xh-action-fg-focus-visible: var(--xh-pagination-item-fg-selected, var(--xh-_pagination-selected-fg));
     --xh-action-border-rest: var(--xh-pagination-item-border-selected, var(--xh-_pagination-selected-border));
     --xh-action-border-hover: var(--xh-pagination-item-border-selected-hover, var(--xh-_pagination-selected-border));
-    --xh-action-border-pressed: var(--xh-pagination-item-border-selected-active, var(--xh-_pagination-selected-border));
+    --xh-action-border-pressed: var(--xh-pagination-item-border-selected-pressed, var(--xh-_pagination-selected-border));
     --xh-action-border-focus-visible: var(--xh-pagination-item-border-selected, var(--xh-_pagination-selected-border));
     --xh-action-shadow-rest: var(--xh-pagination-item-shadow, none);
     --xh-action-shadow-hover: var(--xh-pagination-item-shadow, none);

@@ -614,8 +614,8 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `--xh-tree-branch-status-font-size` | `branch-empty`<br>`branch-error`<br>`branch-loading`<br>`branch-retry-trigger` | `font-size` | `default`<br>`is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error'])` | `--xh-_tree-font-size` | tree 的 branch-empty、branch-error、branch-loading、branch-retry-trigger 部件 font-size 覆盖槽。 |
 | `--xh-tree-branch-status-py` | `branch-empty`<br>`branch-error`<br>`branch-loading` | `padding-block` | `is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error'])` | `--xh-_tree-row-py` | tree 的 branch-empty、branch-error、branch-loading 部件 padding-block 覆盖槽。 |
 | `--xh-tree-drag-fg` | `node-drag-trigger` | `color` | `default` | `--xh-fg-subtle` | tree 的 node-drag-trigger 部件 color 覆盖槽。 |
-| `--xh-tree-drag-fg-active` | `node-drag-trigger` | `color` | `disabled`<br>`dragging`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-default` | tree 的 node-drag-trigger 部件 color 覆盖槽。 |
 | `--xh-tree-drag-fg-disabled` | `node-drag-trigger` | `color` | `disabled` | `--xh-fg-disabled` | tree 的 node-drag-trigger 部件 color 覆盖槽。 |
+| `--xh-tree-drag-fg-dragging` | `node-drag-trigger` | `color` | `disabled`<br>`dragging`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-default` | tree 的 node-drag-trigger 部件 color 覆盖槽。 |
 | `--xh-tree-drag-grip-long` | `node-drag-trigger` | `inline-size` | `empty` | `--xh-space-2` | tree 的 node-drag-trigger 部件 inline-size 覆盖槽。 |
 | `--xh-tree-drag-grip-short` | `node-drag-trigger` | `block-size` | `empty` | `--xh-space-1` | tree 的 node-drag-trigger 部件 block-size 覆盖槽。 |
 | `--xh-tree-drag-radius` | `node-drag-trigger` | `border-radius` | `default` | `--xh-shape-control` | tree 的 node-drag-trigger 部件 border-radius 覆盖槽。 |

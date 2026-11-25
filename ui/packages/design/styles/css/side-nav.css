@@ -230,15 +230,15 @@
     --xh-collection-bg-keyboard-highlight: var(--xh-side-nav-row-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-pressed: var(--xh-side-nav-row-bg-pressed, var(--xh-bg-subtle-hover));
     /* 当前页：页内持久集合的标记是品牌淡底行面 + 淡底前景；侧栏另把字重提到 semibold，整列扫读时当前项一眼可见 */
-    --xh-collection-bg-current: var(--xh-side-nav-row-bg-active, var(--xh-bg-brand-subtle));
-    --xh-collection-fg-current: var(--xh-side-nav-row-fg-active, var(--xh-fg-on-brand-subtle));
-    --xh-collection-fg-current-hover: var(--xh-side-nav-row-fg-active, var(--xh-fg-on-brand-subtle));
-    --xh-collection-fg-current-highlight: var(--xh-side-nav-row-fg-active, var(--xh-fg-on-brand-subtle));
-    --xh-collection-fg-current-pressed: var(--xh-side-nav-row-fg-active, var(--xh-fg-on-brand-subtle));
-    --xh-collection-font-weight-current: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-semibold));
-    --xh-collection-font-weight-current-hover: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-semibold));
-    --xh-collection-font-weight-current-highlight: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-semibold));
-    --xh-collection-font-weight-current-pressed: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-semibold));
+    --xh-collection-bg-current: var(--xh-side-nav-row-bg-current, var(--xh-bg-brand-subtle));
+    --xh-collection-fg-current: var(--xh-side-nav-row-fg-current, var(--xh-fg-on-brand-subtle));
+    --xh-collection-fg-current-hover: var(--xh-side-nav-row-fg-current, var(--xh-fg-on-brand-subtle));
+    --xh-collection-fg-current-highlight: var(--xh-side-nav-row-fg-current, var(--xh-fg-on-brand-subtle));
+    --xh-collection-fg-current-pressed: var(--xh-side-nav-row-fg-current, var(--xh-fg-on-brand-subtle));
+    --xh-collection-font-weight-current: var(--xh-side-nav-row-font-weight-current, var(--xh-font-weight-semibold));
+    --xh-collection-font-weight-current-hover: var(--xh-side-nav-row-font-weight-current, var(--xh-font-weight-semibold));
+    --xh-collection-font-weight-current-highlight: var(--xh-side-nav-row-font-weight-current, var(--xh-font-weight-semibold));
+    --xh-collection-font-weight-current-pressed: var(--xh-side-nav-row-font-weight-current, var(--xh-font-weight-semibold));
     --xh-collection-indicator-fg-current: var(--xh-side-nav-indicator-color, var(--xh-fg-brand));
     --xh-collection-indicator-fg-current-hover: var(--xh-side-nav-indicator-color, var(--xh-fg-brand));
     --xh-collection-indicator-fg-current-highlight: var(--xh-side-nav-indicator-color, var(--xh-fg-brand));

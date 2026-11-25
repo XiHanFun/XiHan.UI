@@ -150,7 +150,7 @@
     --xh-action-min-inline-size: var(--xh-number-field-trigger-size, var(--xh-_action-profile-visual-size));
     --xh-action-radius: var(--xh-number-field-trigger-radius, var(--xh-shape-inset));
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
-    --xh-action-bg-pressed: var(--xh-number-field-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-number-field-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-number-field-trigger-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-number-field-trigger-fg-hover, var(--xh-fg-default));
     --xh-action-border-rest: transparent;
@@ -218,7 +218,7 @@
     [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:where([data-scope='number-field']) {
       --xh-action-bg-rest: var(--xh-number-field-stepper-bg, var(--xh-bg-subtle));
       --xh-action-bg-hover: var(--xh-number-field-stepper-bg-hover, var(--xh-bg-subtle-hover));
-      --xh-action-bg-pressed: var(--xh-number-field-trigger-bg-active, var(--xh-bg-subtle-active));
+      --xh-action-bg-pressed: var(--xh-number-field-trigger-bg-pressed, var(--xh-bg-subtle-active));
       --xh-action-bg-disabled: var(--xh-number-field-stepper-bg, var(--xh-bg-subtle));
       --xh-action-scale-pressed: none;
       /* 叠放的两颗四周已经内收、彼此共边相接：家族给内嵌钮的那一圈面内收在这里撤掉，面铺满钮自己的盒 */

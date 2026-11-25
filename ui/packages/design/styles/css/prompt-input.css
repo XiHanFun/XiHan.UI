@@ -157,7 +157,7 @@
     --xh-action-radius: var(--xh-prompt-input-submit-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-prompt-input-send-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-prompt-input-send-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-prompt-input-send-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-prompt-input-send-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-prompt-input-send-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-prompt-input-send-fg, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-prompt-input-send-fg, var(--xh-_action-variant-fg-pressed));
@@ -193,7 +193,7 @@
   [data-scope='prompt-input'][data-part='submit-trigger'][data-mode='stop'] {
     --xh-action-bg-rest: var(--xh-prompt-input-stop-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-prompt-input-stop-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-prompt-input-stop-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-prompt-input-stop-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-prompt-input-stop-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-prompt-input-stop-fg, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-prompt-input-stop-fg, var(--xh-_action-variant-fg-pressed));

@@ -53,7 +53,7 @@
     --xh-action-border-pressed: var(--xh-infinite-scroll-load-more-border-hover, var(--xh-_action-variant-border-pressed));
     --xh-action-bg-rest: var(--xh-infinite-scroll-load-more-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-infinite-scroll-load-more-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-infinite-scroll-load-more-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-infinite-scroll-load-more-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-infinite-scroll-load-more-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-infinite-scroll-load-more-fg, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-infinite-scroll-load-more-fg, var(--xh-_action-variant-fg-pressed));

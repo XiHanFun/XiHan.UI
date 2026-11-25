@@ -155,7 +155,7 @@
     --xh-action-radius: var(--xh-toolbar-item-radius, var(--xh-_action-profile-radius));
     --xh-action-bg-rest: var(--xh-toolbar-item-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-toolbar-item-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-toolbar-item-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-toolbar-item-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-disabled: var(--xh-toolbar-item-bg-disabled, var(--xh-_action-variant-bg-disabled));
     --xh-action-fg-rest: var(--xh-toolbar-item-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-toolbar-item-fg, var(--xh-_action-variant-fg-hover));
@@ -187,24 +187,24 @@
     --xh-action-shadow-hover: var(--xh-_highlight-brand);
     --xh-action-shadow-pressed: var(--xh-_highlight-brand);
     --xh-action-shadow-disabled: none;
-    --xh-action-bg-rest: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
-    --xh-action-bg-hover: var(--xh-toolbar-item-bg-pressed-hover, var(--xh-bg-brand-hover));
-    --xh-action-bg-pressed: var(--xh-toolbar-item-bg-pressed-active, var(--xh-bg-brand-active));
-    --xh-action-bg-focus-visible: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
+    --xh-action-bg-rest: var(--xh-toolbar-item-bg-on, var(--xh-bg-brand));
+    --xh-action-bg-hover: var(--xh-toolbar-item-bg-on-hover, var(--xh-bg-brand-hover));
+    --xh-action-bg-pressed: var(--xh-toolbar-item-bg-on-pressed, var(--xh-bg-brand-active));
+    --xh-action-bg-focus-visible: var(--xh-toolbar-item-bg-on, var(--xh-bg-brand));
     --xh-action-bg-disabled: var(
-      --xh-toolbar-item-bg-pressed-disabled,
+      --xh-toolbar-item-bg-on-disabled,
       var(--xh-bg-brand-disabled)
     );
-    --xh-action-fg-rest: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand));
-    --xh-action-fg-hover: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand));
-    --xh-action-fg-pressed: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand));
-    --xh-action-fg-focus-visible: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand));
-    --xh-action-fg-disabled: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand));
-    --xh-action-border-rest: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
-    --xh-action-border-hover: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
-    --xh-action-border-pressed: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
-    --xh-action-border-focus-visible: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
-    --xh-action-border-disabled: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
+    --xh-action-fg-rest: var(--xh-toolbar-item-fg-on, var(--xh-fg-on-brand));
+    --xh-action-fg-hover: var(--xh-toolbar-item-fg-on, var(--xh-fg-on-brand));
+    --xh-action-fg-pressed: var(--xh-toolbar-item-fg-on, var(--xh-fg-on-brand));
+    --xh-action-fg-focus-visible: var(--xh-toolbar-item-fg-on, var(--xh-fg-on-brand));
+    --xh-action-fg-disabled: var(--xh-toolbar-item-fg-on, var(--xh-fg-on-brand));
+    --xh-action-border-rest: var(--xh-toolbar-item-bg-on, var(--xh-bg-brand));
+    --xh-action-border-hover: var(--xh-toolbar-item-bg-on, var(--xh-bg-brand));
+    --xh-action-border-pressed: var(--xh-toolbar-item-bg-on, var(--xh-bg-brand));
+    --xh-action-border-focus-visible: var(--xh-toolbar-item-bg-on, var(--xh-bg-brand));
+    --xh-action-border-disabled: var(--xh-toolbar-item-bg-on, var(--xh-bg-brand));
   }
 
   [data-scope='toolbar'][data-part='item'][hidden] {

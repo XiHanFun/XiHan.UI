@@ -164,7 +164,7 @@
     --xh-action-radius: var(--xh-filter-builder-delete-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-filter-builder-delete-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-filter-builder-delete-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-filter-builder-delete-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-filter-builder-delete-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-filter-builder-delete-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-filter-builder-delete-fg-hover, var(--xh-fg-danger-hover));
     --xh-action-fg-pressed: var(--xh-filter-builder-delete-fg-hover, var(--xh-fg-danger-hover));
@@ -193,7 +193,7 @@
     --xh-action-radius: var(--xh-filter-builder-add-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-filter-builder-add-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-filter-builder-add-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-filter-builder-add-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-filter-builder-add-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-filter-builder-add-fg, var(--xh-fg-brand));
     --xh-action-fg-hover: var(--xh-filter-builder-add-fg, var(--xh-fg-brand));
     --xh-action-fg-pressed: var(--xh-filter-builder-add-fg, var(--xh-fg-brand));

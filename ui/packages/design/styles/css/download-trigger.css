@@ -25,7 +25,7 @@
   [data-scope='download-trigger'][data-part='root'] {
     --xh-action-bg-rest: var(--xh-download-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-download-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-download-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-download-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-download-trigger-bg, var(--xh-_action-variant-bg-focus-visible));
     --xh-action-bg-loading: var(--xh-download-trigger-bg, var(--xh-_action-variant-bg-loading));
     --xh-action-bg-disabled: var(--xh-download-trigger-bg-disabled, var(--xh-_action-variant-bg-disabled));

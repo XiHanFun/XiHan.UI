@@ -346,8 +346,8 @@
 | `--xh-tour-backdrop-layer` | `backdrop` | `z-index` | `default` | `--xh-_layer` | tour 的 backdrop 部件 z-index 覆盖槽。 |
 | `--xh-tour-bg` | `arrow`<br>`content` | `background` | `default` | `--xh-material-elevated-bg` | tour 的 arrow、content 部件 background 覆盖槽。 |
 | `--xh-tour-border` | `arrow`<br>`content` | `border` | `default` | `--xh-material-elevated-border` | tour 的 arrow、content 部件 border 覆盖槽。 |
-| `--xh-tour-close-bg-active` | `close-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | tour 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-tour-close-bg-hover` | `close-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | tour 的 close-trigger 部件 background-color 覆盖槽。 |
+| `--xh-tour-close-bg-pressed` | `close-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | tour 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-tour-close-fg` | `close-trigger` | `color` | `default` | `--xh-fg-muted` | tour 的 close-trigger 部件 color 覆盖槽。 |
 | `--xh-tour-close-fg-hover` | `close-trigger` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed` | tour 的 close-trigger 部件 color 覆盖槽。 |
 | `--xh-tour-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | tour 的 close-trigger 部件 border-radius 覆盖槽。 |

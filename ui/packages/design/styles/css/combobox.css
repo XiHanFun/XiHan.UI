@@ -221,7 +221,7 @@
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-combobox-action-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-combobox-action-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-combobox-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-combobox-action-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-combobox-action-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-combobox-action-fg-hover, var(--xh-fg-default));
     --xh-action-border-rest: transparent;

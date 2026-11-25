@@ -736,7 +736,7 @@
 
   [data-scope='tree'][data-part='node-drag-trigger']:not([data-disabled]):hover,
   [data-scope='tree'][data-part='node-drag-trigger'][data-dragging] {
-    color: var(--xh-tree-drag-fg-active, var(--xh-fg-default));
+    color: var(--xh-tree-drag-fg-dragging, var(--xh-fg-default));
   }
 
   [data-scope='tree'][data-part='node-drag-trigger'][data-dragging] {

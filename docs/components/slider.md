@@ -391,12 +391,12 @@ draggableRange 让两端拇指之间的轨道可以整段拖动，时间窗宽�
 | `--xh-slider-thumb-size` | `control`<br>`root`<br>`thumb` | `block-size`<br>`inline-size`<br>`inset-block-end`<br>`inset-block-start`<br>`inset-inline`<br>`margin-block-end`<br>`margin-block-start`<br>`margin-inline-start` | `@media (pointer: coarse)`<br>`default`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`size=lg`<br>`size=sm` | `--xh-track-thumb-size-lg`<br>`--xh-track-thumb-size-md`<br>`--xh-track-thumb-size-sm` | slider 的 control、root、thumb 部件 block-size、inline-size、inset-block-end、inset-block-start、inset-inline、margin-block-end、margin-block-start、margin-inline-start 覆盖槽。 |
 | `--xh-slider-tick-bg` | `tick` | `background` | `default` | `--xh-bg-surface` | slider 的 tick 部件 background 覆盖槽。 |
 | `--xh-slider-tick-border` | `tick` | `border` | `default` | `--xh-bg-subtle-hover` | slider 的 tick 部件 border 覆盖槽。 |
-| `--xh-slider-tick-border-active` | `tick` | `border-color` | `passed` | `--xh-_tone` | slider 的 tick 部件 border-color 覆盖槽。 |
-| `--xh-slider-tick-border-active-disabled` | `tick`<br>`tick-group` | `border-color` | `disabled`<br>`passed` | `--xh-bg-subtle-hover-opaque` | slider 的 tick、tick-group 部件 border-color 覆盖槽。 |
 | `--xh-slider-tick-border-disabled` | `tick`<br>`tick-group` | `border-color` | `disabled` | `--xh-bg-subtle` | slider 的 tick、tick-group 部件 border-color 覆盖槽。 |
+| `--xh-slider-tick-border-passed` | `tick` | `border-color` | `passed` | `--xh-_tone` | slider 的 tick 部件 border-color 覆盖槽。 |
+| `--xh-slider-tick-border-passed-disabled` | `tick`<br>`tick-group` | `border-color` | `disabled`<br>`passed` | `--xh-bg-subtle-hover-opaque` | slider 的 tick、tick-group 部件 border-color 覆盖槽。 |
 | `--xh-slider-tick-label-fg` | `tick-label` | `color` | `default` | `--xh-fg-subtle` | slider 的 tick-label 部件 color 覆盖槽。 |
-| `--xh-slider-tick-label-fg-active` | `tick-label` | `color` | `passed` | `--xh-fg-default` | slider 的 tick-label 部件 color 覆盖槽。 |
 | `--xh-slider-tick-label-fg-disabled` | `tick-group`<br>`tick-label` | `color` | `disabled` | `--xh-fg-disabled` | slider 的 tick-group、tick-label 部件 color 覆盖槽。 |
+| `--xh-slider-tick-label-fg-passed` | `tick-label` | `color` | `passed` | `--xh-fg-default` | slider 的 tick-label 部件 color 覆盖槽。 |
 | `--xh-slider-tick-label-font-size` | `tick-label` | `font-size` | `default` | `--xh-text-caption-size` | slider 的 tick-label 部件 font-size 覆盖槽。 |
 | `--xh-slider-tick-label-gap` | `root`<br>`tick-label` | `margin-block-start`<br>`margin-inline-start` | `default`<br>`orientation=vertical` | `--xh-space-1` | slider 的 root、tick-label 部件 margin-block-start、margin-inline-start 覆盖槽。 |
 | `--xh-slider-tick-radius` | `tick` | `border-radius` | `default` | `--xh-shape-circle` | slider 的 tick 部件 border-radius 覆盖槽。 |

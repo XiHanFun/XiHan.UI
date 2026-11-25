@@ -233,7 +233,7 @@
   [data-scope='float-button'][data-part='trigger'] {
     --xh-action-bg-rest: var(--xh-float-button-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-float-button-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-float-button-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-float-button-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-float-button-bg, var(--xh-_action-variant-bg-focus-visible));
     --xh-action-bg-disabled: var(--xh-float-button-bg, var(--xh-_action-variant-bg-disabled));
     --xh-action-fg-rest: var(--xh-float-button-fg, var(--xh-_action-variant-fg-rest));
@@ -264,7 +264,7 @@
     [data-scope='float-button'][data-part='trigger'] {
     --xh-action-bg-rest: var(--xh-float-button-bg, var(--xh-_float-button-bg));
     --xh-action-bg-hover: var(--xh-float-button-bg-hover, var(--xh-_float-button-bg-hover));
-    --xh-action-bg-pressed: var(--xh-float-button-bg-active, var(--xh-_float-button-bg-active));
+    --xh-action-bg-pressed: var(--xh-float-button-bg-pressed, var(--xh-_float-button-bg-active));
     --xh-action-bg-focus-visible: var(--xh-float-button-bg, var(--xh-_float-button-bg));
   }
 
@@ -278,7 +278,7 @@
        liquid 档由配方换成液态面；这里把使用者槽接到 Action Control 的桥接槽 */
     --xh-action-bg-rest: var(--xh-float-button-bg, var(--xh-_material-bg));
     --xh-action-bg-hover: var(--xh-float-button-bg-hover, var(--xh-_material-bg-hover));
-    --xh-action-bg-pressed: var(--xh-float-button-bg-active, var(--xh-_material-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-float-button-bg-pressed, var(--xh-_material-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-float-button-bg, var(--xh-_material-bg-focus));
     --xh-action-bg-disabled: var(--xh-float-button-bg, var(--xh-_material-bg));
     --xh-action-fg-rest: var(--xh-float-button-fg, var(--xh-_material-fg));
@@ -378,7 +378,7 @@
   }
 
   [data-scope='float-button'][data-part='list'] > button:not([data-scope]):not(:disabled):active {
-    background-color: var(--xh-float-button-bg-active, var(--xh-_float-button-bg-active));
+    background-color: var(--xh-float-button-bg-pressed, var(--xh-_float-button-bg-active));
     scale: var(--xh-motion-scale-press);
     transition-duration: var(--xh-motion-duration-press);
     transition-timing-function: var(--xh-motion-ease-press);

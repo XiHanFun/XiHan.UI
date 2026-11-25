@@ -145,7 +145,7 @@
        liquid 档由配方换成液态面；这里把使用者槽接到 Action Control 的桥接槽 */
     --xh-action-bg-rest: var(--xh-carousel-trigger-bg, var(--xh-_material-bg));
     --xh-action-bg-hover: var(--xh-carousel-trigger-bg-hover, var(--xh-_material-bg-hover));
-    --xh-action-bg-pressed: var(--xh-carousel-trigger-bg-active, var(--xh-_material-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-carousel-trigger-bg-pressed, var(--xh-_material-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-carousel-trigger-bg, var(--xh-_material-bg-focus));
     --xh-action-bg-disabled: var(--xh-carousel-trigger-bg, var(--xh-_material-bg));
     --xh-action-fg-rest: var(--xh-carousel-trigger-fg, var(--xh-_material-fg));
@@ -168,7 +168,7 @@
     --xh-action-highlight-focus-visible: var(--xh-_material-highlight);
     --xh-action-highlight-disabled: var(--xh-_material-highlight);
     --xh-action-bg-hover: var(--xh-carousel-trigger-bg-hover, var(--xh-bg-subtle-opaque));
-    --xh-action-bg-pressed: var(--xh-carousel-trigger-bg-active, var(--xh-bg-subtle-hover-opaque));
+    --xh-action-bg-pressed: var(--xh-carousel-trigger-bg-pressed, var(--xh-bg-subtle-hover-opaque));
     /* M2 顶光走配方的高光通道 */
     --xh-action-radius: var(--xh-carousel-trigger-radius, var(--xh-_action-profile-radius));
     --xh-_carousel-trigger-size: var(--xh-control-target-min);
@@ -356,7 +356,7 @@
   /* 按下：点的颜色再压一档，同时缩一下（同时换底）；指针按住由 :active 表出，
      Space / Enter 与触屏按住由 Headless 投影 data-pressed，三种输入同一副面 */
   [data-scope='carousel'][data-part='indicator']:is(:active, [data-pressed]):not([data-current]) {
-    background: var(--xh-carousel-indicator-bg-active, var(--xh-fg-default));
+    background: var(--xh-carousel-indicator-bg-current, var(--xh-fg-default));
     scale: var(--xh-motion-scale-press);
     transition-duration: var(--xh-motion-duration-press);
     transition-timing-function: var(--xh-motion-ease-press);
@@ -378,7 +378,7 @@
   }
 
   [data-scope='carousel'][data-part='indicator'][data-current]:is(:active, [data-pressed]) {
-    background: var(--xh-carousel-indicator-bg-selected-active, var(--xh-bg-brand-active));
+    background: var(--xh-carousel-indicator-bg-selected-pressed, var(--xh-bg-brand-active));
     scale: var(--xh-motion-scale-press);
     transition-duration: var(--xh-motion-duration-press);
     transition-timing-function: var(--xh-motion-ease-press);
@@ -609,7 +609,7 @@
     }
 
     [data-scope='carousel'][data-part='indicator']:is(:active, [data-pressed]):not([data-current])::after {
-      background: var(--xh-carousel-indicator-bg-active, var(--xh-fg-default));
+      background: var(--xh-carousel-indicator-bg-current, var(--xh-fg-default));
     }
 
     [data-scope='carousel'][data-part='indicator'][data-current]::after {
@@ -623,7 +623,7 @@
     }
 
     [data-scope='carousel'][data-part='indicator'][data-current]:is(:active, [data-pressed])::after {
-      background: var(--xh-carousel-indicator-bg-selected-active, var(--xh-bg-brand-active));
+      background: var(--xh-carousel-indicator-bg-selected-pressed, var(--xh-bg-brand-active));
     }
 
     [data-scope='carousel'][data-part='root'][data-autoplay]

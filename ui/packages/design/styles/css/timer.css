@@ -95,7 +95,7 @@
     --xh-action-radius: var(--xh-timer-control-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-timer-control-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-timer-control-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-timer-control-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-timer-control-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-disabled: var(--xh-timer-control-bg-disabled, var(--xh-_action-variant-bg-disabled));
     --xh-action-fg-rest: var(--xh-timer-control-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-timer-control-fg, var(--xh-_action-variant-fg-hover));
@@ -108,7 +108,7 @@
     --xh-action-highlight-rest: transparent;
     --xh-action-shadow-rest: none;
     --xh-action-shadow-hover: var(--xh-timer-control-shadow-hover, none);
-    --xh-action-shadow-pressed: var(--xh-timer-control-shadow-active, none);
+    --xh-action-shadow-pressed: var(--xh-timer-control-shadow-pressed, none);
     --xh-action-font-size: var(--xh-text-label-size);
     /* 作者塞进钮里的图标按档取字形尺寸，与文案同一把尺 */
     --xh-icon-size: var(--xh-timer-icon-size, var(--xh-_action-profile-glyph-size));

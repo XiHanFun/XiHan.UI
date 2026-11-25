@@ -19,7 +19,7 @@
   [data-scope='toggle'][data-part='root'] {
     --xh-_toggle-bg-on: var(--xh-toggle-bg-on, var(--xh-_tone, var(--xh-bg-brand)));
     --xh-_toggle-bg-on-hover: var(--xh-toggle-bg-on-hover, var(--xh-_tone-hover, var(--xh-bg-brand-hover)));
-    --xh-_toggle-bg-on-active: var(--xh-toggle-bg-on-active, var(--xh-_tone-active, var(--xh-bg-brand-active)));
+    --xh-_toggle-bg-on-active: var(--xh-toggle-bg-on-pressed, var(--xh-_tone-active, var(--xh-bg-brand-active)));
     --xh-_toggle-fg-on: var(--xh-toggle-fg-on, var(--xh-_tone-on, var(--xh-fg-on-brand)));
     --xh-_toggle-border-on: var(--xh-toggle-border-on, var(--xh-_tone, var(--xh-bg-brand)));
     /* 禁用同时降级前景与表面，不靠 opacity；选中且禁用时取选中又禁用的面（主色往承载面兑一半），选中信息不丢；
@@ -28,7 +28,7 @@
     --xh-_toggle-fg-on-disabled: var(--xh-toggle-fg-on-disabled, var(--xh-_toggle-fg-on));
     --xh-action-bg-rest: var(--xh-toggle-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-toggle-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-toggle-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-toggle-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-toggle-bg, var(--xh-_action-variant-bg-focus-visible));
     --xh-action-bg-disabled: var(--xh-toggle-bg-disabled, var(--xh-_action-variant-bg-disabled));
     --xh-action-fg-rest: var(--xh-toggle-fg, var(--xh-_action-variant-fg-rest));

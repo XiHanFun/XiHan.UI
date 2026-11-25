@@ -212,8 +212,8 @@ fade 让内容从窗口一端淡入、从另一端淡出，边缘不再生硬地
 | `--xh-marquee-span` | `content`<br>`root` | `animation-duration` | `auto-fill`<br>`default` | `--xh-_marquee-measured-span` | marquee 的 content、root 部件 animation-duration 覆盖槽。 |
 | `--xh-marquee-speed` | `content`<br>`root` | `animation-duration` | `auto-fill`<br>`default` | `60` | marquee 的 content、root 部件 animation-duration 覆盖槽。 |
 | `--xh-marquee-trigger-bg` | `autoplay-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`focus-visible`<br>`xh-ink-surface` | `--xh-bg-surface` | marquee 的 autoplay-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
-| `--xh-marquee-trigger-bg-active` | `autoplay-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover-opaque` | marquee 的 autoplay-trigger 部件 background-color 覆盖槽。 |
 | `--xh-marquee-trigger-bg-hover` | `autoplay-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle-opaque` | marquee 的 autoplay-trigger 部件 background-color 覆盖槽。 |
+| `--xh-marquee-trigger-bg-pressed` | `autoplay-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover-opaque` | marquee 的 autoplay-trigger 部件 background-color 覆盖槽。 |
 | `--xh-marquee-trigger-inset` | `autoplay-trigger`<br>`root` | `-webkit-mask-image`<br>`-webkit-mask-size`<br>`inset-block-end`<br>`inset-inline-end`<br>`mask-image`<br>`mask-size` | `default`<br>`fade`<br>`has(> [data-scope='marquee'][data-part='autoplay-trigger']:not([hidden])`<br>`orientation=vertical` | `--xh-space-1` | marquee 的 autoplay-trigger、root 部件 -webkit-mask-image、-webkit-mask-size、inset-block-end、inset-inline-end、mask-image、mask-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

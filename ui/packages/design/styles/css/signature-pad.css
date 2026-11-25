@@ -114,7 +114,7 @@
   [data-scope='signature-pad'][data-part='clear-trigger'] {
     --xh-action-bg-rest: var(--xh-signature-pad-clear-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-signature-pad-clear-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-signature-pad-clear-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-signature-pad-clear-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-signature-pad-clear-bg, var(--xh-_action-variant-bg-focus-visible));
     --xh-action-bg-disabled: var(--xh-signature-pad-clear-bg-disabled, var(--xh-_action-variant-bg-disabled));
     --xh-action-fg-rest: var(--xh-signature-pad-clear-fg, var(--xh-_action-variant-fg-rest));

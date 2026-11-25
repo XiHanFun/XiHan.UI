@@ -715,7 +715,7 @@
     --xh-action-radius: var(--xh-notification-action-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-notification-action-bg, transparent);
     --xh-action-bg-hover: var(--xh-notification-action-bg-hover, var(--xh-bg-subtle));
-    --xh-action-bg-pressed: var(--xh-notification-action-bg-active, var(--xh-bg-subtle-hover));
+    --xh-action-bg-pressed: var(--xh-notification-action-bg-pressed, var(--xh-bg-subtle-hover));
     --xh-action-fg-rest: var(--xh-notification-action-fg, var(--xh-fg-default));
     --xh-action-fg-hover: var(--xh-notification-action-fg, var(--xh-fg-default));
     --xh-action-fg-pressed: var(--xh-notification-action-fg, var(--xh-fg-default));
@@ -755,7 +755,7 @@
     --xh-action-radius: var(--xh-notification-close-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-notification-close-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-notification-close-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-notification-close-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-notification-close-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-notification-close-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-notification-close-fg-hover, var(--xh-fg-default));
     --xh-action-fg-pressed: var(--xh-notification-close-fg-hover, var(--xh-fg-default));

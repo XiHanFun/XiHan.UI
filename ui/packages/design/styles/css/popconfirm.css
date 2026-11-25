@@ -259,7 +259,7 @@
   [data-scope='popconfirm'][data-part='cancel-trigger'] {
     --xh-action-bg-rest: var(--xh-popconfirm-cancel-bg, transparent);
     --xh-action-bg-hover: var(--xh-popconfirm-cancel-bg-hover, var(--xh-bg-subtle));
-    --xh-action-bg-pressed: var(--xh-popconfirm-cancel-bg-active, var(--xh-bg-subtle-hover));
+    --xh-action-bg-pressed: var(--xh-popconfirm-cancel-bg-pressed, var(--xh-bg-subtle-hover));
     --xh-action-bg-focus-visible: var(--xh-popconfirm-cancel-bg-focus, var(--xh-popconfirm-cancel-bg, transparent));
     --xh-action-fg-rest: var(--xh-popconfirm-cancel-fg, var(--xh-fg-default));
     --xh-action-fg-hover: var(--xh-popconfirm-cancel-fg, var(--xh-fg-default));

@@ -3883,7 +3883,7 @@
   .xh-scope-back-top[data-part='trigger'] {
     --xh-action-bg-rest: var(--xh-back-top-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-back-top-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-back-top-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-back-top-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-back-top-bg, var(--xh-_action-variant-bg-focus-visible));
     --xh-action-bg-disabled: var(--xh-back-top-bg, var(--xh-_action-variant-bg-disabled));
     --xh-action-fg-rest: var(--xh-back-top-fg, var(--xh-_action-variant-fg-rest));
@@ -3918,7 +3918,7 @@
        liquid 档由配方换成液态面；这里把使用者槽接到 Action Control 的桥接槽 */
     --xh-action-bg-rest: var(--xh-back-top-bg, var(--xh-_material-bg));
     --xh-action-bg-hover: var(--xh-back-top-bg-hover, var(--xh-_material-bg-hover));
-    --xh-action-bg-pressed: var(--xh-back-top-bg-active, var(--xh-_material-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-back-top-bg-pressed, var(--xh-_material-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-back-top-bg, var(--xh-_material-bg-focus));
     --xh-action-bg-disabled: var(--xh-back-top-bg, var(--xh-_material-bg));
     --xh-action-fg-rest: var(--xh-back-top-fg, var(--xh-_material-fg));
@@ -5141,7 +5141,7 @@
   .xh-scope-download-trigger[data-part='root'] {
     --xh-action-bg-rest: var(--xh-download-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-download-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-download-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-download-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-download-trigger-bg, var(--xh-_action-variant-bg-focus-visible));
     --xh-action-bg-loading: var(--xh-download-trigger-bg, var(--xh-_action-variant-bg-loading));
     --xh-action-bg-disabled: var(--xh-download-trigger-bg-disabled, var(--xh-_action-variant-bg-disabled));
@@ -5385,7 +5385,7 @@
     --xh-action-radius: var(--xh-field-array-trigger-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-field-array-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-field-array-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-field-array-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-field-array-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-field-array-trigger-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-field-array-trigger-fg-hover, var(--xh-fg-default));
     --xh-action-fg-pressed: var(--xh-field-array-trigger-fg-hover, var(--xh-fg-default));
@@ -5442,7 +5442,7 @@
     --xh-action-radius: var(--xh-field-array-add-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-field-array-add-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-field-array-add-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-field-array-add-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-field-array-add-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-field-array-add-fg, var(--xh-fg-brand));
     --xh-action-fg-hover: var(--xh-field-array-add-fg, var(--xh-fg-brand));
     --xh-action-fg-pressed: var(--xh-field-array-add-fg, var(--xh-fg-brand));
@@ -6547,7 +6547,7 @@
   .xh-scope-float-button[data-part='trigger'] {
     --xh-action-bg-rest: var(--xh-float-button-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-float-button-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-float-button-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-float-button-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-float-button-bg, var(--xh-_action-variant-bg-focus-visible));
     --xh-action-bg-disabled: var(--xh-float-button-bg, var(--xh-_action-variant-bg-disabled));
     --xh-action-fg-rest: var(--xh-float-button-fg, var(--xh-_action-variant-fg-rest));
@@ -6578,7 +6578,7 @@
     .xh-scope-float-button[data-part='trigger'] {
     --xh-action-bg-rest: var(--xh-float-button-bg, var(--xh-_float-button-bg));
     --xh-action-bg-hover: var(--xh-float-button-bg-hover, var(--xh-_float-button-bg-hover));
-    --xh-action-bg-pressed: var(--xh-float-button-bg-active, var(--xh-_float-button-bg-active));
+    --xh-action-bg-pressed: var(--xh-float-button-bg-pressed, var(--xh-_float-button-bg-active));
     --xh-action-bg-focus-visible: var(--xh-float-button-bg, var(--xh-_float-button-bg));
   }
 
@@ -6592,7 +6592,7 @@
        liquid 档由配方换成液态面；这里把使用者槽接到 Action Control 的桥接槽 */
     --xh-action-bg-rest: var(--xh-float-button-bg, var(--xh-_material-bg));
     --xh-action-bg-hover: var(--xh-float-button-bg-hover, var(--xh-_material-bg-hover));
-    --xh-action-bg-pressed: var(--xh-float-button-bg-active, var(--xh-_material-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-float-button-bg-pressed, var(--xh-_material-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-float-button-bg, var(--xh-_material-bg-focus));
     --xh-action-bg-disabled: var(--xh-float-button-bg, var(--xh-_material-bg));
     --xh-action-fg-rest: var(--xh-float-button-fg, var(--xh-_material-fg));
@@ -6692,7 +6692,7 @@
   }
 
   .xh-scope-float-button[data-part='list'] > button:not([data-scope]):not(:disabled):active {
-    background-color: var(--xh-float-button-bg-active, var(--xh-_float-button-bg-active));
+    background-color: var(--xh-float-button-bg-pressed, var(--xh-_float-button-bg-active));
     scale: var(--xh-motion-scale-press);
     transition-duration: var(--xh-motion-duration-press);
     transition-timing-function: var(--xh-motion-ease-press);
@@ -7106,7 +7106,7 @@
   .xh-scope-floating-panel[data-part='window-state-trigger'],
   .xh-scope-floating-panel[data-part='close-trigger'] {
     --xh-action-bg-hover: var(--xh-floating-panel-action-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-floating-panel-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-floating-panel-action-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-floating-panel-action-fg, var(--xh-material-frosted-fg-muted));
     --xh-action-fg-hover: var(--xh-floating-panel-action-fg-hover, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-floating-panel-action-fg-hover, var(--xh-_action-variant-fg-pressed));
@@ -7139,7 +7139,7 @@
   .xh-scope-floating-panel[data-part='window-state-trigger'][data-state='on'] {
     --xh-action-bg-rest: var(--xh-floating-panel-action-bg-on, var(--xh-bg-brand-subtle));
     --xh-action-bg-hover: var(--xh-floating-panel-action-bg-on-hover, var(--xh-bg-brand-subtle-hover));
-    --xh-action-bg-pressed: var(--xh-floating-panel-action-bg-on-active, var(--xh-bg-brand-subtle-active));
+    --xh-action-bg-pressed: var(--xh-floating-panel-action-bg-on-pressed, var(--xh-bg-brand-subtle-active));
     --xh-action-bg-focus-visible: var(--xh-floating-panel-action-bg-on, var(--xh-bg-brand-subtle));
     --xh-action-fg-rest: var(--xh-floating-panel-action-fg-on, var(--xh-fg-on-brand-subtle));
     --xh-action-fg-hover: var(--xh-floating-panel-action-fg-on, var(--xh-fg-on-brand-subtle));
@@ -9647,7 +9647,7 @@
     --xh-action-border-pressed: var(--xh-infinite-scroll-load-more-border-hover, var(--xh-_action-variant-border-pressed));
     --xh-action-bg-rest: var(--xh-infinite-scroll-load-more-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-infinite-scroll-load-more-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-infinite-scroll-load-more-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-infinite-scroll-load-more-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-infinite-scroll-load-more-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-infinite-scroll-load-more-fg, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-infinite-scroll-load-more-fg, var(--xh-_action-variant-fg-pressed));
@@ -10171,7 +10171,7 @@
   /* 按下只换面不缩放：白底承载 hover 100 → pressed 200（集合行不允许零反馈）；
      指针按住由 :active 表出，Space / Enter 与触屏按住由 Headless 投影 data-pressed，三种输入同一副面 */
   .xh-scope-json-viewer[data-part='branch-control']:not([data-disabled]):is(:active, [data-pressed]) {
-    background: var(--xh-json-viewer-row-bg-active, var(--xh-bg-subtle-hover));
+    background: var(--xh-json-viewer-row-bg-pressed, var(--xh-bg-subtle-hover));
   }
 
   /* 键名不参与压缩：它短且必须完整可读，被挤掉的应该是值 */
@@ -10697,7 +10697,7 @@
     --xh-action-radius: var(--xh-layout-sider-trigger-radius, var(--xh-_action-profile-radius));
     --xh-action-bg-rest: var(--xh-layout-sider-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-layout-sider-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-layout-sider-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-layout-sider-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-layout-sider-trigger-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-layout-sider-trigger-fg, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-layout-sider-trigger-fg, var(--xh-_action-variant-fg-pressed));
@@ -11758,7 +11758,7 @@
   .xh-scope-marquee[data-part='autoplay-trigger'] {
     --xh-action-bg-rest: var(--xh-marquee-trigger-bg, var(--xh-bg-surface));
     --xh-action-bg-hover: var(--xh-marquee-trigger-bg-hover, var(--xh-bg-subtle-opaque));
-    --xh-action-bg-pressed: var(--xh-marquee-trigger-bg-active, var(--xh-bg-subtle-hover-opaque));
+    --xh-action-bg-pressed: var(--xh-marquee-trigger-bg-pressed, var(--xh-bg-subtle-hover-opaque));
     --xh-action-bg-focus-visible: var(--xh-marquee-trigger-bg, var(--xh-bg-surface));
     /* 作者塞进来的图标跟着 icon 档走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-marquee-icon-size, var(--xh-_action-profile-glyph-size));
@@ -12844,7 +12844,7 @@
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-password-input-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-password-input-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-password-input-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-password-input-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-password-input-trigger-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-password-input-trigger-fg-hover, var(--xh-fg-default));
     --xh-action-border-rest: transparent;
@@ -13294,7 +13294,7 @@
   .xh-scope-popconfirm[data-part='cancel-trigger'] {
     --xh-action-bg-rest: var(--xh-popconfirm-cancel-bg, transparent);
     --xh-action-bg-hover: var(--xh-popconfirm-cancel-bg-hover, var(--xh-bg-subtle));
-    --xh-action-bg-pressed: var(--xh-popconfirm-cancel-bg-active, var(--xh-bg-subtle-hover));
+    --xh-action-bg-pressed: var(--xh-popconfirm-cancel-bg-pressed, var(--xh-bg-subtle-hover));
     --xh-action-bg-focus-visible: var(--xh-popconfirm-cancel-bg-focus, var(--xh-popconfirm-cancel-bg, transparent));
     --xh-action-fg-rest: var(--xh-popconfirm-cancel-fg, var(--xh-fg-default));
     --xh-action-fg-hover: var(--xh-popconfirm-cancel-fg, var(--xh-fg-default));
@@ -13482,7 +13482,7 @@
     --xh-action-radius: var(--xh-prompt-input-submit-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-prompt-input-send-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-prompt-input-send-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-prompt-input-send-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-prompt-input-send-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-prompt-input-send-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-prompt-input-send-fg, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-prompt-input-send-fg, var(--xh-_action-variant-fg-pressed));
@@ -13518,7 +13518,7 @@
   .xh-scope-prompt-input[data-part='submit-trigger'][data-mode='stop'] {
     --xh-action-bg-rest: var(--xh-prompt-input-stop-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-prompt-input-stop-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-prompt-input-stop-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-prompt-input-stop-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-prompt-input-stop-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-prompt-input-stop-fg, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-prompt-input-stop-fg, var(--xh-_action-variant-fg-pressed));
@@ -13995,7 +13995,7 @@
   }
 
   .xh-scope-resizable[data-part='handle'][data-resizing] {
-    --xh-_resizable-indicator-color: var(--xh-resizable-handle-bg-active, var(--xh-bg-brand));
+    --xh-_resizable-indicator-color: var(--xh-resizable-handle-bg-resizing, var(--xh-bg-brand));
   }
 
   .xh-scope-resizable[data-part='handle']:focus-visible {
@@ -14273,7 +14273,7 @@
   .xh-scope-signature-pad[data-part='clear-trigger'] {
     --xh-action-bg-rest: var(--xh-signature-pad-clear-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-signature-pad-clear-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-signature-pad-clear-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-signature-pad-clear-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-signature-pad-clear-bg, var(--xh-_action-variant-bg-focus-visible));
     --xh-action-bg-disabled: var(--xh-signature-pad-clear-bg-disabled, var(--xh-_action-variant-bg-disabled));
     --xh-action-fg-rest: var(--xh-signature-pad-clear-fg, var(--xh-_action-variant-fg-rest));
@@ -14607,7 +14607,7 @@
 
   /* 指针 :active 与 Headless 投影的 data-pressed（Space / Enter 与触屏按住）看见同一副按压面 */
   .xh-scope-tag[data-part='close-trigger']:not(:disabled):is(:active, [data-pressed]) {
-    background: var(--xh-tag-close-bg-active, color-mix(in oklab, currentColor 22%, transparent));
+    background: var(--xh-tag-close-bg-pressed, color-mix(in oklab, currentColor 22%, transparent));
     scale: var(--xh-motion-scale-press);
     transition-duration: var(--xh-motion-duration-press);
     transition-timing-function: var(--xh-motion-ease-press);
@@ -14731,7 +14731,7 @@
   }
 
   :where([data-xh-field-chrome][data-variant='subtle']:not(:focus-within):not([data-disabled])) .xh-scope-tag[data-part='root']:is(:not([data-variant]), [data-variant='subtle'], [data-variant='outline']):not([data-tone], [data-disabled]) .xh-scope-tag[data-part='close-trigger']:not(:disabled):is(:active, [data-pressed]) {
-    background: var(--xh-tag-close-bg-active, var(--xh-bg-subtle-hover));
+    background: var(--xh-tag-close-bg-pressed, var(--xh-bg-subtle-hover));
   }
 
   /* 键盘焦点落在标签上：环画在标签盒内。实心档是彩色面，环内侧紧挨着同色的面，衬一道底色间隔线才读得出来
@@ -15346,7 +15346,7 @@
     --xh-action-radius: var(--xh-timer-control-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-timer-control-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-timer-control-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-timer-control-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-timer-control-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-disabled: var(--xh-timer-control-bg-disabled, var(--xh-_action-variant-bg-disabled));
     --xh-action-fg-rest: var(--xh-timer-control-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-timer-control-fg, var(--xh-_action-variant-fg-hover));
@@ -15359,7 +15359,7 @@
     --xh-action-highlight-rest: transparent;
     --xh-action-shadow-rest: none;
     --xh-action-shadow-hover: var(--xh-timer-control-shadow-hover, none);
-    --xh-action-shadow-pressed: var(--xh-timer-control-shadow-active, none);
+    --xh-action-shadow-pressed: var(--xh-timer-control-shadow-pressed, none);
     --xh-action-font-size: var(--xh-text-label-size);
     /* 作者塞进钮里的图标按档取字形尺寸，与文案同一把尺 */
     --xh-icon-size: var(--xh-timer-icon-size, var(--xh-_action-profile-glyph-size));
@@ -16566,7 +16566,7 @@
     --xh-action-min-inline-size: var(--xh-alert-close-size, var(--xh-_action-profile-visual-size));
     --xh-action-radius: var(--xh-alert-close-radius, var(--xh-shape-control));
     --xh-action-bg-hover: var(--xh-alert-close-bg-hover, var(--xh-_tone-subtle-hover, var(--xh-_action-variant-bg-hover)));
-    --xh-action-bg-pressed: var(--xh-alert-close-bg-active, var(--xh-_tone-subtle-active, var(--xh-_action-variant-bg-pressed)));
+    --xh-action-bg-pressed: var(--xh-alert-close-bg-pressed, var(--xh-_tone-subtle-active, var(--xh-_action-variant-bg-pressed)));
     --xh-action-fg-rest: var(--xh-alert-close-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-alert-close-fg-hover, var(--xh-fg-default));
     --xh-action-fg-pressed: var(--xh-alert-close-fg-hover, var(--xh-fg-default));
@@ -19095,7 +19095,7 @@
   .xh-scope-button[data-part='root'] {
     --xh-action-bg-rest: var(--xh-button-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-button-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-button-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-button-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-button-bg, var(--xh-_action-variant-bg-focus-visible));
     --xh-action-bg-loading: var(--xh-button-bg, var(--xh-_action-variant-bg-loading));
     --xh-action-fg-rest: var(--xh-button-fg, var(--xh-_action-variant-fg-rest));
@@ -19434,7 +19434,7 @@
 
   .xh-scope-scrollbar[data-part='thumb'][data-dragging] {
     background: var(
-      --xh-scrollbar-thumb-bg-active,
+      --xh-scrollbar-thumb-bg-dragging,
       var(--xh-fg-scrollbar-thumb-active)
     );
   }
@@ -19873,7 +19873,7 @@
     --xh-_ring-gap: var(--xh-ring-gap);
     --xh-action-bg-rest: var(--xh-calendar-picker-cell-bg-selected, var(--xh-bg-brand));
     --xh-action-bg-hover: var(--xh-calendar-picker-cell-bg-selected, var(--xh-bg-brand));
-    --xh-action-bg-pressed: var(--xh-calendar-picker-cell-bg-selected-active, var(--xh-bg-brand-active));
+    --xh-action-bg-pressed: var(--xh-calendar-picker-cell-bg-selected-pressed, var(--xh-bg-brand-active));
     --xh-action-bg-focus-visible: var(--xh-calendar-picker-cell-bg-selected, var(--xh-bg-brand));
     --xh-action-border-rest: transparent;
     --xh-action-border-hover: transparent;
@@ -20490,7 +20490,7 @@
     --xh-_ring-gap: var(--xh-ring-gap);
     --xh-action-bg-rest: var(--xh-calendar-range-picker-cell-bg-selected, var(--xh-bg-brand));
     --xh-action-bg-hover: var(--xh-calendar-range-picker-cell-bg-selected, var(--xh-bg-brand));
-    --xh-action-bg-pressed: var(--xh-calendar-range-picker-cell-bg-selected-active, var(--xh-bg-brand-active));
+    --xh-action-bg-pressed: var(--xh-calendar-range-picker-cell-bg-selected-pressed, var(--xh-bg-brand-active));
     --xh-action-bg-focus-visible: var(--xh-calendar-range-picker-cell-bg-selected, var(--xh-bg-brand));
     --xh-action-border-rest: transparent;
     --xh-action-border-hover: transparent;
@@ -21057,7 +21057,7 @@
        liquid 档由配方换成液态面；这里把使用者槽接到 Action Control 的桥接槽 */
     --xh-action-bg-rest: var(--xh-carousel-trigger-bg, var(--xh-_material-bg));
     --xh-action-bg-hover: var(--xh-carousel-trigger-bg-hover, var(--xh-_material-bg-hover));
-    --xh-action-bg-pressed: var(--xh-carousel-trigger-bg-active, var(--xh-_material-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-carousel-trigger-bg-pressed, var(--xh-_material-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-carousel-trigger-bg, var(--xh-_material-bg-focus));
     --xh-action-bg-disabled: var(--xh-carousel-trigger-bg, var(--xh-_material-bg));
     --xh-action-fg-rest: var(--xh-carousel-trigger-fg, var(--xh-_material-fg));
@@ -21080,7 +21080,7 @@
     --xh-action-highlight-focus-visible: var(--xh-_material-highlight);
     --xh-action-highlight-disabled: var(--xh-_material-highlight);
     --xh-action-bg-hover: var(--xh-carousel-trigger-bg-hover, var(--xh-bg-subtle-opaque));
-    --xh-action-bg-pressed: var(--xh-carousel-trigger-bg-active, var(--xh-bg-subtle-hover-opaque));
+    --xh-action-bg-pressed: var(--xh-carousel-trigger-bg-pressed, var(--xh-bg-subtle-hover-opaque));
     /* M2 顶光走配方的高光通道 */
     --xh-action-radius: var(--xh-carousel-trigger-radius, var(--xh-_action-profile-radius));
     --xh-_carousel-trigger-size: var(--xh-control-target-min);
@@ -21268,7 +21268,7 @@
   /* 按下：点的颜色再压一档，同时缩一下（同时换底）；指针按住由 :active 表出，
      Space / Enter 与触屏按住由 Headless 投影 data-pressed，三种输入同一副面 */
   .xh-scope-carousel[data-part='indicator']:is(:active, [data-pressed]):not([data-current]) {
-    background: var(--xh-carousel-indicator-bg-active, var(--xh-fg-default));
+    background: var(--xh-carousel-indicator-bg-current, var(--xh-fg-default));
     scale: var(--xh-motion-scale-press);
     transition-duration: var(--xh-motion-duration-press);
     transition-timing-function: var(--xh-motion-ease-press);
@@ -21290,7 +21290,7 @@
   }
 
   .xh-scope-carousel[data-part='indicator'][data-current]:is(:active, [data-pressed]) {
-    background: var(--xh-carousel-indicator-bg-selected-active, var(--xh-bg-brand-active));
+    background: var(--xh-carousel-indicator-bg-selected-pressed, var(--xh-bg-brand-active));
     scale: var(--xh-motion-scale-press);
     transition-duration: var(--xh-motion-duration-press);
     transition-timing-function: var(--xh-motion-ease-press);
@@ -21521,7 +21521,7 @@
     }
 
     .xh-scope-carousel[data-part='indicator']:is(:active, [data-pressed]):not([data-current])::after {
-      background: var(--xh-carousel-indicator-bg-active, var(--xh-fg-default));
+      background: var(--xh-carousel-indicator-bg-current, var(--xh-fg-default));
     }
 
     .xh-scope-carousel[data-part='indicator'][data-current]::after {
@@ -21535,7 +21535,7 @@
     }
 
     .xh-scope-carousel[data-part='indicator'][data-current]:is(:active, [data-pressed])::after {
-      background: var(--xh-carousel-indicator-bg-selected-active, var(--xh-bg-brand-active));
+      background: var(--xh-carousel-indicator-bg-selected-pressed, var(--xh-bg-brand-active));
     }
 
     .xh-scope-carousel[data-part='root'][data-autoplay]
@@ -22737,7 +22737,7 @@
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-cascader-action-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-cascader-action-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-cascader-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-cascader-action-bg-pressed, var(--xh-_action-variant-bg-pressed));
     /* 清空钮（设计真源 §8.3）：圆形钮，静息字形取次级前景兑 50%，指到钮上换满色 */
     --xh-action-fg-rest: var(--xh-cascader-action-fg, var(--xh-fg-field-clear));
     --xh-action-fg-hover: var(--xh-cascader-action-fg-hover, var(--xh-fg-default));
@@ -22912,14 +22912,14 @@
     --xh-collection-fg-selected-hover: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-material-frosted-fg)));
     --xh-collection-fg-selected-pressed: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-material-frosted-fg)));
     --xh-collection-fg-pressed: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
-    --xh-collection-font-weight-open-path: var(--xh-cascader-item-active-font-weight, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-open-path: var(--xh-cascader-item-font-weight-open, var(--xh-font-weight-regular));
     --xh-collection-font-weight-selected: var(--xh-cascader-item-font-weight-selected, var(--xh-font-weight-medium));
     --xh-collection-font-weight-selected-highlight: var(--xh-cascader-item-font-weight-selected, var(--xh-font-weight-medium));
     --xh-collection-font-weight-selected-hover: var(--xh-cascader-item-font-weight-selected, var(--xh-font-weight-medium));
     --xh-collection-font-weight-selected-pressed: var(--xh-cascader-item-font-weight-selected, var(--xh-font-weight-medium));
     --xh-collection-bg-hover: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-keyboard-highlight: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
-    --xh-collection-bg-open-path: var(--xh-cascader-item-bg-active, var(--xh-bg-subtle));
+    --xh-collection-bg-open-path: var(--xh-cascader-item-bg-open, var(--xh-bg-subtle));
     --xh-collection-bg-selected-highlight: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-selected-hover: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-pressed: var(--xh-cascader-item-bg-pressed, var(--xh-bg-subtle-hover));
@@ -24478,8 +24478,8 @@
   }
 
   .xh-scope-citation[data-part='source'][data-state='active'] [data-part='source-index']:where(.xh-scope-citation) {
-    background: var(--xh-citation-index-active-bg, var(--xh-bg-brand));
-    color: var(--xh-citation-index-active-fg, var(--xh-fg-on-brand));
+    background: var(--xh-citation-index-bg-current, var(--xh-bg-brand));
+    color: var(--xh-citation-index-fg-current, var(--xh-fg-on-brand));
   }
 
   .xh-scope-citation[data-part='source-title'] {
@@ -24712,7 +24712,7 @@
   .xh-scope-clipboard[data-part='copy-trigger'] {
     --xh-action-bg-rest: var(--xh-clipboard-copy-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-clipboard-copy-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-clipboard-copy-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-clipboard-copy-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-clipboard-copy-trigger-bg, var(--xh-_action-variant-bg-focus-visible));
     --xh-action-bg-loading: var(--xh-clipboard-copy-trigger-bg, var(--xh-_action-variant-bg-loading));
     --xh-action-bg-disabled: var(--xh-clipboard-copy-trigger-bg-disabled, var(--xh-_action-variant-bg-disabled));
@@ -24770,7 +24770,7 @@
   .xh-scope-clipboard[data-part='control'] > .xh-scope-clipboard[data-part='copy-trigger']:focus-visible,
   .xh-scope-clipboard[data-part='control'] > .xh-scope-clipboard[data-part='copy-trigger']:hover {
     position: relative;
-    z-index: var(--xh-clipboard-control-active-layer, 1);
+    z-index: var(--xh-clipboard-control-layer-focus, 1);
   }
 
   /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
@@ -25605,7 +25605,7 @@
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-color-field-action-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-color-field-action-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-color-field-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-color-field-action-bg-pressed, var(--xh-_action-variant-bg-pressed));
     /* 清空钮（设计真源 §8.3）：圆形钮，静息字形取次级前景兑 50%，指到钮上换满色 */
     --xh-action-fg-rest: var(--xh-color-field-action-fg, var(--xh-fg-field-clear));
     --xh-action-fg-hover: var(--xh-color-field-action-fg-hover, var(--xh-fg-default));
@@ -25866,7 +25866,7 @@
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-color-picker-action-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-color-picker-action-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-color-picker-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-color-picker-action-bg-pressed, var(--xh-_action-variant-bg-pressed));
     /* 清空钮（设计真源 §8.3）：圆形钮，静息字形取次级前景兑 50%，指到钮上换满色 */
     --xh-action-fg-rest: var(--xh-color-picker-action-fg, var(--xh-fg-field-clear));
     --xh-action-fg-hover: var(--xh-color-picker-action-fg-hover, var(--xh-fg-default));
@@ -26229,7 +26229,7 @@
      松手那一刻浮层多半已经被系统的取色镜头盖住，按下的回执只有这一瞬看得见。
      指针 :active 与 Headless 投影的 data-pressed（Space / Enter 与触屏按住）看见同一副按压面 */
   .xh-scope-color-picker[data-part='eye-dropper-trigger']:not(:disabled):is(:active, [data-pressed]) {
-    background: var(--xh-color-picker-action-bg-active, var(--xh-bg-subtle-hover));
+    background: var(--xh-color-picker-action-bg-pressed, var(--xh-bg-subtle-hover));
     scale: var(--xh-motion-scale-press);
     transition-duration: var(--xh-motion-duration-press);
     transition-timing-function: var(--xh-motion-ease-press);
@@ -26238,8 +26238,8 @@
   /* 取色途中按钮保持按下的样子：屏幕取色期间浮层多半被系统的取色镜头盖着，
      这是用户回到页面时唯一能看出"刚才在取色"的痕迹 */
   .xh-scope-color-picker[data-part='eye-dropper-trigger'][data-state='picking'] {
-    border-color: var(--xh-color-picker-action-border-active, var(--xh-bg-brand));
-    background: var(--xh-color-picker-action-bg-active, var(--xh-bg-subtle-active));
+    border-color: var(--xh-color-picker-action-border-picking, var(--xh-bg-brand));
+    background: var(--xh-color-picker-action-bg-pressed, var(--xh-bg-subtle-active));
   }
 
   .xh-scope-color-picker[data-part='eye-dropper-trigger']:disabled {
@@ -26260,7 +26260,7 @@
     --xh-action-radius: var(--xh-color-picker-confirm-trigger-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-color-picker-confirm-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-color-picker-confirm-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-color-picker-confirm-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-color-picker-confirm-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-color-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-color-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-color-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-pressed));
@@ -27167,7 +27167,7 @@
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-combobox-action-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-combobox-action-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-combobox-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-combobox-action-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-combobox-action-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-combobox-action-fg-hover, var(--xh-fg-default));
     --xh-action-border-rest: transparent;
@@ -28202,7 +28202,7 @@
     --xh-collection-bg-hover: var(--xh-context-menu-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-keyboard-highlight: var(--xh-context-menu-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-pressed: var(--xh-context-menu-item-bg-pressed, var(--xh-bg-subtle-hover));
-    --xh-collection-bg-open-path: var(--xh-context-menu-item-bg-active, var(--xh-bg-subtle));
+    --xh-collection-bg-open-path: var(--xh-context-menu-item-bg-open, var(--xh-bg-subtle));
     /* data-highlighted 同时覆盖指针与键盘路径：指针只换面，焦点环在 :focus-visible 下再接回 */
     --xh-collection-outline-keyboard-highlight: transparent;
 
@@ -28703,7 +28703,7 @@
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-date-field-action-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-date-field-action-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-date-field-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-date-field-action-bg-pressed, var(--xh-_action-variant-bg-pressed));
     /* 清空钮（设计真源 §8.3）：圆形钮，静息字形取次级前景兑 50%，指到钮上换满色 */
     --xh-action-fg-rest: var(--xh-date-field-action-fg, var(--xh-fg-field-clear));
     --xh-action-fg-hover: var(--xh-date-field-action-fg-hover, var(--xh-fg-default));
@@ -29086,7 +29086,7 @@
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-date-picker-action-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-date-picker-action-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-date-picker-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-date-picker-action-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-date-picker-action-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-date-picker-action-fg-hover, var(--xh-fg-default));
     --xh-action-border-rest: transparent;
@@ -29606,7 +29606,7 @@
     --xh-action-radius: var(--xh-date-picker-confirm-trigger-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-date-picker-confirm-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-date-picker-confirm-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-date-picker-confirm-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-date-picker-confirm-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-date-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-date-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-date-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-pressed));
@@ -30061,7 +30061,7 @@
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-date-range-picker-action-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-date-range-picker-action-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-date-range-picker-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-date-range-picker-action-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-date-range-picker-action-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-date-range-picker-action-fg-hover, var(--xh-fg-default));
     --xh-action-border-rest: transparent;
@@ -30603,7 +30603,7 @@
     --xh-action-radius: var(--xh-date-range-picker-confirm-trigger-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-date-range-picker-confirm-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-date-range-picker-confirm-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-date-range-picker-confirm-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-date-range-picker-confirm-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-date-range-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-date-range-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-date-range-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-pressed));
@@ -31189,7 +31189,7 @@
     --xh-action-visual-size: var(--xh-dialog-close-size, var(--xh-_action-profile-visual-size));
     --xh-action-radius: var(--xh-dialog-close-radius, var(--xh-shape-control));
     --xh-action-bg-hover: var(--xh-dialog-close-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-dialog-close-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-dialog-close-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-dialog-close-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-dialog-close-fg-hover, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-dialog-close-fg-hover, var(--xh-_action-variant-fg-pressed));
@@ -31319,7 +31319,7 @@
     --xh-action-font-size: var(--xh-drawer-trigger-font-size, var(--xh-_action-profile-font-size));
     --xh-action-bg-rest: var(--xh-drawer-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-drawer-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-drawer-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-drawer-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-drawer-trigger-bg, var(--xh-_action-variant-bg-focus-visible));
     --xh-action-fg-rest: var(--xh-drawer-trigger-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-drawer-trigger-fg, var(--xh-_action-variant-fg-hover));
@@ -31732,7 +31732,7 @@
     --xh-action-visual-size: var(--xh-drawer-close-size, var(--xh-_action-profile-visual-size));
     --xh-action-radius: var(--xh-drawer-close-radius, var(--xh-shape-control));
     --xh-action-bg-hover: var(--xh-drawer-close-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-drawer-close-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-drawer-close-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-drawer-close-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-drawer-close-fg-hover, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-drawer-close-fg-hover, var(--xh-_action-variant-fg-pressed));
@@ -31801,7 +31801,7 @@
   }
 
   .xh-scope-drawer[data-part='resize-trigger'][data-resizing] {
-    --xh-_drawer-resize-indicator: var(--xh-drawer-resize-trigger-bg-active, var(--xh-bg-brand));
+    --xh-_drawer-resize-indicator: var(--xh-drawer-resize-trigger-bg-resizing, var(--xh-bg-brand));
   }
 
   /* 键盘落在把手上时指示条换成焦点色：命中区贴着面板边，外扩的环会压到页面上 */
@@ -32099,7 +32099,7 @@
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-editable-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-editable-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-editable-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-editable-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-disabled: var(--xh-editable-trigger-bg-disabled, var(--xh-_action-variant-bg-disabled));
     --xh-action-fg-rest: var(--xh-editable-trigger-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-editable-trigger-fg-hover, var(--xh-fg-default));
@@ -32848,7 +32848,7 @@
   .xh-scope-file-upload[data-part='trigger'] {
     --xh-action-bg-rest: var(--xh-file-upload-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-file-upload-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-file-upload-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-file-upload-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-file-upload-trigger-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-file-upload-trigger-fg, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-file-upload-trigger-fg, var(--xh-_action-variant-fg-pressed));
@@ -33135,7 +33135,7 @@
      按压由家族给；悬停与按下时字换危险色，说明这一下会删掉。钮里的叉取指示符小档（12px），不抢文件名 */
   .xh-scope-file-upload[data-part='item-delete-trigger'] {
     --xh-action-bg-hover: var(--xh-file-upload-delete-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-file-upload-delete-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-file-upload-delete-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-file-upload-delete-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-file-upload-delete-fg-hover, var(--xh-fg-danger-hover));
     --xh-action-fg-pressed: var(--xh-file-upload-delete-fg-hover, var(--xh-fg-danger-hover));
@@ -33153,7 +33153,7 @@
   /* 清空是收尾动作，画成不带底的文字钮：Action Control text 档 ghost、sm，比「选择文件」小一档 */
   .xh-scope-file-upload[data-part='clear-trigger'] {
     --xh-action-bg-hover: var(--xh-file-upload-clear-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-file-upload-clear-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-file-upload-clear-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-file-upload-clear-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-file-upload-clear-fg-hover, var(--xh-fg-default));
     --xh-action-fg-pressed: var(--xh-file-upload-clear-fg-hover, var(--xh-fg-default));
@@ -33386,7 +33386,7 @@
     --xh-action-radius: var(--xh-filter-builder-delete-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-filter-builder-delete-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-filter-builder-delete-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-filter-builder-delete-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-filter-builder-delete-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-filter-builder-delete-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-filter-builder-delete-fg-hover, var(--xh-fg-danger-hover));
     --xh-action-fg-pressed: var(--xh-filter-builder-delete-fg-hover, var(--xh-fg-danger-hover));
@@ -33415,7 +33415,7 @@
     --xh-action-radius: var(--xh-filter-builder-add-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-filter-builder-add-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-filter-builder-add-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-filter-builder-add-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-filter-builder-add-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-filter-builder-add-fg, var(--xh-fg-brand));
     --xh-action-fg-hover: var(--xh-filter-builder-add-fg, var(--xh-fg-brand));
     --xh-action-fg-pressed: var(--xh-filter-builder-add-fg, var(--xh-fg-brand));
@@ -33848,7 +33848,7 @@
   .xh-scope-form[data-part='reset-trigger'] {
     --xh-action-bg-rest: var(--xh-form-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-form-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-form-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-form-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-disabled: var(--xh-form-trigger-bg-disabled, var(--xh-_action-variant-bg-disabled));
     --xh-action-fg-rest: var(--xh-form-trigger-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-form-trigger-fg, var(--xh-_action-variant-fg-hover));
@@ -33866,14 +33866,14 @@
   .xh-scope-form[data-part='submit-trigger'] {
     --xh-action-bg-rest: var(--xh-form-submit-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-form-submit-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-form-submit-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-form-submit-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-disabled: var(--xh-form-trigger-bg-disabled, var(--xh-_action-variant-bg-disabled));
     --xh-action-fg-rest: var(--xh-form-submit-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-form-submit-fg, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-form-submit-fg, var(--xh-_action-variant-fg-pressed));
     --xh-action-border-rest: var(--xh-form-submit-border, var(--xh-_action-variant-border-rest));
     --xh-action-border-hover: var(--xh-form-submit-border-hover, var(--xh-_action-variant-border-hover));
-    --xh-action-border-pressed: var(--xh-form-submit-border-active, var(--xh-_action-variant-border-pressed));
+    --xh-action-border-pressed: var(--xh-form-submit-border-pressed, var(--xh-_action-variant-border-pressed));
     --xh-action-border-disabled: var(--xh-form-trigger-border-disabled, var(--xh-_action-variant-border-disabled));
     --xh-action-highlight-rest: transparent;
     --xh-action-shadow-rest: var(--xh-form-submit-shadow, var(--xh-_highlight-brand));
@@ -35475,7 +35475,7 @@
        不取页面语义面。白面压在亮图上分不出来（白 30% 的面压亮图不到 1.4:1），这几件留在深纱上 */
     --xh-_image-viewer-chrome-bg: var(--xh-image-viewer-chrome-bg, var(--xh-bg-media-chrome));
     --xh-_image-viewer-chrome-bg-hover: var(--xh-image-viewer-action-bg-hover, var(--xh-bg-media-chrome-hover));
-    --xh-_image-viewer-chrome-bg-active: var(--xh-image-viewer-action-bg-active, var(--xh-bg-media-chrome-active));
+    --xh-_image-viewer-chrome-bg-active: var(--xh-image-viewer-action-bg-pressed, var(--xh-bg-media-chrome-active));
 
     position: relative;
     inline-size: 100%;
@@ -35727,7 +35727,7 @@
   .xh-scope-image-viewer[data-part='close-trigger'] {
     --xh-action-bg-rest: var(--xh-_image-viewer-chrome-bg);
     --xh-action-bg-hover: var(--xh-image-viewer-close-bg-hover, var(--xh-_image-viewer-chrome-bg-hover));
-    --xh-action-bg-pressed: var(--xh-image-viewer-close-bg-active, var(--xh-_image-viewer-chrome-bg-active));
+    --xh-action-bg-pressed: var(--xh-image-viewer-close-bg-pressed, var(--xh-_image-viewer-chrome-bg-active));
     --xh-action-bg-focus-visible: var(--xh-_image-viewer-chrome-bg);
     --xh-action-bg-disabled: var(--xh-_image-viewer-chrome-bg);
     /* 看图时整块 chrome 盖住页面，叉的颜色随那层继承；使用者要单独换叉的颜色走这支槽 */
@@ -35786,7 +35786,7 @@
   /* 工具条里的钮：悬停 / 按下取墨色淡底阶梯，工具条这块液态面就是它们的墨色域 */
   :where([data-material='liquid']) .xh-scope-image-viewer[data-part='toolbar'][data-xh-liquid] > [data-part] {
     --xh-action-bg-hover: var(--xh-image-viewer-action-bg-hover, var(--xh-bg-subtle));
-    --xh-action-bg-pressed: var(--xh-image-viewer-action-bg-active, var(--xh-bg-subtle-hover));
+    --xh-action-bg-pressed: var(--xh-image-viewer-action-bg-pressed, var(--xh-bg-subtle-hover));
     --xh-action-fg-rest: currentColor;
     --xh-action-fg-hover: currentColor;
     --xh-action-fg-pressed: currentColor;
@@ -35798,7 +35798,7 @@
   :where([data-material='liquid']) .xh-scope-image-viewer[data-part='close-trigger'][data-xh-liquid] {
     --xh-action-bg-rest: var(--xh-image-viewer-chrome-bg, var(--xh-_liquid-bg));
     --xh-action-bg-hover: var(--xh-image-viewer-action-bg-hover, var(--xh-_liquid-bg-hover));
-    --xh-action-bg-pressed: var(--xh-image-viewer-action-bg-active, var(--xh-_liquid-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-image-viewer-action-bg-pressed, var(--xh-_liquid-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-image-viewer-chrome-bg, var(--xh-material-liquid-focus-surface));
     --xh-action-bg-disabled: var(--xh-image-viewer-chrome-bg, var(--xh-_liquid-bg));
     --xh-action-fg-rest: var(--xh-material-liquid-fg);
@@ -35830,7 +35830,7 @@
     --xh-action-fg-pressed: var(--xh-image-viewer-close-fg, var(--xh-material-liquid-fg));
     --xh-action-fg-focus-visible: var(--xh-image-viewer-close-fg, var(--xh-material-liquid-fg));
     --xh-action-bg-hover: var(--xh-image-viewer-close-bg-hover, var(--xh-_liquid-bg-hover));
-    --xh-action-bg-pressed: var(--xh-image-viewer-close-bg-active, var(--xh-_liquid-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-image-viewer-close-bg-pressed, var(--xh-_liquid-bg-pressed));
     --xh-action-radius: var(--xh-image-viewer-close-radius, var(--xh-shape-circle));
   }
 
@@ -36620,7 +36620,7 @@
   /* 触发器的长相归作者，皮肤只表达展开态：展开着的那一张是打开路径，落与家族 hover 同档的中性面——
      打开中不是选中，不用品牌色、不接语气；哪一张开着由浮层本身说明。不加粗：加粗会推挤相邻内容 */
   .xh-scope-menu[data-part='trigger']:not([data-disabled])[data-state='open'] {
-    background: var(--xh-menu-trigger-bg-active, var(--xh-bg-subtle));
+    background: var(--xh-menu-trigger-bg-open, var(--xh-bg-subtle));
   }
 
   .xh-scope-menu[data-part='content'] {
@@ -36738,7 +36738,7 @@
     --xh-collection-bg-hover: var(--xh-menu-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-keyboard-highlight: var(--xh-menu-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-pressed: var(--xh-menu-item-bg-pressed, var(--xh-bg-subtle-hover));
-    --xh-collection-bg-open-path: var(--xh-menu-item-bg-active, var(--xh-bg-subtle));
+    --xh-collection-bg-open-path: var(--xh-menu-item-bg-open, var(--xh-bg-subtle));
     /* data-highlighted 同时覆盖指针与键盘路径：指针只换面，焦点环在 :focus-visible 下再接回 */
     --xh-collection-outline-keyboard-highlight: transparent;
 
@@ -37046,7 +37046,7 @@
     --xh-collection-font-size: var(--xh-menubar-trigger-font-size, var(--xh-_menubar-font-size));
     --xh-collection-fg-rest: var(--xh-menubar-trigger-fg, var(--xh-fg-default));
     --xh-collection-bg-hover: var(--xh-menubar-trigger-bg-hover, var(--xh-bg-subtle));
-    --xh-collection-bg-open-path: var(--xh-menubar-trigger-bg-active, var(--xh-bg-subtle));
+    --xh-collection-bg-open-path: var(--xh-menubar-trigger-bg-open, var(--xh-bg-subtle));
     --xh-collection-bg-pressed: var(--xh-menubar-trigger-bg-pressed, var(--xh-bg-subtle-hover));
 
     display: inline-flex;
@@ -37260,7 +37260,7 @@
     --xh-collection-bg-hover: var(--xh-menubar-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-keyboard-highlight: var(--xh-menubar-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-pressed: var(--xh-menubar-item-bg-pressed, var(--xh-bg-subtle-hover));
-    --xh-collection-bg-open-path: var(--xh-menubar-item-bg-active, var(--xh-bg-subtle));
+    --xh-collection-bg-open-path: var(--xh-menubar-item-bg-open, var(--xh-bg-subtle));
     /* data-highlighted 同时覆盖指针与键盘路径：指针只换面，焦点环在 :focus-visible 下再接回 */
     --xh-collection-outline-keyboard-highlight: transparent;
 
@@ -37944,7 +37944,7 @@
     --xh-collection-fg-rest: var(--xh-navigation-menu-trigger-fg, var(--xh-fg-muted));
     --xh-collection-font-weight-rest: var(--xh-navigation-menu-trigger-font-weight, var(--xh-font-weight-regular));
     --xh-collection-bg-hover: var(--xh-navigation-menu-trigger-bg-hover, var(--xh-_navigation-menu-highlight-bg));
-    --xh-collection-bg-open-path: var(--xh-navigation-menu-trigger-bg-active, var(--xh-_navigation-menu-highlight-bg));
+    --xh-collection-bg-open-path: var(--xh-navigation-menu-trigger-bg-open, var(--xh-_navigation-menu-highlight-bg));
     --xh-collection-bg-pressed: var(--xh-navigation-menu-trigger-bg-pressed, var(--xh-bg-subtle-hover));
 
     display: inline-flex;
@@ -39051,7 +39051,7 @@
     --xh-action-radius: var(--xh-notification-action-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-notification-action-bg, transparent);
     --xh-action-bg-hover: var(--xh-notification-action-bg-hover, var(--xh-bg-subtle));
-    --xh-action-bg-pressed: var(--xh-notification-action-bg-active, var(--xh-bg-subtle-hover));
+    --xh-action-bg-pressed: var(--xh-notification-action-bg-pressed, var(--xh-bg-subtle-hover));
     --xh-action-fg-rest: var(--xh-notification-action-fg, var(--xh-fg-default));
     --xh-action-fg-hover: var(--xh-notification-action-fg, var(--xh-fg-default));
     --xh-action-fg-pressed: var(--xh-notification-action-fg, var(--xh-fg-default));
@@ -39091,7 +39091,7 @@
     --xh-action-radius: var(--xh-notification-close-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-notification-close-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-notification-close-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-notification-close-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-notification-close-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-notification-close-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-notification-close-fg-hover, var(--xh-fg-default));
     --xh-action-fg-pressed: var(--xh-notification-close-fg-hover, var(--xh-fg-default));
@@ -39352,7 +39352,7 @@
     --xh-action-min-inline-size: var(--xh-number-field-trigger-size, var(--xh-_action-profile-visual-size));
     --xh-action-radius: var(--xh-number-field-trigger-radius, var(--xh-shape-inset));
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
-    --xh-action-bg-pressed: var(--xh-number-field-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-number-field-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-number-field-trigger-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-number-field-trigger-fg-hover, var(--xh-fg-default));
     --xh-action-border-rest: transparent;
@@ -39420,7 +39420,7 @@
     .xh-scope-number-field[data-part='control'] [data-part='decrement-trigger']:where(.xh-scope-number-field) {
       --xh-action-bg-rest: var(--xh-number-field-stepper-bg, var(--xh-bg-subtle));
       --xh-action-bg-hover: var(--xh-number-field-stepper-bg-hover, var(--xh-bg-subtle-hover));
-      --xh-action-bg-pressed: var(--xh-number-field-trigger-bg-active, var(--xh-bg-subtle-active));
+      --xh-action-bg-pressed: var(--xh-number-field-trigger-bg-pressed, var(--xh-bg-subtle-active));
       --xh-action-bg-disabled: var(--xh-number-field-stepper-bg, var(--xh-bg-subtle));
       --xh-action-scale-pressed: none;
       /* 叠放的两颗四周已经内收、彼此共边相接：家族给内嵌钮的那一圈面内收在这里撤掉，面铺满钮自己的盒 */
@@ -39568,7 +39568,7 @@
     --xh-action-font-size: var(--xh-pagination-font-size, var(--xh-_pagination-font-size));
     --xh-action-bg-rest: var(--xh-pagination-item-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-pagination-item-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-pagination-item-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-pagination-item-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-border-rest: var(--xh-pagination-item-border, var(--xh-border-default));
     --xh-action-border-hover: var(--xh-pagination-item-border-hover, var(--xh-border-strong));
     --xh-action-border-pressed: var(--xh-pagination-item-border-hover, var(--xh-border-strong));
@@ -39604,7 +39604,7 @@
   .xh-scope-pagination[data-part='item'][data-current] {
     --xh-action-bg-rest: var(--xh-pagination-item-bg-selected, var(--xh-_pagination-selected-bg));
     --xh-action-bg-hover: var(--xh-pagination-item-bg-selected-hover, var(--xh-_pagination-selected-bg-hover));
-    --xh-action-bg-pressed: var(--xh-pagination-item-bg-selected-active, var(--xh-_pagination-selected-bg-active));
+    --xh-action-bg-pressed: var(--xh-pagination-item-bg-selected-pressed, var(--xh-_pagination-selected-bg-active));
     --xh-action-bg-focus-visible: var(--xh-pagination-item-bg-selected, var(--xh-_pagination-selected-bg));
     --xh-action-fg-rest: var(--xh-pagination-item-fg-selected, var(--xh-_pagination-selected-fg));
     --xh-action-fg-hover: var(--xh-pagination-item-fg-selected, var(--xh-_pagination-selected-fg));
@@ -39612,7 +39612,7 @@
     --xh-action-fg-focus-visible: var(--xh-pagination-item-fg-selected, var(--xh-_pagination-selected-fg));
     --xh-action-border-rest: var(--xh-pagination-item-border-selected, var(--xh-_pagination-selected-border));
     --xh-action-border-hover: var(--xh-pagination-item-border-selected-hover, var(--xh-_pagination-selected-border));
-    --xh-action-border-pressed: var(--xh-pagination-item-border-selected-active, var(--xh-_pagination-selected-border));
+    --xh-action-border-pressed: var(--xh-pagination-item-border-selected-pressed, var(--xh-_pagination-selected-border));
     --xh-action-border-focus-visible: var(--xh-pagination-item-border-selected, var(--xh-_pagination-selected-border));
     --xh-action-shadow-rest: var(--xh-pagination-item-shadow, none);
     --xh-action-shadow-hover: var(--xh-pagination-item-shadow, none);
@@ -40529,7 +40529,7 @@
     --xh-action-visual-size: var(--xh-popover-close-size, var(--xh-_action-profile-visual-size));
     --xh-action-radius: var(--xh-popover-close-radius, var(--xh-shape-control));
     --xh-action-bg-hover: var(--xh-popover-close-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-popover-close-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-popover-close-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-popover-close-fg, var(--xh-material-frosted-fg-muted));
     --xh-action-fg-hover: var(--xh-popover-close-fg-hover, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-popover-close-fg-hover, var(--xh-_action-variant-fg-pressed));
@@ -41593,7 +41593,7 @@
   .xh-scope-question-flow[data-part='submit-trigger'] {
     --xh-action-bg-rest: var(--xh-question-flow-submit-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-question-flow-submit-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-question-flow-submit-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-question-flow-submit-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-disabled: var(--xh-question-flow-submit-bg-off, var(--xh-_action-variant-bg-disabled));
     --xh-action-fg-rest: var(--xh-question-flow-submit-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-question-flow-submit-fg, var(--xh-_action-variant-fg-hover));
@@ -43486,7 +43486,7 @@
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-select-action-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-select-action-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-select-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-select-action-bg-pressed, var(--xh-_action-variant-bg-pressed));
     /* 清空钮（设计真源 §8.3）：圆形钮，静息字形取次级前景兑 50%，指到钮上换满色 */
     --xh-action-fg-rest: var(--xh-select-action-fg, var(--xh-fg-field-clear));
     --xh-action-fg-hover: var(--xh-select-action-fg-hover, var(--xh-fg-default));
@@ -44554,15 +44554,15 @@
     --xh-collection-bg-keyboard-highlight: var(--xh-side-nav-row-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-pressed: var(--xh-side-nav-row-bg-pressed, var(--xh-bg-subtle-hover));
     /* 当前页：页内持久集合的标记是品牌淡底行面 + 淡底前景；侧栏另把字重提到 semibold，整列扫读时当前项一眼可见 */
-    --xh-collection-bg-current: var(--xh-side-nav-row-bg-active, var(--xh-bg-brand-subtle));
-    --xh-collection-fg-current: var(--xh-side-nav-row-fg-active, var(--xh-fg-on-brand-subtle));
-    --xh-collection-fg-current-hover: var(--xh-side-nav-row-fg-active, var(--xh-fg-on-brand-subtle));
-    --xh-collection-fg-current-highlight: var(--xh-side-nav-row-fg-active, var(--xh-fg-on-brand-subtle));
-    --xh-collection-fg-current-pressed: var(--xh-side-nav-row-fg-active, var(--xh-fg-on-brand-subtle));
-    --xh-collection-font-weight-current: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-semibold));
-    --xh-collection-font-weight-current-hover: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-semibold));
-    --xh-collection-font-weight-current-highlight: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-semibold));
-    --xh-collection-font-weight-current-pressed: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-semibold));
+    --xh-collection-bg-current: var(--xh-side-nav-row-bg-current, var(--xh-bg-brand-subtle));
+    --xh-collection-fg-current: var(--xh-side-nav-row-fg-current, var(--xh-fg-on-brand-subtle));
+    --xh-collection-fg-current-hover: var(--xh-side-nav-row-fg-current, var(--xh-fg-on-brand-subtle));
+    --xh-collection-fg-current-highlight: var(--xh-side-nav-row-fg-current, var(--xh-fg-on-brand-subtle));
+    --xh-collection-fg-current-pressed: var(--xh-side-nav-row-fg-current, var(--xh-fg-on-brand-subtle));
+    --xh-collection-font-weight-current: var(--xh-side-nav-row-font-weight-current, var(--xh-font-weight-semibold));
+    --xh-collection-font-weight-current-hover: var(--xh-side-nav-row-font-weight-current, var(--xh-font-weight-semibold));
+    --xh-collection-font-weight-current-highlight: var(--xh-side-nav-row-font-weight-current, var(--xh-font-weight-semibold));
+    --xh-collection-font-weight-current-pressed: var(--xh-side-nav-row-font-weight-current, var(--xh-font-weight-semibold));
     --xh-collection-indicator-fg-current: var(--xh-side-nav-indicator-color, var(--xh-fg-brand));
     --xh-collection-indicator-fg-current-hover: var(--xh-side-nav-indicator-color, var(--xh-fg-brand));
     --xh-collection-indicator-fg-current-highlight: var(--xh-side-nav-indicator-color, var(--xh-fg-brand));
@@ -45157,7 +45157,7 @@
 
   /* 落进已选区间的刻度点描边跟 range 同色 */
   .xh-scope-slider[data-part='tick'][data-passed] {
-    border-color: var(--xh-slider-tick-border-active, var(--xh-_tone, var(--xh-bg-brand)));
+    border-color: var(--xh-slider-tick-border-passed, var(--xh-_tone, var(--xh-bg-brand)));
   }
 
   .xh-scope-slider[data-part='tick-label'] {
@@ -45175,7 +45175,7 @@
   }
 
   .xh-scope-slider[data-part='tick-label'][data-passed] {
-    color: var(--xh-slider-tick-label-fg-active, var(--xh-fg-default));
+    color: var(--xh-slider-tick-label-fg-passed, var(--xh-fg-default));
   }
 
   /* 禁用：刻度点与文案由 tick-group 上的 data-disabled 下发（连接层不给每个刻度单发），
@@ -45185,7 +45185,7 @@
   }
 
   .xh-scope-slider[data-part='tick-group'][data-disabled] [data-part='tick'][data-passed]:where(.xh-scope-slider) {
-    border-color: var(--xh-slider-tick-border-active-disabled, var(--xh-bg-subtle-hover-opaque));
+    border-color: var(--xh-slider-tick-border-passed-disabled, var(--xh-bg-subtle-hover-opaque));
   }
 
   .xh-scope-slider[data-part='tick-group'][data-disabled] [data-part='tick-label']:where(.xh-scope-slider) {
@@ -45314,7 +45314,7 @@
     --xh-action-min-inline-size: var(--xh-sortable-drag-size, var(--xh-_action-profile-visual-size));
     --xh-action-radius: var(--xh-sortable-drag-radius, var(--xh-shape-control));
     --xh-action-bg-hover: var(--xh-sortable-drag-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-sortable-drag-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-sortable-drag-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-sortable-drag-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-sortable-drag-fg-hover, var(--xh-fg-default));
     --xh-action-fg-pressed: var(--xh-sortable-drag-fg-hover, var(--xh-fg-default));
@@ -46220,7 +46220,7 @@
 
   /* 走到与走过的步标题取正文色，没走到的留在次级色；当前步再取区块标题的字重 */
   .xh-scope-steps[data-part='title']:is([data-state='current'], [data-state='completed']) {
-    color: var(--xh-steps-title-fg-active, var(--xh-fg-default));
+    color: var(--xh-steps-title-fg-current, var(--xh-fg-default));
   }
 
   .xh-scope-steps[data-part='title'][data-state='current'] {
@@ -47510,10 +47510,10 @@
   }
 
   .xh-scope-table[data-part='sort-trigger'][data-sort] {
-    --xh-action-fg-rest: var(--xh-table-sort-fg-active, var(--xh-fg-default));
-    --xh-action-fg-hover: var(--xh-table-sort-fg-active, var(--xh-fg-default));
-    --xh-action-fg-pressed: var(--xh-table-sort-fg-active, var(--xh-fg-default));
-    --xh-action-fg-focus-visible: var(--xh-table-sort-fg-active, var(--xh-fg-default));
+    --xh-action-fg-rest: var(--xh-table-sort-fg-pressed, var(--xh-fg-default));
+    --xh-action-fg-hover: var(--xh-table-sort-fg-pressed, var(--xh-fg-default));
+    --xh-action-fg-pressed: var(--xh-table-sort-fg-pressed, var(--xh-fg-default));
+    --xh-action-fg-focus-visible: var(--xh-table-sort-fg-pressed, var(--xh-fg-default));
   }
 
   /* 列宽把手贴在表头格的行尾侧。它压在相邻两列的接缝上，因此往外挪半个身位，
@@ -47584,7 +47584,7 @@
   }
 
   .xh-scope-table[data-part='column-header'][data-filtered] .xh-scope-menu[data-part='trigger'] {
-    color: var(--xh-table-filter-fg-active, var(--xh-fg-brand));
+    color: var(--xh-table-filter-fg-filtered, var(--xh-fg-brand));
   }
 
   /* 前面已有排序钮时 auto 外边距归它，筛选钮紧贴其后；同理列宽把手紧贴筛选钮之后 */
@@ -47633,7 +47633,7 @@
 
   .xh-scope-table[data-part='column-resize-trigger']:hover::after,
   .xh-scope-table[data-part='column-resize-trigger'][data-resizing]::after {
-    background: var(--xh-table-resize-fg-active, var(--xh-bg-brand));
+    background: var(--xh-table-resize-fg-resizing, var(--xh-bg-brand));
     block-size: 100%;
   }
 
@@ -47676,7 +47676,7 @@
 
   .xh-scope-table[data-part='column-drag-trigger']:not([data-disabled]):hover,
   .xh-scope-table[data-part='column-drag-trigger'][data-dragging] {
-    color: var(--xh-table-drag-fg-active, var(--xh-fg-default));
+    color: var(--xh-table-drag-fg-dragging, var(--xh-fg-default));
   }
 
   .xh-scope-table[data-part='column-drag-trigger'][data-dragging] {
@@ -47776,7 +47776,7 @@
 
   .xh-scope-table[data-part='row-drag-trigger']:not([data-disabled]):hover,
   .xh-scope-table[data-part='row-drag-trigger'][data-dragging] {
-    color: var(--xh-table-row-drag-fg-active, var(--xh-fg-default));
+    color: var(--xh-table-row-drag-fg-dragging, var(--xh-fg-default));
   }
 
   .xh-scope-table[data-part='row-drag-trigger'][data-dragging] {
@@ -47913,7 +47913,7 @@
     inset-block-start: 0;
     inset-inline-end: 0;
     translate: 50% -50%;
-    color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
+    color: var(--xh-table-sort-fg-pressed, var(--xh-fg-default));
     font-size: var(--xh-text-caption-size);
     line-height: 1;
     content: attr(data-sort-index);
@@ -48314,13 +48314,13 @@
     --xh-collection-fg-hover: var(--xh-tabs-trigger-fg-hover, var(--xh-fg-default));
     --xh-collection-bg-pressed: var(--xh-tabs-trigger-bg-pressed, var(--xh-bg-subtle-hover));
     --xh-collection-fg-pressed: var(--xh-tabs-trigger-fg-pressed, var(--xh-fg-default));
-    --xh-collection-bg-current: var(--xh-tabs-trigger-bg-active, transparent);
-    --xh-collection-bg-current-hover: var(--xh-tabs-trigger-bg-active-hover, var(--xh-bg-subtle));
-    --xh-collection-fg-current: var(--xh-tabs-trigger-fg-active, var(--xh-_tabs-accent-text));
-    --xh-collection-fg-current-hover: var(--xh-tabs-trigger-fg-active, var(--xh-_tabs-accent-text-strong));
-    --xh-collection-fg-current-highlight: var(--xh-tabs-trigger-fg-active, var(--xh-_tabs-accent-text-strong));
-    --xh-collection-fg-current-pressed: var(--xh-tabs-trigger-fg-active, var(--xh-_tabs-accent-text-strong));
-    --xh-collection-font-weight-current: var(--xh-tabs-trigger-font-weight-active, var(--xh-font-weight-medium));
+    --xh-collection-bg-current: var(--xh-tabs-trigger-bg-current, transparent);
+    --xh-collection-bg-current-hover: var(--xh-tabs-trigger-bg-current-hover, var(--xh-bg-subtle));
+    --xh-collection-fg-current: var(--xh-tabs-trigger-fg-current, var(--xh-_tabs-accent-text));
+    --xh-collection-fg-current-hover: var(--xh-tabs-trigger-fg-current, var(--xh-_tabs-accent-text-strong));
+    --xh-collection-fg-current-highlight: var(--xh-tabs-trigger-fg-current, var(--xh-_tabs-accent-text-strong));
+    --xh-collection-fg-current-pressed: var(--xh-tabs-trigger-fg-current, var(--xh-_tabs-accent-text-strong));
+    --xh-collection-font-weight-current: var(--xh-tabs-trigger-font-weight-current, var(--xh-font-weight-medium));
   }
 
   /* card / segment 档不归族：面、字色、字重、光标与过渡写在标签自己身上 */
@@ -48393,11 +48393,11 @@
      由卡片面 / 抬起面表达当前；line 档的当前页由家族按 data-current 给 */
   .xh-scope-tabs[data-part='root']:is([data-variant='card'], [data-variant='segmented'])
     .xh-scope-tabs[data-part='trigger'][data-state='active'] {
-    border-color: var(--xh-tabs-trigger-border-active, var(--xh-_tabs-trigger-border-active));
-    background: var(--xh-tabs-trigger-bg-active, var(--xh-_tabs-trigger-bg-active));
-    color: var(--xh-tabs-trigger-fg-active, var(--xh-_tabs-accent-text));
-    box-shadow: var(--xh-tabs-trigger-shadow-active, var(--xh-_tabs-trigger-shadow-active));
-    font-weight: var(--xh-tabs-trigger-font-weight-active, var(--xh-font-weight-medium));
+    border-color: var(--xh-tabs-trigger-border-current, var(--xh-_tabs-trigger-border-active));
+    background: var(--xh-tabs-trigger-bg-current, var(--xh-_tabs-trigger-bg-active));
+    color: var(--xh-tabs-trigger-fg-current, var(--xh-_tabs-accent-text));
+    box-shadow: var(--xh-tabs-trigger-shadow-current, var(--xh-_tabs-trigger-shadow-active));
+    font-weight: var(--xh-tabs-trigger-font-weight-current, var(--xh-font-weight-medium));
   }
 
   /* segment 档的选中标签就是那块白色抬起的滑块面（有滑块开关）：surface-raised 底 +
@@ -48405,9 +48405,9 @@
      这块面搬到部件上跟着滑（见下面的 indicator 规则），标签自己透空、只留字 */
   .xh-scope-tabs[data-part='root'][data-variant='segmented']
     .xh-scope-tabs[data-part='trigger'][data-state='active'] {
-    border-color: var(--xh-tabs-trigger-border-active, var(--xh-_tone-border, var(--xh-border-default)));
-    background: var(--xh-tabs-trigger-bg-active, var(--xh-_tone-subtle, var(--xh-bg-surface-raised)));
-    box-shadow: var(--xh-tabs-trigger-shadow-active, var(--xh-elevation-raised));
+    border-color: var(--xh-tabs-trigger-border-current, var(--xh-_tone-border, var(--xh-border-default)));
+    background: var(--xh-tabs-trigger-bg-current, var(--xh-_tone-subtle, var(--xh-bg-surface-raised)));
+    box-shadow: var(--xh-tabs-trigger-shadow-current, var(--xh-elevation-raised));
   }
 
   /* segment 档的标签压在抬起面之上：面是绝对定位的部件，写在标签之后也不许盖住字。
@@ -48428,7 +48428,7 @@
      不单列一条的话指针一压到选中项上，形态档的选中底就被轻档吃掉 */
   .xh-scope-tabs[data-part='root']:is([data-variant='card'], [data-variant='segmented'])
     .xh-scope-tabs[data-part='trigger']:not([data-disabled])[data-state='active']:hover {
-    background: var(--xh-tabs-trigger-bg-active-hover, var(--xh-_tabs-trigger-bg-active-hover));
+    background: var(--xh-tabs-trigger-bg-current-hover, var(--xh-_tabs-trigger-bg-active-hover));
   }
 
   /* line 档的禁用字色由家族按 aria-disabled 给 */
@@ -48495,7 +48495,7 @@
 
   .xh-scope-tabs[data-part='tab-drag-trigger']:not([data-disabled]):hover,
   .xh-scope-tabs[data-part='tab-drag-trigger'][data-dragging] {
-    color: var(--xh-tabs-drag-fg-active, var(--xh-fg-default));
+    color: var(--xh-tabs-drag-fg-dragging, var(--xh-fg-default));
   }
 
   .xh-scope-tabs[data-part='tab-drag-trigger'][data-dragging] {
@@ -48628,10 +48628,10 @@
     inline-size: var(--xh-_tabs-indicator-w);
     block-size: var(--xh-_tabs-indicator-h);
     box-sizing: border-box;
-    border: var(--xh-stroke-thin) solid var(--xh-tabs-trigger-border-active, var(--xh-_tone-border, var(--xh-border-default)));
+    border: var(--xh-stroke-thin) solid var(--xh-tabs-trigger-border-current, var(--xh-_tone-border, var(--xh-border-default)));
     border-radius: var(--xh-tabs-trigger-radius, var(--xh-shape-inset));
-    background: var(--xh-tabs-trigger-bg-active, var(--xh-_tone-subtle, var(--xh-bg-surface-raised)));
-    box-shadow: var(--xh-tabs-trigger-shadow-active, var(--xh-elevation-raised));
+    background: var(--xh-tabs-trigger-bg-current, var(--xh-_tone-subtle, var(--xh-bg-surface-raised)));
+    box-shadow: var(--xh-tabs-trigger-shadow-current, var(--xh-elevation-raised));
     pointer-events: none;
     transform: translate(var(--xh-_tabs-indicator-x), var(--xh-_tabs-indicator-y));
     transition:
@@ -49583,7 +49583,7 @@
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-tags-input-action-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-tags-input-action-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-tags-input-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-tags-input-action-bg-pressed, var(--xh-_action-variant-bg-pressed));
     /* 清空钮（设计真源 §8.3）：圆形钮，静息字形取次级前景兑 50%，指到钮上换满色 */
     --xh-action-fg-rest: var(--xh-tags-input-action-fg, var(--xh-fg-field-clear));
     --xh-action-fg-hover: var(--xh-tags-input-action-fg-hover, var(--xh-fg-default));
@@ -49803,7 +49803,7 @@
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-text-field-action-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-text-field-action-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-text-field-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-text-field-action-bg-pressed, var(--xh-_action-variant-bg-pressed));
     /* 清空钮（设计真源 §8.3）：圆形钮，静息字形取次级前景兑 50%，指到钮上换满色 */
     --xh-action-fg-rest: var(--xh-text-field-action-fg, var(--xh-fg-field-clear));
     --xh-action-fg-hover: var(--xh-text-field-action-fg-hover, var(--xh-fg-default));
@@ -50085,7 +50085,7 @@
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-time-field-action-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-time-field-action-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-time-field-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-time-field-action-bg-pressed, var(--xh-_action-variant-bg-pressed));
     /* 清空钮（设计真源 §8.3）：圆形钮，静息字形取次级前景兑 50%，指到钮上换满色 */
     --xh-action-fg-rest: var(--xh-time-field-action-fg, var(--xh-fg-field-clear));
     --xh-action-fg-hover: var(--xh-time-field-action-fg-hover, var(--xh-fg-default));
@@ -50476,7 +50476,7 @@
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-time-picker-action-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-time-picker-action-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-time-picker-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-time-picker-action-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-time-picker-action-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-time-picker-action-fg-hover, var(--xh-fg-default));
     --xh-action-border-rest: transparent;
@@ -50616,7 +50616,7 @@
     --xh-action-radius: var(--xh-time-picker-confirm-trigger-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-time-picker-confirm-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-time-picker-confirm-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-time-picker-confirm-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-time-picker-confirm-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-time-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-time-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-time-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-pressed));
@@ -51352,7 +51352,7 @@
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-time-range-picker-action-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-time-range-picker-action-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-time-range-picker-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-time-range-picker-action-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-time-range-picker-action-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-time-range-picker-action-fg-hover, var(--xh-fg-default));
     --xh-action-border-rest: transparent;
@@ -51902,7 +51902,7 @@
   .xh-scope-toggle[data-part='root'] {
     --xh-_toggle-bg-on: var(--xh-toggle-bg-on, var(--xh-_tone, var(--xh-bg-brand)));
     --xh-_toggle-bg-on-hover: var(--xh-toggle-bg-on-hover, var(--xh-_tone-hover, var(--xh-bg-brand-hover)));
-    --xh-_toggle-bg-on-active: var(--xh-toggle-bg-on-active, var(--xh-_tone-active, var(--xh-bg-brand-active)));
+    --xh-_toggle-bg-on-active: var(--xh-toggle-bg-on-pressed, var(--xh-_tone-active, var(--xh-bg-brand-active)));
     --xh-_toggle-fg-on: var(--xh-toggle-fg-on, var(--xh-_tone-on, var(--xh-fg-on-brand)));
     --xh-_toggle-border-on: var(--xh-toggle-border-on, var(--xh-_tone, var(--xh-bg-brand)));
     /* 禁用同时降级前景与表面，不靠 opacity；选中且禁用时取选中又禁用的面（主色往承载面兑一半），选中信息不丢；
@@ -51911,7 +51911,7 @@
     --xh-_toggle-fg-on-disabled: var(--xh-toggle-fg-on-disabled, var(--xh-_toggle-fg-on));
     --xh-action-bg-rest: var(--xh-toggle-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-toggle-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-toggle-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-toggle-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-toggle-bg, var(--xh-_action-variant-bg-focus-visible));
     --xh-action-bg-disabled: var(--xh-toggle-bg-disabled, var(--xh-_action-variant-bg-disabled));
     --xh-action-fg-rest: var(--xh-toggle-fg, var(--xh-_action-variant-fg-rest));
@@ -52178,7 +52178,7 @@
     --xh-action-radius: 0;
     --xh-action-bg-rest: var(--xh-toggle-group-item-bg, var(--xh-_toggle-group-item-bg));
     --xh-action-bg-hover: var(--xh-toggle-group-item-bg-hover, var(--xh-_toggle-group-item-bg-hover));
-    --xh-action-bg-pressed: var(--xh-toggle-group-item-bg-active, var(--xh-_toggle-group-item-bg-active));
+    --xh-action-bg-pressed: var(--xh-toggle-group-item-bg-pressed, var(--xh-_toggle-group-item-bg-active));
     --xh-action-bg-focus-visible: var(--xh-toggle-group-item-bg, var(--xh-_toggle-group-item-bg));
     --xh-action-bg-disabled: var(--xh-toggle-group-item-bg-disabled, var(--xh-bg-subtle));
     --xh-action-fg-rest: var(--xh-toggle-group-item-fg, var(--xh-_toggle-group-item-fg));
@@ -52261,7 +52261,7 @@
   .xh-scope-toggle-group[data-part='item'][data-state='on'] {
     --xh-action-bg-rest: var(--xh-toggle-group-item-bg-on, var(--xh-_toggle-group-item-bg-on));
     --xh-action-bg-hover: var(--xh-toggle-group-item-bg-on-hover, var(--xh-_toggle-group-item-bg-on-hover));
-    --xh-action-bg-pressed: var(--xh-toggle-group-item-bg-on-active, var(--xh-_toggle-group-item-bg-on-active));
+    --xh-action-bg-pressed: var(--xh-toggle-group-item-bg-on-pressed, var(--xh-_toggle-group-item-bg-on-active));
     --xh-action-bg-focus-visible: var(--xh-toggle-group-item-bg-on, var(--xh-_toggle-group-item-bg-on));
     --xh-action-bg-disabled: var(
       --xh-toggle-group-item-bg-on-disabled,
@@ -53042,7 +53042,7 @@
     --xh-action-radius: var(--xh-toolbar-item-radius, var(--xh-_action-profile-radius));
     --xh-action-bg-rest: var(--xh-toolbar-item-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-toolbar-item-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-toolbar-item-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-toolbar-item-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-disabled: var(--xh-toolbar-item-bg-disabled, var(--xh-_action-variant-bg-disabled));
     --xh-action-fg-rest: var(--xh-toolbar-item-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-toolbar-item-fg, var(--xh-_action-variant-fg-hover));
@@ -53074,24 +53074,24 @@
     --xh-action-shadow-hover: var(--xh-_highlight-brand);
     --xh-action-shadow-pressed: var(--xh-_highlight-brand);
     --xh-action-shadow-disabled: none;
-    --xh-action-bg-rest: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
-    --xh-action-bg-hover: var(--xh-toolbar-item-bg-pressed-hover, var(--xh-bg-brand-hover));
-    --xh-action-bg-pressed: var(--xh-toolbar-item-bg-pressed-active, var(--xh-bg-brand-active));
-    --xh-action-bg-focus-visible: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
+    --xh-action-bg-rest: var(--xh-toolbar-item-bg-on, var(--xh-bg-brand));
+    --xh-action-bg-hover: var(--xh-toolbar-item-bg-on-hover, var(--xh-bg-brand-hover));
+    --xh-action-bg-pressed: var(--xh-toolbar-item-bg-on-pressed, var(--xh-bg-brand-active));
+    --xh-action-bg-focus-visible: var(--xh-toolbar-item-bg-on, var(--xh-bg-brand));
     --xh-action-bg-disabled: var(
-      --xh-toolbar-item-bg-pressed-disabled,
+      --xh-toolbar-item-bg-on-disabled,
       var(--xh-bg-brand-disabled)
     );
-    --xh-action-fg-rest: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand));
-    --xh-action-fg-hover: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand));
-    --xh-action-fg-pressed: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand));
-    --xh-action-fg-focus-visible: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand));
-    --xh-action-fg-disabled: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand));
-    --xh-action-border-rest: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
-    --xh-action-border-hover: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
-    --xh-action-border-pressed: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
-    --xh-action-border-focus-visible: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
-    --xh-action-border-disabled: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
+    --xh-action-fg-rest: var(--xh-toolbar-item-fg-on, var(--xh-fg-on-brand));
+    --xh-action-fg-hover: var(--xh-toolbar-item-fg-on, var(--xh-fg-on-brand));
+    --xh-action-fg-pressed: var(--xh-toolbar-item-fg-on, var(--xh-fg-on-brand));
+    --xh-action-fg-focus-visible: var(--xh-toolbar-item-fg-on, var(--xh-fg-on-brand));
+    --xh-action-fg-disabled: var(--xh-toolbar-item-fg-on, var(--xh-fg-on-brand));
+    --xh-action-border-rest: var(--xh-toolbar-item-bg-on, var(--xh-bg-brand));
+    --xh-action-border-hover: var(--xh-toolbar-item-bg-on, var(--xh-bg-brand));
+    --xh-action-border-pressed: var(--xh-toolbar-item-bg-on, var(--xh-bg-brand));
+    --xh-action-border-focus-visible: var(--xh-toolbar-item-bg-on, var(--xh-bg-brand));
+    --xh-action-border-disabled: var(--xh-toolbar-item-bg-on, var(--xh-bg-brand));
   }
 
   .xh-scope-toolbar[data-part='item'][hidden] {
@@ -53638,7 +53638,7 @@
     --xh-action-visual-size: var(--xh-tour-close-size, var(--xh-_action-profile-visual-size));
     --xh-action-radius: var(--xh-tour-close-radius, var(--xh-shape-control));
     --xh-action-bg-hover: var(--xh-tour-close-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-tour-close-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-tour-close-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-tour-close-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-tour-close-fg-hover, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-tour-close-fg-hover, var(--xh-_action-variant-fg-pressed));
@@ -54335,12 +54335,12 @@
     --xh-action-border-pressed: var(--xh-transfer-trigger-border, var(--xh-_action-variant-border-pressed));
     --xh-action-bg-rest: var(--xh-transfer-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-transfer-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-transfer-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-transfer-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-transfer-trigger-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-transfer-trigger-fg, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-transfer-trigger-fg, var(--xh-_action-variant-fg-pressed));
     --xh-action-shadow-hover: var(--xh-transfer-trigger-shadow-hover, none);
-    --xh-action-shadow-pressed: var(--xh-transfer-trigger-shadow-active, none);
+    --xh-action-shadow-pressed: var(--xh-transfer-trigger-shadow-pressed, none);
     --xh-action-font-size: var(--xh-transfer-trigger-font-size, var(--xh-text-label-size));
     /* 作者塞进钮里的图标与皮肤画的兜底箭头同一把尺：按 icon 档取字形尺寸。
        配方尚未把 profile 字形档灌进 --xh-icon-size，钮内字形先按 icon 档逐钮取值 */
@@ -55198,7 +55198,7 @@
 
   .xh-scope-tree[data-part='node-drag-trigger']:not([data-disabled]):hover,
   .xh-scope-tree[data-part='node-drag-trigger'][data-dragging] {
-    color: var(--xh-tree-drag-fg-active, var(--xh-fg-default));
+    color: var(--xh-tree-drag-fg-dragging, var(--xh-fg-default));
   }
 
   .xh-scope-tree[data-part='node-drag-trigger'][data-dragging] {
@@ -55617,7 +55617,7 @@
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-tree-select-action-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-tree-select-action-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-tree-select-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-tree-select-action-bg-pressed, var(--xh-_action-variant-bg-pressed));
     /* 清空钮（设计真源 §8.3）：圆形钮，静息字形取次级前景兑 50%，指到钮上换满色 */
     --xh-action-fg-rest: var(--xh-tree-select-action-fg, var(--xh-fg-field-clear));
     --xh-action-fg-hover: var(--xh-tree-select-action-fg-hover, var(--xh-fg-default));

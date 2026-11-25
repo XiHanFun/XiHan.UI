@@ -70,7 +70,7 @@
        不取页面语义面。白面压在亮图上分不出来（白 30% 的面压亮图不到 1.4:1），这几件留在深纱上 */
     --xh-_image-viewer-chrome-bg: var(--xh-image-viewer-chrome-bg, var(--xh-bg-media-chrome));
     --xh-_image-viewer-chrome-bg-hover: var(--xh-image-viewer-action-bg-hover, var(--xh-bg-media-chrome-hover));
-    --xh-_image-viewer-chrome-bg-active: var(--xh-image-viewer-action-bg-active, var(--xh-bg-media-chrome-active));
+    --xh-_image-viewer-chrome-bg-active: var(--xh-image-viewer-action-bg-pressed, var(--xh-bg-media-chrome-active));
 
     position: relative;
     inline-size: 100%;
@@ -322,7 +322,7 @@
   [data-scope='image-viewer'][data-part='close-trigger'] {
     --xh-action-bg-rest: var(--xh-_image-viewer-chrome-bg);
     --xh-action-bg-hover: var(--xh-image-viewer-close-bg-hover, var(--xh-_image-viewer-chrome-bg-hover));
-    --xh-action-bg-pressed: var(--xh-image-viewer-close-bg-active, var(--xh-_image-viewer-chrome-bg-active));
+    --xh-action-bg-pressed: var(--xh-image-viewer-close-bg-pressed, var(--xh-_image-viewer-chrome-bg-active));
     --xh-action-bg-focus-visible: var(--xh-_image-viewer-chrome-bg);
     --xh-action-bg-disabled: var(--xh-_image-viewer-chrome-bg);
     /* 看图时整块 chrome 盖住页面，叉的颜色随那层继承；使用者要单独换叉的颜色走这支槽 */
@@ -381,7 +381,7 @@
   /* 工具条里的钮：悬停 / 按下取墨色淡底阶梯，工具条这块液态面就是它们的墨色域 */
   :where([data-material='liquid']) [data-scope='image-viewer'][data-part='toolbar'][data-xh-liquid] > [data-part] {
     --xh-action-bg-hover: var(--xh-image-viewer-action-bg-hover, var(--xh-bg-subtle));
-    --xh-action-bg-pressed: var(--xh-image-viewer-action-bg-active, var(--xh-bg-subtle-hover));
+    --xh-action-bg-pressed: var(--xh-image-viewer-action-bg-pressed, var(--xh-bg-subtle-hover));
     --xh-action-fg-rest: currentColor;
     --xh-action-fg-hover: currentColor;
     --xh-action-fg-pressed: currentColor;
@@ -393,7 +393,7 @@
   :where([data-material='liquid']) [data-scope='image-viewer'][data-part='close-trigger'][data-xh-liquid] {
     --xh-action-bg-rest: var(--xh-image-viewer-chrome-bg, var(--xh-_liquid-bg));
     --xh-action-bg-hover: var(--xh-image-viewer-action-bg-hover, var(--xh-_liquid-bg-hover));
-    --xh-action-bg-pressed: var(--xh-image-viewer-action-bg-active, var(--xh-_liquid-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-image-viewer-action-bg-pressed, var(--xh-_liquid-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-image-viewer-chrome-bg, var(--xh-material-liquid-focus-surface));
     --xh-action-bg-disabled: var(--xh-image-viewer-chrome-bg, var(--xh-_liquid-bg));
     --xh-action-fg-rest: var(--xh-material-liquid-fg);
@@ -425,7 +425,7 @@
     --xh-action-fg-pressed: var(--xh-image-viewer-close-fg, var(--xh-material-liquid-fg));
     --xh-action-fg-focus-visible: var(--xh-image-viewer-close-fg, var(--xh-material-liquid-fg));
     --xh-action-bg-hover: var(--xh-image-viewer-close-bg-hover, var(--xh-_liquid-bg-hover));
-    --xh-action-bg-pressed: var(--xh-image-viewer-close-bg-active, var(--xh-_liquid-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-image-viewer-close-bg-pressed, var(--xh-_liquid-bg-pressed));
     --xh-action-radius: var(--xh-image-viewer-close-radius, var(--xh-shape-circle));
   }
 

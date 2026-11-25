@@ -348,7 +348,7 @@
     --xh-action-visual-size: var(--xh-tour-close-size, var(--xh-_action-profile-visual-size));
     --xh-action-radius: var(--xh-tour-close-radius, var(--xh-shape-control));
     --xh-action-bg-hover: var(--xh-tour-close-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-tour-close-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-tour-close-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-tour-close-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-tour-close-fg-hover, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-tour-close-fg-hover, var(--xh-_action-variant-fg-pressed));

@@ -390,8 +390,8 @@
   }
 
   [data-scope='citation'][data-part='source'][data-state='active'] [data-part='source-index']:where([data-scope='citation']) {
-    background: var(--xh-citation-index-active-bg, var(--xh-bg-brand));
-    color: var(--xh-citation-index-active-fg, var(--xh-fg-on-brand));
+    background: var(--xh-citation-index-bg-current, var(--xh-bg-brand));
+    color: var(--xh-citation-index-fg-current, var(--xh-fg-on-brand));
   }
 
   [data-scope='citation'][data-part='source-title'] {

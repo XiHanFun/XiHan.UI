@@ -403,8 +403,8 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-file-upload-clear-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | file-upload 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-file-upload-clear-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | file-upload 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-file-upload-clear-bg-pressed` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | file-upload 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-file-upload-clear-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | file-upload 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-file-upload-clear-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | file-upload 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-file-upload-clear-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-_action-profile-font-size` | file-upload 的 clear-trigger 部件 font-size 覆盖槽。 |
@@ -412,8 +412,8 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `--xh-file-upload-clear-h` | `clear-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | file-upload 的 clear-trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-file-upload-clear-px` | `clear-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | file-upload 的 clear-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-file-upload-clear-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-control` | file-upload 的 clear-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-file-upload-delete-bg-active` | `item-delete-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | file-upload 的 item-delete-trigger 部件 background-color 覆盖槽。 |
 | `--xh-file-upload-delete-bg-hover` | `item-delete-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | file-upload 的 item-delete-trigger 部件 background-color 覆盖槽。 |
+| `--xh-file-upload-delete-bg-pressed` | `item-delete-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | file-upload 的 item-delete-trigger 部件 background-color 覆盖槽。 |
 | `--xh-file-upload-delete-fg` | `item-delete-trigger` | `color` | `default` | `--xh-fg-muted` | file-upload 的 item-delete-trigger 部件 color 覆盖槽。 |
 | `--xh-file-upload-delete-fg-hover` | `item-delete-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-danger-hover` | file-upload 的 item-delete-trigger 部件 color 覆盖槽。 |
 | `--xh-file-upload-delete-radius` | `item-delete-trigger` | `border-radius` | `default` | `--xh-shape-control` | file-upload 的 item-delete-trigger 部件 border-radius 覆盖槽。 |
@@ -474,8 +474,8 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `--xh-file-upload-size-fg` | `item-size-text` | `color` | `default` | `--xh-fg-subtle` | file-upload 的 item-size-text 部件 color 覆盖槽。 |
 | `--xh-file-upload-size-font-size` | `item-size-text` | `font-size` | `default` | `--xh-text-caption-size` | file-upload 的 item-size-text 部件 font-size 覆盖槽。 |
 | `--xh-file-upload-trigger-bg` | `trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | file-upload 的 trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
-| `--xh-file-upload-trigger-bg-active` | `trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | file-upload 的 trigger 部件 background-color 覆盖槽。 |
 | `--xh-file-upload-trigger-bg-hover` | `trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | file-upload 的 trigger 部件 background-color 覆盖槽。 |
+| `--xh-file-upload-trigger-bg-pressed` | `trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | file-upload 的 trigger 部件 background-color 覆盖槽。 |
 | `--xh-file-upload-trigger-border` | `trigger` | `border` | `default` | `--xh-_action-variant-border-rest` | file-upload 的 trigger 部件 border 覆盖槽。 |
 | `--xh-file-upload-trigger-fg` | `trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | file-upload 的 trigger 部件 color 覆盖槽。 |
 | `--xh-file-upload-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_action-profile-font-size` | file-upload 的 trigger 部件 font-size 覆盖槽。 |

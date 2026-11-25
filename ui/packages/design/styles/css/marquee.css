@@ -218,7 +218,7 @@
   [data-scope='marquee'][data-part='autoplay-trigger'] {
     --xh-action-bg-rest: var(--xh-marquee-trigger-bg, var(--xh-bg-surface));
     --xh-action-bg-hover: var(--xh-marquee-trigger-bg-hover, var(--xh-bg-subtle-opaque));
-    --xh-action-bg-pressed: var(--xh-marquee-trigger-bg-active, var(--xh-bg-subtle-hover-opaque));
+    --xh-action-bg-pressed: var(--xh-marquee-trigger-bg-pressed, var(--xh-bg-subtle-hover-opaque));
     --xh-action-bg-focus-visible: var(--xh-marquee-trigger-bg, var(--xh-bg-surface));
     /* 作者塞进来的图标跟着 icon 档走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-marquee-icon-size, var(--xh-_action-profile-glyph-size));

@@ -65,7 +65,7 @@
   /* 触发器的长相归作者，皮肤只表达展开态：展开着的那一张是打开路径，落与家族 hover 同档的中性面——
      打开中不是选中，不用品牌色、不接语气；哪一张开着由浮层本身说明。不加粗：加粗会推挤相邻内容 */
   [data-scope='menu'][data-part='trigger']:not([data-disabled])[data-state='open'] {
-    background: var(--xh-menu-trigger-bg-active, var(--xh-bg-subtle));
+    background: var(--xh-menu-trigger-bg-open, var(--xh-bg-subtle));
   }
 
   [data-scope='menu'][data-part='content'] {
@@ -183,7 +183,7 @@
     --xh-collection-bg-hover: var(--xh-menu-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-keyboard-highlight: var(--xh-menu-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-pressed: var(--xh-menu-item-bg-pressed, var(--xh-bg-subtle-hover));
-    --xh-collection-bg-open-path: var(--xh-menu-item-bg-active, var(--xh-bg-subtle));
+    --xh-collection-bg-open-path: var(--xh-menu-item-bg-open, var(--xh-bg-subtle));
     /* data-highlighted 同时覆盖指针与键盘路径：指针只换面，焦点环在 :focus-visible 下再接回 */
     --xh-collection-outline-keyboard-highlight: transparent;
 

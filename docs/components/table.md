@@ -832,8 +832,8 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `--xh-table-detail-px` | `cell`<br>`expanded-row` | `padding-inline` | `default` | `--xh-_table-cell-px` | table 的 cell、expanded-row 部件 padding-inline 覆盖槽。 |
 | `--xh-table-detail-py` | `cell`<br>`expanded-row` | `padding-block` | `default` | `--xh-space-3` | table 的 cell、expanded-row 部件 padding-block 覆盖槽。 |
 | `--xh-table-drag-fg` | `column-drag-trigger` | `color` | `default` | `--xh-fg-subtle` | table 的 column-drag-trigger 部件 color 覆盖槽。 |
-| `--xh-table-drag-fg-active` | `column-drag-trigger` | `color` | `disabled`<br>`dragging`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-default` | table 的 column-drag-trigger 部件 color 覆盖槽。 |
 | `--xh-table-drag-fg-disabled` | `column-drag-trigger` | `color` | `disabled` | `--xh-fg-disabled` | table 的 column-drag-trigger 部件 color 覆盖槽。 |
+| `--xh-table-drag-fg-dragging` | `column-drag-trigger` | `color` | `disabled`<br>`dragging`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-default` | table 的 column-drag-trigger 部件 color 覆盖槽。 |
 | `--xh-table-drag-grip-h` | `column-drag-trigger` | `block-size` | `empty` | `--xh-space-2` | table 的 column-drag-trigger 部件 block-size 覆盖槽。 |
 | `--xh-table-drag-grip-w` | `column-drag-trigger` | `inline-size` | `empty` | `--xh-space-1` | table 的 column-drag-trigger 部件 inline-size 覆盖槽。 |
 | `--xh-table-drag-size` | `column-drag-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | table 的 column-drag-trigger 部件 block-size、inline-size 覆盖槽。 |
@@ -844,7 +844,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `--xh-table-expand-fg` | `expand-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-subtle` | table 的 expand-trigger 部件 color 覆盖槽。 |
 | `--xh-table-fg` | `root` | `color` | `default` | `--xh-fg-default` | table 的 root 部件 color 覆盖槽。 |
 | `--xh-table-filter-fg` | `column-header`<br>`trigger` | `color` | `default` | `--xh-fg-subtle` | table 的 column-header、trigger 部件 color 覆盖槽。 |
-| `--xh-table-filter-fg-active` | `column-header`<br>`trigger` | `color` | `filtered` | `--xh-fg-brand` | table 的 column-header、trigger 部件 color 覆盖槽。 |
+| `--xh-table-filter-fg-filtered` | `column-header`<br>`trigger` | `color` | `filtered` | `--xh-fg-brand` | table 的 column-header、trigger 部件 color 覆盖槽。 |
 | `--xh-table-filter-size` | `column-header`<br>`trigger` | `--xh-icon-size` | `default` | `--xh-_table-trigger-size` | table 的 column-header、trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-table-font-size` | `empty`<br>`loading`<br>`root`<br>`row` | `--xh-placeholder-font-size`<br>`font-size` | `default` | `--xh-_table-font-size` | table 的 empty、loading、root、row 部件 --xh-placeholder-font-size、font-size 覆盖槽。 |
 | `--xh-table-footer-bg` | `cell`<br>`footer`<br>`row` | `background` | `default`<br>`fixed`<br>`frozen` | `--xh-bg-subtle`<br>`--xh-bg-subtle-opaque` | table 的 cell、footer、row 部件 background 覆盖槽。 |
@@ -866,7 +866,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `--xh-table-pagination-gap` | `root` | `margin-block-start` | `default` | `--xh-space-3` | table 的 root 部件 margin-block-start 覆盖槽。 |
 | `--xh-table-radius` | `root` | `border-radius` | `variant=outline`<br>`variant=subtle` | `--xh-shape-surface` | table 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-table-resize-fg` | `column-resize-trigger` | `background` | `default` | `--xh-border-default` | table 的 column-resize-trigger 部件 background 覆盖槽。 |
-| `--xh-table-resize-fg-active` | `column-resize-trigger` | `background` | `hover`<br>`resizing` | `--xh-bg-brand` | table 的 column-resize-trigger 部件 background 覆盖槽。 |
+| `--xh-table-resize-fg-resizing` | `column-resize-trigger` | `background` | `hover`<br>`resizing` | `--xh-bg-brand` | table 的 column-resize-trigger 部件 background 覆盖槽。 |
 | `--xh-table-resize-line` | `column-resize-trigger` | `inline-size` | `default` | `--xh-stroke-thin` | table 的 column-resize-trigger 部件 inline-size 覆盖槽。 |
 | `--xh-table-resize-line-length` | `column-resize-trigger` | `block-size` | `default` | `60%` | table 的 column-resize-trigger 部件 block-size 覆盖槽。 |
 | `--xh-table-resize-radius` | `column-resize-trigger` | `border-radius` | `default` | `--xh-shape-pill` | table 的 column-resize-trigger 部件 border-radius 覆盖槽。 |
@@ -879,8 +879,8 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `--xh-table-row-border` | `body`<br>`cell`<br>`column-header`<br>`expanded-row`<br>`footer`<br>`header`<br>`item`<br>`root`<br>`row` | `border-block-start`<br>`border-inline-end` | `index=0`<br>`is([data-part='header'], [data-part='body'], [data-part='footer'])`<br>`is([data-part='row'], [data-part='expanded-row'])`<br>`not(:last-child)`<br>`not([data-index='0'])`<br>`not([hidden])`<br>`split` | `--xh-border-subtle` | table 的 body、cell、column-header、expanded-row、footer、header、item、root、row 部件 border-block-start、border-inline-end 覆盖槽。 |
 | `--xh-table-row-cursor` | `row` | `cursor` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=page` | `default` | table 的 row 部件 cursor 覆盖槽。 |
 | `--xh-table-row-drag-fg` | `row-drag-trigger` | `color` | `default` | `--xh-fg-subtle` | table 的 row-drag-trigger 部件 color 覆盖槽。 |
-| `--xh-table-row-drag-fg-active` | `row-drag-trigger` | `color` | `disabled`<br>`dragging`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-default` | table 的 row-drag-trigger 部件 color 覆盖槽。 |
 | `--xh-table-row-drag-fg-disabled` | `row-drag-trigger` | `color` | `disabled` | `--xh-fg-disabled` | table 的 row-drag-trigger 部件 color 覆盖槽。 |
+| `--xh-table-row-drag-fg-dragging` | `row-drag-trigger` | `color` | `disabled`<br>`dragging`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-default` | table 的 row-drag-trigger 部件 color 覆盖槽。 |
 | `--xh-table-row-drag-grip-long` | `row-drag-trigger` | `inline-size` | `empty` | `--xh-space-2` | table 的 row-drag-trigger 部件 inline-size 覆盖槽。 |
 | `--xh-table-row-drag-grip-short` | `row-drag-trigger` | `block-size` | `empty` | `--xh-space-1` | table 的 row-drag-trigger 部件 block-size 覆盖槽。 |
 | `--xh-table-row-drag-size` | `row-drag-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | table 的 row-drag-trigger 部件 block-size、inline-size 覆盖槽。 |
@@ -888,7 +888,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `--xh-table-sort-bg-hover` | `column-header`<br>`sort-trigger`<br>`trigger` | `background`<br>`background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover`<br>`--xh-bg-subtle-hover` | table 的 column-header、sort-trigger、trigger 部件 background、background-color 覆盖槽。 |
 | `--xh-table-sort-bg-pressed` | `sort-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | table 的 sort-trigger 部件 background-color 覆盖槽。 |
 | `--xh-table-sort-fg` | `sort-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-subtle` | table 的 sort-trigger 部件 color 覆盖槽。 |
-| `--xh-table-sort-fg-active` | `sort-trigger` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`sort`<br>`sort-index` | `--xh-fg-default` | table 的 sort-trigger 部件 color 覆盖槽。 |
+| `--xh-table-sort-fg-pressed` | `sort-trigger` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`sort`<br>`sort-index` | `--xh-fg-default` | table 的 sort-trigger 部件 color 覆盖槽。 |
 | `--xh-table-sort-size` | `sort-trigger` | `--xh-icon-size` | `default` | `--xh-_table-trigger-size` | table 的 sort-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-table-span-layer` | `cell`<br>`column-header` | `z-index` | `is([data-part='cell'], [data-part='column-header'])`<br>`row-span` | `1` | table 的 cell、column-header 部件 z-index 覆盖槽。 |
 | `--xh-table-state-fg` | `empty`<br>`loading` | `--xh-placeholder-fg` | `default` | `--xh-fg-muted` | table 的 empty、loading 部件 --xh-placeholder-fg 覆盖槽。 |

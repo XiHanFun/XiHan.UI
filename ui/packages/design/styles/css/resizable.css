@@ -73,7 +73,7 @@
   }
 
   [data-scope='resizable'][data-part='handle'][data-resizing] {
-    --xh-_resizable-indicator-color: var(--xh-resizable-handle-bg-active, var(--xh-bg-brand));
+    --xh-_resizable-indicator-color: var(--xh-resizable-handle-bg-resizing, var(--xh-bg-brand));
   }
 
   [data-scope='resizable'][data-part='handle']:focus-visible {

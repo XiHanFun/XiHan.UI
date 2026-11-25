@@ -350,7 +350,7 @@
 
   /* 落进已选区间的刻度点描边跟 range 同色 */
   [data-scope='slider'][data-part='tick'][data-passed] {
-    border-color: var(--xh-slider-tick-border-active, var(--xh-_tone, var(--xh-bg-brand)));
+    border-color: var(--xh-slider-tick-border-passed, var(--xh-_tone, var(--xh-bg-brand)));
   }
 
   [data-scope='slider'][data-part='tick-label'] {
@@ -368,7 +368,7 @@
   }
 
   [data-scope='slider'][data-part='tick-label'][data-passed] {
-    color: var(--xh-slider-tick-label-fg-active, var(--xh-fg-default));
+    color: var(--xh-slider-tick-label-fg-passed, var(--xh-fg-default));
   }
 
   /* 禁用：刻度点与文案由 tick-group 上的 data-disabled 下发（连接层不给每个刻度单发），
@@ -378,7 +378,7 @@
   }
 
   [data-scope='slider'][data-part='tick-group'][data-disabled] [data-part='tick'][data-passed]:where([data-scope='slider']) {
-    border-color: var(--xh-slider-tick-border-active-disabled, var(--xh-bg-subtle-hover-opaque));
+    border-color: var(--xh-slider-tick-border-passed-disabled, var(--xh-bg-subtle-hover-opaque));
   }
 
   [data-scope='slider'][data-part='tick-group'][data-disabled] [data-part='tick-label']:where([data-scope='slider']) {

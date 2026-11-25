@@ -49,7 +49,7 @@
     --xh-action-font-size: var(--xh-drawer-trigger-font-size, var(--xh-_action-profile-font-size));
     --xh-action-bg-rest: var(--xh-drawer-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-drawer-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-drawer-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-drawer-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-drawer-trigger-bg, var(--xh-_action-variant-bg-focus-visible));
     --xh-action-fg-rest: var(--xh-drawer-trigger-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-drawer-trigger-fg, var(--xh-_action-variant-fg-hover));
@@ -462,7 +462,7 @@
     --xh-action-visual-size: var(--xh-drawer-close-size, var(--xh-_action-profile-visual-size));
     --xh-action-radius: var(--xh-drawer-close-radius, var(--xh-shape-control));
     --xh-action-bg-hover: var(--xh-drawer-close-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-drawer-close-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-drawer-close-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-drawer-close-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-drawer-close-fg-hover, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-drawer-close-fg-hover, var(--xh-_action-variant-fg-pressed));
@@ -531,7 +531,7 @@
   }
 
   [data-scope='drawer'][data-part='resize-trigger'][data-resizing] {
-    --xh-_drawer-resize-indicator: var(--xh-drawer-resize-trigger-bg-active, var(--xh-bg-brand));
+    --xh-_drawer-resize-indicator: var(--xh-drawer-resize-trigger-bg-resizing, var(--xh-bg-brand));
   }
 
   /* 键盘落在把手上时指示条换成焦点色：命中区贴着面板边，外扩的环会压到页面上 */

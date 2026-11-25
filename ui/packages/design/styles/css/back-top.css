@@ -52,7 +52,7 @@
   [data-scope='back-top'][data-part='trigger'] {
     --xh-action-bg-rest: var(--xh-back-top-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-back-top-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-back-top-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-back-top-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-back-top-bg, var(--xh-_action-variant-bg-focus-visible));
     --xh-action-bg-disabled: var(--xh-back-top-bg, var(--xh-_action-variant-bg-disabled));
     --xh-action-fg-rest: var(--xh-back-top-fg, var(--xh-_action-variant-fg-rest));
@@ -87,7 +87,7 @@
        liquid 档由配方换成液态面；这里把使用者槽接到 Action Control 的桥接槽 */
     --xh-action-bg-rest: var(--xh-back-top-bg, var(--xh-_material-bg));
     --xh-action-bg-hover: var(--xh-back-top-bg-hover, var(--xh-_material-bg-hover));
-    --xh-action-bg-pressed: var(--xh-back-top-bg-active, var(--xh-_material-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-back-top-bg-pressed, var(--xh-_material-bg-pressed));
     --xh-action-bg-focus-visible: var(--xh-back-top-bg, var(--xh-_material-bg-focus));
     --xh-action-bg-disabled: var(--xh-back-top-bg, var(--xh-_material-bg));
     --xh-action-fg-rest: var(--xh-back-top-fg, var(--xh-_material-fg));

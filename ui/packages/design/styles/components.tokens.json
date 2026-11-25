@@ -605,29 +605,6 @@
       "description": "alert 的 root 部件 border 覆盖槽。"
     },
     {
-      "name": "--xh-alert-close-bg-active",
-      "component": "alert",
-      "part": [
-        "close-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_tone-subtle-active"
-      ],
-      "visibility": "public",
-      "description": "alert 的 close-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-alert-close-bg-hover",
       "component": "alert",
       "part": [
@@ -645,6 +622,29 @@
       ],
       "defaultToken": [
         "--xh-_tone-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "alert 的 close-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-alert-close-bg-pressed",
+      "component": "alert",
+      "part": [
+        "close-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_tone-subtle-active"
       ],
       "visibility": "public",
       "description": "alert 的 close-trigger 部件 background-color 覆盖槽。"
@@ -3182,32 +3182,6 @@
       "description": "back-top 的 root、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-back-top-bg-active",
-      "component": "back-top",
-      "part": [
-        "root",
-        "trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed",
-        "variant=outline"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed",
-        "--xh-_material-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "back-top 的 root、trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-back-top-bg-hover",
       "component": "back-top",
       "part": [
@@ -3228,6 +3202,32 @@
       "defaultToken": [
         "--xh-_action-variant-bg-hover",
         "--xh-_material-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "back-top 的 root、trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-back-top-bg-pressed",
+      "component": "back-top",
+      "part": [
+        "root",
+        "trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
+        "variant=outline"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed",
+        "--xh-_material-bg-pressed"
       ],
       "visibility": "public",
       "description": "back-top 的 root、trigger 部件 background-color 覆盖槽。"
@@ -4251,29 +4251,6 @@
       "description": "button 的 root 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-button-bg-active",
-      "component": "button",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "button 的 root 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-button-bg-hover",
       "component": "button",
       "part": [
@@ -4291,6 +4268,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "button 的 root 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-button-bg-pressed",
+      "component": "button",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "button 的 root 部件 background-color 覆盖槽。"
@@ -4809,7 +4809,28 @@
       "description": "calendar-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-calendar-picker-cell-bg-selected-active",
+      "name": "--xh-calendar-picker-cell-bg-selected-disabled",
+      "component": "calendar-picker",
+      "part": [
+        "cell-trigger"
+      ],
+      "property": [
+        "--xh-ink-surface",
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "selected",
+        "xh-ink-surface"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "calendar-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-picker-cell-bg-selected-pressed",
       "component": "calendar-picker",
       "part": [
         "cell-trigger"
@@ -4831,27 +4852,6 @@
       ],
       "visibility": "public",
       "description": "calendar-picker 的 cell-trigger 部件 background-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-calendar-picker-cell-bg-selected-disabled",
-      "component": "calendar-picker",
-      "part": [
-        "cell-trigger"
-      ],
-      "property": [
-        "--xh-ink-surface",
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "selected",
-        "xh-ink-surface"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle-hover"
-      ],
-      "visibility": "public",
-      "description": "calendar-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-picker-cell-fg",
@@ -6004,7 +6004,28 @@
       "description": "calendar-range-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-calendar-range-picker-cell-bg-selected-active",
+      "name": "--xh-calendar-range-picker-cell-bg-selected-disabled",
+      "component": "calendar-range-picker",
+      "part": [
+        "cell-trigger"
+      ],
+      "property": [
+        "--xh-ink-surface",
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "selected",
+        "xh-ink-surface"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "calendar-range-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-range-picker-cell-bg-selected-pressed",
       "component": "calendar-range-picker",
       "part": [
         "cell-trigger"
@@ -6033,27 +6054,6 @@
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-calendar-range-picker-cell-bg-selected-disabled",
-      "component": "calendar-range-picker",
-      "part": [
-        "cell-trigger"
-      ],
-      "property": [
-        "--xh-ink-surface",
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "selected",
-        "xh-ink-surface"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle-hover"
-      ],
-      "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-cell-fg",
@@ -8007,7 +8007,7 @@
       "description": "carousel 的 indicator 部件 background 覆盖槽。"
     },
     {
-      "name": "--xh-carousel-indicator-bg-active",
+      "name": "--xh-carousel-indicator-bg-current",
       "component": "carousel",
       "part": [
         "indicator"
@@ -8072,7 +8072,7 @@
       "description": "carousel 的 indicator、root 部件 background 覆盖槽。"
     },
     {
-      "name": "--xh-carousel-indicator-bg-selected-active",
+      "name": "--xh-carousel-indicator-bg-selected-pressed",
       "component": "carousel",
       "part": [
         "indicator"
@@ -8390,32 +8390,6 @@
       "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-carousel-trigger-bg-active",
-      "component": "carousel",
-      "part": [
-        "autoplay-trigger",
-        "next-trigger",
-        "prev-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_material-bg-pressed",
-        "--xh-bg-subtle-hover-opaque"
-      ],
-      "visibility": "public",
-      "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-carousel-trigger-bg-hover",
       "component": "carousel",
       "part": [
@@ -8436,6 +8410,32 @@
       "defaultToken": [
         "--xh-_material-bg-hover",
         "--xh-bg-subtle-opaque"
+      ],
+      "visibility": "public",
+      "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-carousel-trigger-bg-pressed",
+      "component": "carousel",
+      "part": [
+        "autoplay-trigger",
+        "next-trigger",
+        "prev-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_material-bg-pressed",
+        "--xh-bg-subtle-hover-opaque"
       ],
       "visibility": "public",
       "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background-color 覆盖槽。"
@@ -9324,29 +9324,6 @@
       "description": "cascader 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-cascader-action-bg-active",
-      "component": "cascader",
-      "part": [
-        "clear-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "cascader 的 clear-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-cascader-action-bg-hover",
       "component": "cascader",
       "part": [
@@ -9364,6 +9341,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 clear-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-cascader-action-bg-pressed",
+      "component": "cascader",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "cascader 的 clear-trigger 部件 background-color 覆盖槽。"
@@ -10609,42 +10609,6 @@
       "description": "cascader 的 input 部件 margin-inline-end、padding-inline 覆盖槽。"
     },
     {
-      "name": "--xh-cascader-item-active-font-weight",
-      "component": "cascader",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "font-weight"
-      ],
-      "state": [
-        "in-path"
-      ],
-      "defaultToken": [
-        "--xh-font-weight-regular"
-      ],
-      "visibility": "public",
-      "description": "cascader 的 item 部件 font-weight 覆盖槽。"
-    },
-    {
-      "name": "--xh-cascader-item-bg-active",
-      "component": "cascader",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "in-path"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle"
-      ],
-      "visibility": "public",
-      "description": "cascader 的 item 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-cascader-item-bg-hover",
       "component": "cascader",
       "part": [
@@ -10673,6 +10637,24 @@
       ],
       "visibility": "public",
       "description": "cascader 的 item、search-item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-cascader-item-bg-open",
+      "component": "cascader",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "in-path"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-cascader-item-bg-pressed",
@@ -10967,6 +10949,24 @@
       ],
       "visibility": "public",
       "description": "cascader 的 empty、item、search-item 部件 --xh-placeholder-font-size、font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-cascader-item-font-weight-open",
+      "component": "cascader",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "in-path"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-regular"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 item 部件 font-weight 覆盖槽。"
     },
     {
       "name": "--xh-cascader-item-font-weight-selected",
@@ -13189,44 +13189,6 @@
       "description": "citation 的 positioner、root 部件 --xh-icon-size 覆盖槽。"
     },
     {
-      "name": "--xh-citation-index-active-bg",
-      "component": "citation",
-      "part": [
-        "source",
-        "source-index"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "state=active"
-      ],
-      "defaultToken": [
-        "--xh-bg-brand"
-      ],
-      "visibility": "public",
-      "description": "citation 的 source、source-index 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-citation-index-active-fg",
-      "component": "citation",
-      "part": [
-        "source",
-        "source-index"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "state=active"
-      ],
-      "defaultToken": [
-        "--xh-fg-on-brand"
-      ],
-      "visibility": "public",
-      "description": "citation 的 source、source-index 部件 color 覆盖槽。"
-    },
-    {
       "name": "--xh-citation-index-bg",
       "component": "citation",
       "part": [
@@ -13245,6 +13207,25 @@
       "description": "citation 的 source-index 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-citation-index-bg-current",
+      "component": "citation",
+      "part": [
+        "source",
+        "source-index"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "state=active"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand"
+      ],
+      "visibility": "public",
+      "description": "citation 的 source、source-index 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-citation-index-fg",
       "component": "citation",
       "part": [
@@ -13261,6 +13242,25 @@
       ],
       "visibility": "public",
       "description": "citation 的 source-index 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-index-fg-current",
+      "component": "citation",
+      "part": [
+        "source",
+        "source-index"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "state=active"
+      ],
+      "defaultToken": [
+        "--xh-fg-on-brand"
+      ],
+      "visibility": "public",
+      "description": "citation 的 source、source-index 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-citation-index-font-size",
@@ -13987,7 +13987,25 @@
       "description": "citation 的 trigger 部件 border-radius 覆盖槽。"
     },
     {
-      "name": "--xh-clipboard-control-active-layer",
+      "name": "--xh-clipboard-control-gap",
+      "component": "clipboard",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "0"
+      ],
+      "visibility": "public",
+      "description": "clipboard 的 control 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-clipboard-control-layer-focus",
       "component": "clipboard",
       "part": [
         "control",
@@ -14007,24 +14025,6 @@
       ],
       "visibility": "public",
       "description": "clipboard 的 control、copy-trigger、input 部件 z-index 覆盖槽。"
-    },
-    {
-      "name": "--xh-clipboard-control-gap",
-      "component": "clipboard",
-      "part": [
-        "control"
-      ],
-      "property": [
-        "gap"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "0"
-      ],
-      "visibility": "public",
-      "description": "clipboard 的 control 部件 gap 覆盖槽。"
     },
     {
       "name": "--xh-clipboard-control-min-w",
@@ -14108,29 +14108,6 @@
       "description": "clipboard 的 copy-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-clipboard-copy-trigger-bg-active",
-      "component": "clipboard",
-      "part": [
-        "copy-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "clipboard 的 copy-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-clipboard-copy-trigger-bg-disabled",
       "component": "clipboard",
       "part": [
@@ -14168,6 +14145,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "clipboard 的 copy-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-clipboard-copy-trigger-bg-pressed",
+      "component": "clipboard",
+      "part": [
+        "copy-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "clipboard 的 copy-trigger 部件 background-color 覆盖槽。"
@@ -16033,29 +16033,6 @@
       "description": "color-field 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-color-field-action-bg-active",
-      "component": "color-field",
-      "part": [
-        "clear-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "color-field 的 clear-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-color-field-action-bg-hover",
       "component": "color-field",
       "part": [
@@ -16073,6 +16050,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 clear-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-action-bg-pressed",
+      "component": "color-field",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "color-field 的 clear-trigger 部件 background-color 覆盖槽。"
@@ -16809,7 +16809,33 @@
       "description": "color-picker 的 clear-trigger、eye-dropper-trigger 部件 --xh-ink-surface、background、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-color-picker-action-bg-active",
+      "name": "--xh-color-picker-action-bg-hover",
+      "component": "color-picker",
+      "part": [
+        "clear-trigger",
+        "eye-dropper-trigger"
+      ],
+      "property": [
+        "background",
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "loading",
+        "not(:disabled)",
+        "not([data-disabled])",
+        "not([data-loading])"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-hover",
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 clear-trigger、eye-dropper-trigger 部件 background、background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-action-bg-pressed",
       "component": "color-picker",
       "part": [
         "clear-trigger",
@@ -16838,32 +16864,6 @@
       "description": "color-picker 的 clear-trigger、eye-dropper-trigger 部件 background、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-color-picker-action-bg-hover",
-      "component": "color-picker",
-      "part": [
-        "clear-trigger",
-        "eye-dropper-trigger"
-      ],
-      "property": [
-        "background",
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "hover",
-        "loading",
-        "not(:disabled)",
-        "not([data-disabled])",
-        "not([data-loading])"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-hover",
-        "--xh-bg-subtle"
-      ],
-      "visibility": "public",
-      "description": "color-picker 的 clear-trigger、eye-dropper-trigger 部件 background、background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-color-picker-action-border",
       "component": "color-picker",
       "part": [
@@ -16882,7 +16882,7 @@
       "description": "color-picker 的 eye-dropper-trigger 部件 border 覆盖槽。"
     },
     {
-      "name": "--xh-color-picker-action-border-active",
+      "name": "--xh-color-picker-action-border-picking",
       "component": "color-picker",
       "part": [
         "eye-dropper-trigger"
@@ -17045,29 +17045,6 @@
       "description": "color-picker 的 confirm-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-color-picker-confirm-trigger-bg-active",
-      "component": "color-picker",
-      "part": [
-        "confirm-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "color-picker 的 confirm-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-color-picker-confirm-trigger-bg-hover",
       "component": "color-picker",
       "part": [
@@ -17085,6 +17062,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 confirm-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-confirm-trigger-bg-pressed",
+      "component": "color-picker",
+      "part": [
+        "confirm-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "color-picker 的 confirm-trigger 部件 background-color 覆盖槽。"
@@ -19516,30 +19516,6 @@
       "description": "combobox 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-combobox-action-bg-active",
-      "component": "combobox",
-      "part": [
-        "clear-trigger",
-        "trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "combobox 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-combobox-action-bg-hover",
       "component": "combobox",
       "part": [
@@ -19558,6 +19534,30 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "combobox 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-combobox-action-bg-pressed",
+      "component": "combobox",
+      "part": [
+        "clear-trigger",
+        "trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "combobox 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
@@ -22565,24 +22565,6 @@
       "description": "context-menu 的 positioner、root 部件 --xh-icon-size 覆盖槽。"
     },
     {
-      "name": "--xh-context-menu-item-bg-active",
-      "component": "context-menu",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "in-path"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle"
-      ],
-      "visibility": "public",
-      "description": "context-menu 的 item 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-context-menu-item-bg-hover",
       "component": "context-menu",
       "part": [
@@ -22598,6 +22580,24 @@
         "hover",
         "is(:focus-visible, [data-highlighted])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "context-menu 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-context-menu-item-bg-open",
+      "component": "context-menu",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "in-path"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
@@ -23080,29 +23080,6 @@
       "description": "date-field 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-date-field-action-bg-active",
-      "component": "date-field",
-      "part": [
-        "clear-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "date-field 的 clear-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-date-field-action-bg-hover",
       "component": "date-field",
       "part": [
@@ -23120,6 +23097,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "date-field 的 clear-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-field-action-bg-pressed",
+      "component": "date-field",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "date-field 的 clear-trigger 部件 background-color 覆盖槽。"
@@ -23912,30 +23912,6 @@
       "description": "date-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-date-picker-action-bg-active",
-      "component": "date-picker",
-      "part": [
-        "clear-trigger",
-        "trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "date-picker 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-date-picker-action-bg-hover",
       "component": "date-picker",
       "part": [
@@ -23960,6 +23936,30 @@
       ],
       "visibility": "public",
       "description": "date-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-picker-action-bg-pressed",
+      "component": "date-picker",
+      "part": [
+        "clear-trigger",
+        "trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-action-fg",
@@ -24131,29 +24131,6 @@
       "description": "date-picker 的 confirm-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-date-picker-confirm-trigger-bg-active",
-      "component": "date-picker",
-      "part": [
-        "confirm-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "date-picker 的 confirm-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-date-picker-confirm-trigger-bg-hover",
       "component": "date-picker",
       "part": [
@@ -24171,6 +24148,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 confirm-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-picker-confirm-trigger-bg-pressed",
+      "component": "date-picker",
+      "part": [
+        "confirm-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "date-picker 的 confirm-trigger 部件 background-color 覆盖槽。"
@@ -25922,30 +25922,6 @@
       "description": "date-range-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-date-range-picker-action-bg-active",
-      "component": "date-range-picker",
-      "part": [
-        "clear-trigger",
-        "trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "date-range-picker 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-date-range-picker-action-bg-hover",
       "component": "date-range-picker",
       "part": [
@@ -25970,6 +25946,30 @@
       ],
       "visibility": "public",
       "description": "date-range-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-action-bg-pressed",
+      "component": "date-range-picker",
+      "part": [
+        "clear-trigger",
+        "trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-date-range-picker-action-fg",
@@ -26214,29 +26214,6 @@
       "description": "date-range-picker 的 confirm-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-date-range-picker-confirm-trigger-bg-active",
-      "component": "date-range-picker",
-      "part": [
-        "confirm-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "date-range-picker 的 confirm-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-date-range-picker-confirm-trigger-bg-hover",
       "component": "date-range-picker",
       "part": [
@@ -26254,6 +26231,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 confirm-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-confirm-trigger-bg-pressed",
+      "component": "date-range-picker",
+      "part": [
+        "confirm-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "date-range-picker 的 confirm-trigger 部件 background-color 覆盖槽。"
@@ -28547,29 +28547,6 @@
       "description": "dialog 的 content 部件 border 覆盖槽。"
     },
     {
-      "name": "--xh-dialog-close-bg-active",
-      "component": "dialog",
-      "part": [
-        "close-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "dialog 的 close-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-dialog-close-bg-hover",
       "component": "dialog",
       "part": [
@@ -28587,6 +28564,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "dialog 的 close-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-dialog-close-bg-pressed",
+      "component": "dialog",
+      "part": [
+        "close-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "dialog 的 close-trigger 部件 background-color 覆盖槽。"
@@ -30247,29 +30247,6 @@
       "description": "download-trigger 的 root 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-download-trigger-bg-active",
-      "component": "download-trigger",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "download-trigger 的 root 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-download-trigger-bg-disabled",
       "component": "download-trigger",
       "part": [
@@ -30307,6 +30284,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "download-trigger 的 root 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-download-trigger-bg-pressed",
+      "component": "download-trigger",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "download-trigger 的 root 部件 background-color 覆盖槽。"
@@ -30731,29 +30731,6 @@
       "description": "drawer 的 content 部件 border 覆盖槽。"
     },
     {
-      "name": "--xh-drawer-close-bg-active",
-      "component": "drawer",
-      "part": [
-        "close-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "drawer 的 close-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-drawer-close-bg-hover",
       "component": "drawer",
       "part": [
@@ -30771,6 +30748,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 close-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-drawer-close-bg-pressed",
+      "component": "drawer",
+      "part": [
+        "close-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "drawer 的 close-trigger 部件 background-color 覆盖槽。"
@@ -31260,24 +31260,6 @@
       "description": "drawer 的 resize-trigger 部件 background 覆盖槽。"
     },
     {
-      "name": "--xh-drawer-resize-trigger-bg-active",
-      "component": "drawer",
-      "part": [
-        "resize-trigger"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "resizing"
-      ],
-      "defaultToken": [
-        "--xh-bg-brand"
-      ],
-      "visibility": "public",
-      "description": "drawer 的 resize-trigger 部件 background 覆盖槽。"
-    },
-    {
       "name": "--xh-drawer-resize-trigger-bg-hover",
       "component": "drawer",
       "part": [
@@ -31291,6 +31273,24 @@
       ],
       "defaultToken": [
         "--xh-border-control-hover"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 resize-trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-drawer-resize-trigger-bg-resizing",
+      "component": "drawer",
+      "part": [
+        "resize-trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "resizing"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand"
       ],
       "visibility": "public",
       "description": "drawer 的 resize-trigger 部件 background 覆盖槽。"
@@ -31473,29 +31473,6 @@
       "description": "drawer 的 trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-drawer-trigger-bg-active",
-      "component": "drawer",
-      "part": [
-        "trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "drawer 的 trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-drawer-trigger-bg-hover",
       "component": "drawer",
       "part": [
@@ -31537,6 +31514,29 @@
       ],
       "visibility": "public",
       "description": "drawer 的 trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-drawer-trigger-bg-pressed",
+      "component": "drawer",
+      "part": [
+        "trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-drawer-trigger-border",
@@ -32432,31 +32432,6 @@
       "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-editable-trigger-bg-active",
-      "component": "editable",
-      "part": [
-        "cancel-trigger",
-        "edit-trigger",
-        "submit-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-editable-trigger-bg-disabled",
       "component": "editable",
       "part": [
@@ -32498,6 +32473,31 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-editable-trigger-bg-pressed",
+      "component": "editable",
+      "part": [
+        "cancel-trigger",
+        "edit-trigger",
+        "submit-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 background-color 覆盖槽。"
@@ -34897,29 +34897,6 @@
       "description": "field-array 的 add-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-field-array-add-bg-active",
-      "component": "field-array",
-      "part": [
-        "add-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "field-array 的 add-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-field-array-add-bg-hover",
       "component": "field-array",
       "part": [
@@ -34937,6 +34914,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "field-array 的 add-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-field-array-add-bg-pressed",
+      "component": "field-array",
+      "part": [
+        "add-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "field-array 的 add-trigger 部件 background-color 覆盖槽。"
@@ -35655,32 +35655,6 @@
       "description": "field-array 的 item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-field-array-trigger-bg-active",
-      "component": "field-array",
-      "part": [
-        "item-delete-trigger",
-        "item-drag-trigger",
-        "move-down-trigger",
-        "move-up-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "field-array 的 item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-field-array-trigger-bg-hover",
       "component": "field-array",
       "part": [
@@ -35701,6 +35675,32 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "field-array 的 item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-field-array-trigger-bg-pressed",
+      "component": "field-array",
+      "part": [
+        "item-delete-trigger",
+        "item-drag-trigger",
+        "move-down-trigger",
+        "move-up-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "field-array 的 item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。"
@@ -36110,29 +36110,6 @@
       "description": "fieldset 的 legend 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-file-upload-clear-bg-active",
-      "component": "file-upload",
-      "part": [
-        "clear-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "file-upload 的 clear-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-file-upload-clear-bg-hover",
       "component": "file-upload",
       "part": [
@@ -36150,6 +36127,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "file-upload 的 clear-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-file-upload-clear-bg-pressed",
+      "component": "file-upload",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "file-upload 的 clear-trigger 部件 background-color 覆盖槽。"
@@ -36289,29 +36289,6 @@
       "description": "file-upload 的 clear-trigger 部件 border-radius 覆盖槽。"
     },
     {
-      "name": "--xh-file-upload-delete-bg-active",
-      "component": "file-upload",
-      "part": [
-        "item-delete-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "file-upload 的 item-delete-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-file-upload-delete-bg-hover",
       "component": "file-upload",
       "part": [
@@ -36329,6 +36306,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "file-upload 的 item-delete-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-file-upload-delete-bg-pressed",
+      "component": "file-upload",
+      "part": [
+        "item-delete-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "file-upload 的 item-delete-trigger 部件 background-color 覆盖槽。"
@@ -37459,29 +37459,6 @@
       "description": "file-upload 的 trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-file-upload-trigger-bg-active",
-      "component": "file-upload",
-      "part": [
-        "trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "file-upload 的 trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-file-upload-trigger-bg-hover",
       "component": "file-upload",
       "part": [
@@ -37499,6 +37476,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "file-upload 的 trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-file-upload-trigger-bg-pressed",
+      "component": "file-upload",
+      "part": [
+        "trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "file-upload 的 trigger 部件 background-color 覆盖槽。"
@@ -37702,30 +37702,6 @@
       "description": "filter-builder 的 add-condition-trigger、add-group-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-filter-builder-add-bg-active",
-      "component": "filter-builder",
-      "part": [
-        "add-condition-trigger",
-        "add-group-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "filter-builder 的 add-condition-trigger、add-group-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-filter-builder-add-bg-hover",
       "component": "filter-builder",
       "part": [
@@ -37744,6 +37720,30 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 add-condition-trigger、add-group-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-add-bg-pressed",
+      "component": "filter-builder",
+      "part": [
+        "add-condition-trigger",
+        "add-group-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "filter-builder 的 add-condition-trigger、add-group-trigger 部件 background-color 覆盖槽。"
@@ -37953,30 +37953,6 @@
       "description": "filter-builder 的 condition-delete-trigger、group-delete-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-filter-builder-delete-bg-active",
-      "component": "filter-builder",
-      "part": [
-        "condition-delete-trigger",
-        "group-delete-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "filter-builder 的 condition-delete-trigger、group-delete-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-filter-builder-delete-bg-hover",
       "component": "filter-builder",
       "part": [
@@ -37995,6 +37971,30 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 condition-delete-trigger、group-delete-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-delete-bg-pressed",
+      "component": "filter-builder",
+      "part": [
+        "condition-delete-trigger",
+        "group-delete-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "filter-builder 的 condition-delete-trigger、group-delete-trigger 部件 background-color 覆盖槽。"
@@ -38533,38 +38533,6 @@
       "description": "float-button 的 list、root、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-float-button-bg-active",
-      "component": "float-button",
-      "part": [
-        "list",
-        "root",
-        "trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "active",
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not(:disabled)",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "not([data-scope])",
-        "pressed",
-        "variant=outline",
-        "variant=subtle"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed",
-        "--xh-_float-button-bg-active",
-        "--xh-_material-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "float-button 的 list、root、trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-float-button-bg-hover",
       "component": "float-button",
       "part": [
@@ -38591,6 +38559,38 @@
         "--xh-_action-variant-bg-hover",
         "--xh-_float-button-bg-hover",
         "--xh-_material-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "float-button 的 list、root、trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-float-button-bg-pressed",
+      "component": "float-button",
+      "part": [
+        "list",
+        "root",
+        "trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "active",
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not(:disabled)",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "not([data-scope])",
+        "pressed",
+        "variant=outline",
+        "variant=subtle"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed",
+        "--xh-_float-button-bg-active",
+        "--xh-_material-bg-pressed"
       ],
       "visibility": "public",
       "description": "float-button 的 list、root、trigger 部件 background-color 覆盖槽。"
@@ -38841,30 +38841,6 @@
       "description": "float-button 的 list、root、trigger 部件 block-size、bottom、inline-size、inset-block-end、inset-block-start、inset-inline-end、inset-inline-start、left、min-inline-size、top 覆盖槽。"
     },
     {
-      "name": "--xh-floating-panel-action-bg-active",
-      "component": "floating-panel",
-      "part": [
-        "close-trigger",
-        "window-state-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "floating-panel 的 close-trigger、window-state-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-floating-panel-action-bg-hover",
       "component": "floating-panel",
       "part": [
@@ -38909,7 +38885,30 @@
       "description": "floating-panel 的 window-state-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-floating-panel-action-bg-on-active",
+      "name": "--xh-floating-panel-action-bg-on-hover",
+      "component": "floating-panel",
+      "part": [
+        "window-state-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "state=on"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "floating-panel 的 window-state-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-floating-panel-action-bg-on-pressed",
       "component": "floating-panel",
       "part": [
         "window-state-trigger"
@@ -38933,9 +38932,10 @@
       "description": "floating-panel 的 window-state-trigger 部件 background-color 覆盖槽。"
     },
     {
-      "name": "--xh-floating-panel-action-bg-on-hover",
+      "name": "--xh-floating-panel-action-bg-pressed",
       "component": "floating-panel",
       "part": [
+        "close-trigger",
         "window-state-trigger"
       ],
       "property": [
@@ -38943,17 +38943,17 @@
       ],
       "state": [
         "disabled",
-        "hover",
+        "is(:active, [data-pressed])",
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
-        "state=on"
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-brand-subtle-hover"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "floating-panel 的 window-state-trigger 部件 background-color 覆盖槽。"
+      "description": "floating-panel 的 close-trigger、window-state-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-floating-panel-action-fg",
@@ -39728,29 +39728,6 @@
       "description": "form 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-form-submit-bg-active",
-      "component": "form",
-      "part": [
-        "submit-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "form 的 submit-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-form-submit-bg-hover",
       "component": "form",
       "part": [
@@ -39768,6 +39745,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "form 的 submit-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-form-submit-bg-pressed",
+      "component": "form",
+      "part": [
+        "submit-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "form 的 submit-trigger 部件 background-color 覆盖槽。"
@@ -39791,29 +39791,6 @@
       "description": "form 的 submit-trigger 部件 border 覆盖槽。"
     },
     {
-      "name": "--xh-form-submit-border-active",
-      "component": "form",
-      "part": [
-        "submit-trigger"
-      ],
-      "property": [
-        "border-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-border-pressed"
-      ],
-      "visibility": "public",
-      "description": "form 的 submit-trigger 部件 border-color 覆盖槽。"
-    },
-    {
       "name": "--xh-form-submit-border-hover",
       "component": "form",
       "part": [
@@ -39831,6 +39808,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-border-hover"
+      ],
+      "visibility": "public",
+      "description": "form 的 submit-trigger 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-form-submit-border-pressed",
+      "component": "form",
+      "part": [
+        "submit-trigger"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-border-pressed"
       ],
       "visibility": "public",
       "description": "form 的 submit-trigger 部件 border-color 覆盖槽。"
@@ -40226,29 +40226,6 @@
       "description": "form 的 reset-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-form-trigger-bg-active",
-      "component": "form",
-      "part": [
-        "reset-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "form 的 reset-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-form-trigger-bg-disabled",
       "component": "form",
       "part": [
@@ -40287,6 +40264,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "form 的 reset-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-form-trigger-bg-pressed",
+      "component": "form",
+      "part": [
+        "reset-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "form 的 reset-trigger 部件 background-color 覆盖槽。"
@@ -44923,38 +44923,6 @@
       "description": "image-cropper 的 root 部件 inline-size 覆盖槽。"
     },
     {
-      "name": "--xh-image-viewer-action-bg-active",
-      "component": "image-viewer",
-      "part": [
-        "close-trigger",
-        "content",
-        "next-trigger",
-        "prev-trigger",
-        "toolbar"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "material=liquid",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed",
-        "where([data-material='liquid'])",
-        "xh-liquid"
-      ],
-      "defaultToken": [
-        "--xh-_liquid-bg-pressed",
-        "--xh-bg-media-chrome-active",
-        "--xh-bg-subtle-hover"
-      ],
-      "visibility": "public",
-      "description": "image-viewer 的 close-trigger、content、next-trigger、prev-trigger、toolbar 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-image-viewer-action-bg-hover",
       "component": "image-viewer",
       "part": [
@@ -44981,6 +44949,38 @@
         "--xh-_liquid-bg-hover",
         "--xh-bg-media-chrome-hover",
         "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "image-viewer 的 close-trigger、content、next-trigger、prev-trigger、toolbar 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-image-viewer-action-bg-pressed",
+      "component": "image-viewer",
+      "part": [
+        "close-trigger",
+        "content",
+        "next-trigger",
+        "prev-trigger",
+        "toolbar"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "material=liquid",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
+        "where([data-material='liquid'])",
+        "xh-liquid"
+      ],
+      "defaultToken": [
+        "--xh-_liquid-bg-pressed",
+        "--xh-bg-media-chrome-active",
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "image-viewer 的 close-trigger、content、next-trigger、prev-trigger、toolbar 部件 background-color 覆盖槽。"
@@ -45074,33 +45074,6 @@
       "description": "image-viewer 的 close-trigger、content、counter、next-trigger、prev-trigger、toolbar 部件 --xh-ink-surface、background、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-image-viewer-close-bg-active",
-      "component": "image-viewer",
-      "part": [
-        "close-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "material=liquid",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed",
-        "where([data-material='liquid'])",
-        "xh-liquid"
-      ],
-      "defaultToken": [
-        "--xh-_image-viewer-chrome-bg-active",
-        "--xh-_liquid-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "image-viewer 的 close-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-image-viewer-close-bg-hover",
       "component": "image-viewer",
       "part": [
@@ -45122,6 +45095,33 @@
       "defaultToken": [
         "--xh-_image-viewer-chrome-bg-hover",
         "--xh-_liquid-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "image-viewer 的 close-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-image-viewer-close-bg-pressed",
+      "component": "image-viewer",
+      "part": [
+        "close-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "material=liquid",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
+        "where([data-material='liquid'])",
+        "xh-liquid"
+      ],
+      "defaultToken": [
+        "--xh-_image-viewer-chrome-bg-active",
+        "--xh-_liquid-bg-pressed"
       ],
       "visibility": "public",
       "description": "image-viewer 的 close-trigger 部件 background-color 覆盖槽。"
@@ -45499,29 +45499,6 @@
       "description": "infinite-scroll 的 load-more-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-infinite-scroll-load-more-bg-active",
-      "component": "infinite-scroll",
-      "part": [
-        "load-more-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "infinite-scroll 的 load-more-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-infinite-scroll-load-more-bg-hover",
       "component": "infinite-scroll",
       "part": [
@@ -45539,6 +45516,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "infinite-scroll 的 load-more-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-infinite-scroll-load-more-bg-pressed",
+      "component": "infinite-scroll",
+      "part": [
+        "load-more-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "infinite-scroll 的 load-more-trigger 部件 background-color 覆盖槽。"
@@ -46725,27 +46725,6 @@
       "description": "json-viewer 的 empty、text、tree 部件 border-radius 覆盖槽。"
     },
     {
-      "name": "--xh-json-viewer-row-bg-active",
-      "component": "json-viewer",
-      "part": [
-        "branch-control"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "not([data-disabled])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle-hover"
-      ],
-      "visibility": "public",
-      "description": "json-viewer 的 branch-control 部件 background 覆盖槽。"
-    },
-    {
       "name": "--xh-json-viewer-row-bg-hover",
       "component": "json-viewer",
       "part": [
@@ -46764,6 +46743,27 @@
       ],
       "visibility": "public",
       "description": "json-viewer 的 branch-control、item 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-json-viewer-row-bg-pressed",
+      "component": "json-viewer",
+      "part": [
+        "branch-control"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "not([data-disabled])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "json-viewer 的 branch-control 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-json-viewer-row-gap",
@@ -47618,29 +47618,6 @@
       "description": "layout 的 sider-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-layout-sider-trigger-bg-active",
-      "component": "layout",
-      "part": [
-        "sider-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "layout 的 sider-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-layout-sider-trigger-bg-hover",
       "component": "layout",
       "part": [
@@ -47658,6 +47635,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "layout 的 sider-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-layout-sider-trigger-bg-pressed",
+      "component": "layout",
+      "part": [
+        "sider-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "layout 的 sider-trigger 部件 background-color 覆盖槽。"
@@ -50411,29 +50411,6 @@
       "description": "marquee 的 autoplay-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-marquee-trigger-bg-active",
-      "component": "marquee",
-      "part": [
-        "autoplay-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle-hover-opaque"
-      ],
-      "visibility": "public",
-      "description": "marquee 的 autoplay-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-marquee-trigger-bg-hover",
       "component": "marquee",
       "part": [
@@ -50451,6 +50428,29 @@
       ],
       "defaultToken": [
         "--xh-bg-subtle-opaque"
+      ],
+      "visibility": "public",
+      "description": "marquee 的 autoplay-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-marquee-trigger-bg-pressed",
+      "component": "marquee",
+      "part": [
+        "autoplay-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover-opaque"
       ],
       "visibility": "public",
       "description": "marquee 的 autoplay-trigger 部件 background-color 覆盖槽。"
@@ -52105,24 +52105,6 @@
       "description": "menu 的 content 部件 --xh-icon-size 覆盖槽。"
     },
     {
-      "name": "--xh-menu-item-bg-active",
-      "component": "menu",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "in-path"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle"
-      ],
-      "visibility": "public",
-      "description": "menu 的 item 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-menu-item-bg-hover",
       "component": "menu",
       "part": [
@@ -52138,6 +52120,24 @@
         "hover",
         "is(:focus-visible, [data-highlighted])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "menu 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-menu-item-bg-open",
+      "component": "menu",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "in-path"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
@@ -52582,7 +52582,7 @@
       "description": "menu 的 item 部件 block-size、inline-size 覆盖槽。"
     },
     {
-      "name": "--xh-menu-trigger-bg-active",
+      "name": "--xh-menu-trigger-bg-open",
       "component": "menu",
       "part": [
         "trigger"
@@ -53015,25 +53015,6 @@
       "description": "menubar 的 positioner、root 部件 --xh-icon-size 覆盖槽。"
     },
     {
-      "name": "--xh-menubar-item-bg-active",
-      "component": "menubar",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "in-path",
-        "xh-collection-context=nav"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle"
-      ],
-      "visibility": "public",
-      "description": "menubar 的 item 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-menubar-item-bg-hover",
       "component": "menubar",
       "part": [
@@ -53049,6 +53030,25 @@
         "hover",
         "is(:focus-visible, [data-highlighted])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "xh-collection-context=nav"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "menubar 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-menubar-item-bg-open",
+      "component": "menubar",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "in-path",
         "xh-collection-context=nav"
       ],
       "defaultToken": [
@@ -53550,25 +53550,6 @@
       "description": "menubar 的 item 部件 block-size、inline-size 覆盖槽。"
     },
     {
-      "name": "--xh-menubar-trigger-bg-active",
-      "component": "menubar",
-      "part": [
-        "trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "in-path",
-        "xh-collection-context=nav"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle"
-      ],
-      "visibility": "public",
-      "description": "menubar 的 trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-menubar-trigger-bg-hover",
       "component": "menubar",
       "part": [
@@ -53582,6 +53563,25 @@
         "error",
         "hover",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "xh-collection-context=nav"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "menubar 的 trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-menubar-trigger-bg-open",
+      "component": "menubar",
+      "part": [
+        "trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "in-path",
         "xh-collection-context=nav"
       ],
       "defaultToken": [
@@ -54892,25 +54892,6 @@
       "description": "navigation-menu 的 branch-trigger、link 部件 border-radius 覆盖槽。"
     },
     {
-      "name": "--xh-navigation-menu-trigger-bg-active",
-      "component": "navigation-menu",
-      "part": [
-        "trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "in-path",
-        "xh-collection-context=nav"
-      ],
-      "defaultToken": [
-        "--xh-_navigation-menu-highlight-bg"
-      ],
-      "visibility": "public",
-      "description": "navigation-menu 的 trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-navigation-menu-trigger-bg-hover",
       "component": "navigation-menu",
       "part": [
@@ -54924,6 +54905,25 @@
         "error",
         "hover",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "xh-collection-context=nav"
+      ],
+      "defaultToken": [
+        "--xh-_navigation-menu-highlight-bg"
+      ],
+      "visibility": "public",
+      "description": "navigation-menu 的 trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-navigation-menu-trigger-bg-open",
+      "component": "navigation-menu",
+      "part": [
+        "trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "in-path",
         "xh-collection-context=nav"
       ],
       "defaultToken": [
@@ -55104,29 +55104,6 @@
       "description": "notification 的 item-action-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-notification-action-bg-active",
-      "component": "notification",
-      "part": [
-        "item-action-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle-hover"
-      ],
-      "visibility": "public",
-      "description": "notification 的 item-action-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-notification-action-bg-hover",
       "component": "notification",
       "part": [
@@ -55144,6 +55121,29 @@
       ],
       "defaultToken": [
         "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "notification 的 item-action-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-notification-action-bg-pressed",
+      "component": "notification",
+      "part": [
+        "item-action-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "notification 的 item-action-trigger 部件 background-color 覆盖槽。"
@@ -55295,29 +55295,6 @@
       "description": "notification 的 item-close-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-notification-close-bg-active",
-      "component": "notification",
-      "part": [
-        "item-close-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "notification 的 item-close-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-notification-close-bg-hover",
       "component": "notification",
       "part": [
@@ -55335,6 +55312,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "notification 的 item-close-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-notification-close-bg-pressed",
+      "component": "notification",
+      "part": [
+        "item-close-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "notification 的 item-close-trigger 部件 background-color 覆盖槽。"
@@ -56929,7 +56929,7 @@
       "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 inline-size、padding-inline-end 覆盖槽。"
     },
     {
-      "name": "--xh-number-field-trigger-bg-active",
+      "name": "--xh-number-field-trigger-bg-pressed",
       "component": "number-field",
       "part": [
         "control",
@@ -57708,34 +57708,6 @@
       "description": "pagination 的 ellipsis-trigger、first-trigger、item、last-trigger、next-trigger、prev-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-pagination-item-bg-active",
-      "component": "pagination",
-      "part": [
-        "ellipsis-trigger",
-        "first-trigger",
-        "item",
-        "last-trigger",
-        "next-trigger",
-        "prev-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "pagination 的 ellipsis-trigger、first-trigger、item、last-trigger、next-trigger、prev-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-pagination-item-bg-hover",
       "component": "pagination",
       "part": [
@@ -57763,6 +57735,34 @@
       "description": "pagination 的 ellipsis-trigger、first-trigger、item、last-trigger、next-trigger、prev-trigger 部件 background-color 覆盖槽。"
     },
     {
+      "name": "--xh-pagination-item-bg-pressed",
+      "component": "pagination",
+      "part": [
+        "ellipsis-trigger",
+        "first-trigger",
+        "item",
+        "last-trigger",
+        "next-trigger",
+        "prev-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
+      ],
+      "visibility": "public",
+      "description": "pagination 的 ellipsis-trigger、first-trigger、item、last-trigger、next-trigger、prev-trigger 部件 background-color 覆盖槽。"
+    },
+    {
       "name": "--xh-pagination-item-bg-selected",
       "component": "pagination",
       "part": [
@@ -57784,30 +57784,6 @@
       "description": "pagination 的 item 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-pagination-item-bg-selected-active",
-      "component": "pagination",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "current",
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_pagination-selected-bg-active"
-      ],
-      "visibility": "public",
-      "description": "pagination 的 item 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-pagination-item-bg-selected-hover",
       "component": "pagination",
       "part": [
@@ -57826,6 +57802,30 @@
       ],
       "defaultToken": [
         "--xh-_pagination-selected-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "pagination 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-pagination-item-bg-selected-pressed",
+      "component": "pagination",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "current",
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_pagination-selected-bg-active"
       ],
       "visibility": "public",
       "description": "pagination 的 item 部件 background-color 覆盖槽。"
@@ -57906,30 +57906,6 @@
       "description": "pagination 的 item 部件 border、border-color 覆盖槽。"
     },
     {
-      "name": "--xh-pagination-item-border-selected-active",
-      "component": "pagination",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "border-color"
-      ],
-      "state": [
-        "current",
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_pagination-selected-border"
-      ],
-      "visibility": "public",
-      "description": "pagination 的 item 部件 border-color 覆盖槽。"
-    },
-    {
       "name": "--xh-pagination-item-border-selected-hover",
       "component": "pagination",
       "part": [
@@ -57945,6 +57921,30 @@
         "loading",
         "not([data-disabled])",
         "not([data-loading])"
+      ],
+      "defaultToken": [
+        "--xh-_pagination-selected-border"
+      ],
+      "visibility": "public",
+      "description": "pagination 的 item 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-pagination-item-border-selected-pressed",
+      "component": "pagination",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "current",
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-_pagination-selected-border"
@@ -59099,29 +59099,6 @@
       "description": "password-input 的 visibility-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-password-input-trigger-bg-active",
-      "component": "password-input",
-      "part": [
-        "visibility-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "password-input 的 visibility-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-password-input-trigger-bg-hover",
       "component": "password-input",
       "part": [
@@ -59139,6 +59116,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "password-input 的 visibility-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-password-input-trigger-bg-pressed",
+      "component": "password-input",
+      "part": [
+        "visibility-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "password-input 的 visibility-trigger 部件 background-color 覆盖槽。"
@@ -60328,29 +60328,6 @@
       "description": "popconfirm 的 cancel-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-popconfirm-cancel-bg-active",
-      "component": "popconfirm",
-      "part": [
-        "cancel-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle-hover"
-      ],
-      "visibility": "public",
-      "description": "popconfirm 的 cancel-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-popconfirm-cancel-bg-focus",
       "component": "popconfirm",
       "part": [
@@ -60386,6 +60363,29 @@
       ],
       "defaultToken": [
         "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "popconfirm 的 cancel-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-popconfirm-cancel-bg-pressed",
+      "component": "popconfirm",
+      "part": [
+        "cancel-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "popconfirm 的 cancel-trigger 部件 background-color 覆盖槽。"
@@ -60954,29 +60954,6 @@
       "description": "popover 的 arrow、content 部件 border 覆盖槽。"
     },
     {
-      "name": "--xh-popover-close-bg-active",
-      "component": "popover",
-      "part": [
-        "close-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "popover 的 close-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-popover-close-bg-hover",
       "component": "popover",
       "part": [
@@ -60994,6 +60971,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "popover 的 close-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-popover-close-bg-pressed",
+      "component": "popover",
+      "part": [
+        "close-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "popover 的 close-trigger 部件 background-color 覆盖槽。"
@@ -62144,29 +62144,6 @@
       "description": "prompt-input 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-prompt-input-send-bg-active",
-      "component": "prompt-input",
-      "part": [
-        "submit-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "prompt-input 的 submit-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-prompt-input-send-bg-hover",
       "component": "prompt-input",
       "part": [
@@ -62207,6 +62184,29 @@
       ],
       "visibility": "public",
       "description": "prompt-input 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-prompt-input-send-bg-pressed",
+      "component": "prompt-input",
+      "part": [
+        "submit-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
+      ],
+      "visibility": "public",
+      "description": "prompt-input 的 submit-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-prompt-input-send-fg",
@@ -62274,30 +62274,6 @@
       "description": "prompt-input 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-prompt-input-stop-bg-active",
-      "component": "prompt-input",
-      "part": [
-        "submit-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "mode=stop",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "prompt-input 的 submit-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-prompt-input-stop-bg-hover",
       "component": "prompt-input",
       "part": [
@@ -62316,6 +62292,30 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "prompt-input 的 submit-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-prompt-input-stop-bg-pressed",
+      "component": "prompt-input",
+      "part": [
+        "submit-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "mode=stop",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "prompt-input 的 submit-trigger 部件 background-color 覆盖槽。"
@@ -63994,29 +63994,6 @@
       "description": "question-flow 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-question-flow-submit-bg-active",
-      "component": "question-flow",
-      "part": [
-        "submit-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "question-flow 的 submit-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-question-flow-submit-bg-hover",
       "component": "question-flow",
       "part": [
@@ -64057,6 +64034,29 @@
       ],
       "visibility": "public",
       "description": "question-flow 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-question-flow-submit-bg-pressed",
+      "component": "question-flow",
+      "part": [
+        "submit-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
+      ],
+      "visibility": "public",
+      "description": "question-flow 的 submit-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-submit-fg",
@@ -66683,30 +66683,6 @@
       "description": "resizable 的 handle 部件 background、border 覆盖槽。"
     },
     {
-      "name": "--xh-resizable-handle-bg-active",
-      "component": "resizable",
-      "part": [
-        "handle"
-      ],
-      "property": [
-        "background",
-        "border"
-      ],
-      "state": [
-        "edge=ne",
-        "edge=nw",
-        "edge=se",
-        "edge=sw",
-        "is([data-edge='ne'], [data-edge='nw'], [data-edge='se'], [data-edge='sw'])",
-        "resizing"
-      ],
-      "defaultToken": [
-        "--xh-bg-brand"
-      ],
-      "visibility": "public",
-      "description": "resizable 的 handle 部件 background、border 覆盖槽。"
-    },
-    {
       "name": "--xh-resizable-handle-bg-hover",
       "component": "resizable",
       "part": [
@@ -66726,6 +66702,30 @@
       ],
       "defaultToken": [
         "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "resizable 的 handle 部件 background、border 覆盖槽。"
+    },
+    {
+      "name": "--xh-resizable-handle-bg-resizing",
+      "component": "resizable",
+      "part": [
+        "handle"
+      ],
+      "property": [
+        "background",
+        "border"
+      ],
+      "state": [
+        "edge=ne",
+        "edge=nw",
+        "edge=se",
+        "edge=sw",
+        "is([data-edge='ne'], [data-edge='nw'], [data-edge='se'], [data-edge='sw'])",
+        "resizing"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand"
       ],
       "visibility": "public",
       "description": "resizable 的 handle 部件 background、border 覆盖槽。"
@@ -67240,24 +67240,6 @@
       "description": "scrollbar 的 thumb 部件 background 覆盖槽。"
     },
     {
-      "name": "--xh-scrollbar-thumb-bg-active",
-      "component": "scrollbar",
-      "part": [
-        "thumb"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "dragging"
-      ],
-      "defaultToken": [
-        "--xh-fg-scrollbar-thumb-active"
-      ],
-      "visibility": "public",
-      "description": "scrollbar 的 thumb 部件 background 覆盖槽。"
-    },
-    {
       "name": "--xh-scrollbar-thumb-bg-disabled",
       "component": "scrollbar",
       "part": [
@@ -67271,6 +67253,24 @@
       ],
       "defaultToken": [
         "--xh-border-subtle"
+      ],
+      "visibility": "public",
+      "description": "scrollbar 的 thumb 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-scrollbar-thumb-bg-dragging",
+      "component": "scrollbar",
+      "part": [
+        "thumb"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "dragging"
+      ],
+      "defaultToken": [
+        "--xh-fg-scrollbar-thumb-active"
       ],
       "visibility": "public",
       "description": "scrollbar 的 thumb 部件 background 覆盖槽。"
@@ -67352,29 +67352,6 @@
       "description": "select 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-select-action-bg-active",
-      "component": "select",
-      "part": [
-        "clear-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "select 的 clear-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-select-action-bg-hover",
       "component": "select",
       "part": [
@@ -67392,6 +67369,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "select 的 clear-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-select-action-bg-pressed",
+      "component": "select",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "select 的 clear-trigger 部件 background-color 覆盖槽。"
@@ -70052,7 +70052,7 @@
       "description": "side-nav 的 branch-content 部件 box-shadow 覆盖槽。"
     },
     {
-      "name": "--xh-side-nav-row-bg-active",
+      "name": "--xh-side-nav-row-bg-current",
       "component": "side-nav",
       "part": [
         "branch-trigger",
@@ -70169,7 +70169,7 @@
       "description": "side-nav 的 branch-trigger、link 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-side-nav-row-fg-active",
+      "name": "--xh-side-nav-row-fg-current",
       "component": "side-nav",
       "part": [
         "branch-trigger",
@@ -70216,7 +70216,7 @@
       "description": "side-nav 的 branch-trigger、link 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-side-nav-row-font-weight-active",
+      "name": "--xh-side-nav-row-font-weight-current",
       "component": "side-nav",
       "part": [
         "branch-trigger",
@@ -70492,29 +70492,6 @@
       "description": "signature-pad 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-signature-pad-clear-bg-active",
-      "component": "signature-pad",
-      "part": [
-        "clear-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "signature-pad 的 clear-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-signature-pad-clear-bg-disabled",
       "component": "signature-pad",
       "part": [
@@ -70552,6 +70529,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "signature-pad 的 clear-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-signature-pad-clear-bg-pressed",
+      "component": "signature-pad",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "signature-pad 的 clear-trigger 部件 background-color 覆盖槽。"
@@ -71600,7 +71600,26 @@
       "description": "slider 的 tick 部件 border 覆盖槽。"
     },
     {
-      "name": "--xh-slider-tick-border-active",
+      "name": "--xh-slider-tick-border-disabled",
+      "component": "slider",
+      "part": [
+        "tick",
+        "tick-group"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "slider 的 tick、tick-group 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-slider-tick-border-passed",
       "component": "slider",
       "part": [
         "tick"
@@ -71618,7 +71637,7 @@
       "description": "slider 的 tick 部件 border-color 覆盖槽。"
     },
     {
-      "name": "--xh-slider-tick-border-active-disabled",
+      "name": "--xh-slider-tick-border-passed-disabled",
       "component": "slider",
       "part": [
         "tick",
@@ -71633,25 +71652,6 @@
       ],
       "defaultToken": [
         "--xh-bg-subtle-hover-opaque"
-      ],
-      "visibility": "public",
-      "description": "slider 的 tick、tick-group 部件 border-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-slider-tick-border-disabled",
-      "component": "slider",
-      "part": [
-        "tick",
-        "tick-group"
-      ],
-      "property": [
-        "border-color"
-      ],
-      "state": [
-        "disabled"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "slider 的 tick、tick-group 部件 border-color 覆盖槽。"
@@ -71675,24 +71675,6 @@
       "description": "slider 的 tick-label 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-slider-tick-label-fg-active",
-      "component": "slider",
-      "part": [
-        "tick-label"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "passed"
-      ],
-      "defaultToken": [
-        "--xh-fg-default"
-      ],
-      "visibility": "public",
-      "description": "slider 的 tick-label 部件 color 覆盖槽。"
-    },
-    {
       "name": "--xh-slider-tick-label-fg-disabled",
       "component": "slider",
       "part": [
@@ -71710,6 +71692,24 @@
       ],
       "visibility": "public",
       "description": "slider 的 tick-group、tick-label 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-slider-tick-label-fg-passed",
+      "component": "slider",
+      "part": [
+        "tick-label"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "passed"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "slider 的 tick-label 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-slider-tick-label-font-size",
@@ -72011,29 +72011,6 @@
       "description": "slider 的 control 部件 block-size 覆盖槽。"
     },
     {
-      "name": "--xh-sortable-drag-bg-active",
-      "component": "sortable",
-      "part": [
-        "item-drag-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "sortable 的 item-drag-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-sortable-drag-bg-hover",
       "component": "sortable",
       "part": [
@@ -72051,6 +72028,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "sortable 的 item-drag-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-sortable-drag-bg-pressed",
+      "component": "sortable",
+      "part": [
+        "item-drag-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "sortable 的 item-drag-trigger 部件 background-color 覆盖槽。"
@@ -74051,7 +74051,7 @@
       "description": "steps 的 title 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-steps-title-fg-active",
+      "name": "--xh-steps-title-fg-current",
       "component": "steps",
       "part": [
         "title"
@@ -75382,7 +75382,25 @@
       "description": "table 的 column-drag-trigger 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-table-drag-fg-active",
+      "name": "--xh-table-drag-fg-disabled",
+      "component": "table",
+      "part": [
+        "column-drag-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-disabled"
+      ],
+      "visibility": "public",
+      "description": "table 的 column-drag-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-table-drag-fg-dragging",
       "component": "table",
       "part": [
         "column-drag-trigger"
@@ -75398,24 +75416,6 @@
       ],
       "defaultToken": [
         "--xh-fg-default"
-      ],
-      "visibility": "public",
-      "description": "table 的 column-drag-trigger 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-table-drag-fg-disabled",
-      "component": "table",
-      "part": [
-        "column-drag-trigger"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "disabled"
-      ],
-      "defaultToken": [
-        "--xh-fg-disabled"
       ],
       "visibility": "public",
       "description": "table 的 column-drag-trigger 部件 color 覆盖槽。"
@@ -75637,7 +75637,7 @@
       "description": "table 的 column-header、trigger 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-table-filter-fg-active",
+      "name": "--xh-table-filter-fg-filtered",
       "component": "table",
       "part": [
         "column-header",
@@ -76064,7 +76064,7 @@
       "description": "table 的 column-resize-trigger 部件 background 覆盖槽。"
     },
     {
-      "name": "--xh-table-resize-fg-active",
+      "name": "--xh-table-resize-fg-resizing",
       "component": "table",
       "part": [
         "column-resize-trigger"
@@ -76343,7 +76343,25 @@
       "description": "table 的 row-drag-trigger 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-table-row-drag-fg-active",
+      "name": "--xh-table-row-drag-fg-disabled",
+      "component": "table",
+      "part": [
+        "row-drag-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-disabled"
+      ],
+      "visibility": "public",
+      "description": "table 的 row-drag-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-table-row-drag-fg-dragging",
       "component": "table",
       "part": [
         "row-drag-trigger"
@@ -76359,24 +76377,6 @@
       ],
       "defaultToken": [
         "--xh-fg-default"
-      ],
-      "visibility": "public",
-      "description": "table 的 row-drag-trigger 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-table-row-drag-fg-disabled",
-      "component": "table",
-      "part": [
-        "row-drag-trigger"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "disabled"
-      ],
-      "defaultToken": [
-        "--xh-fg-disabled"
       ],
       "visibility": "public",
       "description": "table 的 row-drag-trigger 部件 color 覆盖槽。"
@@ -76540,7 +76540,7 @@
       "description": "table 的 sort-trigger 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-table-sort-fg-active",
+      "name": "--xh-table-sort-fg-pressed",
       "component": "table",
       "part": [
         "sort-trigger"
@@ -77143,7 +77143,25 @@
       "description": "tabs 的 tab-drag-trigger 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-tabs-drag-fg-active",
+      "name": "--xh-tabs-drag-fg-disabled",
+      "component": "tabs",
+      "part": [
+        "tab-drag-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-disabled"
+      ],
+      "visibility": "public",
+      "description": "tabs 的 tab-drag-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tabs-drag-fg-dragging",
       "component": "tabs",
       "part": [
         "tab-drag-trigger"
@@ -77159,24 +77177,6 @@
       ],
       "defaultToken": [
         "--xh-fg-default"
-      ],
-      "visibility": "public",
-      "description": "tabs 的 tab-drag-trigger 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-tabs-drag-fg-disabled",
-      "component": "tabs",
-      "part": [
-        "tab-drag-trigger"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "disabled"
-      ],
-      "defaultToken": [
-        "--xh-fg-disabled"
       ],
       "visibility": "public",
       "description": "tabs 的 tab-drag-trigger 部件 color 覆盖槽。"
@@ -77689,7 +77689,7 @@
       "description": "tabs 的 root、trigger 部件 background、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-tabs-trigger-bg-active",
+      "name": "--xh-tabs-trigger-bg-current",
       "component": "tabs",
       "part": [
         "indicator",
@@ -77721,7 +77721,7 @@
       "description": "tabs 的 indicator、root、trigger 部件 background、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-tabs-trigger-bg-active-hover",
+      "name": "--xh-tabs-trigger-bg-current-hover",
       "component": "tabs",
       "part": [
         "root",
@@ -77834,7 +77834,7 @@
       "description": "tabs 的 trigger 部件 border 覆盖槽。"
     },
     {
-      "name": "--xh-tabs-trigger-border-active",
+      "name": "--xh-tabs-trigger-border-current",
       "component": "tabs",
       "part": [
         "indicator",
@@ -77882,7 +77882,7 @@
       "description": "tabs 的 root、trigger 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-tabs-trigger-fg-active",
+      "name": "--xh-tabs-trigger-fg-current",
       "component": "tabs",
       "part": [
         "root",
@@ -78007,7 +78007,7 @@
       "description": "tabs 的 root、trigger 部件 font-weight 覆盖槽。"
     },
     {
-      "name": "--xh-tabs-trigger-font-weight-active",
+      "name": "--xh-tabs-trigger-font-weight-current",
       "component": "tabs",
       "part": [
         "root",
@@ -78124,7 +78124,7 @@
       "description": "tabs 的 indicator、trigger 部件 border-radius 覆盖槽。"
     },
     {
-      "name": "--xh-tabs-trigger-shadow-active",
+      "name": "--xh-tabs-trigger-shadow-current",
       "component": "tabs",
       "part": [
         "indicator",
@@ -78256,38 +78256,6 @@
       "description": "tag 的 root 部件 border-color 覆盖槽。"
     },
     {
-      "name": "--xh-tag-close-bg-active",
-      "component": "tag",
-      "part": [
-        "close-trigger",
-        "root"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "is(:not([data-variant])",
-        "not(:disabled)",
-        "not([data-disabled])",
-        "not([data-tone], [data-disabled])",
-        "pressed",
-        "tone",
-        "variant",
-        "variant=outline",
-        "variant=subtle",
-        "where([data-xh-field-chrome][data-variant='subtle']:not(:focus-within)",
-        "xh-field-chrome"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle-hover",
-        "color-mix(in oklab, currentColor 22%, transparent)"
-      ],
-      "visibility": "public",
-      "description": "tag 的 close-trigger、root 部件 background 覆盖槽。"
-    },
-    {
       "name": "--xh-tag-close-bg-hover",
       "component": "tag",
       "part": [
@@ -78314,6 +78282,38 @@
       "defaultToken": [
         "--xh-bg-subtle",
         "color-mix(in oklab, currentColor 14%, transparent)"
+      ],
+      "visibility": "public",
+      "description": "tag 的 close-trigger、root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-tag-close-bg-pressed",
+      "component": "tag",
+      "part": [
+        "close-trigger",
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "is(:not([data-variant])",
+        "not(:disabled)",
+        "not([data-disabled])",
+        "not([data-tone], [data-disabled])",
+        "pressed",
+        "tone",
+        "variant",
+        "variant=outline",
+        "variant=subtle",
+        "where([data-xh-field-chrome][data-variant='subtle']:not(:focus-within)",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover",
+        "color-mix(in oklab, currentColor 22%, transparent)"
       ],
       "visibility": "public",
       "description": "tag 的 close-trigger、root 部件 background 覆盖槽。"
@@ -78822,29 +78822,6 @@
       "description": "tags-input 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-tags-input-action-bg-active",
-      "component": "tags-input",
-      "part": [
-        "clear-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "tags-input 的 clear-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-tags-input-action-bg-hover",
       "component": "tags-input",
       "part": [
@@ -78862,6 +78839,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "tags-input 的 clear-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tags-input-action-bg-pressed",
+      "component": "tags-input",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "tags-input 的 clear-trigger 部件 background-color 覆盖槽。"
@@ -79946,29 +79946,6 @@
       "description": "text-field 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-text-field-action-bg-active",
-      "component": "text-field",
-      "part": [
-        "clear-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "text-field 的 clear-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-text-field-action-bg-hover",
       "component": "text-field",
       "part": [
@@ -79986,6 +79963,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "text-field 的 clear-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-text-field-action-bg-pressed",
+      "component": "text-field",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "text-field 的 clear-trigger 部件 background-color 覆盖槽。"
@@ -80852,29 +80852,6 @@
       "description": "time-field 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-time-field-action-bg-active",
-      "component": "time-field",
-      "part": [
-        "clear-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "time-field 的 clear-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-time-field-action-bg-hover",
       "component": "time-field",
       "part": [
@@ -80892,6 +80869,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "time-field 的 clear-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-field-action-bg-pressed",
+      "component": "time-field",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "time-field 的 clear-trigger 部件 background-color 覆盖槽。"
@@ -81707,30 +81707,6 @@
       "description": "time-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-time-picker-action-bg-active",
-      "component": "time-picker",
-      "part": [
-        "clear-trigger",
-        "trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "time-picker 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-time-picker-action-bg-hover",
       "component": "time-picker",
       "part": [
@@ -81755,6 +81731,30 @@
       ],
       "visibility": "public",
       "description": "time-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-picker-action-bg-pressed",
+      "component": "time-picker",
+      "part": [
+        "clear-trigger",
+        "trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
+      ],
+      "visibility": "public",
+      "description": "time-picker 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-time-picker-action-fg",
@@ -81996,29 +81996,6 @@
       "description": "time-picker 的 confirm-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-time-picker-confirm-trigger-bg-active",
-      "component": "time-picker",
-      "part": [
-        "confirm-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "time-picker 的 confirm-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-time-picker-confirm-trigger-bg-hover",
       "component": "time-picker",
       "part": [
@@ -82036,6 +82013,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "time-picker 的 confirm-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-picker-confirm-trigger-bg-pressed",
+      "component": "time-picker",
+      "part": [
+        "confirm-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "time-picker 的 confirm-trigger 部件 background-color 覆盖槽。"
@@ -83773,30 +83773,6 @@
       "description": "time-range-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-time-range-picker-action-bg-active",
-      "component": "time-range-picker",
-      "part": [
-        "clear-trigger",
-        "trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "time-range-picker 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-time-range-picker-action-bg-hover",
       "component": "time-range-picker",
       "part": [
@@ -83821,6 +83797,30 @@
       ],
       "visibility": "public",
       "description": "time-range-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-range-picker-action-bg-pressed",
+      "component": "time-range-picker",
+      "part": [
+        "clear-trigger",
+        "trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
+      ],
+      "visibility": "public",
+      "description": "time-range-picker 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-time-range-picker-action-fg",
@@ -86137,29 +86137,6 @@
       "description": "timer 的 control 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-timer-control-bg-active",
-      "component": "timer",
-      "part": [
-        "control"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "timer 的 control 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-timer-control-bg-disabled",
       "component": "timer",
       "part": [
@@ -86197,6 +86174,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "timer 的 control 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-timer-control-bg-pressed",
+      "component": "timer",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "timer 的 control 部件 background-color 覆盖槽。"
@@ -86380,29 +86380,6 @@
       "description": "timer 的 control 部件 border-radius 覆盖槽。"
     },
     {
-      "name": "--xh-timer-control-shadow-active",
-      "component": "timer",
-      "part": [
-        "control"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "none"
-      ],
-      "visibility": "public",
-      "description": "timer 的 control 部件 box-shadow 覆盖槽。"
-    },
-    {
       "name": "--xh-timer-control-shadow-hover",
       "component": "timer",
       "part": [
@@ -86417,6 +86394,29 @@
         "loading",
         "not([data-disabled])",
         "not([data-loading])"
+      ],
+      "defaultToken": [
+        "none"
+      ],
+      "visibility": "public",
+      "description": "timer 的 control 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-timer-control-shadow-pressed",
+      "component": "timer",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "none"
@@ -86628,29 +86628,6 @@
       "description": "toggle 的 root 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-toggle-bg-active",
-      "component": "toggle",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "toggle 的 root 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-toggle-bg-disabled",
       "component": "toggle",
       "part": [
@@ -86716,32 +86693,6 @@
       "description": "toggle 的 root 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-toggle-bg-on-active",
-      "component": "toggle",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "not([data-variant='solid'])",
-        "pressed",
-        "state=on",
-        "variant=solid"
-      ],
-      "defaultToken": [
-        "--xh-_tone-active"
-      ],
-      "visibility": "public",
-      "description": "toggle 的 root 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-toggle-bg-on-disabled",
       "component": "toggle",
       "part": [
@@ -86786,6 +86737,55 @@
       ],
       "defaultToken": [
         "--xh-_tone-hover"
+      ],
+      "visibility": "public",
+      "description": "toggle 的 root 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-toggle-bg-on-pressed",
+      "component": "toggle",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "not([data-variant='solid'])",
+        "pressed",
+        "state=on",
+        "variant=solid"
+      ],
+      "defaultToken": [
+        "--xh-_tone-active"
+      ],
+      "visibility": "public",
+      "description": "toggle 的 root 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-toggle-bg-pressed",
+      "component": "toggle",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 background-color 覆盖槽。"
@@ -87171,29 +87171,6 @@
       "description": "toggle-group 的 item 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-toggle-group-item-bg-active",
-      "component": "toggle-group",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_toggle-group-item-bg-active"
-      ],
-      "visibility": "public",
-      "description": "toggle-group 的 item 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-toggle-group-item-bg-disabled",
       "component": "toggle-group",
       "part": [
@@ -87265,30 +87242,6 @@
       "description": "toggle-group 的 item 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-toggle-group-item-bg-on-active",
-      "component": "toggle-group",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed",
-        "state=on"
-      ],
-      "defaultToken": [
-        "--xh-_toggle-group-item-bg-on-active"
-      ],
-      "visibility": "public",
-      "description": "toggle-group 的 item 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-toggle-group-item-bg-on-disabled",
       "component": "toggle-group",
       "part": [
@@ -87328,6 +87281,53 @@
       ],
       "defaultToken": [
         "--xh-_toggle-group-item-bg-on-hover"
+      ],
+      "visibility": "public",
+      "description": "toggle-group 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-toggle-group-item-bg-on-pressed",
+      "component": "toggle-group",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
+        "state=on"
+      ],
+      "defaultToken": [
+        "--xh-_toggle-group-item-bg-on-active"
+      ],
+      "visibility": "public",
+      "description": "toggle-group 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-toggle-group-item-bg-pressed",
+      "component": "toggle-group",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_toggle-group-item-bg-active"
       ],
       "visibility": "public",
       "description": "toggle-group 的 item 部件 background-color 覆盖槽。"
@@ -88763,29 +88763,6 @@
       "description": "toolbar 的 group、item 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-toolbar-item-bg-active",
-      "component": "toolbar",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "toolbar 的 item 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-toolbar-item-bg-disabled",
       "component": "toolbar",
       "part": [
@@ -88831,7 +88808,7 @@
       "description": "toolbar 的 item 部件 background-color 覆盖槽。"
     },
     {
-      "name": "--xh-toolbar-item-bg-pressed",
+      "name": "--xh-toolbar-item-bg-on",
       "component": "toolbar",
       "part": [
         "item"
@@ -88861,7 +88838,49 @@
       "description": "toolbar 的 item 部件 --xh-ink-surface、background-color、border、border-color 覆盖槽。"
     },
     {
-      "name": "--xh-toolbar-item-bg-pressed-active",
+      "name": "--xh-toolbar-item-bg-on-disabled",
+      "component": "toolbar",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "--xh-ink-surface",
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "xh-ink-surface"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-disabled"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 item 部件 --xh-ink-surface、background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-toolbar-item-bg-on-hover",
+      "component": "toolbar",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-hover"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-toolbar-item-bg-on-pressed",
       "component": "toolbar",
       "part": [
         "item"
@@ -88884,27 +88903,7 @@
       "description": "toolbar 的 item 部件 background-color 覆盖槽。"
     },
     {
-      "name": "--xh-toolbar-item-bg-pressed-disabled",
-      "component": "toolbar",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "--xh-ink-surface",
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "xh-ink-surface"
-      ],
-      "defaultToken": [
-        "--xh-bg-brand-disabled"
-      ],
-      "visibility": "public",
-      "description": "toolbar 的 item 部件 --xh-ink-surface、background-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-toolbar-item-bg-pressed-hover",
+      "name": "--xh-toolbar-item-bg-pressed",
       "component": "toolbar",
       "part": [
         "item"
@@ -88914,13 +88913,14 @@
       ],
       "state": [
         "disabled",
-        "hover",
+        "is(:active, [data-pressed])",
         "loading",
         "not([data-disabled])",
-        "not([data-loading])"
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-brand-hover"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "toolbar 的 item 部件 background-color 覆盖槽。"
@@ -88955,7 +88955,7 @@
       "description": "toolbar 的 item 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-toolbar-item-fg-pressed",
+      "name": "--xh-toolbar-item-fg-on",
       "component": "toolbar",
       "part": [
         "item"
@@ -89668,29 +89668,6 @@
       "description": "tour 的 arrow、content 部件 border 覆盖槽。"
     },
     {
-      "name": "--xh-tour-close-bg-active",
-      "component": "tour",
-      "part": [
-        "close-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "tour 的 close-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-tour-close-bg-hover",
       "component": "tour",
       "part": [
@@ -89708,6 +89685,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "tour 的 close-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tour-close-bg-pressed",
+      "component": "tour",
+      "part": [
+        "close-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "tour 的 close-trigger 部件 background-color 覆盖槽。"
@@ -91773,30 +91773,6 @@
       "description": "transfer 的 to-source-trigger、to-target-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-transfer-trigger-bg-active",
-      "component": "transfer",
-      "part": [
-        "to-source-trigger",
-        "to-target-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "transfer 的 to-source-trigger、to-target-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-transfer-trigger-bg-hover",
       "component": "transfer",
       "part": [
@@ -91815,6 +91791,30 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "transfer 的 to-source-trigger、to-target-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-transfer-trigger-bg-pressed",
+      "component": "transfer",
+      "part": [
+        "to-source-trigger",
+        "to-target-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "transfer 的 to-source-trigger、to-target-trigger 部件 background-color 覆盖槽。"
@@ -91934,30 +91934,6 @@
       "description": "transfer 的 to-source-trigger、to-target-trigger 部件 border-radius 覆盖槽。"
     },
     {
-      "name": "--xh-transfer-trigger-shadow-active",
-      "component": "transfer",
-      "part": [
-        "to-source-trigger",
-        "to-target-trigger"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "none"
-      ],
-      "visibility": "public",
-      "description": "transfer 的 to-source-trigger、to-target-trigger 部件 box-shadow 覆盖槽。"
-    },
-    {
       "name": "--xh-transfer-trigger-shadow-hover",
       "component": "transfer",
       "part": [
@@ -91973,6 +91949,30 @@
         "loading",
         "not([data-disabled])",
         "not([data-loading])"
+      ],
+      "defaultToken": [
+        "none"
+      ],
+      "visibility": "public",
+      "description": "transfer 的 to-source-trigger、to-target-trigger 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-transfer-trigger-shadow-pressed",
+      "component": "transfer",
+      "part": [
+        "to-source-trigger",
+        "to-target-trigger"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "none"
@@ -92255,7 +92255,25 @@
       "description": "tree 的 node-drag-trigger 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-tree-drag-fg-active",
+      "name": "--xh-tree-drag-fg-disabled",
+      "component": "tree",
+      "part": [
+        "node-drag-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-disabled"
+      ],
+      "visibility": "public",
+      "description": "tree 的 node-drag-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-drag-fg-dragging",
       "component": "tree",
       "part": [
         "node-drag-trigger"
@@ -92271,24 +92289,6 @@
       ],
       "defaultToken": [
         "--xh-fg-default"
-      ],
-      "visibility": "public",
-      "description": "tree 的 node-drag-trigger 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-tree-drag-fg-disabled",
-      "component": "tree",
-      "part": [
-        "node-drag-trigger"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "disabled"
-      ],
-      "defaultToken": [
-        "--xh-fg-disabled"
       ],
       "visibility": "public",
       "description": "tree 的 node-drag-trigger 部件 color 覆盖槽。"
@@ -93420,29 +93420,6 @@
       "description": "tree-select 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
-      "name": "--xh-tree-select-action-bg-active",
-      "component": "tree-select",
-      "part": [
-        "clear-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
-      ],
-      "visibility": "public",
-      "description": "tree-select 的 clear-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-tree-select-action-bg-hover",
       "component": "tree-select",
       "part": [
@@ -93460,6 +93437,29 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "tree-select 的 clear-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-select-action-bg-pressed",
+      "component": "tree-select",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "tree-select 的 clear-trigger 部件 background-color 覆盖槽。"

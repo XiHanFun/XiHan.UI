@@ -835,10 +835,10 @@
               "name": "--xh-alert-border"
             },
             {
-              "name": "--xh-alert-close-bg-active"
+              "name": "--xh-alert-close-bg-hover"
             },
             {
-              "name": "--xh-alert-close-bg-hover"
+              "name": "--xh-alert-close-bg-pressed"
             },
             {
               "name": "--xh-alert-close-fg"
@@ -2518,10 +2518,10 @@
               "name": "--xh-back-top-bg"
             },
             {
-              "name": "--xh-back-top-bg-active"
+              "name": "--xh-back-top-bg-hover"
             },
             {
-              "name": "--xh-back-top-bg-hover"
+              "name": "--xh-back-top-bg-pressed"
             },
             {
               "name": "--xh-back-top-border"
@@ -3997,10 +3997,10 @@
               "name": "--xh-button-bg"
             },
             {
-              "name": "--xh-button-bg-active"
+              "name": "--xh-button-bg-hover"
             },
             {
-              "name": "--xh-button-bg-hover"
+              "name": "--xh-button-bg-pressed"
             },
             {
               "name": "--xh-button-fg"
@@ -4667,10 +4667,10 @@
               "name": "--xh-calendar-picker-cell-bg-selected"
             },
             {
-              "name": "--xh-calendar-picker-cell-bg-selected-active"
+              "name": "--xh-calendar-picker-cell-bg-selected-disabled"
             },
             {
-              "name": "--xh-calendar-picker-cell-bg-selected-disabled"
+              "name": "--xh-calendar-picker-cell-bg-selected-pressed"
             },
             {
               "name": "--xh-calendar-picker-cell-fg"
@@ -5468,10 +5468,10 @@
               "name": "--xh-calendar-range-picker-cell-bg-selected"
             },
             {
-              "name": "--xh-calendar-range-picker-cell-bg-selected-active"
+              "name": "--xh-calendar-range-picker-cell-bg-selected-disabled"
             },
             {
-              "name": "--xh-calendar-range-picker-cell-bg-selected-disabled"
+              "name": "--xh-calendar-range-picker-cell-bg-selected-pressed"
             },
             {
               "name": "--xh-calendar-range-picker-cell-fg"
@@ -6220,7 +6220,7 @@
               "name": "--xh-carousel-indicator-bg"
             },
             {
-              "name": "--xh-carousel-indicator-bg-active"
+              "name": "--xh-carousel-indicator-bg-current"
             },
             {
               "name": "--xh-carousel-indicator-bg-hover"
@@ -6229,7 +6229,7 @@
               "name": "--xh-carousel-indicator-bg-selected"
             },
             {
-              "name": "--xh-carousel-indicator-bg-selected-active"
+              "name": "--xh-carousel-indicator-bg-selected-pressed"
             },
             {
               "name": "--xh-carousel-indicator-bg-track"
@@ -6271,10 +6271,10 @@
               "name": "--xh-carousel-trigger-bg"
             },
             {
-              "name": "--xh-carousel-trigger-bg-active"
+              "name": "--xh-carousel-trigger-bg-hover"
             },
             {
-              "name": "--xh-carousel-trigger-bg-hover"
+              "name": "--xh-carousel-trigger-bg-pressed"
             },
             {
               "name": "--xh-carousel-trigger-border"
@@ -8775,10 +8775,10 @@
               "name": "--xh-cascader-action-bg"
             },
             {
-              "name": "--xh-cascader-action-bg-active"
+              "name": "--xh-cascader-action-bg-hover"
             },
             {
-              "name": "--xh-cascader-action-bg-hover"
+              "name": "--xh-cascader-action-bg-pressed"
             },
             {
               "name": "--xh-cascader-action-fg"
@@ -8976,13 +8976,10 @@
               "name": "--xh-cascader-input-px"
             },
             {
-              "name": "--xh-cascader-item-active-font-weight"
-            },
-            {
-              "name": "--xh-cascader-item-bg-active"
-            },
-            {
               "name": "--xh-cascader-item-bg-hover"
+            },
+            {
+              "name": "--xh-cascader-item-bg-open"
             },
             {
               "name": "--xh-cascader-item-bg-pressed"
@@ -9022,6 +9019,9 @@
             },
             {
               "name": "--xh-cascader-item-font-size"
+            },
+            {
+              "name": "--xh-cascader-item-font-weight-open"
             },
             {
               "name": "--xh-cascader-item-font-weight-selected"
@@ -10662,16 +10662,16 @@
               "name": "--xh-citation-icon-size"
             },
             {
-              "name": "--xh-citation-index-active-bg"
-            },
-            {
-              "name": "--xh-citation-index-active-fg"
-            },
-            {
               "name": "--xh-citation-index-bg"
             },
             {
+              "name": "--xh-citation-index-bg-current"
+            },
+            {
               "name": "--xh-citation-index-fg"
+            },
+            {
+              "name": "--xh-citation-index-fg-current"
             },
             {
               "name": "--xh-citation-index-font-size"
@@ -11036,10 +11036,10 @@
           "customElement": true,
           "cssProperties": [
             {
-              "name": "--xh-clipboard-control-active-layer"
+              "name": "--xh-clipboard-control-gap"
             },
             {
-              "name": "--xh-clipboard-control-gap"
+              "name": "--xh-clipboard-control-layer-focus"
             },
             {
               "name": "--xh-clipboard-control-min-w"
@@ -11054,13 +11054,13 @@
               "name": "--xh-clipboard-copy-trigger-bg"
             },
             {
-              "name": "--xh-clipboard-copy-trigger-bg-active"
-            },
-            {
               "name": "--xh-clipboard-copy-trigger-bg-disabled"
             },
             {
               "name": "--xh-clipboard-copy-trigger-bg-hover"
+            },
+            {
+              "name": "--xh-clipboard-copy-trigger-bg-pressed"
             },
             {
               "name": "--xh-clipboard-copy-trigger-border"
@@ -12631,10 +12631,10 @@
               "name": "--xh-color-field-action-bg"
             },
             {
-              "name": "--xh-color-field-action-bg-active"
+              "name": "--xh-color-field-action-bg-hover"
             },
             {
-              "name": "--xh-color-field-action-bg-hover"
+              "name": "--xh-color-field-action-bg-pressed"
             },
             {
               "name": "--xh-color-field-action-fg"
@@ -14033,16 +14033,16 @@
               "name": "--xh-color-picker-action-bg"
             },
             {
-              "name": "--xh-color-picker-action-bg-active"
+              "name": "--xh-color-picker-action-bg-hover"
             },
             {
-              "name": "--xh-color-picker-action-bg-hover"
+              "name": "--xh-color-picker-action-bg-pressed"
             },
             {
               "name": "--xh-color-picker-action-border"
             },
             {
-              "name": "--xh-color-picker-action-border-active"
+              "name": "--xh-color-picker-action-border-picking"
             },
             {
               "name": "--xh-color-picker-action-fg"
@@ -14066,10 +14066,10 @@
               "name": "--xh-color-picker-confirm-trigger-bg"
             },
             {
-              "name": "--xh-color-picker-confirm-trigger-bg-active"
+              "name": "--xh-color-picker-confirm-trigger-bg-hover"
             },
             {
-              "name": "--xh-color-picker-confirm-trigger-bg-hover"
+              "name": "--xh-color-picker-confirm-trigger-bg-pressed"
             },
             {
               "name": "--xh-color-picker-confirm-trigger-fg"
@@ -16537,10 +16537,10 @@
               "name": "--xh-combobox-action-bg"
             },
             {
-              "name": "--xh-combobox-action-bg-active"
+              "name": "--xh-combobox-action-bg-hover"
             },
             {
-              "name": "--xh-combobox-action-bg-hover"
+              "name": "--xh-combobox-action-bg-pressed"
             },
             {
               "name": "--xh-combobox-action-fg"
@@ -18792,10 +18792,10 @@
               "name": "--xh-context-menu-icon-size"
             },
             {
-              "name": "--xh-context-menu-item-bg-active"
+              "name": "--xh-context-menu-item-bg-hover"
             },
             {
-              "name": "--xh-context-menu-item-bg-hover"
+              "name": "--xh-context-menu-item-bg-open"
             },
             {
               "name": "--xh-context-menu-item-bg-pressed"
@@ -19337,10 +19337,10 @@
               "name": "--xh-date-field-action-bg"
             },
             {
-              "name": "--xh-date-field-action-bg-active"
+              "name": "--xh-date-field-action-bg-hover"
             },
             {
-              "name": "--xh-date-field-action-bg-hover"
+              "name": "--xh-date-field-action-bg-pressed"
             },
             {
               "name": "--xh-date-field-action-fg"
@@ -20827,10 +20827,10 @@
               "name": "--xh-date-picker-action-bg"
             },
             {
-              "name": "--xh-date-picker-action-bg-active"
+              "name": "--xh-date-picker-action-bg-hover"
             },
             {
-              "name": "--xh-date-picker-action-bg-hover"
+              "name": "--xh-date-picker-action-bg-pressed"
             },
             {
               "name": "--xh-date-picker-action-fg"
@@ -20857,10 +20857,10 @@
               "name": "--xh-date-picker-confirm-trigger-bg"
             },
             {
-              "name": "--xh-date-picker-confirm-trigger-bg-active"
+              "name": "--xh-date-picker-confirm-trigger-bg-hover"
             },
             {
-              "name": "--xh-date-picker-confirm-trigger-bg-hover"
+              "name": "--xh-date-picker-confirm-trigger-bg-pressed"
             },
             {
               "name": "--xh-date-picker-confirm-trigger-fg"
@@ -22457,10 +22457,10 @@
               "name": "--xh-date-range-picker-action-bg"
             },
             {
-              "name": "--xh-date-range-picker-action-bg-active"
+              "name": "--xh-date-range-picker-action-bg-hover"
             },
             {
-              "name": "--xh-date-range-picker-action-bg-hover"
+              "name": "--xh-date-range-picker-action-bg-pressed"
             },
             {
               "name": "--xh-date-range-picker-action-fg"
@@ -22499,10 +22499,10 @@
               "name": "--xh-date-range-picker-confirm-trigger-bg"
             },
             {
-              "name": "--xh-date-range-picker-confirm-trigger-bg-active"
+              "name": "--xh-date-range-picker-confirm-trigger-bg-hover"
             },
             {
-              "name": "--xh-date-range-picker-confirm-trigger-bg-hover"
+              "name": "--xh-date-range-picker-confirm-trigger-bg-pressed"
             },
             {
               "name": "--xh-date-range-picker-confirm-trigger-fg"
@@ -23707,10 +23707,10 @@
               "name": "--xh-dialog-border"
             },
             {
-              "name": "--xh-dialog-close-bg-active"
+              "name": "--xh-dialog-close-bg-hover"
             },
             {
-              "name": "--xh-dialog-close-bg-hover"
+              "name": "--xh-dialog-close-bg-pressed"
             },
             {
               "name": "--xh-dialog-close-fg"
@@ -24621,13 +24621,13 @@
               "name": "--xh-download-trigger-bg"
             },
             {
-              "name": "--xh-download-trigger-bg-active"
-            },
-            {
               "name": "--xh-download-trigger-bg-disabled"
             },
             {
               "name": "--xh-download-trigger-bg-hover"
+            },
+            {
+              "name": "--xh-download-trigger-bg-pressed"
             },
             {
               "name": "--xh-download-trigger-border"
@@ -25491,10 +25491,10 @@
               "name": "--xh-drawer-border"
             },
             {
-              "name": "--xh-drawer-close-bg-active"
+              "name": "--xh-drawer-close-bg-hover"
             },
             {
-              "name": "--xh-drawer-close-bg-hover"
+              "name": "--xh-drawer-close-bg-pressed"
             },
             {
               "name": "--xh-drawer-close-fg"
@@ -25569,10 +25569,10 @@
               "name": "--xh-drawer-resize-trigger-bg"
             },
             {
-              "name": "--xh-drawer-resize-trigger-bg-active"
+              "name": "--xh-drawer-resize-trigger-bg-hover"
             },
             {
-              "name": "--xh-drawer-resize-trigger-bg-hover"
+              "name": "--xh-drawer-resize-trigger-bg-resizing"
             },
             {
               "name": "--xh-drawer-resize-trigger-radius"
@@ -25602,13 +25602,13 @@
               "name": "--xh-drawer-trigger-bg"
             },
             {
-              "name": "--xh-drawer-trigger-bg-active"
-            },
-            {
               "name": "--xh-drawer-trigger-bg-hover"
             },
             {
               "name": "--xh-drawer-trigger-bg-open"
+            },
+            {
+              "name": "--xh-drawer-trigger-bg-pressed"
             },
             {
               "name": "--xh-drawer-trigger-border"
@@ -26243,13 +26243,13 @@
               "name": "--xh-editable-trigger-bg"
             },
             {
-              "name": "--xh-editable-trigger-bg-active"
-            },
-            {
               "name": "--xh-editable-trigger-bg-disabled"
             },
             {
               "name": "--xh-editable-trigger-bg-hover"
+            },
+            {
+              "name": "--xh-editable-trigger-bg-pressed"
             },
             {
               "name": "--xh-editable-trigger-fg"
@@ -28102,10 +28102,10 @@
               "name": "--xh-field-array-add-bg"
             },
             {
-              "name": "--xh-field-array-add-bg-active"
+              "name": "--xh-field-array-add-bg-hover"
             },
             {
-              "name": "--xh-field-array-add-bg-hover"
+              "name": "--xh-field-array-add-bg-pressed"
             },
             {
               "name": "--xh-field-array-add-border"
@@ -28216,10 +28216,10 @@
               "name": "--xh-field-array-trigger-bg"
             },
             {
-              "name": "--xh-field-array-trigger-bg-active"
+              "name": "--xh-field-array-trigger-bg-hover"
             },
             {
-              "name": "--xh-field-array-trigger-bg-hover"
+              "name": "--xh-field-array-trigger-bg-pressed"
             },
             {
               "name": "--xh-field-array-trigger-fg"
@@ -29729,10 +29729,10 @@
           "customElement": true,
           "cssProperties": [
             {
-              "name": "--xh-file-upload-clear-bg-active"
+              "name": "--xh-file-upload-clear-bg-hover"
             },
             {
-              "name": "--xh-file-upload-clear-bg-hover"
+              "name": "--xh-file-upload-clear-bg-pressed"
             },
             {
               "name": "--xh-file-upload-clear-fg"
@@ -29756,10 +29756,10 @@
               "name": "--xh-file-upload-clear-radius"
             },
             {
-              "name": "--xh-file-upload-delete-bg-active"
+              "name": "--xh-file-upload-delete-bg-hover"
             },
             {
-              "name": "--xh-file-upload-delete-bg-hover"
+              "name": "--xh-file-upload-delete-bg-pressed"
             },
             {
               "name": "--xh-file-upload-delete-fg"
@@ -29942,10 +29942,10 @@
               "name": "--xh-file-upload-trigger-bg"
             },
             {
-              "name": "--xh-file-upload-trigger-bg-active"
+              "name": "--xh-file-upload-trigger-bg-hover"
             },
             {
-              "name": "--xh-file-upload-trigger-bg-hover"
+              "name": "--xh-file-upload-trigger-bg-pressed"
             },
             {
               "name": "--xh-file-upload-trigger-border"
@@ -30674,10 +30674,10 @@
               "name": "--xh-filter-builder-add-bg"
             },
             {
-              "name": "--xh-filter-builder-add-bg-active"
+              "name": "--xh-filter-builder-add-bg-hover"
             },
             {
-              "name": "--xh-filter-builder-add-bg-hover"
+              "name": "--xh-filter-builder-add-bg-pressed"
             },
             {
               "name": "--xh-filter-builder-add-border"
@@ -30710,10 +30710,10 @@
               "name": "--xh-filter-builder-delete-bg"
             },
             {
-              "name": "--xh-filter-builder-delete-bg-active"
+              "name": "--xh-filter-builder-delete-bg-hover"
             },
             {
-              "name": "--xh-filter-builder-delete-bg-hover"
+              "name": "--xh-filter-builder-delete-bg-pressed"
             },
             {
               "name": "--xh-filter-builder-delete-fg"
@@ -31373,10 +31373,10 @@
               "name": "--xh-float-button-bg"
             },
             {
-              "name": "--xh-float-button-bg-active"
+              "name": "--xh-float-button-bg-hover"
             },
             {
-              "name": "--xh-float-button-bg-hover"
+              "name": "--xh-float-button-bg-pressed"
             },
             {
               "name": "--xh-float-button-border"
@@ -31930,19 +31930,19 @@
           "customElement": true,
           "cssProperties": [
             {
-              "name": "--xh-floating-panel-action-bg-active"
-            },
-            {
               "name": "--xh-floating-panel-action-bg-hover"
             },
             {
               "name": "--xh-floating-panel-action-bg-on"
             },
             {
-              "name": "--xh-floating-panel-action-bg-on-active"
+              "name": "--xh-floating-panel-action-bg-on-hover"
             },
             {
-              "name": "--xh-floating-panel-action-bg-on-hover"
+              "name": "--xh-floating-panel-action-bg-on-pressed"
+            },
+            {
+              "name": "--xh-floating-panel-action-bg-pressed"
             },
             {
               "name": "--xh-floating-panel-action-fg"
@@ -32743,19 +32743,19 @@
               "name": "--xh-form-submit-bg"
             },
             {
-              "name": "--xh-form-submit-bg-active"
+              "name": "--xh-form-submit-bg-hover"
             },
             {
-              "name": "--xh-form-submit-bg-hover"
+              "name": "--xh-form-submit-bg-pressed"
             },
             {
               "name": "--xh-form-submit-border"
             },
             {
-              "name": "--xh-form-submit-border-active"
+              "name": "--xh-form-submit-border-hover"
             },
             {
-              "name": "--xh-form-submit-border-hover"
+              "name": "--xh-form-submit-border-pressed"
             },
             {
               "name": "--xh-form-submit-fg"
@@ -32818,13 +32818,13 @@
               "name": "--xh-form-trigger-bg"
             },
             {
-              "name": "--xh-form-trigger-bg-active"
-            },
-            {
               "name": "--xh-form-trigger-bg-disabled"
             },
             {
               "name": "--xh-form-trigger-bg-hover"
+            },
+            {
+              "name": "--xh-form-trigger-bg-pressed"
             },
             {
               "name": "--xh-form-trigger-border"
@@ -39713,10 +39713,10 @@
           "customElement": true,
           "cssProperties": [
             {
-              "name": "--xh-image-viewer-action-bg-active"
+              "name": "--xh-image-viewer-action-bg-hover"
             },
             {
-              "name": "--xh-image-viewer-action-bg-hover"
+              "name": "--xh-image-viewer-action-bg-pressed"
             },
             {
               "name": "--xh-image-viewer-backdrop-bg"
@@ -39731,10 +39731,10 @@
               "name": "--xh-image-viewer-chrome-bg"
             },
             {
-              "name": "--xh-image-viewer-close-bg-active"
+              "name": "--xh-image-viewer-close-bg-hover"
             },
             {
-              "name": "--xh-image-viewer-close-bg-hover"
+              "name": "--xh-image-viewer-close-bg-pressed"
             },
             {
               "name": "--xh-image-viewer-close-fg"
@@ -40194,10 +40194,10 @@
               "name": "--xh-infinite-scroll-load-more-bg"
             },
             {
-              "name": "--xh-infinite-scroll-load-more-bg-active"
+              "name": "--xh-infinite-scroll-load-more-bg-hover"
             },
             {
-              "name": "--xh-infinite-scroll-load-more-bg-hover"
+              "name": "--xh-infinite-scroll-load-more-bg-pressed"
             },
             {
               "name": "--xh-infinite-scroll-load-more-border"
@@ -41278,10 +41278,10 @@
               "name": "--xh-json-viewer-radius"
             },
             {
-              "name": "--xh-json-viewer-row-bg-active"
+              "name": "--xh-json-viewer-row-bg-hover"
             },
             {
-              "name": "--xh-json-viewer-row-bg-hover"
+              "name": "--xh-json-viewer-row-bg-pressed"
             },
             {
               "name": "--xh-json-viewer-row-gap"
@@ -42002,10 +42002,10 @@
               "name": "--xh-layout-sider-trigger-bg"
             },
             {
-              "name": "--xh-layout-sider-trigger-bg-active"
+              "name": "--xh-layout-sider-trigger-bg-hover"
             },
             {
-              "name": "--xh-layout-sider-trigger-bg-hover"
+              "name": "--xh-layout-sider-trigger-bg-pressed"
             },
             {
               "name": "--xh-layout-sider-trigger-fg"
@@ -44165,10 +44165,10 @@
               "name": "--xh-marquee-trigger-bg"
             },
             {
-              "name": "--xh-marquee-trigger-bg-active"
+              "name": "--xh-marquee-trigger-bg-hover"
             },
             {
-              "name": "--xh-marquee-trigger-bg-hover"
+              "name": "--xh-marquee-trigger-bg-pressed"
             },
             {
               "name": "--xh-marquee-trigger-inset"
@@ -46460,10 +46460,10 @@
               "name": "--xh-menu-icon-size"
             },
             {
-              "name": "--xh-menu-item-bg-active"
+              "name": "--xh-menu-item-bg-hover"
             },
             {
-              "name": "--xh-menu-item-bg-hover"
+              "name": "--xh-menu-item-bg-open"
             },
             {
               "name": "--xh-menu-item-bg-pressed"
@@ -46535,7 +46535,7 @@
               "name": "--xh-menu-submenu-indicator-size"
             },
             {
-              "name": "--xh-menu-trigger-bg-active"
+              "name": "--xh-menu-trigger-bg-open"
             }
           ]
         }
@@ -47393,10 +47393,10 @@
               "name": "--xh-menubar-icon-size"
             },
             {
-              "name": "--xh-menubar-item-bg-active"
+              "name": "--xh-menubar-item-bg-hover"
             },
             {
-              "name": "--xh-menubar-item-bg-hover"
+              "name": "--xh-menubar-item-bg-open"
             },
             {
               "name": "--xh-menubar-item-bg-pressed"
@@ -47477,10 +47477,10 @@
               "name": "--xh-menubar-submenu-indicator-size"
             },
             {
-              "name": "--xh-menubar-trigger-bg-active"
+              "name": "--xh-menubar-trigger-bg-hover"
             },
             {
-              "name": "--xh-menubar-trigger-bg-hover"
+              "name": "--xh-menubar-trigger-bg-open"
             },
             {
               "name": "--xh-menubar-trigger-bg-pressed"
@@ -48496,10 +48496,10 @@
               "name": "--xh-navigation-menu-link-radius"
             },
             {
-              "name": "--xh-navigation-menu-trigger-bg-active"
+              "name": "--xh-navigation-menu-trigger-bg-hover"
             },
             {
-              "name": "--xh-navigation-menu-trigger-bg-hover"
+              "name": "--xh-navigation-menu-trigger-bg-open"
             },
             {
               "name": "--xh-navigation-menu-trigger-bg-pressed"
@@ -48913,10 +48913,10 @@
               "name": "--xh-notification-action-bg"
             },
             {
-              "name": "--xh-notification-action-bg-active"
+              "name": "--xh-notification-action-bg-hover"
             },
             {
-              "name": "--xh-notification-action-bg-hover"
+              "name": "--xh-notification-action-bg-pressed"
             },
             {
               "name": "--xh-notification-action-border"
@@ -48940,10 +48940,10 @@
               "name": "--xh-notification-close-bg"
             },
             {
-              "name": "--xh-notification-close-bg-active"
+              "name": "--xh-notification-close-bg-hover"
             },
             {
-              "name": "--xh-notification-close-bg-hover"
+              "name": "--xh-notification-close-bg-pressed"
             },
             {
               "name": "--xh-notification-close-border"
@@ -50312,7 +50312,7 @@
               "name": "--xh-number-field-stepper-w"
             },
             {
-              "name": "--xh-number-field-trigger-bg-active"
+              "name": "--xh-number-field-trigger-bg-pressed"
             },
             {
               "name": "--xh-number-field-trigger-fg"
@@ -51376,19 +51376,19 @@
               "name": "--xh-pagination-item-bg"
             },
             {
-              "name": "--xh-pagination-item-bg-active"
+              "name": "--xh-pagination-item-bg-hover"
             },
             {
-              "name": "--xh-pagination-item-bg-hover"
+              "name": "--xh-pagination-item-bg-pressed"
             },
             {
               "name": "--xh-pagination-item-bg-selected"
             },
             {
-              "name": "--xh-pagination-item-bg-selected-active"
+              "name": "--xh-pagination-item-bg-selected-hover"
             },
             {
-              "name": "--xh-pagination-item-bg-selected-hover"
+              "name": "--xh-pagination-item-bg-selected-pressed"
             },
             {
               "name": "--xh-pagination-item-border"
@@ -51400,10 +51400,10 @@
               "name": "--xh-pagination-item-border-selected"
             },
             {
-              "name": "--xh-pagination-item-border-selected-active"
+              "name": "--xh-pagination-item-border-selected-hover"
             },
             {
-              "name": "--xh-pagination-item-border-selected-hover"
+              "name": "--xh-pagination-item-border-selected-pressed"
             },
             {
               "name": "--xh-pagination-item-fg"
@@ -51996,10 +51996,10 @@
               "name": "--xh-password-input-trigger-bg"
             },
             {
-              "name": "--xh-password-input-trigger-bg-active"
+              "name": "--xh-password-input-trigger-bg-hover"
             },
             {
-              "name": "--xh-password-input-trigger-bg-hover"
+              "name": "--xh-password-input-trigger-bg-pressed"
             },
             {
               "name": "--xh-password-input-trigger-fg"
@@ -53941,13 +53941,13 @@
               "name": "--xh-popconfirm-cancel-bg"
             },
             {
-              "name": "--xh-popconfirm-cancel-bg-active"
-            },
-            {
               "name": "--xh-popconfirm-cancel-bg-focus"
             },
             {
               "name": "--xh-popconfirm-cancel-bg-hover"
+            },
+            {
+              "name": "--xh-popconfirm-cancel-bg-pressed"
             },
             {
               "name": "--xh-popconfirm-cancel-border"
@@ -54471,10 +54471,10 @@
               "name": "--xh-popover-border"
             },
             {
-              "name": "--xh-popover-close-bg-active"
+              "name": "--xh-popover-close-bg-hover"
             },
             {
-              "name": "--xh-popover-close-bg-hover"
+              "name": "--xh-popover-close-bg-pressed"
             },
             {
               "name": "--xh-popover-close-fg"
@@ -55472,13 +55472,13 @@
               "name": "--xh-prompt-input-send-bg"
             },
             {
-              "name": "--xh-prompt-input-send-bg-active"
-            },
-            {
               "name": "--xh-prompt-input-send-bg-hover"
             },
             {
               "name": "--xh-prompt-input-send-bg-off"
+            },
+            {
+              "name": "--xh-prompt-input-send-bg-pressed"
             },
             {
               "name": "--xh-prompt-input-send-fg"
@@ -55490,10 +55490,10 @@
               "name": "--xh-prompt-input-stop-bg"
             },
             {
-              "name": "--xh-prompt-input-stop-bg-active"
+              "name": "--xh-prompt-input-stop-bg-hover"
             },
             {
-              "name": "--xh-prompt-input-stop-bg-hover"
+              "name": "--xh-prompt-input-stop-bg-pressed"
             },
             {
               "name": "--xh-prompt-input-stop-fg"
@@ -56320,13 +56320,13 @@
               "name": "--xh-question-flow-submit-bg"
             },
             {
-              "name": "--xh-question-flow-submit-bg-active"
-            },
-            {
               "name": "--xh-question-flow-submit-bg-hover"
             },
             {
               "name": "--xh-question-flow-submit-bg-off"
+            },
+            {
+              "name": "--xh-question-flow-submit-bg-pressed"
             },
             {
               "name": "--xh-question-flow-submit-fg"
@@ -59243,10 +59243,10 @@
               "name": "--xh-resizable-handle-bg"
             },
             {
-              "name": "--xh-resizable-handle-bg-active"
+              "name": "--xh-resizable-handle-bg-hover"
             },
             {
-              "name": "--xh-resizable-handle-bg-hover"
+              "name": "--xh-resizable-handle-bg-resizing"
             },
             {
               "name": "--xh-resizable-handle-radius"
@@ -60834,10 +60834,10 @@
               "name": "--xh-scrollbar-thumb-bg"
             },
             {
-              "name": "--xh-scrollbar-thumb-bg-active"
+              "name": "--xh-scrollbar-thumb-bg-disabled"
             },
             {
-              "name": "--xh-scrollbar-thumb-bg-disabled"
+              "name": "--xh-scrollbar-thumb-bg-dragging"
             },
             {
               "name": "--xh-scrollbar-thumb-bg-hover"
@@ -61992,10 +61992,10 @@
               "name": "--xh-select-action-bg"
             },
             {
-              "name": "--xh-select-action-bg-active"
+              "name": "--xh-select-action-bg-hover"
             },
             {
-              "name": "--xh-select-action-bg-hover"
+              "name": "--xh-select-action-bg-pressed"
             },
             {
               "name": "--xh-select-action-fg"
@@ -63312,7 +63312,7 @@
               "name": "--xh-side-nav-popout-shadow"
             },
             {
-              "name": "--xh-side-nav-row-bg-active"
+              "name": "--xh-side-nav-row-bg-current"
             },
             {
               "name": "--xh-side-nav-row-bg-hover"
@@ -63327,13 +63327,13 @@
               "name": "--xh-side-nav-row-fg"
             },
             {
-              "name": "--xh-side-nav-row-fg-active"
+              "name": "--xh-side-nav-row-fg-current"
             },
             {
               "name": "--xh-side-nav-row-fg-in-path"
             },
             {
-              "name": "--xh-side-nav-row-font-weight-active"
+              "name": "--xh-side-nav-row-font-weight-current"
             },
             {
               "name": "--xh-side-nav-search-divider"
@@ -63827,13 +63827,13 @@
               "name": "--xh-signature-pad-clear-bg"
             },
             {
-              "name": "--xh-signature-pad-clear-bg-active"
-            },
-            {
               "name": "--xh-signature-pad-clear-bg-disabled"
             },
             {
               "name": "--xh-signature-pad-clear-bg-hover"
+            },
+            {
+              "name": "--xh-signature-pad-clear-bg-pressed"
             },
             {
               "name": "--xh-signature-pad-clear-border"
@@ -64765,22 +64765,22 @@
               "name": "--xh-slider-tick-border"
             },
             {
-              "name": "--xh-slider-tick-border-active"
-            },
-            {
-              "name": "--xh-slider-tick-border-active-disabled"
-            },
-            {
               "name": "--xh-slider-tick-border-disabled"
+            },
+            {
+              "name": "--xh-slider-tick-border-passed"
+            },
+            {
+              "name": "--xh-slider-tick-border-passed-disabled"
             },
             {
               "name": "--xh-slider-tick-label-fg"
             },
             {
-              "name": "--xh-slider-tick-label-fg-active"
+              "name": "--xh-slider-tick-label-fg-disabled"
             },
             {
-              "name": "--xh-slider-tick-label-fg-disabled"
+              "name": "--xh-slider-tick-label-fg-passed"
             },
             {
               "name": "--xh-slider-tick-label-font-size"
@@ -65210,10 +65210,10 @@
           "customElement": true,
           "cssProperties": [
             {
-              "name": "--xh-sortable-drag-bg-active"
+              "name": "--xh-sortable-drag-bg-hover"
             },
             {
-              "name": "--xh-sortable-drag-bg-hover"
+              "name": "--xh-sortable-drag-bg-pressed"
             },
             {
               "name": "--xh-sortable-drag-fg"
@@ -66901,7 +66901,7 @@
               "name": "--xh-steps-title-fg"
             },
             {
-              "name": "--xh-steps-title-fg-active"
+              "name": "--xh-steps-title-fg-current"
             },
             {
               "name": "--xh-steps-title-fg-toned"
@@ -68659,10 +68659,10 @@
               "name": "--xh-table-drag-fg"
             },
             {
-              "name": "--xh-table-drag-fg-active"
+              "name": "--xh-table-drag-fg-disabled"
             },
             {
-              "name": "--xh-table-drag-fg-disabled"
+              "name": "--xh-table-drag-fg-dragging"
             },
             {
               "name": "--xh-table-drag-grip-h"
@@ -68695,7 +68695,7 @@
               "name": "--xh-table-filter-fg"
             },
             {
-              "name": "--xh-table-filter-fg-active"
+              "name": "--xh-table-filter-fg-filtered"
             },
             {
               "name": "--xh-table-filter-size"
@@ -68761,7 +68761,7 @@
               "name": "--xh-table-resize-fg"
             },
             {
-              "name": "--xh-table-resize-fg-active"
+              "name": "--xh-table-resize-fg-resizing"
             },
             {
               "name": "--xh-table-resize-line"
@@ -68800,10 +68800,10 @@
               "name": "--xh-table-row-drag-fg"
             },
             {
-              "name": "--xh-table-row-drag-fg-active"
+              "name": "--xh-table-row-drag-fg-disabled"
             },
             {
-              "name": "--xh-table-row-drag-fg-disabled"
+              "name": "--xh-table-row-drag-fg-dragging"
             },
             {
               "name": "--xh-table-row-drag-grip-long"
@@ -68827,7 +68827,7 @@
               "name": "--xh-table-sort-fg"
             },
             {
-              "name": "--xh-table-sort-fg-active"
+              "name": "--xh-table-sort-fg-pressed"
             },
             {
               "name": "--xh-table-sort-size"
@@ -69405,10 +69405,10 @@
               "name": "--xh-tabs-drag-fg"
             },
             {
-              "name": "--xh-tabs-drag-fg-active"
+              "name": "--xh-tabs-drag-fg-disabled"
             },
             {
-              "name": "--xh-tabs-drag-fg-disabled"
+              "name": "--xh-tabs-drag-fg-dragging"
             },
             {
               "name": "--xh-tabs-drag-grip-long"
@@ -69483,10 +69483,10 @@
               "name": "--xh-tabs-trigger-bg"
             },
             {
-              "name": "--xh-tabs-trigger-bg-active"
+              "name": "--xh-tabs-trigger-bg-current"
             },
             {
-              "name": "--xh-tabs-trigger-bg-active-hover"
+              "name": "--xh-tabs-trigger-bg-current-hover"
             },
             {
               "name": "--xh-tabs-trigger-bg-hover"
@@ -69498,13 +69498,13 @@
               "name": "--xh-tabs-trigger-border"
             },
             {
-              "name": "--xh-tabs-trigger-border-active"
+              "name": "--xh-tabs-trigger-border-current"
             },
             {
               "name": "--xh-tabs-trigger-fg"
             },
             {
-              "name": "--xh-tabs-trigger-fg-active"
+              "name": "--xh-tabs-trigger-fg-current"
             },
             {
               "name": "--xh-tabs-trigger-fg-hover"
@@ -69519,7 +69519,7 @@
               "name": "--xh-tabs-trigger-font-weight"
             },
             {
-              "name": "--xh-tabs-trigger-font-weight-active"
+              "name": "--xh-tabs-trigger-font-weight-current"
             },
             {
               "name": "--xh-tabs-trigger-gap"
@@ -69534,7 +69534,7 @@
               "name": "--xh-tabs-trigger-radius"
             },
             {
-              "name": "--xh-tabs-trigger-shadow-active"
+              "name": "--xh-tabs-trigger-shadow-current"
             }
           ]
         }
@@ -70486,10 +70486,10 @@
               "name": "--xh-tag-border-disabled"
             },
             {
-              "name": "--xh-tag-close-bg-active"
+              "name": "--xh-tag-close-bg-hover"
             },
             {
-              "name": "--xh-tag-close-bg-hover"
+              "name": "--xh-tag-close-bg-pressed"
             },
             {
               "name": "--xh-tag-close-fg"
@@ -71172,10 +71172,10 @@
               "name": "--xh-tags-input-action-bg"
             },
             {
-              "name": "--xh-tags-input-action-bg-active"
+              "name": "--xh-tags-input-action-bg-hover"
             },
             {
-              "name": "--xh-tags-input-action-bg-hover"
+              "name": "--xh-tags-input-action-bg-pressed"
             },
             {
               "name": "--xh-tags-input-action-fg"
@@ -71896,10 +71896,10 @@
               "name": "--xh-text-field-action-bg"
             },
             {
-              "name": "--xh-text-field-action-bg-active"
+              "name": "--xh-text-field-action-bg-hover"
             },
             {
-              "name": "--xh-text-field-action-bg-hover"
+              "name": "--xh-text-field-action-bg-pressed"
             },
             {
               "name": "--xh-text-field-action-fg"
@@ -72472,10 +72472,10 @@
               "name": "--xh-time-field-action-bg"
             },
             {
-              "name": "--xh-time-field-action-bg-active"
+              "name": "--xh-time-field-action-bg-hover"
             },
             {
-              "name": "--xh-time-field-action-bg-hover"
+              "name": "--xh-time-field-action-bg-pressed"
             },
             {
               "name": "--xh-time-field-action-fg"
@@ -73555,10 +73555,10 @@
               "name": "--xh-time-picker-action-bg"
             },
             {
-              "name": "--xh-time-picker-action-bg-active"
+              "name": "--xh-time-picker-action-bg-hover"
             },
             {
-              "name": "--xh-time-picker-action-bg-hover"
+              "name": "--xh-time-picker-action-bg-pressed"
             },
             {
               "name": "--xh-time-picker-action-fg"
@@ -73597,10 +73597,10 @@
               "name": "--xh-time-picker-confirm-trigger-bg"
             },
             {
-              "name": "--xh-time-picker-confirm-trigger-bg-active"
+              "name": "--xh-time-picker-confirm-trigger-bg-hover"
             },
             {
-              "name": "--xh-time-picker-confirm-trigger-bg-hover"
+              "name": "--xh-time-picker-confirm-trigger-bg-pressed"
             },
             {
               "name": "--xh-time-picker-confirm-trigger-fg"
@@ -74690,10 +74690,10 @@
               "name": "--xh-time-range-picker-action-bg"
             },
             {
-              "name": "--xh-time-range-picker-action-bg-active"
+              "name": "--xh-time-range-picker-action-bg-hover"
             },
             {
-              "name": "--xh-time-range-picker-action-bg-hover"
+              "name": "--xh-time-range-picker-action-bg-pressed"
             },
             {
               "name": "--xh-time-range-picker-action-fg"
@@ -75574,13 +75574,13 @@
               "name": "--xh-timer-control-bg"
             },
             {
-              "name": "--xh-timer-control-bg-active"
-            },
-            {
               "name": "--xh-timer-control-bg-disabled"
             },
             {
               "name": "--xh-timer-control-bg-hover"
+            },
+            {
+              "name": "--xh-timer-control-bg-pressed"
             },
             {
               "name": "--xh-timer-control-border"
@@ -75610,10 +75610,10 @@
               "name": "--xh-timer-control-radius"
             },
             {
-              "name": "--xh-timer-control-shadow-active"
+              "name": "--xh-timer-control-shadow-hover"
             },
             {
-              "name": "--xh-timer-control-shadow-hover"
+              "name": "--xh-timer-control-shadow-pressed"
             },
             {
               "name": "--xh-timer-digit-font-size"
@@ -76405,9 +76405,6 @@
               "name": "--xh-toggle-group-item-bg"
             },
             {
-              "name": "--xh-toggle-group-item-bg-active"
-            },
-            {
               "name": "--xh-toggle-group-item-bg-disabled"
             },
             {
@@ -76417,13 +76414,16 @@
               "name": "--xh-toggle-group-item-bg-on"
             },
             {
-              "name": "--xh-toggle-group-item-bg-on-active"
-            },
-            {
               "name": "--xh-toggle-group-item-bg-on-disabled"
             },
             {
               "name": "--xh-toggle-group-item-bg-on-hover"
+            },
+            {
+              "name": "--xh-toggle-group-item-bg-on-pressed"
+            },
+            {
+              "name": "--xh-toggle-group-item-bg-pressed"
             },
             {
               "name": "--xh-toggle-group-item-border"
@@ -76724,9 +76724,6 @@
               "name": "--xh-toggle-bg"
             },
             {
-              "name": "--xh-toggle-bg-active"
-            },
-            {
               "name": "--xh-toggle-bg-disabled"
             },
             {
@@ -76736,13 +76733,16 @@
               "name": "--xh-toggle-bg-on"
             },
             {
-              "name": "--xh-toggle-bg-on-active"
-            },
-            {
               "name": "--xh-toggle-bg-on-disabled"
             },
             {
               "name": "--xh-toggle-bg-on-hover"
+            },
+            {
+              "name": "--xh-toggle-bg-on-pressed"
+            },
+            {
+              "name": "--xh-toggle-bg-pressed"
             },
             {
               "name": "--xh-toggle-border"
@@ -77576,31 +77576,31 @@
               "name": "--xh-toolbar-item-bg"
             },
             {
-              "name": "--xh-toolbar-item-bg-active"
-            },
-            {
               "name": "--xh-toolbar-item-bg-disabled"
             },
             {
               "name": "--xh-toolbar-item-bg-hover"
             },
             {
+              "name": "--xh-toolbar-item-bg-on"
+            },
+            {
+              "name": "--xh-toolbar-item-bg-on-disabled"
+            },
+            {
+              "name": "--xh-toolbar-item-bg-on-hover"
+            },
+            {
+              "name": "--xh-toolbar-item-bg-on-pressed"
+            },
+            {
               "name": "--xh-toolbar-item-bg-pressed"
-            },
-            {
-              "name": "--xh-toolbar-item-bg-pressed-active"
-            },
-            {
-              "name": "--xh-toolbar-item-bg-pressed-disabled"
-            },
-            {
-              "name": "--xh-toolbar-item-bg-pressed-hover"
             },
             {
               "name": "--xh-toolbar-item-fg"
             },
             {
-              "name": "--xh-toolbar-item-fg-pressed"
+              "name": "--xh-toolbar-item-fg-on"
             },
             {
               "name": "--xh-toolbar-item-font-size"
@@ -78971,10 +78971,10 @@
               "name": "--xh-tour-border"
             },
             {
-              "name": "--xh-tour-close-bg-active"
+              "name": "--xh-tour-close-bg-hover"
             },
             {
-              "name": "--xh-tour-close-bg-hover"
+              "name": "--xh-tour-close-bg-pressed"
             },
             {
               "name": "--xh-tour-close-fg"
@@ -79968,10 +79968,10 @@
               "name": "--xh-transfer-trigger-bg"
             },
             {
-              "name": "--xh-transfer-trigger-bg-active"
+              "name": "--xh-transfer-trigger-bg-hover"
             },
             {
-              "name": "--xh-transfer-trigger-bg-hover"
+              "name": "--xh-transfer-trigger-bg-pressed"
             },
             {
               "name": "--xh-transfer-trigger-border"
@@ -79989,10 +79989,10 @@
               "name": "--xh-transfer-trigger-radius"
             },
             {
-              "name": "--xh-transfer-trigger-shadow-active"
+              "name": "--xh-transfer-trigger-shadow-hover"
             },
             {
-              "name": "--xh-transfer-trigger-shadow-hover"
+              "name": "--xh-transfer-trigger-shadow-pressed"
             },
             {
               "name": "--xh-transfer-trigger-size"
@@ -81258,10 +81258,10 @@
               "name": "--xh-tree-select-action-bg"
             },
             {
-              "name": "--xh-tree-select-action-bg-active"
+              "name": "--xh-tree-select-action-bg-hover"
             },
             {
-              "name": "--xh-tree-select-action-bg-hover"
+              "name": "--xh-tree-select-action-bg-pressed"
             },
             {
               "name": "--xh-tree-select-action-fg"
@@ -82384,10 +82384,10 @@
               "name": "--xh-tree-drag-fg"
             },
             {
-              "name": "--xh-tree-drag-fg-active"
+              "name": "--xh-tree-drag-fg-disabled"
             },
             {
-              "name": "--xh-tree-drag-fg-disabled"
+              "name": "--xh-tree-drag-fg-dragging"
             },
             {
               "name": "--xh-tree-drag-grip-long"

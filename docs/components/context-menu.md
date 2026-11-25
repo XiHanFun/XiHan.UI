@@ -396,8 +396,8 @@
 | `--xh-context-menu-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | context-menu 的 group-label 部件 padding-block 覆盖槽。 |
 | `--xh-context-menu-highlight` | `content` | `background` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-highlight` | context-menu 的 content 部件 background 覆盖槽。 |
 | `--xh-context-menu-icon-size` | `positioner`<br>`root` | `--xh-icon-size` | `is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | context-menu 的 positioner、root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-context-menu-item-bg-active` | `item` | `background-color` | `in-path` | `--xh-bg-subtle` | context-menu 的 item 部件 background-color 覆盖槽。 |
 | `--xh-context-menu-item-bg-hover` | `item` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])` | `--xh-bg-subtle` | context-menu 的 item 部件 background-color 覆盖槽。 |
+| `--xh-context-menu-item-bg-open` | `item` | `background-color` | `in-path` | `--xh-bg-subtle` | context-menu 的 item 部件 background-color 覆盖槽。 |
 | `--xh-context-menu-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed` | `--xh-bg-subtle-hover` | context-menu 的 item 部件 background-color 覆盖槽。 |
 | `--xh-context-menu-item-description-fg` | `item-description` | `color` | `default` | `--xh-material-frosted-fg-muted` | context-menu 的 item-description 部件 color 覆盖槽。 |
 | `--xh-context-menu-item-description-font-size` | `item-description` | `font-size` | `default` | `--xh-_collection-caption-size` | context-menu 的 item-description 部件 font-size 覆盖槽。 |

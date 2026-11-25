@@ -488,7 +488,7 @@
   [data-scope='question-flow'][data-part='submit-trigger'] {
     --xh-action-bg-rest: var(--xh-question-flow-submit-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-question-flow-submit-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-question-flow-submit-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-question-flow-submit-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-disabled: var(--xh-question-flow-submit-bg-off, var(--xh-_action-variant-bg-disabled));
     --xh-action-fg-rest: var(--xh-question-flow-submit-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-question-flow-submit-fg, var(--xh-_action-variant-fg-hover));

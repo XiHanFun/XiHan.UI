@@ -379,9 +379,9 @@ function SIDE_NAV(): unknown {
 
 describe('side-nav 当前页的品牌高亮有出口', () => {
   it('当前页的底色、字色与字重三样都改得动', async () => {
-    setSlot('--xh-side-nav-row-bg-active', RED)
-    setSlot('--xh-side-nav-row-fg-active', BLUE)
-    setSlot('--xh-side-nav-row-font-weight-active', '800')
+    setSlot('--xh-side-nav-row-bg-current', RED)
+    setSlot('--xh-side-nav-row-fg-current', BLUE)
+    setSlot('--xh-side-nav-row-font-weight-current', '800')
     await mount(SIDE_NAV)
 
     const current = part('side-nav', 'link', 1)
@@ -392,7 +392,7 @@ describe('side-nav 当前页的品牌高亮有出口', () => {
   })
 
   it('当前页那组槽不牵连别的行', async () => {
-    setSlot('--xh-side-nav-row-bg-active', RED)
+    setSlot('--xh-side-nav-row-bg-current', RED)
     await mount(SIDE_NAV)
 
     expect(styleOf(part('side-nav', 'link', 0), 'background-color')).not.toBe(RED)

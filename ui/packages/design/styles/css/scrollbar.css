@@ -146,7 +146,7 @@
 
   [data-scope='scrollbar'][data-part='thumb'][data-dragging] {
     background: var(
-      --xh-scrollbar-thumb-bg-active,
+      --xh-scrollbar-thumb-bg-dragging,
       var(--xh-fg-scrollbar-thumb-active)
     );
   }

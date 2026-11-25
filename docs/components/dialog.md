@@ -372,8 +372,8 @@ fullscreen 让面板铺满视口：头尾定在原处，正文吃掉剩下的高
 | `--xh-dialog-body-px` | `body` | `padding-inline` | `default` | `--xh-overlay-sheet-px` | dialog 的 body 部件 padding-inline 覆盖槽。 |
 | `--xh-dialog-body-py` | `body` | `padding-block` | `default` | `--xh-overlay-sheet-body-py` | dialog 的 body 部件 padding-block 覆盖槽。 |
 | `--xh-dialog-border` | `content` | `border` | `default` | `--xh-material-elevated-border` | dialog 的 content 部件 border 覆盖槽。 |
-| `--xh-dialog-close-bg-active` | `close-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | dialog 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-dialog-close-bg-hover` | `close-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | dialog 的 close-trigger 部件 background-color 覆盖槽。 |
+| `--xh-dialog-close-bg-pressed` | `close-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | dialog 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-dialog-close-fg` | `close-trigger` | `color` | `default` | `--xh-fg-muted` | dialog 的 close-trigger 部件 color 覆盖槽。 |
 | `--xh-dialog-close-fg-hover` | `close-trigger` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed` | dialog 的 close-trigger 部件 color 覆盖槽。 |
 | `--xh-dialog-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | dialog 的 close-trigger 部件 border-radius 覆盖槽。 |

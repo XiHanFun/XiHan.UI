@@ -214,7 +214,7 @@
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-color-picker-action-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-color-picker-action-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-color-picker-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-color-picker-action-bg-pressed, var(--xh-_action-variant-bg-pressed));
     /* 清空钮（设计真源 §8.3）：圆形钮，静息字形取次级前景兑 50%，指到钮上换满色 */
     --xh-action-fg-rest: var(--xh-color-picker-action-fg, var(--xh-fg-field-clear));
     --xh-action-fg-hover: var(--xh-color-picker-action-fg-hover, var(--xh-fg-default));
@@ -577,7 +577,7 @@
      松手那一刻浮层多半已经被系统的取色镜头盖住，按下的回执只有这一瞬看得见。
      指针 :active 与 Headless 投影的 data-pressed（Space / Enter 与触屏按住）看见同一副按压面 */
   [data-scope='color-picker'][data-part='eye-dropper-trigger']:not(:disabled):is(:active, [data-pressed]) {
-    background: var(--xh-color-picker-action-bg-active, var(--xh-bg-subtle-hover));
+    background: var(--xh-color-picker-action-bg-pressed, var(--xh-bg-subtle-hover));
     scale: var(--xh-motion-scale-press);
     transition-duration: var(--xh-motion-duration-press);
     transition-timing-function: var(--xh-motion-ease-press);
@@ -586,8 +586,8 @@
   /* 取色途中按钮保持按下的样子：屏幕取色期间浮层多半被系统的取色镜头盖着，
      这是用户回到页面时唯一能看出"刚才在取色"的痕迹 */
   [data-scope='color-picker'][data-part='eye-dropper-trigger'][data-state='picking'] {
-    border-color: var(--xh-color-picker-action-border-active, var(--xh-bg-brand));
-    background: var(--xh-color-picker-action-bg-active, var(--xh-bg-subtle-active));
+    border-color: var(--xh-color-picker-action-border-picking, var(--xh-bg-brand));
+    background: var(--xh-color-picker-action-bg-pressed, var(--xh-bg-subtle-active));
   }
 
   [data-scope='color-picker'][data-part='eye-dropper-trigger']:disabled {
@@ -608,7 +608,7 @@
     --xh-action-radius: var(--xh-color-picker-confirm-trigger-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-color-picker-confirm-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-color-picker-confirm-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-color-picker-confirm-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-color-picker-confirm-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-color-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-color-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-color-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-pressed));

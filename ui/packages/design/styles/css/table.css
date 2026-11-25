@@ -746,10 +746,10 @@
   }
 
   [data-scope='table'][data-part='sort-trigger'][data-sort] {
-    --xh-action-fg-rest: var(--xh-table-sort-fg-active, var(--xh-fg-default));
-    --xh-action-fg-hover: var(--xh-table-sort-fg-active, var(--xh-fg-default));
-    --xh-action-fg-pressed: var(--xh-table-sort-fg-active, var(--xh-fg-default));
-    --xh-action-fg-focus-visible: var(--xh-table-sort-fg-active, var(--xh-fg-default));
+    --xh-action-fg-rest: var(--xh-table-sort-fg-pressed, var(--xh-fg-default));
+    --xh-action-fg-hover: var(--xh-table-sort-fg-pressed, var(--xh-fg-default));
+    --xh-action-fg-pressed: var(--xh-table-sort-fg-pressed, var(--xh-fg-default));
+    --xh-action-fg-focus-visible: var(--xh-table-sort-fg-pressed, var(--xh-fg-default));
   }
 
   /* 列宽把手贴在表头格的行尾侧。它压在相邻两列的接缝上，因此往外挪半个身位，
@@ -821,7 +821,7 @@
   }
 
   [data-scope='table'][data-part='column-header'][data-filtered] [data-scope='menu'][data-part='trigger'] {
-    color: var(--xh-table-filter-fg-active, var(--xh-fg-brand));
+    color: var(--xh-table-filter-fg-filtered, var(--xh-fg-brand));
   }
 
   /* 前面已有排序钮时 auto 外边距归它，筛选钮紧贴其后；同理列宽把手紧贴筛选钮之后 */
@@ -870,7 +870,7 @@
 
   [data-scope='table'][data-part='column-resize-trigger']:hover::after,
   [data-scope='table'][data-part='column-resize-trigger'][data-resizing]::after {
-    background: var(--xh-table-resize-fg-active, var(--xh-bg-brand));
+    background: var(--xh-table-resize-fg-resizing, var(--xh-bg-brand));
     block-size: 100%;
   }
 
@@ -913,7 +913,7 @@
 
   [data-scope='table'][data-part='column-drag-trigger']:not([data-disabled]):hover,
   [data-scope='table'][data-part='column-drag-trigger'][data-dragging] {
-    color: var(--xh-table-drag-fg-active, var(--xh-fg-default));
+    color: var(--xh-table-drag-fg-dragging, var(--xh-fg-default));
   }
 
   [data-scope='table'][data-part='column-drag-trigger'][data-dragging] {
@@ -1013,7 +1013,7 @@
 
   [data-scope='table'][data-part='row-drag-trigger']:not([data-disabled]):hover,
   [data-scope='table'][data-part='row-drag-trigger'][data-dragging] {
-    color: var(--xh-table-row-drag-fg-active, var(--xh-fg-default));
+    color: var(--xh-table-row-drag-fg-dragging, var(--xh-fg-default));
   }
 
   [data-scope='table'][data-part='row-drag-trigger'][data-dragging] {
@@ -1150,7 +1150,7 @@
     inset-block-start: 0;
     inset-inline-end: 0;
     translate: 50% -50%;
-    color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
+    color: var(--xh-table-sort-fg-pressed, var(--xh-fg-default));
     font-size: var(--xh-text-caption-size);
     line-height: 1;
     content: attr(data-sort-index);

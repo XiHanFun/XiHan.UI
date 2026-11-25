@@ -294,7 +294,7 @@
   [data-scope='floating-panel'][data-part='window-state-trigger'],
   [data-scope='floating-panel'][data-part='close-trigger'] {
     --xh-action-bg-hover: var(--xh-floating-panel-action-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-floating-panel-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-floating-panel-action-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-floating-panel-action-fg, var(--xh-material-frosted-fg-muted));
     --xh-action-fg-hover: var(--xh-floating-panel-action-fg-hover, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-floating-panel-action-fg-hover, var(--xh-_action-variant-fg-pressed));
@@ -327,7 +327,7 @@
   [data-scope='floating-panel'][data-part='window-state-trigger'][data-state='on'] {
     --xh-action-bg-rest: var(--xh-floating-panel-action-bg-on, var(--xh-bg-brand-subtle));
     --xh-action-bg-hover: var(--xh-floating-panel-action-bg-on-hover, var(--xh-bg-brand-subtle-hover));
-    --xh-action-bg-pressed: var(--xh-floating-panel-action-bg-on-active, var(--xh-bg-brand-subtle-active));
+    --xh-action-bg-pressed: var(--xh-floating-panel-action-bg-on-pressed, var(--xh-bg-brand-subtle-active));
     --xh-action-bg-focus-visible: var(--xh-floating-panel-action-bg-on, var(--xh-bg-brand-subtle));
     --xh-action-fg-rest: var(--xh-floating-panel-action-fg-on, var(--xh-fg-on-brand-subtle));
     --xh-action-fg-hover: var(--xh-floating-panel-action-fg-on, var(--xh-fg-on-brand-subtle));

@@ -319,7 +319,7 @@
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-time-picker-action-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-time-picker-action-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-time-picker-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-time-picker-action-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-time-picker-action-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-time-picker-action-fg-hover, var(--xh-fg-default));
     --xh-action-border-rest: transparent;
@@ -459,7 +459,7 @@
     --xh-action-radius: var(--xh-time-picker-confirm-trigger-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-time-picker-confirm-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-time-picker-confirm-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-time-picker-confirm-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-pressed: var(--xh-time-picker-confirm-trigger-bg-pressed, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-time-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-rest));
     --xh-action-fg-hover: var(--xh-time-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-time-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-pressed));
