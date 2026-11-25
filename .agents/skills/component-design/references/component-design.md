@@ -1212,6 +1212,8 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 - 多选开关：只有单 / 多两档的字段与选择器用布尔 `multiple`（Select、Combobox、Cascader、TreeSelect、DatePicker、TimePicker、ColorPicker、CalendarPicker、Accordion、ToggleGroup）；能关掉选择、或另有 extended 档的集合用 `selectionMode`（Listbox、Tree、Table、GridList、TagGroup）。
 - 取数在途统一 `loading`（图表、集合、动作钮同一个名字）；`pending` 只留给确认门（Dialog、Drawer、Popconfirm 的异步确认进行中）。
 - 方位统一 `placement`（浮层落在锚点哪一侧、抽屉贴哪条边），投影 `data-placement`；轴向统一 `orientation: horizontal | vertical`，不用布尔 `horizontal`。
+- 拖动重排：开关叫 `<对象>Reorderable`（Tabs `reorderable`、Table `rowReorderable`、Tree `nodeReorderable`、FieldArray `reorderable`），这一次落点许不许的校验函数叫 `allow<对象>Drop`（`allowRowDrop`、`allowNodeDrop`）；接不接外部拖进来的东西是布尔 `droppable`（FileUpload）。拖动位置不改次序的（GraphChart 的 `draggableNodes`）不叫重排。
+- 移除：收起一个之后还会再出现的面用 close（`closable`、`close-trigger`：Alert、Tag、Dialog、Popover、Citation 等，Tag 的显隐走 `open / onOpenChange`）；把条目从集合里拿掉用 delete（`deletable`、`item-delete-trigger`、`onItemDelete`：TagGroup 与带标签行的选择器、FieldArray、FileUpload），去留由宿主决定。Tabs 的 `closable / onTabClose` 按标签页的通行说法登记为例外。
 - 默认值在 Headless 定义，三个适配器不得各自设置。
 - 非法组合立即报错，不静默修正。
 - `asChild` 或 render prop 只在确实需要替换语义宿主时提供。
