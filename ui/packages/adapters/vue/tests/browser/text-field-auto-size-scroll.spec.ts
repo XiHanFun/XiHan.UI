@@ -171,15 +171,15 @@ describe('没给 maxRows：上限取 --xh-text-field-input-max-h，同样只由 
     expect(scrollers(field)).toEqual([field.textarea])
   })
 
-  it('写旧槽 --xh-text-field-control-max-h 的覆盖照常生效，新槽在场时以新槽为准', () => {
-    const legacy = mount(true, lines(40), '--xh-text-field-control-max-h: 96px')
-    expect(height(legacy.textarea)).toBe(96)
-    expectShellWraps(legacy)
+  it('上限槽只认 --xh-text-field-input-max-h：已删的旧槽 control-max-h 写了也不生效', () => {
+    const custom = mount(true, lines(40), '--xh-text-field-input-max-h: 80px')
+    expect(height(custom.textarea)).toBe(80)
+    expectShellWraps(custom)
     app!.unmount()
     host!.remove()
 
-    const both = mount(true, lines(40), '--xh-text-field-control-max-h: 96px; --xh-text-field-input-max-h: 80px')
-    expect(height(both.textarea)).toBe(80)
+    const legacy = mount(true, lines(40), '--xh-text-field-control-max-h: 96px')
+    expect(height(legacy.textarea)).not.toBe(96)
   })
 
   it('没开自增高的多行框不受这条上限管：高度由使用者拖出来', () => {

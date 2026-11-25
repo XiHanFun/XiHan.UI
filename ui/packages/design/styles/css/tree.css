@@ -194,13 +194,13 @@
     /* data-highlighted 跟的是连接层记的焦点行（指针点选也会落焦）：只换面，焦点环在 :focus-visible 下再接回 */
     --xh-collection-outline-keyboard-highlight: transparent;
     --xh-collection-outline-selected-highlight: transparent;
-    /* 行尾对号：槽按本部件取名（item-check-fg），标记部件的旧槽留在兜底位 */
-    --xh-collection-indicator-fg-rest: var(--xh-tree-item-check-fg, var(--xh-tree-item-indicator-fg, var(--xh-fg-brand)));
-    --xh-collection-indicator-fg-checked: var(--xh-tree-item-check-fg, var(--xh-tree-item-indicator-fg, var(--xh-fg-brand)));
-    --xh-collection-indicator-fg-selected: var(--xh-tree-item-check-fg, var(--xh-tree-item-indicator-fg, var(--xh-fg-brand)));
-    --xh-collection-indicator-fg-selected-hover: var(--xh-tree-item-check-fg, var(--xh-tree-item-indicator-fg, var(--xh-fg-brand)));
-    --xh-collection-indicator-fg-selected-highlight: var(--xh-tree-item-check-fg, var(--xh-tree-item-indicator-fg, var(--xh-fg-brand)));
-    --xh-collection-indicator-fg-selected-pressed: var(--xh-tree-item-check-fg, var(--xh-tree-item-indicator-fg, var(--xh-fg-brand)));
+    /* 行尾对号：槽按本部件取名（item-check-fg） */
+    --xh-collection-indicator-fg-rest: var(--xh-tree-item-check-fg, var(--xh-fg-brand));
+    --xh-collection-indicator-fg-checked: var(--xh-tree-item-check-fg, var(--xh-fg-brand));
+    --xh-collection-indicator-fg-selected: var(--xh-tree-item-check-fg, var(--xh-fg-brand));
+    --xh-collection-indicator-fg-selected-hover: var(--xh-tree-item-check-fg, var(--xh-fg-brand));
+    --xh-collection-indicator-fg-selected-highlight: var(--xh-tree-item-check-fg, var(--xh-fg-brand));
+    --xh-collection-indicator-fg-selected-pressed: var(--xh-tree-item-check-fg, var(--xh-fg-brand));
 
     display: flex;
     align-items: center;

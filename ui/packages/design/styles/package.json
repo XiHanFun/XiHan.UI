@@ -204,7 +204,6 @@
     "./tree.css": "./dist/css/tree.css",
     "./truncate.css": "./dist/css/truncate.css",
     "./typography.css": "./dist/css/typography.css",
-    "./undefined.css": "./dist/css/undefined.css",
     "./virtualizer.css": "./dist/css/virtualizer.css",
     "./visually-hidden.css": "./dist/css/visually-hidden.css",
     "./watermark.css": "./dist/css/watermark.css"

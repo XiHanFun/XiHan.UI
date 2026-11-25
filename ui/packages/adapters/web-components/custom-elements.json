@@ -16732,9 +16732,6 @@
               "name": "--xh-combobox-item-h"
             },
             {
-              "name": "--xh-combobox-item-indicator-fg"
-            },
-            {
               "name": "--xh-combobox-item-indicator-size"
             },
             {
@@ -42874,9 +42871,6 @@
             },
             {
               "name": "--xh-listbox-item-gap"
-            },
-            {
-              "name": "--xh-listbox-item-indicator-fg"
             },
             {
               "name": "--xh-listbox-item-indicator-size"
@@ -71968,9 +71962,6 @@
               "name": "--xh-text-field-control-h"
             },
             {
-              "name": "--xh-text-field-control-max-h"
-            },
-            {
               "name": "--xh-text-field-control-min-w"
             },
             {
@@ -81510,9 +81501,6 @@
               "name": "--xh-tree-select-item-h"
             },
             {
-              "name": "--xh-tree-select-item-indicator-fg"
-            },
-            {
               "name": "--xh-tree-select-item-indicator-size"
             },
             {
@@ -82478,9 +82466,6 @@
             },
             {
               "name": "--xh-tree-item-checkbox-radius"
-            },
-            {
-              "name": "--xh-tree-item-indicator-fg"
             },
             {
               "name": "--xh-tree-label-fg"

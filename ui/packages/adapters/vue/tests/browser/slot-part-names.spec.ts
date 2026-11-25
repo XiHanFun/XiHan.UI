@@ -233,7 +233,7 @@ function TREE(): unknown {
 
 describe('tree 的两种指示符各有各的名字', () => {
   it('设叶子勾的槽：分支箭头不跟着变', async () => {
-    setSlot('--xh-tree-item-indicator-fg', RED)
+    setSlot('--xh-tree-item-check-fg', RED)
     await mount(TREE)
 
     expect(styleOf(part('tree', 'item-indicator'), 'color')).toBe(RED)

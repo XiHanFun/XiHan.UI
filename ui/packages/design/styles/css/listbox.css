@@ -269,13 +269,13 @@
     /* data-highlighted 跟的是连接层记的焦点条目（指针点选也会落焦）：只换面，焦点环在 :focus-visible 下再接回 */
     --xh-collection-outline-keyboard-highlight: transparent;
     --xh-collection-outline-selected-highlight: transparent;
-    /* 对号随语气走：没写 data-tone 时退回品牌色；槽按本部件取名（item-check-fg），标记部件的旧槽留在兜底位 */
-    --xh-collection-indicator-fg-rest: var(--xh-listbox-item-check-fg, var(--xh-listbox-item-indicator-fg, var(--xh-_listbox-accent)));
-    --xh-collection-indicator-fg-checked: var(--xh-listbox-item-check-fg, var(--xh-listbox-item-indicator-fg, var(--xh-_listbox-accent)));
-    --xh-collection-indicator-fg-selected: var(--xh-listbox-item-check-fg, var(--xh-listbox-item-indicator-fg, var(--xh-_listbox-accent)));
-    --xh-collection-indicator-fg-selected-hover: var(--xh-listbox-item-check-fg, var(--xh-listbox-item-indicator-fg, var(--xh-_listbox-accent)));
-    --xh-collection-indicator-fg-selected-highlight: var(--xh-listbox-item-check-fg, var(--xh-listbox-item-indicator-fg, var(--xh-_listbox-accent)));
-    --xh-collection-indicator-fg-selected-pressed: var(--xh-listbox-item-check-fg, var(--xh-listbox-item-indicator-fg, var(--xh-_listbox-accent)));
+    /* 对号随语气走：没写 data-tone 时退回品牌色；槽按本部件取名（item-check-fg） */
+    --xh-collection-indicator-fg-rest: var(--xh-listbox-item-check-fg, var(--xh-_listbox-accent));
+    --xh-collection-indicator-fg-checked: var(--xh-listbox-item-check-fg, var(--xh-_listbox-accent));
+    --xh-collection-indicator-fg-selected: var(--xh-listbox-item-check-fg, var(--xh-_listbox-accent));
+    --xh-collection-indicator-fg-selected-hover: var(--xh-listbox-item-check-fg, var(--xh-_listbox-accent));
+    --xh-collection-indicator-fg-selected-highlight: var(--xh-listbox-item-check-fg, var(--xh-_listbox-accent));
+    --xh-collection-indicator-fg-selected-pressed: var(--xh-listbox-item-check-fg, var(--xh-_listbox-accent));
 
     /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
     line-height: var(--xh-listbox-item-leading, var(--xh-leading-normal));

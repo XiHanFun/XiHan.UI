@@ -3,13 +3,7 @@
 // 到期（removeIn 那个大版本）整条删掉，连同 package.json 里的旧键。
 
 /** 旧文件名 → 新文件名与弃用说明。都是 css/ 下的文件名。 */
-export const DEPRECATED_SUBPATHS = {
-  'undefined.css': {
-    target: 'not-defined.css',
-    removeIn: '6.0.0',
-    reason: '文件名取自它选中的 :not(:defined)，旧名容易被当成生成器把 undefined 写进了文件名',
-  },
-}
+export const DEPRECATED_SUBPATHS = {}
 
 /** 副本开头的那行注释：在 node_modules 或 devtools 里翻到旧路径的人一眼看到改去哪。 */
 export function deprecationBanner(oldName) {

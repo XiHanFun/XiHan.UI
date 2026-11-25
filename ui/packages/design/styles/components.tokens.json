@@ -20685,7 +20685,7 @@
         "xh-collection-slot=indicator"
       ],
       "defaultToken": [
-        "--xh-combobox-item-indicator-fg"
+        "--xh-_combobox-accent"
       ],
       "visibility": "public",
       "description": "combobox 的 item 部件 color 覆盖槽。"
@@ -20835,36 +20835,6 @@
       ],
       "visibility": "public",
       "description": "combobox 的 item 部件 min-block-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-combobox-item-indicator-fg",
-      "component": "combobox",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "disabled",
-        "error",
-        "highlighted",
-        "hover",
-        "is(:active, [data-pressed])",
-        "is(:focus-visible, [data-highlighted])",
-        "is([aria-selected='true'], [data-selected])",
-        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "pressed",
-        "selected",
-        "state=checked",
-        "xh-collection-context=overlay",
-        "xh-collection-slot=indicator"
-      ],
-      "defaultToken": [
-        "--xh-_combobox-accent"
-      ],
-      "visibility": "public",
-      "description": "combobox 的 item 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-combobox-item-indicator-size",
@@ -48593,7 +48563,7 @@
         "xh-collection-slot=indicator"
       ],
       "defaultToken": [
-        "--xh-listbox-item-indicator-fg"
+        "--xh-_listbox-accent"
       ],
       "visibility": "public",
       "description": "listbox 的 item 部件 color 覆盖槽。"
@@ -48880,36 +48850,6 @@
       ],
       "visibility": "public",
       "description": "listbox 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。"
-    },
-    {
-      "name": "--xh-listbox-item-indicator-fg",
-      "component": "listbox",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "disabled",
-        "error",
-        "highlighted",
-        "hover",
-        "is(:active, [data-pressed])",
-        "is(:focus-visible, [data-highlighted])",
-        "is([aria-selected='true'], [data-selected])",
-        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "pressed",
-        "selected",
-        "state=checked",
-        "xh-collection-context=overlay",
-        "xh-collection-slot=indicator"
-      ],
-      "defaultToken": [
-        "--xh-_listbox-accent"
-      ],
-      "visibility": "public",
-      "description": "listbox 的 item 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-listbox-item-indicator-size",
@@ -80460,24 +80400,6 @@
       "description": "text-field 的 control 部件 block-size、min-block-size 覆盖槽。"
     },
     {
-      "name": "--xh-text-field-control-max-h",
-      "component": "text-field",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "max-block-size"
-      ],
-      "state": [
-        "xh-field-auto-size"
-      ],
-      "defaultToken": [
-        "--xh-viewport-h-sm"
-      ],
-      "visibility": "public",
-      "description": "text-field 的 input 部件 max-block-size 覆盖槽。"
-    },
-    {
       "name": "--xh-text-field-control-min-w",
       "component": "text-field",
       "part": [
@@ -80776,7 +80698,7 @@
         "xh-field-auto-size"
       ],
       "defaultToken": [
-        "--xh-text-field-control-max-h"
+        "--xh-viewport-h-sm"
       ],
       "visibility": "public",
       "description": "text-field 的 input 部件 max-block-size 覆盖槽。"
@@ -92758,7 +92680,7 @@
         "xh-collection-slot=indicator"
       ],
       "defaultToken": [
-        "--xh-tree-item-indicator-fg"
+        "--xh-fg-brand"
       ],
       "visibility": "public",
       "description": "tree 的 branch-control、item 部件 --xh-collection-indicator-fg-selected、--xh-collection-indicator-fg-selected-highlight、--xh-collection-indicator-fg-selected-hover、--xh-collection-indicator-fg-selected-pressed、color 覆盖槽。"
@@ -92919,31 +92841,6 @@
       ],
       "visibility": "public",
       "description": "tree 的 item-indicator 部件 border-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-tree-item-indicator-fg",
-      "component": "tree",
-      "part": [
-        "branch-control",
-        "item"
-      ],
-      "property": [
-        "--xh-collection-indicator-fg-selected",
-        "--xh-collection-indicator-fg-selected-highlight",
-        "--xh-collection-indicator-fg-selected-hover",
-        "--xh-collection-indicator-fg-selected-pressed",
-        "color"
-      ],
-      "state": [
-        "default",
-        "state=checked",
-        "xh-collection-slot=indicator"
-      ],
-      "defaultToken": [
-        "--xh-fg-brand"
-      ],
-      "visibility": "public",
-      "description": "tree 的 branch-control、item 部件 --xh-collection-indicator-fg-selected、--xh-collection-indicator-fg-selected-highlight、--xh-collection-indicator-fg-selected-hover、--xh-collection-indicator-fg-selected-pressed、color 覆盖槽。"
     },
     {
       "name": "--xh-tree-label-fg",
@@ -94854,7 +94751,7 @@
         "xh-collection-slot=indicator"
       ],
       "defaultToken": [
-        "--xh-tree-select-item-indicator-fg"
+        "--xh-_tree-select-accent"
       ],
       "visibility": "public",
       "description": "tree-select 的 branch-control、item 部件 color 覆盖槽。"
@@ -95167,37 +95064,6 @@
       ],
       "visibility": "public",
       "description": "tree-select 的 branch-control、item 部件 min-block-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-tree-select-item-indicator-fg",
-      "component": "tree-select",
-      "part": [
-        "branch-control",
-        "item"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "disabled",
-        "error",
-        "highlighted",
-        "hover",
-        "is(:active, [data-pressed])",
-        "is(:focus-visible, [data-highlighted])",
-        "is([aria-selected='true'], [data-selected])",
-        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "pressed",
-        "selected",
-        "state=checked",
-        "xh-collection-context=overlay",
-        "xh-collection-slot=indicator"
-      ],
-      "defaultToken": [
-        "--xh-_tree-select-accent"
-      ],
-      "visibility": "public",
-      "description": "tree-select 的 branch-control、item 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-item-indicator-size",

@@ -533,12 +533,12 @@
     --xh-collection-bg-selected-pressed: var(--xh-tree-select-item-bg-pressed, var(--xh-bg-subtle-hover));
     --xh-collection-outline-keyboard-highlight: transparent;
     --xh-collection-outline-selected-highlight: transparent;
-    --xh-collection-indicator-fg-rest: var(--xh-tree-select-item-check-fg, var(--xh-tree-select-item-indicator-fg, var(--xh-_tree-select-accent)));
-    --xh-collection-indicator-fg-checked: var(--xh-tree-select-item-check-fg, var(--xh-tree-select-item-indicator-fg, var(--xh-_tree-select-accent)));
-    --xh-collection-indicator-fg-selected: var(--xh-tree-select-item-check-fg, var(--xh-tree-select-item-indicator-fg, var(--xh-_tree-select-accent)));
-    --xh-collection-indicator-fg-selected-hover: var(--xh-tree-select-item-check-fg, var(--xh-tree-select-item-indicator-fg, var(--xh-_tree-select-accent)));
-    --xh-collection-indicator-fg-selected-highlight: var(--xh-tree-select-item-check-fg, var(--xh-tree-select-item-indicator-fg, var(--xh-_tree-select-accent)));
-    --xh-collection-indicator-fg-selected-pressed: var(--xh-tree-select-item-check-fg, var(--xh-tree-select-item-indicator-fg, var(--xh-_tree-select-accent)));
+    --xh-collection-indicator-fg-rest: var(--xh-tree-select-item-check-fg, var(--xh-_tree-select-accent));
+    --xh-collection-indicator-fg-checked: var(--xh-tree-select-item-check-fg, var(--xh-_tree-select-accent));
+    --xh-collection-indicator-fg-selected: var(--xh-tree-select-item-check-fg, var(--xh-_tree-select-accent));
+    --xh-collection-indicator-fg-selected-hover: var(--xh-tree-select-item-check-fg, var(--xh-_tree-select-accent));
+    --xh-collection-indicator-fg-selected-highlight: var(--xh-tree-select-item-check-fg, var(--xh-_tree-select-accent));
+    --xh-collection-indicator-fg-selected-pressed: var(--xh-tree-select-item-check-fg, var(--xh-_tree-select-accent));
 
     /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
     line-height: var(--xh-tree-select-item-leading, var(--xh-leading-normal));
