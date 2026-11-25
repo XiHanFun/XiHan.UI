@@ -127,7 +127,7 @@ block-folding 按缩进找出语法块，块头行首给一颗折叠钮；折叠
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-code-view>` |
-| Vue 组件 | `XhCodeViewCode` `XhCodeViewFilename` `XhCodeViewFoldTrigger` `XhCodeViewHeader` `XhCodeViewLangLabel` `XhCodeViewPre` `XhCodeViewRoot` |
+| Vue 组件 | `XhCodeViewCode` `XhCodeViewFileName` `XhCodeViewFoldTrigger` `XhCodeViewHeader` `XhCodeViewLangLabel` `XhCodeViewPre` `XhCodeViewRoot` |
 | 组合式函数 | `useCodeView` |
 | 状态机 | `codeViewMachine` |
 | 皮肤 | `@xihan-ui/styles/code-view.css` |
@@ -182,6 +182,7 @@ block-folding 按缩进找出语法块，块头行首给一颗折叠钮；折叠
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
 | `XhCodeViewCode` | `children` | `SlotChildren<CodeViewLineSlotProps>` |  | 逐行接管该行的正文；未提供时按着色结果铺设。 |
+| `XhCodeViewFileName` | `fileName` | `string` |  | 未写 children 时显示它；也没给时取 XhCodeViewRoot 上的 fileName。 |
 | `XhCodeViewRoot` | `children` | `SlotChildren<CodeViewRootSlotProps>` |  |  |
 
 ### 状态
