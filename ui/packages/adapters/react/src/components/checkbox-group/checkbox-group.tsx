@@ -49,9 +49,9 @@ export interface XhCheckboxGroupRootProps<V = string> extends Omit<ComponentProp
   /** 组内全部条目的值；未提供时全选格只在 unchecked 与 indeterminate 两态之间切换。 */
   itemValues?: V[]
   /** 至少选几项；降到它时已选的条目改不动。 */
-  min?: number
+  minSelected?: number
   /** 至多选几项；到了它时未选的条目改不动，全选只补到它为止。 */
-  max?: number
+  maxSelected?: number
   disabled?: boolean
   readOnly?: boolean
   invalid?: boolean
@@ -77,8 +77,8 @@ export function XhCheckboxGroupRoot<V = string>({
   value,
   defaultValue,
   itemValues,
-  min,
-  max,
+  minSelected,
+  maxSelected,
   disabled,
   readOnly,
   invalid,
@@ -100,8 +100,8 @@ export function XhCheckboxGroupRoot<V = string>({
     value,
     defaultValue,
     itemValues,
-    min,
-    max,
+    minSelected,
+    maxSelected,
     disabled,
     readOnly,
     invalid,

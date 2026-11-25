@@ -1,4 +1,4 @@
-// 限定选择数 | min / max 约束选中数：选满时没选的项置灰，降到下限时已选的项摘不掉
+// 限定选择数 | minSelected / maxSelected 约束选中数：选满时没选的项置灰，降到下限时已选的项摘不掉
 import type { ReactNode } from "react";
 import {
   XhCheckboxGroupIndicator,
@@ -17,7 +17,7 @@ const items = [
 
 export default function Demo(): ReactNode {
   return (
-    <XhCheckboxGroupRoot defaultValue={["design"]} min={1} max={2}>
+    <XhCheckboxGroupRoot defaultValue={["design"]} minSelected={1} maxSelected={2}>
       {({ value, atMax }) => (
         <>
           <XhCheckboxGroupLabel>擅长方向（选 1 到 2 项）</XhCheckboxGroupLabel>

@@ -9243,21 +9243,21 @@
             },
             {
               "kind": "field",
-              "name": "min",
+              "name": "minSelected",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
-              "attribute": "min"
+              "attribute": "min-selected"
             },
             {
               "kind": "field",
-              "name": "max",
+              "name": "maxSelected",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
-              "attribute": "max"
+              "attribute": "max-selected"
             },
             {
               "kind": "field",
@@ -9429,7 +9429,7 @@
               "type": {
                 "text": "boolean"
               },
-              "description": "选中数到了 max：未选的条目改不动；还没进文档时为 false。",
+              "description": "选中数到了 maxSelected：未选的条目改不动；还没进文档时为 false。",
               "readonly": true
             },
             {
@@ -9438,7 +9438,7 @@
               "type": {
                 "text": "boolean"
               },
-              "description": "选中数降到 min：已选的条目改不动；还没进文档时为 false。",
+              "description": "选中数降到 minSelected：已选的条目改不动；还没进文档时为 false。",
               "readonly": true
             },
             {
@@ -9523,16 +9523,16 @@
                 "text": "number | undefined"
               },
               "description": "至少选几项；降到它时已选的条目改不动",
-              "name": "min",
-              "fieldName": "min"
+              "name": "min-selected",
+              "fieldName": "minSelected"
             },
             {
               "type": {
                 "text": "number | undefined"
               },
               "description": "至多选几项；到了它时未选的条目改不动，全选只补到它为止",
-              "name": "max",
-              "fieldName": "max"
+              "name": "max-selected",
+              "fieldName": "maxSelected"
             },
             {
               "type": {

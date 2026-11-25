@@ -621,13 +621,13 @@ describe('connectCheckboxGroup：结构形态', () => {
 })
 
 describe('checkbox-group 选中数上下限', () => {
-  it('上下限必须是非负整数且 min 不大于 max，非法组合立即报错', () => {
+  it('上下限必须是非负整数且 minSelected 不大于 maxSelected，非法组合立即报错', () => {
     expect(resolveCheckboxGroupLimits(undefined, undefined)).toEqual({ min: 0, max: Number.POSITIVE_INFINITY })
     expect(resolveCheckboxGroupLimits(1, 3)).toEqual({ min: 1, max: 3 })
-    expect(() => resolveCheckboxGroupLimits(3, 1)).toThrow(/min（3）不能大于 max（1）/)
+    expect(() => resolveCheckboxGroupLimits(3, 1)).toThrow(/minSelected（3）不能大于 maxSelected（1）/)
     expect(() => resolveCheckboxGroupLimits(-1, undefined)).toThrow(/非负整数/)
     expect(() => resolveCheckboxGroupLimits(undefined, 1.5)).toThrow(/非负整数/)
-    expect(() => api(makeService({ min: 2, max: 1 }))).toThrow()
+    expect(() => api(makeService({ minSelected: 2, maxSelected: 1 }))).toThrow()
   })
 
   it('clampCheckboxGroupValue：多出上限的新值不收，低于下限时保留先选的那几项', () => {
@@ -637,9 +637,9 @@ describe('checkbox-group 选中数上下限', () => {
     expect(clampCheckboxGroupValue(['a'], ['a', 'b'], limits)).toEqual(['a', 'b'])
   })
 
-  it('顶到 max：没选的条目报 aria-disabled 且点不动，已选的照常可摘；atMax 为真', () => {
+  it('顶到 maxSelected：没选的条目报 aria-disabled 且点不动，已选的照常可摘；atMax 为真', () => {
     const onValueChange = vi.fn()
-    const service = makeService({ max: 2, defaultValue: ['a', 'b'], onValueChange })
+    const service = makeService({ maxSelected: 2, defaultValue: ['a', 'b'], onValueChange })
     expect(api(service).atMax).toBe(true)
     expect(itemProps(service, { value: 'c' })).toMatchObject({ 'aria-disabled': 'true', 'data-disabled': '' })
     expect(itemProps(service, { value: 'a' })).toMatchObject({ 'aria-disabled': 'false', 'data-disabled': undefined })
@@ -653,8 +653,8 @@ describe('checkbox-group 选中数上下限', () => {
     expect(api(service).atMax).toBe(false)
   })
 
-  it('降到 min：已选的条目报 aria-disabled 且摘不掉，表单影子仍照常提交它', () => {
-    const service = makeService({ min: 1, defaultValue: ['a'], name: 'ch' })
+  it('降到 minSelected：已选的条目报 aria-disabled 且摘不掉，表单影子仍照常提交它', () => {
+    const service = makeService({ minSelected: 1, defaultValue: ['a'], name: 'ch' })
     expect(api(service).atMin).toBe(true)
     expect(itemProps(service, { value: 'a' })).toMatchObject({ 'aria-disabled': 'true' })
     ;(itemProps(service, { value: 'a' }).onClick as () => void)()
@@ -662,8 +662,8 @@ describe('checkbox-group 选中数上下限', () => {
     expect(api(service).getHiddenInputProps({ value: 'a' })).toMatchObject({ 'disabled': undefined, 'data-disabled': undefined, 'checked': true })
   })
 
-  it('全选格只补到 max 为止；已满时再按是全不选，下限保住先选的那几项', () => {
-    const service = makeService({ min: 1, max: 2, defaultValue: ['b'] })
+  it('全选格只补到 maxSelected 为止；已满时再按是全不选，下限保住先选的那几项', () => {
+    const service = makeService({ minSelected: 1, maxSelected: 2, defaultValue: ['b'] })
     service.send({ type: 'ALL.TOGGLE', values: ['a', 'b', 'c'] })
     expect(api(service).value).toEqual(['b', 'a'])
     service.send({ type: 'ALL.TOGGLE', values: ['a', 'b', 'c'] })
@@ -671,7 +671,7 @@ describe('checkbox-group 选中数上下限', () => {
   })
 
   it('整组禁用或只读时不按上下限锁条目：锁住的是意图，改不动时本就全组不可改', () => {
-    const service = makeService({ max: 1, defaultValue: ['a'], readOnly: true })
+    const service = makeService({ maxSelected: 1, defaultValue: ['a'], readOnly: true })
     expect(itemProps(service, { value: 'b' })).toMatchObject({ 'aria-disabled': 'false' })
   })
 })

@@ -46,8 +46,8 @@ const LIST_CONVERTER = {
  * @attr {string} value - 受控选中值，逗号分隔；未提供该属性即非受控
  * @attr {string} default-value - 非受控初始选中值，逗号分隔
  * @attr {string} item-values - 组内全部条目的值，逗号分隔；trigger 据此分辨全选与半选
- * @attr {number} min - 至少选几项；降到它时已选的条目改不动
- * @attr {number} max - 至多选几项；到了它时未选的条目改不动，全选只补到它为止
+ * @attr {number} min-selected - 至少选几项；降到它时已选的条目改不动
+ * @attr {number} max-selected - 至多选几项；到了它时未选的条目改不动，全选只补到它为止
  * @attr {boolean} disabled - 整组禁用
  * @attr {boolean} read-only - 只读：可聚焦可朗读，不可修改
  * @attr {boolean} invalid - 校验失败标注
@@ -91,8 +91,8 @@ export class XhCheckboxGroupElement<V = string> extends XhElement {
     value: { converter: LIST_CONVERTER },
     defaultValue: { converter: LIST_CONVERTER, attribute: 'default-value' },
     itemValues: { converter: LIST_CONVERTER, attribute: 'item-values' },
-    min: { converter: NUMBER_CONVERTER },
-    max: { converter: NUMBER_CONVERTER },
+    minSelected: { converter: NUMBER_CONVERTER, attribute: 'min-selected' },
+    maxSelected: { converter: NUMBER_CONVERTER, attribute: 'max-selected' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
@@ -110,8 +110,8 @@ export class XhCheckboxGroupElement<V = string> extends XhElement {
   declare value?: V[]
   declare defaultValue?: V[]
   declare itemValues?: V[]
-  declare min?: number
-  declare max?: number
+  declare minSelected?: number
+  declare maxSelected?: number
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
@@ -153,8 +153,8 @@ export class XhCheckboxGroupElement<V = string> extends XhElement {
     } as Pick<CheckboxGroupSchema['props'], 'collection' | 'valueKey' | 'value' | 'defaultValue' | 'itemValues' | 'onValueChange'>
     return {
       ...valueTyped,
-      min: this.min,
-      max: this.max,
+      minSelected: this.minSelected,
+      maxSelected: this.maxSelected,
       disabled: control.disabled,
       readOnly: control.readOnly,
       invalid: control.invalid,
@@ -182,12 +182,12 @@ export class XhCheckboxGroupElement<V = string> extends XhElement {
     return this.getParts(name).filter(el => item.contains(el))
   }
 
-  /** 选中数到了 max：未选的条目改不动；还没进文档时为 false。 */
+  /** 选中数到了 maxSelected：未选的条目改不动；还没进文档时为 false。 */
   get atMax(): boolean {
     return this.ctrl.service ? connectCheckboxGroup(this.ctrl.service, wcNormalize).atMax : false
   }
 
-  /** 选中数降到 min：已选的条目改不动；还没进文档时为 false。 */
+  /** 选中数降到 minSelected：已选的条目改不动；还没进文档时为 false。 */
   get atMin(): boolean {
     return this.ctrl.service ? connectCheckboxGroup(this.ctrl.service, wcNormalize).atMin : false
   }

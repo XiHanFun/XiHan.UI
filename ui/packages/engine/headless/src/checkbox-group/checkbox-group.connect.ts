@@ -79,7 +79,7 @@ function connectCheckboxGroupKeys<T extends PropTypes>(
   const editable = !groupDisabled && !readOnly
   const checkedState = resolveCheckedState(value, prop('itemValues') ?? [])
   // 选中数的上下限：顶到上限时没选的改不动，降到下限时已选的改不动
-  const limits = resolveCheckboxGroupLimits(prop('min'), prop('max'))
+  const limits = resolveCheckboxGroupLimits(prop('minSelected'), prop('maxSelected'))
   const atMax = value.length >= limits.max
   const atMin = limits.min > 0 && value.length <= limits.min
 

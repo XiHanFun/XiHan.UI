@@ -1,4 +1,4 @@
-<!-- 限定选择数 | min / max 约束选中数：选满时没选的项置灰，降到下限时已选的项摘不掉 -->
+<!-- 限定选择数 | minSelected / maxSelected 约束选中数：选满时没选的项置灰，降到下限时已选的项摘不掉 -->
 <script setup lang="ts">
 import {
   XhCheckboxGroupIndicator,
@@ -17,7 +17,7 @@ const items = [
 </script>
 
 <template>
-  <XhCheckboxGroupRoot v-slot="{ value, atMax }" :default-value="['design']" :min="1" :max="2">
+  <XhCheckboxGroupRoot v-slot="{ value, atMax }" :default-value="['design']" :min-selected="1" :max-selected="2">
     <XhCheckboxGroupLabel>擅长方向（选 1 到 2 项）</XhCheckboxGroupLabel>
     <XhCheckboxGroupItem v-for="item in items" :key="item.value" :value="item.value">
       <XhCheckboxGroupIndicator />

@@ -89,12 +89,12 @@ export interface CheckboxGroupSchema<V = string> extends MachineSchema {
      * 至少选几项，非负整数；选中数降到它时已选的条目改不动（aria-disabled）。
      * 只约束用户的点选与全选，不校验程序化写入与初值。
      */
-    min?: number
+    minSelected?: number
     /**
      * 至多选几项，非负整数；选中数到了它时未选的条目改不动（aria-disabled），全选只补到它为止。
-     * 只约束用户的点选与全选，不校验程序化写入与初值。min 大于 max 立即报错。
+     * 只约束用户的点选与全选，不校验程序化写入与初值。minSelected 大于 maxSelected 立即报错。
      */
-    max?: number
+    maxSelected?: number
     /** 整组禁用：每一项随之禁用，且隐藏输入不参与提交。 */
     disabled?: boolean
     /** 只读：仍可聚焦与朗读，但用户不可修改。 */
@@ -178,9 +178,9 @@ export interface CheckboxGroupApi<T extends PropTypes = PropTypes, V = string> {
   readOnly: boolean
   invalid: boolean
   required: boolean
-  /** 选中数到了 max：未选的条目改不动。未设 max 时恒为 false。 */
+  /** 选中数到了 maxSelected：未选的条目改不动。未设 maxSelected 时恒为 false。 */
   atMax: boolean
-  /** 选中数降到 min：已选的条目改不动。未设 min（或为 0）时恒为 false。 */
+  /** 选中数降到 minSelected：已选的条目改不动。未设 minSelected（或为 0）时恒为 false。 */
   atMin: boolean
   isChecked: (value: V) => boolean
   /** 整体替换选中集合。程序化入口，不受 readOnly 拦截。 */

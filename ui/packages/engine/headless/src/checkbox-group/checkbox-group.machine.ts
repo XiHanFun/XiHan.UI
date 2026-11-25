@@ -18,7 +18,7 @@ export interface CheckboxGroupLimits {
 }
 
 /**
- * 读出选中数的上下限并校验：必须是非负整数，min 不能大于 max。
+ * 读出选中数的上下限并校验：必须是非负整数，minSelected 不能大于 maxSelected。
  * 非法值立即报错而不是悄悄夹取：夹取会让作者以为上限生效了，实际放行的是另一个数。
  */
 export function resolveCheckboxGroupLimits(min: number | undefined, max: number | undefined): CheckboxGroupLimits {
@@ -28,7 +28,7 @@ export function resolveCheckboxGroupLimits(min: number | undefined, max: number 
   }
   const limits = { min: min ?? 0, max: max ?? Number.POSITIVE_INFINITY }
   if (limits.min > limits.max)
-    throw new Error(`[xh] CheckboxGroup 的 min（${limits.min}）不能大于 max（${limits.max}）`)
+    throw new Error(`[xh] CheckboxGroup 的 minSelected（${limits.min}）不能大于 maxSelected（${limits.max}）`)
   return limits
 }
 
@@ -162,7 +162,7 @@ export const checkboxGroupMachine = createMachine({
         if (e.type !== 'ITEM.TOGGLE')
           return
         const prev = context.get('value')
-        const next = clampCheckboxGroupValue(prev, toggleItemValue(prev, e.value), resolveCheckboxGroupLimits(prop('min'), prop('max')))
+        const next = clampCheckboxGroupValue(prev, toggleItemValue(prev, e.value), resolveCheckboxGroupLimits(prop('minSelected'), prop('maxSelected')))
         // 顶到上下限的那一下什么都没变：不发通知
         if (next.length !== prev.length)
           context.set('value', next)
@@ -172,7 +172,7 @@ export const checkboxGroupMachine = createMachine({
         if (e.type !== 'ALL.TOGGLE')
           return
         const prev = context.get('value')
-        const limits = resolveCheckboxGroupLimits(prop('min'), prop('max'))
+        const limits = resolveCheckboxGroupLimits(prop('minSelected'), prop('maxSelected'))
         // 顶到上限时全选格按「已满」处理：再按一下是全不选，否则它会卡在补不进、也摘不掉的半选态
         const full = prev.length >= limits.max
         const toggled = full ? prev.filter(v => !e.values.includes(v)) : toggleAllValues(prev, e.values)

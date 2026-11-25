@@ -135,10 +135,10 @@ export const checkboxGroupSuite: ConformanceSuite = {
       },
     },
     {
-      name: 'max：选满时没选的条目报 aria-disabled 且点不动，摘掉一项后恢复',
+      name: 'maxSelected：选满时没选的条目报 aria-disabled 且点不动，摘掉一项后恢复',
       spec: { apg: `${APG}#roles_states_properties` },
       fixture: allEnabled,
-      props: { max: 2, defaultValue: ['a', 'b'] },
+      props: { maxSelected: 2, defaultValue: ['a', 'b'] },
       initial: {
         parts: {
           item: [{ 'aria-disabled': 'false' }, { 'aria-disabled': 'false' }, { 'aria-disabled': 'true', 'data-disabled': '' }],
@@ -165,10 +165,10 @@ export const checkboxGroupSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'min：降到下限时已选的条目报 aria-disabled 且摘不掉',
+      name: 'minSelected：降到下限时已选的条目报 aria-disabled 且摘不掉',
       spec: { apg: `${APG}#roles_states_properties` },
       fixture: allEnabled,
-      props: { min: 1, defaultValue: ['a'] },
+      props: { minSelected: 1, defaultValue: ['a'] },
       initial: {
         parts: {
           item: [{ 'aria-checked': 'true', 'aria-disabled': 'true' }, { 'aria-disabled': 'false' }, { 'aria-disabled': 'false' }],
