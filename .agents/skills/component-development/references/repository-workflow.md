@@ -149,6 +149,6 @@ pnpm build
 - 发布包行为、样式或公开面变化必须添加 changeset。
 - breaking 删除/改名使用 major；兼容新增通常 minor；缺陷修复通常 patch。
 - 一个组件或一个共享配方一个提交。
-- 提交消息使用 `<type>(<scope>): <中文说明>`。
+- 提交消息只写一行 `<type>(<scope>): <中文说明>`，说明不超过 40 个字，写法见 `commit-msg` 技能。
 - 提交前运行 `git diff --check`，确认未暂存用户无关文件。
 - 不 push、不 publish，除非用户明确要求。
