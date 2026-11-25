@@ -68,7 +68,7 @@ time-zone 给了 IANA 时区名就按那个时区的墙钟显示，datetime 带�
 
 ### 特性
 
-- `type` 切换绝对与相对；相对说法一分钟以内是「现在」，其余按分、时、天取整，过去与将来都认，离现在三十天及以上退回绝对日期。
+- `display` 切换绝对与相对；相对说法一分钟以内是「现在」，其余按分、时、天取整，过去与将来都认，离现在三十天及以上退回绝对日期。
 - 用词与缺省日期写法由 `Intl.RelativeTimeFormat` / `Intl.DateTimeFormat` 按 `locale` 给出，任何语言都可用；未提供时跟随宿主浏览器语言，读取失败时使用 `en-US`。`translations.justNow` 可换掉「现在」那一档的说法。
 - `format` 自定义格式串，只改变显示文本，`datetime` 属性不变。
 - `timeZone` 给了 IANA 时区名就按那个时区的墙钟显示，`datetime` 带上偏移量；不带偏移量的 `value` 串也按这个时区解读。认不出的时区落 `invalid`。
@@ -103,13 +103,13 @@ time-zone 给了 IANA 时区名就按那个时区的墙钟显示，datetime 带�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `display` | `TimestampDisplay` |  | 呈现方式：date 只到日、datetime 到秒、relative 表述为「几分钟前」「几分钟后」，默认 datetime。 |
 | `format` | `string` |  | 自定义格式串，记号为 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s。 提供后覆盖该语言的缺省写法；relative 型下只在回退为绝对日期时使用。 |
 | `locale` | `string` |  | BCP 47 语言标记，决定相对说法的用词与缺省的日期写法，任何语言都由 Intl 给出。 未提供时按宿主语言，宿主也没有时按 en-US。它只切换面向用户的文本，datetime 与语言无关。 |
 | `now` | `TimestampValue` |  | 计算相对说法时的参照时刻，默认取当前时刻并自动刷新。提供后整个组件的产出完全由入参决定，不再刷新。 |
 | `refreshInterval` | `number` |  | 相对型的刷新间隔（毫秒）。缺省按距今远近自适应：文字只在跨过分钟、小时、天的边界时才变， 就只在那一刻刷新；给正数按固定间隔刷新，给 0 不刷新。页面隐藏或元素离开视口时暂停，回来时立即刷新一次。 这是停留时长，不是动效，不受减弱动效影响。 |
 | `timeZone` | `string` |  | IANA 时区名（如 `Asia/Shanghai`）。给了就按这个时区的墙钟显示，datetime 带上该时区的偏移量； 不带偏移量的 `value` 串也按这个时区解读。未提供时按运行时本地、datetime 不带偏移量。认不出的时区落 invalid。 |
 | `translations` | `Partial<TimestampTranslations>` |  |  |
-| `type` | `TimestampType` |  | 呈现方式：date 只到日、datetime 到秒、relative 表述为「几分钟前」「几分钟后」，默认 datetime。 |
 | `value` | `TimestampValue` |  | 要显示的时刻。只写年月日的串按零点解读；不带偏移量的串按 `timeZone` 的墙钟解读，没给时区时按本地。 |
 
 ### 状态
@@ -162,7 +162,7 @@ time-zone 给了 IANA 时区名就按那个时区的墙钟显示，datetime 带�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-format` | props.type |
+| `root` | `data-display` | props.display |
 | `root` | `data-relative` | ''（条件成立时才出现） |
 | `root` | `data-state` | 'empty' |
 

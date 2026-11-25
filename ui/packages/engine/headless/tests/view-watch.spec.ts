@@ -117,7 +117,7 @@ describe('timestampMachine 共用可见性监听', () => {
     const add = vi.spyOn(document, 'addEventListener')
     const runtimes = ['2026-08-11T11:58:30', '2026-08-11T11:57:10', '2026-08-11T11:50:00'].map((value) => {
       const runtime = createVanillaRuntime()
-      const props = runtime.signal<TimestampProps>({ value, type: 'relative' })
+      const props = runtime.signal<TimestampProps>({ value, display: 'relative' })
       createService(timestampMachine, { props: () => props.get(), runtime })
       runtime.start()
       return runtime

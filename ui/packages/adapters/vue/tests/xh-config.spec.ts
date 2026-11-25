@@ -143,7 +143,7 @@ describe('provideXhConfig · 嵌套', () => {
     const Inner = defineComponent({
       setup() {
         provideXhConfig({ translations: { breadcrumb: { root: '面包屑' } } })
-        return () => [h(XhBreadcrumbRoot, () => '首页'), h(XhTimestamp, { value, type: 'date' })]
+        return () => [h(XhBreadcrumbRoot, () => '首页'), h(XhTimestamp, { value, display: 'date' })]
       },
     })
     const host = mount(() => {
@@ -209,8 +209,8 @@ describe('provideXhConfig · locale', () => {
     const host = mount(() => {
       provideXhConfig({ locale: 'en' })
       return () => [
-        h('div', { id: 'global' }, [h(XhTimestamp, { value, type: 'date' })]),
-        h('div', { id: 'own' }, [h(XhTimestamp, { value, type: 'date', locale: 'zh-CN' })]),
+        h('div', { id: 'global' }, [h(XhTimestamp, { value, display: 'date' })]),
+        h('div', { id: 'own' }, [h(XhTimestamp, { value, display: 'date', locale: 'zh-CN' })]),
       ]
     })
     // en 的日期是月在前（MM/DD/YYYY），zh-CN 是年在前（YYYY/MM/DD）

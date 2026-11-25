@@ -18,9 +18,9 @@ export default function Demo(): ReactNode {
   return (
     <div style={grid}>
       <span>打开本页</span>
-      <XhTimestamp value={openedAt} type="relative" />
+      <XhTimestamp value={openedAt} display="relative" />
       <span>下一场会议</span>
-      <XhTimestamp value={meetingAt} type="relative" />
+      <XhTimestamp value={meetingAt} display="relative" />
     </div>
   );
 }

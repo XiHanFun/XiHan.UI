@@ -55,7 +55,7 @@ export const timestampSuite: ConformanceSuite = {
         parts: {
           root: {
             'role': null,
-            'data-format': 'datetime',
+            'data-display': 'datetime',
             'data-state': 'empty',
             'data-relative': null,
           },
@@ -73,7 +73,7 @@ export const timestampSuite: ConformanceSuite = {
       spec: { apg: HTML },
       props: { value: AT, locale: 'en-US' },
       initial: {
-        parts: { root: { 'data-format': 'datetime', 'data-state': 'ready' } },
+        parts: { root: { 'data-display': 'datetime', 'data-state': 'ready' } },
       },
       steps: [
         { kind: 'raw', why: WHY, run: expectStamp('2026-08-11T09:30:05') },
@@ -83,9 +83,9 @@ export const timestampSuite: ConformanceSuite = {
     {
       name: 'date 型：戳跟着收到日期精度，不留一个显示不出来的时分秒',
       spec: { apg: HTML },
-      props: { value: AT, type: 'date', locale: 'en-US' },
+      props: { value: AT, display: 'date', locale: 'en-US' },
       initial: {
-        parts: { root: { 'data-format': 'date', 'data-state': 'ready' } },
+        parts: { root: { 'data-display': 'date', 'data-state': 'ready' } },
       },
       steps: [
         { kind: 'raw', why: WHY, run: expectStamp('2026-08-11') },
@@ -104,9 +104,9 @@ export const timestampSuite: ConformanceSuite = {
     {
       name: '相对说法落在档位里：立 data-relative，戳仍是那个确切时刻',
       spec: { apg: HTML },
-      props: { value: '2026-08-11T09:00:00', type: 'relative', now: '2026-08-11T09:30:00', locale: 'en-US' },
+      props: { value: '2026-08-11T09:00:00', display: 'relative', now: '2026-08-11T09:30:00', locale: 'en-US' },
       initial: {
-        parts: { root: { 'data-format': 'relative', 'data-state': 'ready', 'data-relative': '' } },
+        parts: { root: { 'data-display': 'relative', 'data-state': 'ready', 'data-relative': '' } },
       },
       steps: [
         { kind: 'raw', why: WHY, run: expectStamp('2026-08-11T09:00:00') },
@@ -116,9 +116,9 @@ export const timestampSuite: ConformanceSuite = {
     {
       name: '相对说法超出档位：退回绝对日期，data-relative 不写',
       spec: { apg: HTML },
-      props: { value: '2026-01-01T00:00:00', type: 'relative', now: '2026-08-11T09:30:00', locale: 'en-US' },
+      props: { value: '2026-01-01T00:00:00', display: 'relative', now: '2026-08-11T09:30:00', locale: 'en-US' },
       initial: {
-        parts: { root: { 'data-format': 'relative', 'data-state': 'ready', 'data-relative': null } },
+        parts: { root: { 'data-display': 'relative', 'data-state': 'ready', 'data-relative': null } },
       },
       steps: [
         { kind: 'raw', why: WHY, run: expectStamp('2026-01-01T00:00:00') },
@@ -128,7 +128,7 @@ export const timestampSuite: ConformanceSuite = {
     {
       name: 'locale 只换用词，戳恒是同一种写法',
       spec: { apg: HTML },
-      props: { value: '2026-08-11T09:00:00', type: 'relative', now: '2026-08-11T09:30:00', locale: 'zh-CN' },
+      props: { value: '2026-08-11T09:00:00', display: 'relative', now: '2026-08-11T09:30:00', locale: 'zh-CN' },
       steps: [
         { kind: 'raw', why: WHY, run: expectStamp('2026-08-11T09:00:00') },
         { kind: 'raw', why: WHY, run: expectText('30分钟前') },
@@ -137,9 +137,9 @@ export const timestampSuite: ConformanceSuite = {
     {
       name: '将来的时刻说成「几分钟后」，同样立 data-relative',
       spec: { apg: HTML },
-      props: { value: '2026-08-11T10:00:00', type: 'relative', now: '2026-08-11T09:30:00', locale: 'en-US' },
+      props: { value: '2026-08-11T10:00:00', display: 'relative', now: '2026-08-11T09:30:00', locale: 'en-US' },
       initial: {
-        parts: { root: { 'data-format': 'relative', 'data-state': 'ready', 'data-relative': '' } },
+        parts: { root: { 'data-display': 'relative', 'data-state': 'ready', 'data-relative': '' } },
       },
       steps: [
         { kind: 'raw', why: WHY, run: expectText('in 30 minutes') },
@@ -171,7 +171,7 @@ export const timestampSuite: ConformanceSuite = {
       spec: { apg: HTML },
       props: { value: '下周三下午' },
       initial: {
-        parts: { root: { 'data-format': 'datetime', 'data-state': 'invalid' } },
+        parts: { root: { 'data-display': 'datetime', 'data-state': 'invalid' } },
       },
       steps: [
         { kind: 'raw', why: WHY, run: expectStamp(null) },

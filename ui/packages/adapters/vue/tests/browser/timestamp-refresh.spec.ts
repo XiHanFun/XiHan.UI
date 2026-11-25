@@ -33,7 +33,7 @@ async function mount(value: number, offscreen: boolean): Promise<HTMLElement> {
     }, [
       // 离开视口的那一档：时刻排在一块比滚动容器高得多的留白之后
       offscreen ? h('div', { style: { blockSize: '2000px' } }) : null,
-      h(XhTimestamp, { value, type: 'relative', locale: 'en-US' }),
+      h(XhTimestamp, { value, display: 'relative', locale: 'en-US' }),
     ]),
   })
   app.mount(host)

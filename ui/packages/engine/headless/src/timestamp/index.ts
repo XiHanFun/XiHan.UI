@@ -18,7 +18,7 @@ export {
   timestampRefreshDelay,
   toTimeDate,
 } from './timestamp.format'
-export type { TimestampType, TimestampValue } from './timestamp.format'
+export type { TimestampDisplay, TimestampValue } from './timestamp.format'
 export { timestampKeyboard } from './timestamp.keyboard'
 export { timestampMachine, timestampNextRefresh } from './timestamp.machine'
 export { timestampMeta } from './timestamp.meta'

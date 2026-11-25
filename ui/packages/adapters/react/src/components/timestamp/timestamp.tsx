@@ -5,7 +5,7 @@
 
 // 提供 timestamp 相关实现。
 
-import type { TimestampTranslations, TimestampType, TimestampValue } from '@xihan-ui/headless'
+import type { TimestampTranslations, TimestampDisplay, TimestampValue } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { connectTimestamp, timestampMachine } from '@xihan-ui/headless'
 import { withXhConfig } from '../../config/config'
@@ -19,7 +19,7 @@ export interface XhTimestampProps extends ComponentPropsWithRef<'time'> {
   /** 要显示的时刻。只写年月日的串按零点解读；不带偏移量的串按 timeZone 的墙钟解读，没给时区时按本地。 */
   value?: TimestampValue
   /** 呈现方式：date 只到日、datetime 到秒、relative 表述为几分钟前 / 几分钟后等相对说法，默认 datetime。 */
-  type?: TimestampType
+  display?: TimestampDisplay
   /** 自定义格式串，记号是 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s。 */
   format?: string
   /** BCP 47 语言标记，决定相对说法的用词与缺省的日期写法（由 Intl 给出）。它只更换供人阅读的文本，datetime 与语言无关。 */
@@ -40,8 +40,8 @@ export interface XhTimestampProps extends ComponentPropsWithRef<'time'> {
  * 自行排版的时间表述的用法。children 为空时铺设组件格式化后的文本。
  * 相对型在没给 now 时按距今远近自动刷新，刷新节奏由状态机掌握。
  */
-export function XhTimestamp({ value, type, format, locale, timeZone, now, refreshInterval, translations, children, ...rest }: XhTimestampProps): ReactNode {
-  const props = withXhConfig('timestamp', { value, type, format, locale, timeZone, now, refreshInterval, translations })
+export function XhTimestamp({ value, display, format, locale, timeZone, now, refreshInterval, translations, children, ...rest }: XhTimestampProps): ReactNode {
+  const props = withXhConfig('timestamp', { value, display, format, locale, timeZone, now, refreshInterval, translations })
   const service = useMachine(timestampMachine, () => props, { scope: useReactScope() })
   const api = connectTimestamp(service, reactNormalize)
   return (

@@ -13,7 +13,7 @@
 import { isValidTimeZone, PlainDateTime, ZonedDateTime } from '@xihan-ui/core/date'
 
 /** 三种呈现方式：只到日、到秒、以及相对现在的说法。 */
-export type TimestampType = 'date' | 'datetime' | 'relative'
+export type TimestampDisplay = 'date' | 'datetime' | 'relative'
 
 /** 可以当时刻用的三种写法。 */
 export type TimestampValue = Date | number | string
@@ -175,8 +175,8 @@ function relativeFormatter(locale: string, numeric: 'always' | 'auto'): Intl.Rel
 /**
  * 按该语言的缺省写法铺一个绝对时刻：date 只到日，其余到秒（24 小时制）。给了时区时取那个时区的墙钟。
  */
-export function formatTimestampDate(date: Date, type: TimestampType, locale: string, timeZone?: string): string {
-  return dateFormatter(locale, type === 'datetime', timeZone).format(date)
+export function formatTimestampDate(date: Date, display: TimestampDisplay, locale: string, timeZone?: string): string {
+  return dateFormatter(locale, display === 'datetime', timeZone).format(date)
 }
 
 /** 一分钟以内的说法：该语言的「现在」（Intl 的零秒相对说法）。 */
@@ -240,8 +240,8 @@ export function timestampRefreshDelay(date: Date, now: Date): number | null {
  * 相对说法底下仍是一个确切时刻，故与 datetime 型同样给到秒。
  * 给了时区时取那个时区的墙钟，到秒的戳另带该时区在那一刻的偏移量。
  */
-export function timestampMachineStamp(date: Date, type: TimestampType, timeZone?: string): string {
-  if (type === 'date')
+export function timestampMachineStamp(date: Date, display: TimestampDisplay, timeZone?: string): string {
+  if (display === 'date')
     return formatTimePattern(date, 'YYYY-MM-DD', timeZone)
   const wall = formatTimePattern(date, 'YYYY-MM-DDTHH:mm:ss', timeZone)
   return timeZone === undefined ? wall : `${wall}${ZonedDateTime.fromDate(date, timeZone).offset}`

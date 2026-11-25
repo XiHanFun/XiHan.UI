@@ -10,8 +10,8 @@ const meetingAt = openedAt + 2 * 60 * 1000 + 5 * 1000;
 <template>
   <div style="display: grid; grid-template-columns: auto auto; gap: 8px 24px; justify-content: start">
     <span>打开本页</span>
-    <XhTimestamp :value="openedAt" type="relative" />
+    <XhTimestamp :value="openedAt" display="relative" />
     <span>下一场会议</span>
-    <XhTimestamp :value="meetingAt" type="relative" />
+    <XhTimestamp :value="meetingAt" display="relative" />
   </div>
 </template>

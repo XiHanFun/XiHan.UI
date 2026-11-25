@@ -22,7 +22,7 @@ export default function Demo(): ReactNode {
       {types.map(type => (
         <Fragment key={type}>
           <code>{type}</code>
-          <XhTimestamp value={value} type={type} now={now} />
+          <XhTimestamp value={value} display={type} now={now} />
         </Fragment>
       ))}
     </div>

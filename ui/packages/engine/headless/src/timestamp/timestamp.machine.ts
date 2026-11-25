@@ -21,7 +21,7 @@ type PropReader = <K extends keyof TimestampProps>(key: K) => TimestampProps[K]
  * 绝对型的文字不随时间变。固定间隔按作者给的，缺省按文字下一次会变的那一刻。
  */
 export function timestampNextRefresh(prop: PropReader, now: number): number | null {
-  if (prop('type') !== 'relative' || prop('now') != null)
+  if (prop('display') !== 'relative' || prop('now') != null)
     return null
   const interval = prop('refreshInterval')
   if (interval != null && (!Number.isFinite(interval) || interval <= 0))
@@ -54,7 +54,7 @@ export const timestampMachine = createMachine({
   initialState: ({ prop }) => (timestampNextRefresh(prop, Date.now()) == null ? 'idle' : 'live'),
   watch: ({ track, prop, action }) => {
     track(
-      [() => prop('type'), () => prop('value'), () => prop('now'), () => prop('refreshInterval'), () => prop('timeZone')],
+      [() => prop('display'), () => prop('value'), () => prop('now'), () => prop('refreshInterval'), () => prop('timeZone')],
       () => action(['syncRefresh']),
     )
   },

@@ -5,7 +5,7 @@
 
 // 提供 timestamp 相关实现。
 
-import type { TimestampSchema, TimestampTranslations, TimestampType, TimestampValue } from '@xihan-ui/headless'
+import type { TimestampSchema, TimestampTranslations, TimestampDisplay, TimestampValue } from '@xihan-ui/headless'
 import { connectTimestamp, timestampAnatomy, timestampMachine, timestampMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -32,14 +32,14 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  *
  * @customElement xh-timestamp
  * @attr {string} value - 要显示的时刻；只写年月日的串按零点解读，不带偏移量的串按 time-zone 的墙钟解读
- * @attr {'date'|'datetime'|'relative'} type - 呈现方式，默认 datetime
+ * @attr {'date'|'datetime'|'relative'} display - 呈现方式，默认 datetime
  * @attr {string} format - 自定义格式串，记号为 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s
  * @attr {string} locale - BCP 47 语言标记，决定相对说法的用词与缺省的日期写法（由 Intl 给出）；未提供时按宿主语言，宿主也没有时按 en-US。只切换面向用户的文本
  * @attr {string} time-zone - IANA 时区名；给了就按这个时区的墙钟显示，datetime 带上偏移量，认不出的时区落 invalid
  * @attr {string} now - 计算相对说法时的参照时刻，默认取当前时刻并自动刷新；提供后不再刷新
  * @attr {number} refresh-interval - 相对型的刷新间隔（毫秒）；缺省按距今远近自适应，给 0 不刷新
  * @prop {Partial<TimestampTranslations>} translations - 界面文案：justNow 替换一分钟以内的说法；只能通过 property 设置
- * @csspart root - `<time>` 节点，承载 datetime / data-format / data-state / data-relative
+ * @csspart root - `<time>` 节点，承载 datetime / data-display / data-state / data-relative
  */
 export class XhTimestampElement extends XhElement {
   static override partContract = {
@@ -52,7 +52,7 @@ export class XhTimestampElement extends XhElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开
   static override properties = {
     value: { converter: STRING_CONVERTER },
-    type: { converter: STRING_CONVERTER },
+    display: { converter: STRING_CONVERTER },
     format: { converter: STRING_CONVERTER },
     locale: { converter: STRING_CONVERTER },
     timeZone: { attribute: 'time-zone', converter: STRING_CONVERTER },
@@ -62,7 +62,7 @@ export class XhTimestampElement extends XhElement {
   }
 
   declare value?: TimestampValue
-  declare type?: TimestampType
+  declare display?: TimestampDisplay
   declare format?: string
   declare locale?: string
   declare timeZone?: string
@@ -75,7 +75,7 @@ export class XhTimestampElement extends XhElement {
 
   private readonly ctrl = new MachineController<TimestampSchema>(this, timestampMachine, () => ({
     value: this.value,
-    type: this.type,
+    display: this.display,
     format: this.format,
     locale: this.locale,
     timeZone: this.timeZone,

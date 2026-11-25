@@ -13,7 +13,7 @@ const types = ["date", "datetime", "relative"] as const;
   <div style="display: grid; grid-template-columns: auto auto; gap: 8px 24px; justify-content: start">
     <template v-for="type in types" :key="type">
       <code>{{ type }}</code>
-      <XhTimestamp :value="value" :type="type" :now="now" />
+      <XhTimestamp :value="value" :display="type" :now="now" />
     </template>
   </div>
 </template>

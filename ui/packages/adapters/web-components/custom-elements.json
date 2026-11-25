@@ -75672,7 +75672,7 @@
           "name": "XhTimestampElement",
           "cssParts": [
             {
-              "description": "`<time>` 节点，承载 datetime / data-format / data-state / data-relative",
+              "description": "`<time>` 节点，承载 datetime / data-display / data-state / data-relative",
               "name": "root"
             }
           ],
@@ -75697,12 +75697,12 @@
             },
             {
               "kind": "field",
-              "name": "type",
+              "name": "display",
               "privacy": "public",
               "type": {
-                "text": "TimestampType | undefined"
+                "text": "TimestampDisplay | undefined"
               },
-              "attribute": "type"
+              "attribute": "display"
             },
             {
               "kind": "field",
@@ -75772,7 +75772,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<TimestampSchema>(this, timestampMachine, () => ({ value: this.value, type: this.type, format: this.format, locale: this.locale, timeZone: this.timeZone, now: this.now, refreshInterval: this.refreshInterval, translations: this.translations, }))"
+              "default": "new MachineController<TimestampSchema>(this, timestampMachine, () => ({ value: this.value, display: this.display, format: this.format, locale: this.locale, timeZone: this.timeZone, now: this.now, refreshInterval: this.refreshInterval, translations: this.translations, }))"
             },
             {
               "kind": "method",
@@ -75821,11 +75821,11 @@
             },
             {
               "type": {
-                "text": "TimestampType | undefined"
+                "text": "TimestampDisplay | undefined"
               },
               "description": "呈现方式，默认 datetime",
-              "name": "type",
-              "fieldName": "type"
+              "name": "display",
+              "fieldName": "display"
             },
             {
               "type": {

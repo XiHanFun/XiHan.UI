@@ -243,7 +243,7 @@ describe('connectTimestamp', () => {
   })
 
   it('缺省是 datetime 型', () => {
-    expect((api({ value: '2026-08-11T09:30:05' }).getRootProps() as Dict)['data-format']).toBe('datetime')
+    expect((api({ value: '2026-08-11T09:30:05' }).getRootProps() as Dict)['data-display']).toBe('datetime')
   })
 
   it('戳与文本取自同一个墙钟', () => {
@@ -265,36 +265,36 @@ describe('connectTimestamp', () => {
   })
 
   it('相对说法落在档位里就立 relative，超出档位退回绝对日期', () => {
-    const inRange = api({ value: '2026-08-11T09:00:00', type: 'relative', now: '2026-08-11T09:30:00', locale: 'en-US' })
+    const inRange = api({ value: '2026-08-11T09:00:00', display: 'relative', now: '2026-08-11T09:30:00', locale: 'en-US' })
     expect(inRange.relative).toBe(true)
     expect(inRange.text).toBe('30 minutes ago')
     expect((inRange.getRootProps() as Dict)['data-relative']).toBe('')
 
-    const tooFar = api({ value: '2026-01-01T00:00:00', type: 'relative', now: '2026-08-11T09:30:00', locale: 'en-US' })
+    const tooFar = api({ value: '2026-01-01T00:00:00', display: 'relative', now: '2026-08-11T09:30:00', locale: 'en-US' })
     expect(tooFar.relative).toBe(false)
     expect(tooFar.text).toBe('01/01/2026')
     expect((tooFar.getRootProps() as Dict)['data-relative']).toBeUndefined()
   })
 
   it('退回绝对日期时用作者给的格式串', () => {
-    const it0 = api({ value: '2026-01-01T00:00:00', type: 'relative', now: '2026-08-11T09:30:00', format: 'YYYY/MM/DD' })
+    const it0 = api({ value: '2026-01-01T00:00:00', display: 'relative', now: '2026-08-11T09:30:00', format: 'YYYY/MM/DD' })
     expect(it0.text).toBe('2026/01/01')
   })
 
   it('将来的时刻说成「几分钟后」', () => {
-    const it0 = api({ value: '2026-08-11T10:00:00', type: 'relative', now: '2026-08-11T09:30:00', locale: 'zh-CN' })
+    const it0 = api({ value: '2026-08-11T10:00:00', display: 'relative', now: '2026-08-11T09:30:00', locale: 'zh-CN' })
     expect(it0.relative).toBe(true)
     expect(it0.text).toBe('30分钟后')
   })
 
   it('translations.justNow 替换一分钟以内的说法', () => {
-    const it0 = api({ value: '2026-08-11T09:29:40', type: 'relative', now: '2026-08-11T09:30:00', locale: 'zh-CN', translations: { justNow: '刚刚' } })
+    const it0 = api({ value: '2026-08-11T09:29:40', display: 'relative', now: '2026-08-11T09:30:00', locale: 'zh-CN', translations: { justNow: '刚刚' } })
     expect(it0.text).toBe('刚刚')
   })
 
   it('locale 只换用词，戳恒是同一种写法', () => {
-    const zh = api({ value: '2026-08-11T09:30:05', type: 'date', locale: 'zh-CN' })
-    const en = api({ value: '2026-08-11T09:30:05', type: 'date', locale: 'en-US' })
+    const zh = api({ value: '2026-08-11T09:30:05', display: 'date', locale: 'zh-CN' })
+    const en = api({ value: '2026-08-11T09:30:05', display: 'date', locale: 'en-US' })
     expect(zh.text).toBe('2026/08/11')
     expect(en.text).toBe('08/11/2026')
     expect(en.stamp).toBe(zh.stamp)
@@ -312,7 +312,7 @@ describe('timestampMachine', () => {
   })
 
   it('相对型、没给参照时刻：在文字下一次会变的那一刻刷新', () => {
-    const t = makeTimestamp({ value: '2026-08-11T11:58:30', type: 'relative', locale: 'en-US' })
+    const t = makeTimestamp({ value: '2026-08-11T11:58:30', display: 'relative', locale: 'en-US' })
     expect(t.state()).toBe('live')
     expect(t.api().refreshing).toBe(true)
     expect(t.api().text).toBe('1 minute ago')
@@ -325,7 +325,7 @@ describe('timestampMachine', () => {
   })
 
   it('将来的时刻一路倒数到「现在」再转成「几分钟前」', () => {
-    const t = makeTimestamp({ value: '2026-08-11T12:02:00', type: 'relative', locale: 'en-US' })
+    const t = makeTimestamp({ value: '2026-08-11T12:02:00', display: 'relative', locale: 'en-US' })
     expect(t.api().text).toBe('in 2 minutes')
     // 正好两分钟时再过 1 毫秒就跌破了「2 分钟」
     vi.advanceTimersByTime(1)
@@ -339,13 +339,13 @@ describe('timestampMachine', () => {
   })
 
   it('refreshInterval 给正数按固定间隔刷新，给 0 不刷新', () => {
-    const fixed = makeTimestamp({ value: '2026-08-11T11:58:30', type: 'relative', refreshInterval: 10_000 })
+    const fixed = makeTimestamp({ value: '2026-08-11T11:58:30', display: 'relative', refreshInterval: 10_000 })
     const spy = vi.spyOn(fixed.service.context, 'set')
     vi.advanceTimersByTime(10_000)
     expect(spy).toHaveBeenCalledWith('now', Date.now())
     fixed.stop()
 
-    const off = makeTimestamp({ value: '2026-08-11T11:58:30', type: 'relative', refreshInterval: 0, locale: 'en-US' })
+    const off = makeTimestamp({ value: '2026-08-11T11:58:30', display: 'relative', refreshInterval: 0, locale: 'en-US' })
     expect(off.state()).toBe('idle')
     vi.advanceTimersByTime(10 * MINUTE)
     expect(off.api().text).toBe('1 minute ago')
@@ -354,22 +354,22 @@ describe('timestampMachine', () => {
 
   it('绝对型、给了参照时刻或已退回绝对日期都不刷新', () => {
     expect(makeTimestamp({ value: '2026-08-11T11:58:30' }).state()).toBe('idle')
-    expect(makeTimestamp({ value: '2026-08-11T11:58:30', type: 'relative', now: '2026-08-11T12:00:00' }).state()).toBe('idle')
-    expect(makeTimestamp({ value: '2026-01-01T00:00:00', type: 'relative' }).state()).toBe('idle')
+    expect(makeTimestamp({ value: '2026-08-11T11:58:30', display: 'relative', now: '2026-08-11T12:00:00' }).state()).toBe('idle')
+    expect(makeTimestamp({ value: '2026-01-01T00:00:00', display: 'relative' }).state()).toBe('idle')
   })
 
   it('改成相对型即开始刷新，改回绝对型即停', () => {
     const t = makeTimestamp({ value: '2026-08-11T11:58:30', locale: 'en-US' })
     expect(t.state()).toBe('idle')
-    t.setProps({ type: 'relative' })
+    t.setProps({ display: 'relative' })
     expect(t.state()).toBe('live')
-    t.setProps({ type: 'datetime' })
+    t.setProps({ display: 'datetime' })
     expect(t.state()).toBe('idle')
     t.stop()
   })
 
   it('页面隐藏时撤掉计时器，重新可见时立即补刷一次', () => {
-    const t = makeTimestamp({ value: '2026-08-11T11:58:30', type: 'relative', locale: 'en-US' })
+    const t = makeTimestamp({ value: '2026-08-11T11:58:30', display: 'relative', locale: 'en-US' })
     const visibility = vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
     document.dispatchEvent(new Event('visibilitychange'))
     vi.advanceTimersByTime(5 * MINUTE)
@@ -383,7 +383,7 @@ describe('timestampMachine', () => {
   })
 
   it('停机即撤掉计时器', () => {
-    const t = makeTimestamp({ value: '2026-08-11T11:58:30', type: 'relative' })
+    const t = makeTimestamp({ value: '2026-08-11T11:58:30', display: 'relative' })
     t.stop()
     expect(vi.getTimerCount()).toBe(0)
   })

@@ -8403,11 +8403,11 @@
       "TimerTranslations",
       "TimerUnit",
       "TimestampApi",
+      "TimestampDisplay",
       "TimestampProps",
       "TimestampSchema",
       "TimestampState",
       "TimestampTranslations",
-      "TimestampType",
       "TimestampValue",
       "TitleDescriptionParts",
       "ToggleApi",
@@ -15655,13 +15655,13 @@
       "value"
     ],
     "timestamp": [
+      "display",
       "format",
       "locale",
       "now",
       "refreshInterval",
       "timeZone",
       "translations",
-      "type",
       "value"
     ],
     "toggle": [
@@ -15987,6 +15987,7 @@
     "data-dimmed",
     "data-direction",
     "data-disabled",
+    "data-display",
     "data-dot",
     "data-drag-mode",
     "data-draggable",
@@ -24573,12 +24574,12 @@
     },
     "xh-timestamp": {
       "attributes": [
+        "display",
         "format",
         "locale",
         "now",
         "refresh-interval",
         "time-zone",
-        "type",
         "value"
       ],
       "events": []

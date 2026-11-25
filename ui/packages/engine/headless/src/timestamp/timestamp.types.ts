@@ -6,7 +6,7 @@
 // 定义 timestamp 类型契约。
 
 import type { MachineSchema, PropTypes } from '@xihan-ui/core'
-import type { TimestampType, TimestampValue } from './timestamp.format'
+import type { TimestampDisplay, TimestampValue } from './timestamp.format'
 
 /** 根的三态：已获得可识别的时刻 / 未提供时刻 / 已提供但无法识别（时刻或时区认不出）。 */
 export type TimestampState = 'ready' | 'empty' | 'invalid'
@@ -15,7 +15,7 @@ export interface TimestampProps {
   /** 要显示的时刻。只写年月日的串按零点解读；不带偏移量的串按 `timeZone` 的墙钟解读，没给时区时按本地。 */
   value?: TimestampValue
   /** 呈现方式：date 只到日、datetime 到秒、relative 表述为「几分钟前」「几分钟后」，默认 datetime。 */
-  type?: TimestampType
+  display?: TimestampDisplay
   /**
    * 自定义格式串，记号为 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s。
    * 提供后覆盖该语言的缺省写法；relative 型下只在回退为绝对日期时使用。

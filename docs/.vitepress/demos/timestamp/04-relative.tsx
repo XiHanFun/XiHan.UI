@@ -29,8 +29,8 @@ export default function Demo(): ReactNode {
     <div style={grid}>
       {moments.map(moment => (
         <Fragment key={moment}>
-          <XhTimestamp value={moment} type="relative" now={now} locale="en-US" />
-          <XhTimestamp value={moment} type="relative" now={now} locale="zh-CN" />
+          <XhTimestamp value={moment} display="relative" now={now} locale="en-US" />
+          <XhTimestamp value={moment} display="relative" now={now} locale="zh-CN" />
         </Fragment>
       ))}
     </div>

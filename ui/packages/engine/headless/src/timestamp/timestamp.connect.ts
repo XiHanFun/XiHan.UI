@@ -6,7 +6,7 @@
 // 提供 timestamp 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { TimestampType } from './timestamp.format'
+import type { TimestampDisplay } from './timestamp.format'
 import type { TimestampApi, TimestampProps, TimestampSchema, TimestampState } from './timestamp.types'
 import { dataAttr, resolveLocale } from '@xihan-ui/core'
 import { timestampAnatomy } from './timestamp.anatomy'
@@ -21,7 +21,7 @@ import {
 
 const parts = timestampAnatomy.build()
 
-const DEFAULT_TYPE: TimestampType = 'datetime'
+const DEFAULT_DISPLAY: TimestampDisplay = 'datetime'
 
 /** 给了一个空白的串等于没给：它落不到任何时刻上，却也不是「写错了」。 */
 function isProvided(value: TimestampProps['value']): boolean {
@@ -45,7 +45,7 @@ export function connectTimestamp<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): TimestampApi<T> {
   const { prop, context, state: machineState, scope } = service
-  const type = prop('type') ?? DEFAULT_TYPE
+  const display = prop('display') ?? DEFAULT_DISPLAY
   const locale = resolveLocale(prop('locale'), scope)
   const timeZone = prop('timeZone')
   const zoneKnown = isTimestampTimeZone(timeZone)
@@ -60,7 +60,7 @@ export function connectTimestamp<T extends PropTypes>(
   let relative = false
   if (date) {
     const format = prop('format')
-    if (type === 'relative') {
+    if (display === 'relative') {
       const now = toTimeDate(prop('now'), timeZone) ?? new Date(context.get('now'))
       const phrase = formatRelativeTime(date, now, locale, prop('translations')?.justNow)
       relative = phrase !== undefined
@@ -68,11 +68,11 @@ export function connectTimestamp<T extends PropTypes>(
       text = phrase ?? (format ? formatTimePattern(date, format, timeZone) : formatTimestampDate(date, 'date', locale, timeZone))
     }
     else {
-      text = format ? formatTimePattern(date, format, timeZone) : formatTimestampDate(date, type, locale, timeZone)
+      text = format ? formatTimePattern(date, format, timeZone) : formatTimestampDate(date, display, locale, timeZone)
     }
   }
 
-  const stamp = date ? timestampMachineStamp(date, type, timeZone) : undefined
+  const stamp = date ? timestampMachineStamp(date, display, timeZone) : undefined
 
   return {
     date,
@@ -88,7 +88,7 @@ export function connectTimestamp<T extends PropTypes>(
       'id': scope.partId('timestamp', 'root'),
       // 没有可读时刻时不写：空的 datetime 是一条机器读得进去、却指不到任何时刻的假信息
       'datetime': stamp,
-      'data-format': type,
+      'data-display': display,
       'data-state': state,
       // 这一次真按相对说法念了才立；离现在三十天及以上退回绝对日期时不写
       'data-relative': dataAttr(relative),

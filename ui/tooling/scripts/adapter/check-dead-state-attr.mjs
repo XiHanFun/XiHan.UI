@@ -183,7 +183,7 @@ const HOOKS = {
   'tool-call:data-settled': '跑完没跑完看的是状态文字与用时那两格；跑砸了另有 data-errored 换描边色',
   'timer:data-controlled': '状态归 value / active 两个 prop 还是归起停按钮，两条通道画出来一模一样',
   'timer:data-countdown': '正计时还是倒计时，数字的排版两者一致',
-  'timestamp:data-format': '按日期、时间还是两者一起渲染，换的是文本不是外观',
+  'timestamp:data-display': '按日期、时间还是两者一起渲染，换的是文本不是外观',
   'tour:data-last': '走到末步。末步换的是按钮文案不是外观',
 }
 

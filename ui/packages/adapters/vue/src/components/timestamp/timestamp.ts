@@ -5,7 +5,7 @@
 
 // 提供 timestamp 相关实现。
 
-import type { TimestampTranslations, TimestampType, TimestampValue } from '@xihan-ui/headless'
+import type { TimestampTranslations, TimestampDisplay, TimestampValue } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { createScope } from '@xihan-ui/core'
 import { connectTimestamp, timestampMachine } from '@xihan-ui/headless'
@@ -28,7 +28,7 @@ export const XhTimestamp = defineComponent({
   // 缺省值由机器与 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
     value: { type: [String, Number, Date] as PropType<TimestampValue> },
-    type: { type: String as PropType<TimestampType> },
+    display: { type: String as PropType<TimestampDisplay> },
     format: { type: String },
     locale: { type: String },
     timeZone: { type: String },
@@ -40,7 +40,7 @@ export const XhTimestamp = defineComponent({
     const merged = withXhConfig('timestamp', props)
     const service = useMachine(timestampMachine, () => ({
       value: merged.value,
-      type: merged.type,
+      display: merged.display,
       format: merged.format,
       locale: merged.locale,
       timeZone: merged.timeZone,

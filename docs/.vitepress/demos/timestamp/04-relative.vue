@@ -20,8 +20,8 @@ const moments = [
 <template>
   <div style="display: grid; grid-template-columns: auto auto; gap: 8px 24px; justify-content: start">
     <template v-for="moment in moments" :key="moment">
-      <XhTimestamp :value="moment" type="relative" :now="now" locale="en-US" />
-      <XhTimestamp :value="moment" type="relative" :now="now" locale="zh-CN" />
+      <XhTimestamp :value="moment" display="relative" :now="now" locale="en-US" />
+      <XhTimestamp :value="moment" display="relative" :now="now" locale="zh-CN" />
     </template>
   </div>
 </template>
