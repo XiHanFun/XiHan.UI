@@ -159,8 +159,8 @@ const CASES: Case[] = [
     scope: 'notification',
     tag: 'div',
     token: '--xh-notification-probe',
-    machine: { gap: 12, max: 3 },
-    leaks: ['gap', 'max'],
+    machine: { gap: 12, maxVisible: 3 },
+    leaks: ['gap', 'maxVisible'],
     render: props => <XhNotificationRoot {...props} />,
   },
   {
