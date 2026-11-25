@@ -181,7 +181,7 @@ export const floatingPanelMachine = createMachine({
       },
     },
     actions: {
-      ...controlledOpenActions<FloatingPanelSchema>(),
+      ...controlledOpenActions<FloatingPanelSchema>({ reason: true }),
       clearOpenedAtMount,
       startPress: ({ context, event }) => {
         const e = event.current()

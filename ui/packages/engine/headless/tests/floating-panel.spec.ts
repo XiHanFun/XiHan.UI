@@ -300,7 +300,26 @@ describe('floatingPanelMachine 开合', () => {
     const event = press(contentProps(rig.service), 'Escape')
     expect(event.defaultPrevented).toBe(true)
     expect(rig.service.state.get()).toBe('closed')
-    expect(rig.opens).toEqual([{ open: false }])
+    expect(rig.opens).toEqual([{ open: false, reason: 'esc' }])
+  })
+
+  it('关闭钮与再点触发器报 close-trigger，代码调用报 programmatic，展开不带原因', () => {
+    const rig = makeRig({ defaultOpen: true })
+    const click = (props: Dict) => (props.onClick as () => void)()
+
+    click(api(rig.service).getCloseTriggerProps() as Dict)
+    click(api(rig.service).getTriggerProps() as Dict)
+    click(api(rig.service).getTriggerProps() as Dict)
+    rig.service.send({ type: 'OPEN' })
+    api(rig.service).setOpen(false)
+
+    expect(rig.opens).toEqual([
+      { open: false, reason: 'close-trigger' },
+      { open: true },
+      { open: false, reason: 'close-trigger' },
+      { open: true },
+      { open: false, reason: 'programmatic' },
+    ])
   })
 
   it('带 Ctrl 的 Esc 不接：那是浏览器与读屏的组合', () => {

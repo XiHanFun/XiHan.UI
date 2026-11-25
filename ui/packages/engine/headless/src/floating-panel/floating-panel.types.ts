@@ -5,7 +5,7 @@
 
 // 定义 floating panel 类型契约。
 
-import type { MachineSchema, PropTypes } from '@xihan-ui/core'
+import type { MachineSchema, OverlayCloseReason, PropTypes } from '@xihan-ui/core'
 import type { TitleDescriptionParts } from '../shared/title-description'
 
 /**
@@ -64,6 +64,12 @@ export interface FloatingPanelDragSession {
 
 export interface FloatingPanelOpenChangeDetails {
   open: boolean
+  /**
+   * 本次关闭的原因；展开时不带。
+   * Esc 报 esc，关闭钮与再点一次触发器报 close-trigger，代码调用（setOpen(false)）报 programmatic。
+   * 面板不随层外交互收起，不会报 interact-outside。
+   */
+  reason?: OverlayCloseReason
 }
 
 export interface FloatingPanelPositionChangeDetails {

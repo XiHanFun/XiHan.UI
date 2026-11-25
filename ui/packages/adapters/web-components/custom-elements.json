@@ -31774,7 +31774,7 @@
           ],
           "events": [
             {
-              "description": "展开态变化；detail 为 `{ open: boolean }`",
+              "description": "展开态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因",
               "name": "open-change",
               "type": {
                 "text": "FloatingPanelOpenChangeDetails"

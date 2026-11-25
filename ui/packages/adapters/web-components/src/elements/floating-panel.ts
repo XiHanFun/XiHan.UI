@@ -83,7 +83,7 @@ const WINDOW_STATES: readonly FloatingPanelWindowState[] = ['default', 'minimize
  * @attr {boolean} panel-draggable - 是否允许移动面板，默认开启；铺满形态下恒不可移动。不命名为 draggable：那是 HTML 全局属性，写上后宿主会变成原生拖放源
  * @attr {boolean} resizable - 是否允许改尺寸，默认开启；只有常规形态下可以改尺寸
  * @attr {boolean} disabled - 禁用：不可移动、不可改尺寸、不可切换形态；开合与关闭不受影响
- * @fires open-change - 展开态变化；detail 为 `{ open: boolean }`
+ * @fires open-change - 展开态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因
  * @fires position-change - 落点变化（拖动途中连续发出）；detail 为 `{ position: { x, y } }`
  * @fires dimensions-change - 尺寸变化（改尺途中连续发出）；detail 为 `{ dimensions: { width, height } }`
  * @fires window-state-change - 形态变化；detail 为 `{ windowState: 'default' | 'minimized' | 'maximized' }`

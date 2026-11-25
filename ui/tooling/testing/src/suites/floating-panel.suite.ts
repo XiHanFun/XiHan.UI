@@ -185,7 +185,31 @@ export const floatingPanelSuite: ConformanceSuite = {
           key: 'Escape',
           expect: {
             parts: { positioner: { hidden: '' }, content: { 'data-state': 'closed' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'esc' } }],
+          },
+        },
+      ],
+    },
+    {
+      name: '关闭钮与再点触发器收起都报 close-trigger：是用户点了收起，不是代码调的',
+      spec: { apg: APG },
+      props: { defaultOpen: true },
+      steps: [
+        {
+          kind: 'click',
+          part: 'close-trigger',
+          expect: {
+            parts: { positioner: { hidden: '' } },
+            events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }],
+          },
+        },
+        { kind: 'click', part: 'trigger', expect: { events: [{ type: 'open-change', detail: { open: true } }] } },
+        {
+          kind: 'click',
+          part: 'trigger',
+          expect: {
+            parts: { positioner: { hidden: '' } },
+            events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }],
           },
         },
       ],
