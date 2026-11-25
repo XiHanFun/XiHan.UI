@@ -39,7 +39,7 @@ export default function Demo(): ReactNode {
     <XhTagsInputRoot
       value={mails}
       onValueChange={details => setMails(details.value)}
-      max={4}
+      maxTags={4}
       blurBehavior="add"
       placeholder="打前缀选后缀"
     >

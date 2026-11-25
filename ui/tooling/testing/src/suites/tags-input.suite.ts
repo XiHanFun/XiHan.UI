@@ -617,10 +617,10 @@ export const tagsInputSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'max：顶到上限即报 data-at-max，这一次输入整体不生效、文本原样留着',
+      name: 'maxTags：顶到上限即报 data-at-max，这一次输入整体不生效、文本原样留着',
       spec: { apg: APG },
       fixture: withTags('vue'),
-      props: { defaultValue: ['vue'], max: 1 },
+      props: { defaultValue: ['vue'], maxTags: 1 },
       initial: { parts: { root: { 'data-at-max': '', 'data-overflowing': null } } },
       steps: [
         { kind: 'focus', part: 'input' },
@@ -642,7 +642,7 @@ export const tagsInputSuite: ConformanceSuite = {
       name: 'allowOverflow：照加不误，只把 data-overflowing 打出来',
       spec: { apg: APG },
       fixture: withTags('vue'),
-      props: { defaultValue: ['vue'], max: 1, allowOverflow: true },
+      props: { defaultValue: ['vue'], maxTags: 1, allowOverflow: true },
       steps: [
         { kind: 'focus', part: 'input' },
         {
@@ -663,7 +663,7 @@ export const tagsInputSuite: ConformanceSuite = {
       name: '粘贴：addOnPaste 开着才接管；顶到上限时放行，不许把内容凭空吃掉',
       spec: { apg: APG },
       fixture: withTags('vue'),
-      props: { defaultValue: ['vue'], addOnPaste: true, max: 2 },
+      props: { defaultValue: ['vue'], addOnPaste: true, maxTags: 2 },
       steps: [
         {
           kind: 'raw',
@@ -962,7 +962,7 @@ export const tagsInputSuite: ConformanceSuite = {
       name: '作者不写结构：三端都照 tagsInputStructure 铺出标题、按值铺的标签（带编辑框）、输入框、清空钮、计数与表单影子',
       spec: { apg: APG },
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
-      props: { label: '技术栈', defaultValue: ['vue', 'react'], editable: true, showCount: true, max: 5, name: 'stack' },
+      props: { label: '技术栈', defaultValue: ['vue', 'react'], editable: true, showCount: true, maxTags: 5, name: 'stack' },
       initial: {
         order: ['root', 'label', 'control', 'item[0]', 'item-input[0]', 'item[1]', 'item-input[1]', 'input', 'clear-trigger', 'count', 'hidden-input'],
         parts: {

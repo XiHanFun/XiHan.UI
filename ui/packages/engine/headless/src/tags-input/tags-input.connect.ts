@@ -51,10 +51,10 @@ export function connectTagsInput<T extends PropTypes>(
   const delimiters = prop('delimiter') ?? TAGS_INPUT_DELIMITER
   const joiner = tagsDelimiter(delimiters)
   const validate = prop('validate')
-  const max = prop('max')
+  const maxTags = prop('maxTags')
   const allowOverflow = !!prop('allowOverflow')
-  const atMax = isAtMax(count, max)
-  const overflow = isOverflow(count, max)
+  const atMax = isAtMax(count, maxTags)
+  const overflow = isOverflow(count, maxTags)
   const empty = count === 0
   const canClear = editable && (count > 0 || inputValue !== '')
   // 清空按钮的按压通道：键盘 / 触屏按住期间的按压面，指针按住由 :active 表出，皮肤两者同一档
@@ -162,7 +162,7 @@ export function connectTagsInput<T extends PropTypes>(
     readOnly,
     required,
     invalid,
-    max,
+    maxTags,
     showCount,
     atMax,
     overflow,
@@ -268,7 +268,7 @@ export function connectTagsInput<T extends PropTypes>(
         if (tags.length === 0)
           return
         // 顶到上限或被 validate 拒收时也不接管：拦下来又加不进去，让它照常粘进框里，用户改完再按 Enter
-        if (appendTags(value, tags, { max, allowOverflow, validate }).rejected.length > 0)
+        if (appendTags(value, tags, { maxTags, allowOverflow, validate }).rejected.length > 0)
           return
         event.preventDefault()
         send({ type: 'TAG.ADD', values: tags })
@@ -492,7 +492,7 @@ export function connectTagsInput<T extends PropTypes>(
       },
     }),
 
-    // 计数：数字由作者用 count / max 渲。对读屏隐藏——它是标签个数的视觉镜像，
+    // 计数：数字由作者用 count / maxTags 渲。对读屏隐藏——它是标签个数的视觉镜像，
     // 每加一个标签就播报一次的活区反而盖住了刚加进去的那一个
     getCountProps: () => normalize.element({
       ...parts.count.attrs,

@@ -70671,12 +70671,12 @@
             },
             {
               "kind": "field",
-              "name": "max",
+              "name": "maxTags",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
-              "attribute": "max"
+              "attribute": "max-tags"
             },
             {
               "kind": "field",
@@ -71031,14 +71031,14 @@
                 "text": "number | undefined"
               },
               "description": "标签数量上限；写 0 即不允许添加任何标签",
-              "name": "max",
-              "fieldName": "max"
+              "name": "max-tags",
+              "fieldName": "maxTags"
             },
             {
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "允许超过 max，超过后输出 data-overflowing",
+              "description": "允许超过 maxTags，超过后输出 data-overflowing",
               "name": "allow-overflow",
               "fieldName": "allowOverflow"
             },

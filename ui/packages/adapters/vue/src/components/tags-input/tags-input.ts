@@ -22,7 +22,7 @@ import { useTagsInput } from './use-tags-input'
 type TagsInputProps = TagsInputSchema['props']
 
 /** 计数部件默认插槽的载荷：当前个数、上限与已达上限、越界两个标志。 */
-export type TagsInputCountSlotProps = Pick<TagsInputApi, 'count' | 'max' | 'atMax' | 'overflow'>
+export type TagsInputCountSlotProps = Pick<TagsInputApi, 'count' | 'maxTags' | 'atMax' | 'overflow'>
 
 /** 默认插槽的载荷：标签集合与输入文本、数量与越界标志、光标与编辑锚点，以及增删改与清空的动作。 */
 export type TagsInputRootSlotProps = Pick<
@@ -58,7 +58,7 @@ export const XhTagsInputRoot = defineComponent({
     defaultValue: { type: Array as PropType<string[]> },
     inputValue: { type: String },
     defaultInputValue: { type: String },
-    max: { type: Number },
+    maxTags: { type: Number },
     allowOverflow: Boolean,
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
@@ -255,11 +255,11 @@ export const XhTagsInputCount = defineComponent({
     const ctx = useTagsInputContext()
     return () => {
       const api = ctx.api.value
-      const fallback = api.max === undefined ? `${api.count}` : `${api.count} / ${api.max}`
+      const fallback = api.maxTags === undefined ? `${api.count}` : `${api.count} / ${api.maxTags}`
       return h(
         'span',
         api.getCountProps(),
-        slots.default?.({ count: api.count, max: api.max, atMax: api.atMax, overflow: api.overflow }) ?? fallback,
+        slots.default?.({ count: api.count, maxTags: api.maxTags, atMax: api.atMax, overflow: api.overflow }) ?? fallback,
       )
     }
   },

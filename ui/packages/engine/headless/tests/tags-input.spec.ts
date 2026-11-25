@@ -251,14 +251,14 @@ describe('tags-input 纯函数', () => {
     expect(appendTags(['a'], ['  ', 'b', 'a']))
       .toEqual({ value: ['a', 'b'], rejected: [], rejections: [{ tag: 'a', reasons: ['duplicate'] }] })
     // 已经在列表里的不算被拒：用户的意图本来就已经达成，只记一笔 duplicate
-    expect(appendTags(['a'], ['a'], { max: 1 }))
+    expect(appendTags(['a'], ['a'], { maxTags: 1 }))
       .toEqual({ value: ['a'], rejected: [], rejections: [{ tag: 'a', reasons: ['duplicate'] }] })
-    expect(appendTags(['a'], ['b', 'c'], { max: 2 }))
+    expect(appendTags(['a'], ['b', 'c'], { maxTags: 2 }))
       .toEqual({ value: ['a', 'b'], rejected: ['c'], rejections: [{ tag: 'c', reasons: ['too-many-tags'] }] })
-    expect(appendTags(['a'], ['b', 'c'], { max: 2, allowOverflow: true }))
+    expect(appendTags(['a'], ['b', 'c'], { maxTags: 2, allowOverflow: true }))
       .toEqual({ value: ['a', 'b', 'c'], rejected: [], rejections: [] })
-    // max 为 0：一个也加不进去
-    expect(appendTags([], ['a'], { max: 0 }))
+    // maxTags 为 0：一个也加不进去
+    expect(appendTags([], ['a'], { maxTags: 0 }))
       .toEqual({ value: [], rejected: ['a'], rejections: [{ tag: 'a', reasons: ['too-many-tags'] }] })
   })
 
@@ -268,7 +268,7 @@ describe('tags-input 纯函数', () => {
       seen.push([tag, ctx.value, ctx.tags])
       return tag.includes('@') ? null : 'invalid-email'
     }
-    const result = appendTags(['a@x'], ['b@x', 'nope', 'c@x', 'a@x'], { max: 3, validate })
+    const result = appendTags(['a@x'], ['b@x', 'nope', 'c@x', 'a@x'], { maxTags: 3, validate })
     expect(result.value).toEqual(['a@x', 'b@x', 'c@x'])
     expect(result.rejected).toEqual(['nope'])
     expect(result.rejections).toEqual([
@@ -313,8 +313,8 @@ describe('tags-input 纯函数', () => {
 })
 
 describe('tagsInputMachine 值写入', () => {
-  it('setValue 去重去空白，且不受 max 约束（整份替换是作者说了算）', () => {
-    const h = mount({ max: 1 })
+  it('setValue 去重去空白，且不受 maxTags 约束（整份替换是作者说了算）', () => {
+    const h = mount({ maxTags: 1 })
     h.api().setValue([' a ', 'b', 'a', ' '])
     expect(h.value()).toEqual(['a', 'b'])
   })
@@ -364,7 +364,7 @@ describe('tagsInputMachine 值写入', () => {
 
 describe('tagsInputMachine 上限', () => {
   it('顶到上限时这一次整体不生效：值不变、文本原样留在框里', () => {
-    const h = mount({ defaultValue: ['a'], max: 2 })
+    const h = mount({ defaultValue: ['a'], maxTags: 2 })
     typeInto(h.input, 'b,c,')
     // b 能进、c 进不去 → 一个都不进，整串留着
     expect(h.value()).toEqual(['a'])
@@ -373,7 +373,7 @@ describe('tagsInputMachine 上限', () => {
   })
 
   it('allowOverflow 开着就照加，只在 root/control 上打 data-overflowing', () => {
-    const h = mount({ defaultValue: ['a', 'b'], max: 2, allowOverflow: true })
+    const h = mount({ defaultValue: ['a', 'b'], maxTags: 2, allowOverflow: true })
     expect(h.root.getAttribute('data-at-max')).toBe('')
     expect(h.root.getAttribute('data-overflowing')).toBeNull()
     typeInto(h.input, 'c')
@@ -383,8 +383,8 @@ describe('tagsInputMachine 上限', () => {
     expect(h.control.getAttribute('data-overflowing')).toBe('')
   })
 
-  it('max=0：一个标签都加不进去', () => {
-    const h = mount({ max: 0 })
+  it('maxTags=0：一个标签都加不进去', () => {
+    const h = mount({ maxTags: 0 })
     typeInto(h.input, 'a')
     press(h.input, 'Enter')
     expect(h.value()).toEqual([])
@@ -800,7 +800,7 @@ describe('粘贴', () => {
   })
 
   it('顶到上限时也不接管：拦下来又加不进去，等于把内容凭空吃掉', () => {
-    const h = mount({ addOnPaste: true, defaultValue: ['a'], max: 2 })
+    const h = mount({ addOnPaste: true, defaultValue: ['a'], maxTags: 2 })
     expect(paste(h.input, 'b,c')).toBe(false)
     expect(h.value()).toEqual(['a'])
     // 只粘一个还进得去，那就接管
@@ -1062,7 +1062,7 @@ describe('命令式出口', () => {
   })
 
   it('count / empty / atMax 随值走', () => {
-    const h = mount({ max: 2 })
+    const h = mount({ maxTags: 2 })
     expect(h.api().empty).toBe(true)
     expect(h.api().count).toBe(0)
     h.api().addValue('a')
@@ -1220,7 +1220,7 @@ describe('准入判定 validate 与 onTagReject', () => {
 
   it('到了上限报 too-many-tags', () => {
     const onTagReject = vi.fn()
-    const h = mount({ defaultValue: ['a'], max: 1, onTagReject })
+    const h = mount({ defaultValue: ['a'], maxTags: 1, onTagReject })
     h.api().addValue('b')
     expect(h.value()).toEqual(['a'])
     expect(onTagReject).toHaveBeenCalledWith({ tags: [{ tag: 'b', reasons: ['too-many-tags'] }] })

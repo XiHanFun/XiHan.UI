@@ -1,4 +1,4 @@
-// 上限与粘贴拆分 | add-on-paste 使粘贴进来的一串按分隔符拆为多个标签；达到 max 后再输入再粘贴都不能加入
+// 上限与粘贴拆分 | add-on-paste 使粘贴进来的一串按分隔符拆为多个标签；达到 maxTags 后再输入再粘贴都不能加入
 import type { ReactNode } from "react";
 import {
   XhTagsInputClearTrigger,
@@ -20,7 +20,7 @@ export default function Demo(): ReactNode {
     <XhTagsInputRoot
       value={tags}
       onValueChange={details => setTags(details.value)}
-      max={4}
+      maxTags={4}
       addOnPaste
       delimiter=","
       placeholder="试试粘贴 React,Svelte,Solid"

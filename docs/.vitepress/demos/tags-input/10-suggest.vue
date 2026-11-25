@@ -21,7 +21,7 @@ const tags = ref<string[]>(["文档"]);
   <XhTagsInputRoot
     v-slot="{ value, addValue, atMax }"
     v-model:value="tags"
-    :max="3"
+    :max-tags="3"
     placeholder="回车落一个"
   >
     <XhTagsInputLabel>话题（最多 3 个）</XhTagsInputLabel>

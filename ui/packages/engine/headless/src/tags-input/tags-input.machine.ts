@@ -57,19 +57,19 @@ export function sameTags(a: readonly string[], b: readonly string[] | undefined)
   return sameArray(a, b)
 }
 
-/** max 是否给了个能用的上限。负数与非有限值按"没给"处理。 */
-function hasMax(max: number | undefined): max is number {
-  return max != null && Number.isFinite(max) && max >= 0
+/** maxTags 是否给了个能用的上限。负数与非有限值按"没给"处理。 */
+function hasMax(maxTags: number | undefined): maxTags is number {
+  return maxTags != null && Number.isFinite(maxTags) && maxTags >= 0
 }
 
-/** 已顶到上限：再加一个就越界了。max 为 0 时空集合就已经到顶。 */
-export function isAtMax(count: number, max: number | undefined): boolean {
-  return hasMax(max) && count >= max
+/** 已顶到上限：再加一个就越界了。maxTags 为 0 时空集合就已经到顶。 */
+export function isAtMax(count: number, maxTags: number | undefined): boolean {
+  return hasMax(maxTags) && count >= maxTags
 }
 
 /** 已经越过上限。只有 allowOverflow 开着（或作者用 setValue 直接写超）才可能为真。 */
-export function isOverflow(count: number, max: number | undefined): boolean {
-  return hasMax(max) && count > max
+export function isOverflow(count: number, maxTags: number | undefined): boolean {
+  return hasMax(maxTags) && count > maxTags
 }
 
 /** 整份替换时的归一：去首尾空白、丢掉空白项、按首次出现去重。 */
@@ -84,7 +84,7 @@ export function normalizeTags(list: readonly string[]): string[] {
 }
 
 export interface TagsAppendOptions {
-  max?: number
+  maxTags?: number
   allowOverflow?: boolean
   /** 作者的准入判定，见 TagsInputSchema 的同名 prop。 */
   validate?: (tag: string, context: TagsInputValidateContext) => string | string[] | null | undefined
@@ -115,7 +115,7 @@ export function appendTags(
   incoming: readonly string[],
   options: TagsAppendOptions = {},
 ): TagsAppendResult {
-  const { max, allowOverflow, validate } = options
+  const { maxTags, allowOverflow, validate } = options
   const batch = incoming.map(normalizeTag).filter(tag => tag !== '')
   const value = [...current]
   const rejected: string[] = []
@@ -126,7 +126,7 @@ export function appendTags(
       continue
     }
     const reasons = validate ? rejectCodes(validate(tag, { value: [...value], tags: batch })) : []
-    if (!reasons.length && !allowOverflow && isAtMax(value.length, max))
+    if (!reasons.length && !allowOverflow && isAtMax(value.length, maxTags))
       reasons.push('too-many-tags')
     if (reasons.length) {
       rejected.push(tag)
@@ -163,7 +163,7 @@ function commitTags(params: Params<TagsInputSchema>, incoming: readonly string[]
   const { context, prop } = params
   const current = context.get('value')
   const { value: next, rejected, rejections } = appendTags(current, incoming, {
-    max: prop('max'),
+    maxTags: prop('maxTags'),
     allowOverflow: prop('allowOverflow'),
     validate: prop('validate'),
   })
@@ -321,7 +321,7 @@ export const tagsInputMachine = createMachine({
         params.context.reset('editedValue')
       },
 
-      // 作者的整份替换：只做去重去空白，不夹 max
+      // 作者的整份替换：只做去重去空白，不夹 maxTags
       setValue: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'VALUE.SET')

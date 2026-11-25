@@ -40,7 +40,7 @@ function options(text: string): string[] {
   <XhTagsInputRoot
     v-slot="{ value, inputValue, addValue, setInputValue, atMax }"
     v-model:value="mails"
-    :max="4"
+    :max-tags="4"
     blur-behavior="add"
     placeholder="打前缀选后缀"
   >

@@ -19,7 +19,7 @@ export interface TagsInputInputValueChangeDetails {
 
 /**
  * 内建的拒绝原因。duplicate：集合里已有这个标签（同一批里排在前面的也算），它照常被消费掉、不挡这一批；
- * too-many-tags：到了 max 放不下。
+ * too-many-tags：到了 maxTags 放不下。
  */
 export type TagsInputRejectReason = 'duplicate' | 'too-many-tags'
 
@@ -93,9 +93,9 @@ export interface TagsInputSchema extends MachineSchema {
     /** 非受控初始输入文本。 */
     defaultInputValue?: string
     /** 标签数量上限。默认不限；写 0 表示不允许添加任何标签。 */
-    max?: number
+    maxTags?: number
     /**
-     * 允许超过 max。
+     * 允许超过 maxTags。
      * 关闭（默认）：到达上限后本次输入整体不生效，文本原样留在框中，不静默丢弃。
      * 开启：照常添加，只在 root / control 上输出 data-overflowing 供样式与提示使用。
      */
@@ -166,7 +166,7 @@ export interface TagsInputSchema extends MachineSchema {
    */
   state: 'idle' | 'navigating' | 'editing'
   event:
-    /** 整份替换标签集合（公开 API）；会去重去空白，但不受 max 约束。 */
+    /** 整份替换标签集合（公开 API）；会去重去空白，但不受 maxTags 约束。 */
     | { type: 'VALUE.SET', value: string[] }
     /** 追加一批标签，不修改输入框（粘贴与公开 API 经过它）。 */
     | { type: 'TAG.ADD', values: string[] }
@@ -231,13 +231,13 @@ export interface TagsInputApi<T extends PropTypes = PropTypes> {
   readOnly: boolean
   required: boolean
   invalid: boolean
-  /** 标签个数的上限；未设 max 时为 undefined，此时只渲染当前个数。 */
-  max: number | undefined
+  /** 标签个数的上限；未设 maxTags 时为 undefined，此时只渲染当前个数。 */
+  maxTags: number | undefined
   /** 计数部件当前是否显示（开启了 showCount）。 */
   showCount: boolean
-  /** 已到达 max：无法再添加（allowOverflow 开启时只是提示，不拦截）。 */
+  /** 已到达 maxTags：无法再添加（allowOverflow 开启时只是提示，不拦截）。 */
   atMax: boolean
-  /** 已超过 max（只有 allowOverflow 开启时才可能为真）。 */
+  /** 已超过 maxTags（只有 allowOverflow 开启时才可能为真）。 */
   overflow: boolean
   /** 光标停留的标签；不在标签间移动时为 null。 */
   highlightedValue: string | null
@@ -245,9 +245,9 @@ export interface TagsInputApi<T extends PropTypes = PropTypes> {
   editedValue: string | null
   /** 清空按钮当前是否可用（可编辑，且标签或输入文本至少有一项）。 */
   canClear: boolean
-  /** 整份替换，去重去空白，不受 max 约束。 */
+  /** 整份替换，去重去空白，不受 maxTags 约束。 */
   setValue: (next: string[]) => void
-  /** 追加一个标签，受 max、allowOverflow 与 validate 约束。 */
+  /** 追加一个标签，受 maxTags、allowOverflow 与 validate 约束。 */
   addValue: (next: string) => void
   deleteValue: (value: string) => void
   clear: () => void
@@ -269,7 +269,7 @@ export interface TagsInputApi<T extends PropTypes = PropTypes> {
   getItemDeleteTriggerProps: (item: TagsInputItemProps) => T['button']
   getItemInputProps: (item: TagsInputItemProps) => T['input']
   getClearTriggerProps: () => T['button']
-  /** 计数部件：承载 count / max 两个数字，未开启 showCount 时带 hidden 收起。 */
+  /** 计数部件：承载 count / maxTags 两个数字，未开启 showCount 时带 hidden 收起。 */
   getCountProps: () => T['element']
   getHiddenInputProps: () => T['input']
 }

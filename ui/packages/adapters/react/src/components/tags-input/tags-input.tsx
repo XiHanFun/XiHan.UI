@@ -29,7 +29,7 @@ type TagsInputProps = TagsInputSchema['props']
 function noop(): void {}
 
 /** 计数部件函数式 children 的载荷：当前个数、上限与已达上限、越界两个标志。 */
-export type TagsInputCountSlotProps = Pick<TagsInputApi, 'count' | 'max' | 'atMax' | 'overflow'>
+export type TagsInputCountSlotProps = Pick<TagsInputApi, 'count' | 'maxTags' | 'atMax' | 'overflow'>
 
 /** 函数式 children 的载荷：标签集合与输入文本、数量与越界标志、光标与编辑锚点，以及增删改与清空的动作。 */
 export type TagsInputRootSlotProps = Pick<
@@ -63,7 +63,7 @@ export interface XhTagsInputRootProps extends Omit<ComponentPropsWithRef<'div'>,
   defaultValue?: string[]
   inputValue?: string
   defaultInputValue?: string
-  max?: number
+  maxTags?: number
   allowOverflow?: boolean
   disabled?: boolean
   readOnly?: boolean
@@ -101,7 +101,7 @@ export function XhTagsInputRoot({
   defaultValue,
   inputValue,
   defaultInputValue,
-  max,
+  maxTags,
   allowOverflow,
   disabled,
   readOnly,
@@ -132,7 +132,7 @@ export function XhTagsInputRoot({
     defaultValue,
     inputValue,
     defaultInputValue,
-    max,
+    maxTags,
     allowOverflow,
     disabled,
     readOnly,
@@ -351,10 +351,10 @@ export interface XhTagsInputCountProps extends Omit<ComponentPropsWithRef<'span'
 export function XhTagsInputCount({ children, ...rest }: XhTagsInputCountProps): ReactNode {
   const ctx = useTagsInputContext()
   const api = ctx.api
-  const fallback = api.max === undefined ? `${api.count}` : `${api.count} / ${api.max}`
+  const fallback = api.maxTags === undefined ? `${api.count}` : `${api.count} / ${api.maxTags}`
   const body = children == null
     ? fallback
-    : renderSlot(children, { count: api.count, max: api.max, atMax: api.atMax, overflow: api.overflow })
+    : renderSlot(children, { count: api.count, maxTags: api.maxTags, atMax: api.atMax, overflow: api.overflow })
   return (
     <span {...mergeReactProps(api.getCountProps(), rest)}>
       {body}

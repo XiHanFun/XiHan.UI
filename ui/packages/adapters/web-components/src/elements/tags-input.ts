@@ -55,8 +55,8 @@ const ARRAY_CONVERTER = {
  * @attr {string} default-value - 非受控初始标签集合，同样按逗号拆分
  * @attr {string} input-value - 受控输入文本
  * @attr {string} default-input-value - 非受控初始输入文本
- * @attr {number} max - 标签数量上限；写 0 即不允许添加任何标签
- * @attr {boolean} allow-overflow - 允许超过 max，超过后输出 data-overflowing
+ * @attr {number} max-tags - 标签数量上限；写 0 即不允许添加任何标签
+ * @attr {boolean} allow-overflow - 允许超过 maxTags，超过后输出 data-overflowing
  * @attr {boolean} disabled - 禁用：输入框与各按钮都不可用
  * @attr {boolean} read-only - 只读：仍可聚焦与复制，增删改都不可用
  * @attr {boolean} required - 必填标注：经 aria-required 上报，星号由外层的字段壳绘制
@@ -115,7 +115,7 @@ export class XhTagsInputElement extends XhElement {
     defaultValue: { converter: ARRAY_CONVERTER, attribute: 'default-value' },
     inputValue: { converter: STRING_CONVERTER, attribute: 'input-value' },
     defaultInputValue: { converter: STRING_CONVERTER, attribute: 'default-input-value' },
-    max: { converter: NUMBER_CONVERTER },
+    maxTags: { converter: NUMBER_CONVERTER, attribute: 'max-tags' },
     allowOverflow: { converter: BOOLEAN_CONVERTER, attribute: 'allow-overflow' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
@@ -142,7 +142,7 @@ export class XhTagsInputElement extends XhElement {
   declare defaultValue?: string[]
   declare inputValue?: string
   declare defaultInputValue?: string
-  declare max?: number
+  declare maxTags?: number
   declare allowOverflow?: boolean
   declare disabled?: boolean
   declare readOnly?: boolean
@@ -200,7 +200,7 @@ export class XhTagsInputElement extends XhElement {
       defaultValue: this.defaultValue,
       inputValue: this.inputValue,
       defaultInputValue: this.defaultInputValue,
-      max: this.max,
+      maxTags: this.maxTags,
       allowOverflow: this.allowOverflow ?? false,
       disabled: control.disabled,
       readOnly: control.readOnly,
@@ -282,7 +282,7 @@ export class XhTagsInputElement extends XhElement {
     // 计数的数字由元素填；作者第一次就写了内容的节点判为归作者，之后一概不碰
     const countEl = this.getPart('count')
     if (countEl)
-      this.fillOwnedText(countEl, api.max === undefined ? String(api.count) : `${api.count} / ${api.max}`)
+      this.fillOwnedText(countEl, api.maxTags === undefined ? String(api.count) : `${api.count} / ${api.maxTags}`)
     put('hidden-input', api.getHiddenInputProps())
     // 输入框的 value 不必另外回写：spreader 把 value/checked/selected 三个键当 property 写
     // （dom/spread.ts 的 PROP_KEYS），属性写法只管初值、盖不住用户输入过的框

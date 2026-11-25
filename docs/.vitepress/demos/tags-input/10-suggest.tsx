@@ -22,7 +22,7 @@ export default function Demo(): ReactNode {
     <XhTagsInputRoot
       value={tags}
       onValueChange={details => setTags(details.value)}
-      max={3}
+      maxTags={3}
       placeholder="回车落一个"
     >
       {({ value, addValue, atMax }) => (

@@ -1,4 +1,4 @@
-<!-- 上限与粘贴拆分 | add-on-paste 使粘贴进来的一串按分隔符拆为多个标签；达到 max 后再输入再粘贴都不能加入 -->
+<!-- 上限与粘贴拆分 | add-on-paste 使粘贴进来的一串按分隔符拆为多个标签；达到 maxTags 后再输入再粘贴都不能加入 -->
 <script setup lang="ts">
 import {
   XhTagsInputClearTrigger,
@@ -20,7 +20,7 @@ const tags = ref<string[]>(["Vue"]);
   <XhTagsInputRoot
     v-slot="{ value, count, atMax }"
     v-model:value="tags"
-    :max="4"
+    :max-tags="4"
     add-on-paste
     delimiter=","
     placeholder="试试粘贴 React,Svelte,Solid"

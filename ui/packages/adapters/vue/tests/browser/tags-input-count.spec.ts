@@ -22,7 +22,7 @@ describe.each(['sm', 'md', 'lg'] as const)('tags-input %s 档的计数', (size) 
     host = document.createElement('div')
     document.body.append(host)
     app = createApp({
-      render: () => h(XhTagsInputRoot, { size, showCount: true, max: 5, defaultValue: ['甲'] }, () => [
+      render: () => h(XhTagsInputRoot, { size, showCount: true, maxTags: 5, defaultValue: ['甲'] }, () => [
         h(XhTagsInputControl, null, () => h(XhTagsInputInput)),
         h(XhTagsInputCount),
       ]),

@@ -26,7 +26,7 @@
 
 ### 上限与粘贴拆分
 
-add-on-paste 使粘贴进来的一串按分隔符拆为多个标签；达到 max 后再输入再粘贴都不能加入
+add-on-paste 使粘贴进来的一串按分隔符拆为多个标签；达到 maxTags 后再输入再粘贴都不能加入
 
 <XhDemo src="tags-input/02-max-paste" />
 
@@ -122,9 +122,9 @@ delimiter 给一组时其中任何一个都断词：半角逗号、全角逗号�
 - 标签是一个集合：已有的标签再输入一次照常被消费、值不变，只报一笔 `duplicate`。
 - 每个标签都是库内的 tag：预览、文字与删除按钮就是它的 root、label 与 close-trigger，语气与尺寸随控件，形态按控件的面派生。
 - `editable` 让已有标签双击就地修改。
-- `max` 与 `allowOverflow` 成对：超出上限时拒绝还是标记。
+- `maxTags` 与 `allowOverflow` 成对：超出上限时拒绝还是标记。
 - 标签的值恒为字符串；要显示对象的其它字段，按这个字符串去查自己的数据。
-- `showCount` 显示计数部件，数字取 `count` 与 `max`，达到上限与越界各换一档颜色。
+- `showCount` 显示计数部件，数字取 `count` 与 `maxTags`，达到上限与越界各换一档颜色。
 - `required` 经 `aria-required` 上报必填。
 - 标签增删有进退场：首次渲染时已有的标签直接呈现，新落下的淡入、同一批按到达顺序错开，删掉的在原处淡出，其余标签滑到新位置。标签照常按值渲染，删掉即卸载，不必为退场改写法。
 
@@ -164,8 +164,8 @@ delimiter 给一组时其中任何一个都断词：半角逗号、全角逗号�
 | `defaultValue` | `string[]` |  | 非受控初始标签集合。 |
 | `inputValue` | `string` |  | 受控输入文本；与 value 各自独立受控。 |
 | `defaultInputValue` | `string` |  | 非受控初始输入文本。 |
-| `max` | `number` |  | 标签数量上限。默认不限；写 0 表示不允许添加任何标签。 |
-| `allowOverflow` | `boolean` |  | 允许超过 max。 关闭（默认）：到达上限后本次输入整体不生效，文本原样留在框中，不静默丢弃。 开启：照常添加，只在 root / control 上输出 data-overflowing 供样式与提示使用。 |
+| `maxTags` | `number` |  | 标签数量上限。默认不限；写 0 表示不允许添加任何标签。 |
+| `allowOverflow` | `boolean` |  | 允许超过 maxTags。 关闭（默认）：到达上限后本次输入整体不生效，文本原样留在框中，不静默丢弃。 开启：照常添加，只在 root / control 上输出 data-overflowing 供样式与提示使用。 |
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  |  |
 | `required` | `boolean` |  | 必填标注：经 aria-required 上报，星号由外层的字段壳绘制。 |
@@ -245,15 +245,15 @@ delimiter 给一组时其中任何一个都断词：半角逗号、全角逗号�
 | `readOnly` | `boolean` |  |
 | `required` | `boolean` |  |
 | `invalid` | `boolean` |  |
-| `max` | `number \| undefined` | 标签个数的上限；未设 max 时为 undefined，此时只渲染当前个数。 |
+| `maxTags` | `number \| undefined` | 标签个数的上限；未设 maxTags 时为 undefined，此时只渲染当前个数。 |
 | `showCount` | `boolean` | 计数部件当前是否显示（开启了 showCount）。 |
-| `atMax` | `boolean` | 已到达 max：无法再添加（allowOverflow 开启时只是提示，不拦截）。 |
-| `overflow` | `boolean` | 已超过 max（只有 allowOverflow 开启时才可能为真）。 |
+| `atMax` | `boolean` | 已到达 maxTags：无法再添加（allowOverflow 开启时只是提示，不拦截）。 |
+| `overflow` | `boolean` | 已超过 maxTags（只有 allowOverflow 开启时才可能为真）。 |
 | `highlightedValue` | `string \| null` | 光标停留的标签；不在标签间移动时为 null。 |
 | `editedValue` | `string \| null` | 正被就地改写的标签；不在编辑态时为 null。 |
 | `canClear` | `boolean` | 清空按钮当前是否可用（可编辑，且标签或输入文本至少有一项）。 |
-| `setValue` | `(next: string[]) => void` | 整份替换，去重去空白，不受 max 约束。 |
-| `addValue` | `(next: string) => void` | 追加一个标签，受 max、allowOverflow 与 validate 约束。 |
+| `setValue` | `(next: string[]) => void` | 整份替换，去重去空白，不受 maxTags 约束。 |
+| `addValue` | `(next: string) => void` | 追加一个标签，受 maxTags、allowOverflow 与 validate 约束。 |
 | `deleteValue` | `(value: string) => void` |  |
 | `clear` | `() => void` |  |
 | `setInputValue` | `(next: string) => void` |  |
@@ -269,7 +269,7 @@ delimiter 给一组时其中任何一个都断词：半角逗号、全角逗号�
 | `getItemDeleteTriggerProps` | `(item: TagsInputItemProps) => T['button']` | 删除按钮：所在标签那份 tag 的 close-trigger，不占 Tab 位；禁用与只读时保留位置、原生 disabled。 |
 | `getItemInputProps` | `(item: TagsInputItemProps) => T['input']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
-| `getCountProps` | `() => T['element']` | 计数部件：承载 count / max 两个数字，未开启 showCount 时带 hidden 收起。 |
+| `getCountProps` | `() => T['element']` | 计数部件：承载 count / maxTags 两个数字，未开启 showCount 时带 hidden 收起。 |
 | `getHiddenInputProps` | `() => T['input']` |  |
 
 ## 无障碍
