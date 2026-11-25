@@ -43,7 +43,7 @@ export default function Demo(): ReactNode {
   return (
     // 滚动区定高，表格不再自己滚；两条轴各写一条滚动条，交叉口写在竖条里
     <XhScrollAreaRoot
-      type="auto"
+      revealMode="auto"
       style={{ blockSize: "260px", inlineSize: "100%", maxInlineSize: "420px" }}
     >
       <XhScrollAreaViewport>

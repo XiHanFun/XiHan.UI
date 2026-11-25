@@ -6,7 +6,7 @@
 // 提供 scroll area 相关实现。
 
 import type { Direction, IdGenerator, Orientation, Service, Size } from '@xihan-ui/core'
-import type { ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollbarProps, ScrollAreaScrollDetails, ScrollAreaVariant, ScrollbarSchema, ScrollbarType } from '@xihan-ui/headless'
+import type { ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollbarProps, ScrollAreaScrollDetails, ScrollAreaVariant, ScrollbarSchema, ScrollbarRevealMode } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectScrollArea, scrollAreaAnatomy, scrollAreaMeta, scrollAreaScrollbarProps, scrollbarAnatomy, scrollbarMachine } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
@@ -36,8 +36,8 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * 元素的 scrollTo 滚的是 viewport 而不是元素自己：参数与原生 Element.scrollTo 同形。
  *
  * @customElement xh-scroll-area
- * @attr {'auto'|'always'|'scroll'|'hover'|'scroll-hover'} type - 滚动条显示的时机，默认 scroll-hover
- * @attr {number} hide-delay - 收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600
+ * @attr {'auto'|'always'|'scroll'|'hover'|'scroll-hover'} reveal-mode - 滚动条显示的时机，默认 scroll-hover
+ * @attr {number} hide-delay - 收起前的等待毫秒（revealMode 为 scroll / hover / scroll-hover 时生效），默认 600
  * @attr {'horizontal'|'vertical'|'both'} orientation - 归本组件管理的轴，默认 both
  * @attr {'plain'|'fade'} variant - 形态档，默认 plain；fade 在该端仍可滚动时把该侧内容淡出
  * @attr {'sm'|'md'|'lg'} size - 尺寸档，影响滚动条厚度，也是边缘渐隐的带宽
@@ -65,7 +65,7 @@ export class XhScrollAreaElement extends XhElement {
   // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
-    type: { converter: STRING_CONVERTER },
+    revealMode: { converter: STRING_CONVERTER, attribute: 'reveal-mode' },
     hideDelay: { converter: NUMBER_CONVERTER, attribute: 'hide-delay' },
     orientation: { converter: STRING_CONVERTER },
     variant: { converter: STRING_CONVERTER },
@@ -74,7 +74,7 @@ export class XhScrollAreaElement extends XhElement {
     forceVisible: { converter: BOOLEAN_CONVERTER, attribute: 'force-visible' },
   }
 
-  declare type?: ScrollbarType
+  declare revealMode?: ScrollbarRevealMode
   declare hideDelay?: number
   declare orientation?: ScrollAreaOrientation
   declare variant?: ScrollAreaVariant
@@ -110,7 +110,7 @@ export class XhScrollAreaElement extends XhElement {
 
   private areaProps(): ScrollAreaProps {
     return this.configured('scroll-area', {
-      type: this.type,
+      revealMode: this.revealMode,
       hideDelay: this.hideDelay,
       orientation: this.orientation,
       variant: this.variant,

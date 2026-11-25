@@ -12,7 +12,7 @@ import { SCROLLBAR_EN_US } from '../locale/en-US'
 import { maxScrollOffset, SCROLL_MIN_THUMB_SIZE, scrollbarGeometry } from '../shared/scroll-geometry'
 import { resolveTranslations } from '../shared/translations'
 import { scrollbarAnatomy } from './scrollbar.anatomy'
-import { SCROLLBAR_DEFAULT_TYPE, SCROLLBAR_STEP } from './scrollbar.machine'
+import { SCROLLBAR_DEFAULT_REVEAL_MODE, SCROLLBAR_STEP } from './scrollbar.machine'
 
 const parts = scrollbarAnatomy.build()
 
@@ -29,7 +29,7 @@ export function connectScrollbar<T extends PropTypes>(
   const translations = resolveTranslations(SCROLLBAR_EN_US, prop('translations'))
 
   const orientation = prop('orientation') ?? 'vertical'
-  const type = prop('type') ?? SCROLLBAR_DEFAULT_TYPE
+  const revealMode = prop('revealMode') ?? SCROLLBAR_DEFAULT_REVEAL_MODE
   const dir = prop('dir')
   const disabled = !!prop('disabled')
   const focusable = !!prop('focusable')
@@ -48,14 +48,14 @@ export function connectScrollbar<T extends PropTypes>(
   const max = maxScrollOffset(metrics)
 
   /**
-   * 这一刻该不该显形。auto / always 不看状态机，运行期改 type 立刻生效；
+   * 这一刻该不该显形。auto / always 不看状态机，运行期改 revealMode 立刻生效；
    * 禁用恒不显形——它连指针都不接，露一条按不动的灰条只会让人反复点。
    */
   const visible = disabled || native
     ? false
-    : type === 'always'
+    : revealMode === 'always'
       ? true
-      : type === 'auto'
+      : revealMode === 'auto'
         ? geometry.overflow
         : geometry.overflow && stateName !== 'hidden'
 
@@ -139,7 +139,7 @@ export function connectScrollbar<T extends PropTypes>(
 
   return {
     orientation,
-    type,
+    revealMode,
     overflow: geometry.overflow,
     visible,
     native,
@@ -161,7 +161,7 @@ export function connectScrollbar<T extends PropTypes>(
       // 不进 Tab 序时对读屏整条隐藏：滚动本身由滚动容器报，同一件事没必要报两遍
       'aria-hidden': focusable ? undefined : true,
       'data-orientation': orientation,
-      'data-reveal-mode': type,
+      'data-reveal-mode': revealMode,
       // 收起时留在 DOM 里，由皮肤按 data-state 淡出；不写 hidden，display:none 播不了退场
       'data-state': visible ? 'visible' : 'hidden',
       'data-scrolling': dataAttr(scrolling),

@@ -9,7 +9,7 @@ import type { Orientation, Service } from '@xihan-ui/core'
 import type { ScrollbarAnchor, ScrollbarSchema } from '@xihan-ui/headless'
 import type { ReactiveControllerHost } from '../reactive'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
-import { connectScrollbar, isOverflowing, SCROLLBAR_DEFAULT_TYPE, scrollbarMachine } from '@xihan-ui/headless'
+import { connectScrollbar, isOverflowing, SCROLLBAR_DEFAULT_REVEAL_MODE, scrollbarMachine } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { createSpreader } from '../dom/spread'
 import { MachineController } from './machine-controller'
@@ -199,13 +199,13 @@ export class ScrollbarsController {
     if (this.axes.length < 2)
       return false
     const given = this.options.props?.()
-    const type = given?.type ?? SCROLLBAR_DEFAULT_TYPE
+    const revealMode = given?.revealMode ?? SCROLLBAR_DEFAULT_REVEAL_MODE
     for (const axis of this.axes) {
       const service = this.serviceOf(axis)
       if (!service)
         return false
       const native = service.context.get('coarse') && !given?.forceVisible
-      if (native || !(type === 'always' || isOverflowing(service.context.get('metrics'))))
+      if (native || !(revealMode === 'always' || isOverflowing(service.context.get('metrics'))))
         return false
     }
     return true

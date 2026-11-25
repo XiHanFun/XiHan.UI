@@ -24,7 +24,7 @@ const items = [
 </script>
 
 <template>
-  <XhScrollAreaRoot type="always" aria-label="纵向滚动占位区块" style="block-size: 180px; inline-size: min(360px, 100%); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
+  <XhScrollAreaRoot reveal-mode="always" aria-label="纵向滚动占位区块" style="block-size: 180px; inline-size: min(360px, 100%); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
     <XhScrollAreaViewport>
       <XhScrollAreaContent style="padding: 12px 16px">
         <span

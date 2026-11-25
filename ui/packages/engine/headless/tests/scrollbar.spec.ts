@@ -168,14 +168,14 @@ afterEach(() => {
 
 describe('挂在别人的滚动容器上', () => {
   it('推迟一拍后量到尺寸：溢出被认出来', async () => {
-    const r = rig({ type: 'always' })
+    const r = rig({ revealMode: 'always' })
     await settle()
     expect(r.service.context.get('metrics')).toEqual({ viewport: 100, content: 400, scroll: 0, track: 100 })
     expect(r.api().overflow).toBe(true)
   })
 
   it('滑块长度是视口占内容的比例，起点跟着滚动量走', async () => {
-    const r = rig({ type: 'always' })
+    const r = rig({ revealMode: 'always' })
     await settle()
     expect(r.api().thumbSize).toBeCloseTo(0.25)
     scrollTo(r, 150)
@@ -185,7 +185,7 @@ describe('挂在别人的滚动容器上', () => {
   })
 
   it('内容不比视口长时不显形，always 也不例外那一半：overflow 为假', async () => {
-    const r = rig({ type: 'auto' }, { clientH: 400, clientW: 400, scrollH: 400, scrollW: 400 })
+    const r = rig({ revealMode: 'auto' }, { clientH: 400, clientW: 400, scrollH: 400, scrollW: 400 })
     await settle()
     expect(r.api().overflow).toBe(false)
     expect(r.api().visible).toBe(false)
@@ -194,7 +194,7 @@ describe('挂在别人的滚动容器上', () => {
 
 describe('容器换了', () => {
   it('监听挪到新容器：新的滚得到，旧的不再算数', async () => {
-    const r = rig({ type: 'always' })
+    const r = rig({ revealMode: 'always' })
     await settle()
     const next = document.createElement('div')
     document.body.append(next)
@@ -219,7 +219,7 @@ describe('容器换了', () => {
     resetDiagnostics()
     const codes: string[] = []
     const off = onDiagnostic(record => void codes.push(record.code))
-    const r = rig({ type: 'always' })
+    const r = rig({ revealMode: 'always' })
     const real = r.scrollable
     r.swapScrollable(null as unknown as HTMLElement)
     await settle()
@@ -238,15 +238,15 @@ describe('容器换了', () => {
 
 describe('运行期改 props', () => {
   it('type 从 hover 改成 always：立刻显形', async () => {
-    const r = rig({ type: 'hover' })
+    const r = rig({ revealMode: 'hover' })
     await settle()
     expect(r.api().visible).toBe(false)
-    r.setProps({ type: 'always' })
+    r.setProps({ revealMode: 'always' })
     expect(r.api().visible).toBe(true)
   })
 
   it('运行期禁用：按下滑块不再进拖动态', async () => {
-    const r = rig({ type: 'always' })
+    const r = rig({ revealMode: 'always' })
     await settle()
     r.setProps({ disabled: true })
     ;(r.api().getThumbProps() as Dict & { onPointerDown: (e: PointerEvent) => void })
@@ -258,14 +258,14 @@ describe('运行期改 props', () => {
 
 describe('显隐时机', () => {
   it('always 恒显形，即便内容没溢出', async () => {
-    const r = rig({ type: 'always' }, { clientH: 400, clientW: 400, scrollH: 400, scrollW: 400 })
+    const r = rig({ revealMode: 'always' }, { clientH: 400, clientW: 400, scrollH: 400, scrollW: 400 })
     await settle()
     expect(r.api().visible).toBe(true)
   })
 
   it('hover：指针进滚动容器就露，离开后倒计时收起', async () => {
     vi.useFakeTimers()
-    const r = rig({ type: 'hover', hideDelay: 100 })
+    const r = rig({ revealMode: 'hover', hideDelay: 100 })
     await settle()
     expect(r.api().visible).toBe(false)
 
@@ -279,21 +279,21 @@ describe('显隐时机', () => {
   })
 
   it('hover：指针挪到滚动条本身也算手还在这儿', async () => {
-    const r = rig({ type: 'hover' })
+    const r = rig({ revealMode: 'hover' })
     await settle()
     r.root.dispatchEvent(new PointerEvent('pointerenter'))
     expect(r.api().visible).toBe(true)
   })
 
   it('禁用恒不显形：一条按不动的灰条只会让人反复点', async () => {
-    const r = rig({ type: 'always', disabled: true })
+    const r = rig({ revealMode: 'always', disabled: true })
     await settle()
     expect(r.api().visible).toBe(false)
   })
 
   it('scroll：指针在容器里滚动照样起倒计时', async () => {
     vi.useFakeTimers()
-    const r = rig({ type: 'scroll', hideDelay: 100 })
+    const r = rig({ revealMode: 'scroll', hideDelay: 100 })
     await settle()
     r.scrollable.dispatchEvent(new PointerEvent('pointerenter'))
     expect(r.api().visible).toBe(false)
@@ -305,14 +305,14 @@ describe('显隐时机', () => {
 })
 
 describe('滚动时或悬停时露面（scroll-hover）', () => {
-  it('未指定 type 时就是这一档', async () => {
+  it('未指定 revealMode 时就是这一档', async () => {
     const r = rig()
     await settle()
-    expect(r.api().type).toBe('scroll-hover')
+    expect(r.api().revealMode).toBe('scroll-hover')
   })
 
   it('挂载时收着：起点落在 hidden，不闪一下', async () => {
-    const r = rig({ type: 'scroll-hover' })
+    const r = rig({ revealMode: 'scroll-hover' })
     await settle()
     expect(r.service.state.get()).toBe('hidden')
     expect(r.api().visible).toBe(false)
@@ -320,7 +320,7 @@ describe('滚动时或悬停时露面（scroll-hover）', () => {
 
   it('收着时滚动：露出来并开始倒计时，停手够久收起', async () => {
     vi.useFakeTimers()
-    const r = rig({ type: 'scroll-hover', hideDelay: 100 })
+    const r = rig({ revealMode: 'scroll-hover', hideDelay: 100 })
     await settle()
     scrollTo(r, 30)
     expect(r.api().visible).toBe(true)
@@ -331,7 +331,7 @@ describe('滚动时或悬停时露面（scroll-hover）', () => {
 
   it('倒计时途中又滚了：计时推倒重来，连续滚动不会滚到一半自己收起', async () => {
     vi.useFakeTimers()
-    const r = rig({ type: 'scroll-hover', hideDelay: 100 })
+    const r = rig({ revealMode: 'scroll-hover', hideDelay: 100 })
     await settle()
     scrollTo(r, 30)
     vi.advanceTimersByTime(80)
@@ -346,7 +346,7 @@ describe('滚动时或悬停时露面（scroll-hover）', () => {
 
   it('指针占着容器时滚动：留在 visible，不当着指针的面收起', async () => {
     vi.useFakeTimers()
-    const r = rig({ type: 'scroll-hover', hideDelay: 100 })
+    const r = rig({ revealMode: 'scroll-hover', hideDelay: 100 })
     await settle()
     r.scrollable.dispatchEvent(new PointerEvent('pointerenter'))
     expect(r.service.state.get()).toBe('visible')
@@ -358,7 +358,7 @@ describe('滚动时或悬停时露面（scroll-hover）', () => {
 
   it('指针离开：开始倒计时，到点收起', async () => {
     vi.useFakeTimers()
-    const r = rig({ type: 'scroll-hover', hideDelay: 100 })
+    const r = rig({ revealMode: 'scroll-hover', hideDelay: 100 })
     await settle()
     r.scrollable.dispatchEvent(new PointerEvent('pointerenter'))
     r.scrollable.dispatchEvent(new PointerEvent('pointerleave'))
@@ -370,7 +370,7 @@ describe('滚动时或悬停时露面（scroll-hover）', () => {
 
   it('松开滑块时指针还在容器里：回到 visible 不倒计时', async () => {
     vi.useFakeTimers()
-    const r = rig({ type: 'scroll-hover', hideDelay: 100 })
+    const r = rig({ revealMode: 'scroll-hover', hideDelay: 100 })
     await settle()
     r.scrollable.dispatchEvent(new PointerEvent('pointerenter'))
     ;(r.api().getThumbProps() as Dict & { onPointerDown: (e: PointerEvent) => void })
@@ -388,7 +388,7 @@ describe('成段的滚动通知', () => {
     vi.useFakeTimers()
     const onScrollStart = vi.fn()
     const onScrollEnd = vi.fn()
-    const r = rig({ type: 'always', onScrollStart, onScrollEnd })
+    const r = rig({ revealMode: 'always', onScrollStart, onScrollEnd })
     await settle()
 
     scrollTo(r, 30)
@@ -407,7 +407,7 @@ describe('成段的滚动通知', () => {
 
   it('滚动量变了才报 scroll-change：同一个位置的重复 scroll 事件不重复报', async () => {
     const onScrollChange = vi.fn()
-    const r = rig({ type: 'always', onScrollChange })
+    const r = rig({ revealMode: 'always', onScrollChange })
     await settle()
 
     scrollTo(r, 30)
@@ -418,7 +418,7 @@ describe('成段的滚动通知', () => {
 
   it('命令式滚动当场量过，晚到的原生 scroll 事件照样报', async () => {
     const onScrollChange = vi.fn()
-    const r = rig({ type: 'always', onScrollChange })
+    const r = rig({ revealMode: 'always', onScrollChange })
     await settle()
 
     r.api().scrollTo(120)
@@ -429,7 +429,7 @@ describe('成段的滚动通知', () => {
 
   it('reach-end 只在跨过末端那一下报：停在末端不重复，离开再回来才再报', async () => {
     const onReachEnd = vi.fn()
-    const r = rig({ type: 'always', onReachEnd })
+    const r = rig({ revealMode: 'always', onReachEnd })
     await settle()
 
     scrollTo(r, 200)
@@ -449,7 +449,7 @@ describe('成段的滚动通知', () => {
 
   it('内容不溢出时没有"末端"可言，不报 reach-end', async () => {
     const onReachEnd = vi.fn()
-    const r = rig({ type: 'always', onReachEnd }, { clientH: 100, clientW: 100, scrollH: 100, scrollW: 100 })
+    const r = rig({ revealMode: 'always', onReachEnd }, { clientH: 100, clientW: 100, scrollH: 100, scrollW: 100 })
     await settle()
     scrollTo(r, 0)
     r.scrollable.dispatchEvent(new Event('scroll'))
@@ -461,7 +461,7 @@ describe('拖动滑块', () => {
   it('按下再移动：位移按行程换算成滚动量', async () => {
     const onDragStart = vi.fn()
     const onDragEnd = vi.fn()
-    const r = rig({ type: 'always', onDragStart, onDragEnd })
+    const r = rig({ revealMode: 'always', onDragStart, onDragEnd })
     await settle()
 
     ;(r.api().getThumbProps() as Dict & { onPointerDown: (e: PointerEvent) => void })
@@ -479,7 +479,7 @@ describe('拖动滑块', () => {
   })
 
   it('拖过头停在端点，不出负数也不越界', async () => {
-    const r = rig({ type: 'always' })
+    const r = rig({ revealMode: 'always' })
     await settle()
     ;(r.api().getThumbProps() as Dict & { onPointerDown: (e: PointerEvent) => void })
       .onPointerDown(pointer('pointerdown', { clientY: 0 }))
@@ -490,7 +490,7 @@ describe('拖动滑块', () => {
   })
 
   it('禁用时按下滑块不进拖动态', async () => {
-    const r = rig({ type: 'always', disabled: true })
+    const r = rig({ revealMode: 'always', disabled: true })
     await settle()
     ;(r.api().getThumbProps() as Dict & { onPointerDown: (e: PointerEvent) => void })
       .onPointerDown(pointer('pointerdown', { clientY: 0 }))
@@ -500,7 +500,7 @@ describe('拖动滑块', () => {
 
 describe('点轨道空白处', () => {
   it('把滑块中心挪到落点', async () => {
-    const r = rig({ type: 'always' })
+    const r = rig({ revealMode: 'always' })
     await settle()
     // 轨道 100、滑块 25：点在 50 处，中心对齐后滚动量 = (50 − 12.5)/75 × 300 = 150
     ;(r.api().getTrackProps() as Dict & { onPointerDown: (e: PointerEvent) => void })
@@ -516,7 +516,7 @@ describe('键盘', () => {
   }
 
   it('方向键走一步，翻页键走一屏，Home/End 到两端', async () => {
-    const r = rig({ type: 'always', focusable: true, step: 40 })
+    const r = rig({ revealMode: 'always', focusable: true, step: 40 })
     await settle()
 
     press(r, 'ArrowDown')
@@ -532,7 +532,7 @@ describe('键盘', () => {
   })
 
   it('交叉轴的方向键不接：让它冒上去交给页面', async () => {
-    const r = rig({ type: 'always', focusable: true })
+    const r = rig({ revealMode: 'always', focusable: true })
     await settle()
     const event = new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true })
     ;(r.api().getThumbProps() as Dict & { onKeyDown: (e: KeyboardEvent) => void }).onKeyDown(event)
@@ -541,7 +541,7 @@ describe('键盘', () => {
   })
 
   it('禁用时一个键都不接', async () => {
-    const r = rig({ type: 'always', focusable: true, disabled: true })
+    const r = rig({ revealMode: 'always', focusable: true, disabled: true })
     await settle()
     press(r, 'End')
     expect(r.scrollable.scrollTop).toBe(0)
@@ -550,7 +550,7 @@ describe('键盘', () => {
 
 describe('读屏面', () => {
   it('缺省整条隐藏、滑块退出 Tab 序：滚动本身由滚动容器报，没必要报两遍', async () => {
-    const r = rig({ type: 'always' })
+    const r = rig({ revealMode: 'always' })
     await settle()
     expect((r.api().getRootProps() as Dict)['aria-hidden']).toBe(true)
     const thumb = r.api().getThumbProps() as Dict
@@ -559,7 +559,7 @@ describe('读屏面', () => {
   })
 
   it('focusable 打开后报 role=scrollbar 与三个数，名字可覆盖', async () => {
-    const r = rig({ type: 'always', focusable: true, controls: 'scrollable', translations: { thumb: '内容滚动条' } })
+    const r = rig({ revealMode: 'always', focusable: true, controls: 'scrollable', translations: { thumb: '内容滚动条' } })
     await settle()
     scrollTo(r, 150)
     expect((r.api().getRootProps() as Dict)['aria-hidden']).toBeUndefined()
@@ -577,7 +577,7 @@ describe('读屏面', () => {
 
 describe('从右往左排版的横轴', () => {
   it('滚动量写回时取负，读出来仍是恒非负的逻辑距离', async () => {
-    const r = rig({ type: 'always', orientation: 'horizontal', dir: 'rtl' })
+    const r = rig({ revealMode: 'always', orientation: 'horizontal', dir: 'rtl' })
     await settle()
     r.api().scrollTo(120)
     expect(r.scrollable.scrollLeft).toBe(-120)
@@ -585,7 +585,7 @@ describe('从右往左排版的横轴', () => {
   })
 
   it('左右键按排版方向解释：ArrowLeft 往前走，ArrowRight 往回走', async () => {
-    const r = rig({ type: 'always', orientation: 'horizontal', dir: 'rtl', focusable: true, step: 40 })
+    const r = rig({ revealMode: 'always', orientation: 'horizontal', dir: 'rtl', focusable: true, step: 40 })
     await settle()
     const press = (key: string): void => {
       (r.api().getThumbProps() as Dict & { onKeyDown: (e: KeyboardEvent) => void })
@@ -601,7 +601,7 @@ describe('从右往左排版的横轴', () => {
 
 describe('命令式出口', () => {
   it('scrollTo 越界自动夹，scrollBy 相对当前位置走', async () => {
-    const r = rig({ type: 'always' })
+    const r = rig({ revealMode: 'always' })
     await settle()
     r.api().scrollTo(9999)
     expect(r.scrollable.scrollTop).toBe(300)
@@ -620,7 +620,7 @@ describe('触屏与交叉口', () => {
       removeEventListener: () => {},
     })) as unknown as typeof window.matchMedia
     try {
-      const r = rig({ type: 'always' })
+      const r = rig({ revealMode: 'always' })
       await settle()
       expect(r.api().native).toBe(true)
       expect(r.api().visible).toBe(false)
@@ -635,19 +635,19 @@ describe('触屏与交叉口', () => {
   })
 
   it('gutter 打在根上，corner 跟着本条的显隐与方向', async () => {
-    const r = rig({ type: 'hover', gutter: true })
+    const r = rig({ revealMode: 'hover', gutter: true })
     await settle()
     expect((r.api().getRootProps() as Dict)['data-gutter']).toBe('')
     const corner = r.api().getCornerProps() as Dict
     expect(corner['data-part']).toBe('corner')
     expect(corner['data-orientation']).toBe('vertical')
     expect(corner['data-state']).toBe('hidden')
-    r.setProps({ type: 'always' })
+    r.setProps({ revealMode: 'always' })
     expect((r.api().getCornerProps() as Dict)['data-state']).toBe('visible')
   })
 
   it('没给 controls 时 aria-controls 用容器自己的 id', async () => {
-    const r = rig({ type: 'always', focusable: true })
+    const r = rig({ revealMode: 'always', focusable: true })
     await settle()
     expect((r.api().getThumbProps() as Dict)['aria-controls']).toBe('scrollable')
     r.setProps({ controls: 'elsewhere' })
@@ -657,7 +657,7 @@ describe('触屏与交叉口', () => {
 
 describe('容器上的标记', () => {
   it('挂上打 data-xh-scrollbar，拆走撤掉；交给原生滚动时不打', async () => {
-    const r = rig({ type: 'always' })
+    const r = rig({ revealMode: 'always' })
     await settle()
     expect(r.scrollable.getAttribute('data-xh-scrollbar')).toBe('1')
 
@@ -669,7 +669,7 @@ describe('容器上的标记', () => {
       removeEventListener: () => {},
     })) as unknown as typeof window.matchMedia
     try {
-      const touch = rig({ type: 'always' })
+      const touch = rig({ revealMode: 'always' })
       await settle()
       expect(touch.scrollable.getAttribute('data-xh-scrollbar')).toBeNull()
       touch.setProps({ forceVisible: true })
@@ -701,7 +701,7 @@ describe('贴在滚动层上', () => {
   }
 
   it('壳锚定（缺省）不写 data-anchor 也不写内联几何', async () => {
-    const r = rig({ type: 'always' })
+    const r = rig({ revealMode: 'always' })
     await settle()
     const root = r.api().getRootProps() as Dict
     expect(root['data-anchor']).toBeUndefined()
@@ -709,7 +709,7 @@ describe('贴在滚动层上', () => {
   })
 
   it('layer 锚定：竖条贴层的行内末端、横条贴层的块末端，让位时主轴减一个厚度', async () => {
-    const r = rig({ type: 'always', anchor: 'layer' })
+    const r = rig({ revealMode: 'always', anchor: 'layer' })
     stubOffset(r.scrollable, { left: 120, top: 8, width: 160, height: 240 })
     r.api().measure()
     await settle()
@@ -729,7 +729,7 @@ describe('贴在滚动层上', () => {
       left: 'calc(280px - var(--xh-_scrollbar-thickness))',
     })
 
-    const h = rig({ type: 'always', anchor: 'layer', orientation: 'horizontal' })
+    const h = rig({ revealMode: 'always', anchor: 'layer', orientation: 'horizontal' })
     stubOffset(h.scrollable, { left: 120, top: 8, width: 160, height: 240 })
     h.api().measure()
     await settle()
@@ -741,13 +741,13 @@ describe('贴在滚动层上', () => {
   })
 
   it('从右到左排版：竖条贴层的左缘，横条让位时从左侧空出一个厚度', async () => {
-    const r = rig({ type: 'always', anchor: 'layer', dir: 'rtl' })
+    const r = rig({ revealMode: 'always', anchor: 'layer', dir: 'rtl' })
     stubOffset(r.scrollable, { left: 120, top: 8, width: 160, height: 240 })
     r.api().measure()
     await settle()
     expect((r.api().getRootProps() as Dict).style).toEqual({ top: '8px', height: '240px', left: '120px' })
 
-    const h = rig({ type: 'always', anchor: 'layer', orientation: 'horizontal', dir: 'rtl', gutter: true })
+    const h = rig({ revealMode: 'always', anchor: 'layer', orientation: 'horizontal', dir: 'rtl', gutter: true })
     stubOffset(h.scrollable, { left: 120, top: 8, width: 160, height: 240 })
     h.api().measure()
     await settle()

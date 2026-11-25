@@ -21,7 +21,7 @@ export default function Demo(): ReactNode {
     <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
       {types.map(type => (
         <div key={type} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-          <span style={{ fontSize: "13px", color: "var(--xh-fg-muted)" }}>{`type="${type}"`}</span>
+          <span style={{ fontSize: "13px", color: "var(--xh-fg-muted)" }}>{`revealMode="${type}"`}</span>
           <div style={{ position: "relative", inlineSize: "150px" }}>
             <div
               ref={(el) => { boxes.current[type] = el; }}
@@ -33,7 +33,7 @@ export default function Demo(): ReactNode {
             </div>
             <XhScrollbarRoot
               scrollable={() => boxes.current[type] ?? null}
-              type={type}
+              revealMode={type}
               hideDelay={400}
             >
               <XhScrollbarTrack>

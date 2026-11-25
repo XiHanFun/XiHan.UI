@@ -37,7 +37,7 @@ export default function Demo(): ReactNode {
               ))}
             </XhVirtualizerContent>
           </XhVirtualizerViewport>
-          <XhScrollbarRoot controls="virtualizer-scrollbar-viewport" type="always">
+          <XhScrollbarRoot controls="virtualizer-scrollbar-viewport" revealMode="always">
             <XhScrollbarTrack>
               <XhScrollbarThumb />
             </XhScrollbarTrack>

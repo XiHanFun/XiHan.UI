@@ -36,7 +36,7 @@ export default function Demo(): ReactNode {
         scrollable={() => box.current}
         controls="scrollbar-focusable-box"
         orientation="horizontal"
-        type="always"
+        revealMode="always"
         size="lg"
         focusable
         translations={{ thumb: "横向滚动条" }}

@@ -16,7 +16,7 @@ const rows = Array.from({ length: 10 }, (_, index) => ({ id: index + 1, tone: to
 
 <template>
   <XhScrollAreaRoot
-    type="always"
+    reveal-mode="always"
     aria-label="双轴滚动占位区块"
     style="block-size: 160px; inline-size: min(420px, 100%); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
   >

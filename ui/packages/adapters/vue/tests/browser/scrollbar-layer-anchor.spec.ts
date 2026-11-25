@@ -61,7 +61,7 @@ function mount(dir: 'ltr' | 'rtl' = 'ltr', orientation: 'vertical' | 'horizontal
         scrollable: () => layerRef.value,
         anchor: 'layer',
         orientation,
-        type: 'always',
+        revealMode: 'always',
         size: 'sm',
         dir,
       }, () => h(XhScrollbarTrack, null, () => h(XhScrollbarThumb))),

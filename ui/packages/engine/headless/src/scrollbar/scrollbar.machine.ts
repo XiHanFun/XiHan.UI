@@ -7,7 +7,7 @@
 
 import type { Direction, Orientation, Params, Transition } from '@xihan-ui/core'
 import type { ScrollAxisMetrics } from '../shared/scroll-geometry'
-import type { ScrollbarLayerBox, ScrollbarSchema, ScrollbarType } from './scrollbar.types'
+import type { ScrollbarLayerBox, ScrollbarSchema, ScrollbarRevealMode } from './scrollbar.types'
 import { DIAGNOSTIC_CODES, reportDiagnostic, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { watchCoarsePointer } from '../shared/coarse-pointer'
@@ -28,22 +28,22 @@ const { createMachine } = setup<ScrollbarSchema>()
 /** 收起前的默认等待毫秒。 */
 export const SCROLLBAR_HIDE_DELAY = 600
 
-/** 未指定 type 时的露面时机。 */
-export const SCROLLBAR_DEFAULT_TYPE: ScrollbarType = 'scroll-hover'
+/** 未指定 revealMode 时的露面时机。 */
+export const SCROLLBAR_DEFAULT_REVEAL_MODE: ScrollbarRevealMode = 'scroll-hover'
 
 /** 这一档在指针进入滚动容器或滚动条时露面。 */
-function showsOnHover(type: ScrollbarType): boolean {
-  return type === 'hover' || type === 'scroll-hover'
+function showsOnHover(revealMode: ScrollbarRevealMode): boolean {
+  return revealMode === 'hover' || revealMode === 'scroll-hover'
 }
 
 /** 这一档在滚动时露面。 */
-function showsOnScroll(type: ScrollbarType): boolean {
-  return type === 'scroll' || type === 'scroll-hover'
+function showsOnScroll(revealMode: ScrollbarRevealMode): boolean {
+  return revealMode === 'scroll' || revealMode === 'scroll-hover'
 }
 
-/** 这一档的显隐不看状态机，由 connect 直接按 type 判。 */
-function alwaysDecided(type: ScrollbarType): boolean {
-  return type === 'auto' || type === 'always'
+/** 这一档的显隐不看状态机，由 connect 直接按 revealMode 判。 */
+function alwaysDecided(revealMode: ScrollbarRevealMode): boolean {
+  return revealMode === 'auto' || revealMode === 'always'
 }
 
 /** 方向键一步默认滚多少像素。 */
@@ -196,7 +196,7 @@ export const scrollbarMachine = createMachine({
     getRootEl: () => null,
   }),
   // auto / always 的可见性不看状态，起点落在 visible；其余几档从收着起步，不然挂载那一帧会闪一下
-  initialState: ({ prop }) => (alwaysDecided(prop('type') ?? SCROLLBAR_DEFAULT_TYPE) ? 'visible' : 'hidden'),
+  initialState: ({ prop }) => (alwaysDecided(prop('revealMode') ?? SCROLLBAR_DEFAULT_REVEAL_MODE) ? 'visible' : 'hidden'),
   // 尺寸监听、首帧测量与指针类型探测全程挂着
   effects: ['trackScrollable', 'trackPointerType'],
   on: {
@@ -266,14 +266,14 @@ export const scrollbarMachine = createMachine({
   },
   implementations: {
     guards: {
-      showsOnHover: ({ prop }) => showsOnHover(prop('type') ?? SCROLLBAR_DEFAULT_TYPE),
-      showsOnScroll: ({ prop }) => showsOnScroll(prop('type') ?? SCROLLBAR_DEFAULT_TYPE),
+      showsOnHover: ({ prop }) => showsOnHover(prop('revealMode') ?? SCROLLBAR_DEFAULT_REVEAL_MODE),
+      showsOnScroll: ({ prop }) => showsOnScroll(prop('revealMode') ?? SCROLLBAR_DEFAULT_REVEAL_MODE),
       canInteract: ({ prop }) => !prop('disabled'),
       staysVisible: ({ prop, context }) => {
-        const type = prop('type') ?? SCROLLBAR_DEFAULT_TYPE
-        if (alwaysDecided(type))
+        const revealMode = prop('revealMode') ?? SCROLLBAR_DEFAULT_REVEAL_MODE
+        if (alwaysDecided(revealMode))
           return true
-        return showsOnHover(type) && context.get('pointerInside')
+        return showsOnHover(revealMode) && context.get('pointerInside')
       },
     },
     actions: {

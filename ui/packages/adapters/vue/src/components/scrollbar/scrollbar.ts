@@ -6,7 +6,7 @@
 // 提供 scrollbar 相关实现。
 
 import type { Direction, Orientation, Size } from '@xihan-ui/core'
-import type { ScrollbarAnchor, ScrollbarApi, ScrollbarSchema, ScrollbarType } from '@xihan-ui/headless'
+import type { ScrollbarAnchor, ScrollbarApi, ScrollbarSchema, ScrollbarRevealMode } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { ScrollbarSource, ScrollbarTarget } from './use-scrollbar'
@@ -37,7 +37,7 @@ export const XhScrollbarRoot = defineComponent({
      */
     controls: { type: String },
     orientation: { type: String as PropType<Orientation> },
-    type: { type: String as PropType<ScrollbarType> },
+    revealMode: { type: String as PropType<ScrollbarRevealMode> },
     hideDelay: { type: Number },
     minThumbSize: { type: Number },
     step: { type: Number },

@@ -39,7 +39,7 @@ const cells = Array.from({ length: 24 }, (_, i) => `第 ${i + 1} 列`);
       :scrollable="box"
       controls="scrollbar-focusable-box"
       orientation="horizontal"
-      type="always"
+      reveal-mode="always"
       size="lg"
       focusable
       :translations="{ thumb: '横向滚动条' }"

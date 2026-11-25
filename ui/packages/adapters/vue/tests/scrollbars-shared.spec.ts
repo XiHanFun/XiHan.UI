@@ -59,7 +59,7 @@ function mountBars(options: {
       const bars = useScrollbars({
         scrollable: () => box.value,
         axes: options.axes,
-        props: { type: 'auto' },
+        props: { revealMode: 'auto' },
       })
       return () => h('div', { 'data-role': 'shell' }, [
         h('div', { 'ref': box, 'data-role': 'scroller' }, '一段很长的内容'),

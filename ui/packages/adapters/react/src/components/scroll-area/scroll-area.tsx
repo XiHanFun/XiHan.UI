@@ -6,7 +6,7 @@
 // 提供 scroll area 相关实现。
 
 import type { Direction, Orientation, Size } from '@xihan-ui/core'
-import type { ScrollAreaApi, ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollDetails, ScrollAreaVariant, ScrollbarType } from '@xihan-ui/headless'
+import type { ScrollAreaApi, ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollDetails, ScrollAreaVariant, ScrollbarRevealMode } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { withXhConfig } from '../../config/config'
@@ -19,7 +19,7 @@ import { useScrollArea } from './use-scroll-area'
 export type ScrollAreaRootSlotProps = Pick<ScrollAreaApi, 'vertical' | 'horizontal' | 'draggingAxis' | 'cornerVisible' | 'scrollTo'>
 
 export interface XhScrollAreaRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'> {
-  type?: ScrollbarType
+  revealMode?: ScrollbarRevealMode
   hideDelay?: number
   orientation?: ScrollAreaOrientation
   variant?: ScrollAreaVariant
@@ -37,7 +37,7 @@ export interface XhScrollAreaRootProps extends Omit<ComponentPropsWithRef<'div'>
 
 // 滚动本身是原生的；滚动量变化与到头由两台 scrollbar 机器按轴报出来
 export function XhScrollAreaRoot({
-  type,
+  revealMode,
   hideDelay,
   orientation,
   variant,
@@ -50,7 +50,7 @@ export function XhScrollAreaRoot({
   ...rest
 }: XhScrollAreaRootProps): ReactNode {
   const ctx = useScrollArea(withXhConfig('scroll-area', {
-    type,
+    revealMode,
     hideDelay,
     orientation,
     variant,

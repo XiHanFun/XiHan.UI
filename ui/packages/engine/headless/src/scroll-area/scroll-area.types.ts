@@ -6,7 +6,7 @@
 // 定义 scroll area 类型契约。
 
 import type { Direction, Orientation, PropTypes, Service, Size } from '@xihan-ui/core'
-import type { ScrollbarSchema, ScrollbarScrollDetails, ScrollbarType } from '../scrollbar/scrollbar.types'
+import type { ScrollbarSchema, ScrollbarScrollDetails, ScrollbarRevealMode } from '../scrollbar/scrollbar.types'
 
 /** 归本组件管理的轴。被关闭的轴滚动条恒不显示，视口在该方向也不滚动。 */
 export type ScrollAreaOrientation = Orientation | 'both'
@@ -38,8 +38,8 @@ export interface ScrollAreaScrollToOptions {
  */
 export interface ScrollAreaProps {
   /** 滚动条显示的时机，默认 scroll-hover。 */
-  type?: ScrollbarType
-  /** 收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600。 */
+  revealMode?: ScrollbarRevealMode
+  /** 收起前的等待毫秒（revealMode 为 scroll / hover / scroll-hover 时生效），默认 600。 */
   hideDelay?: number
   /** 归本组件管理的轴，默认 both。 */
   orientation?: ScrollAreaOrientation
@@ -75,7 +75,7 @@ export interface ScrollAreaScrollbarProps {
 export interface ScrollAreaAxisState {
   /** 内容比视口长。 */
   overflow: boolean
-  /** 当前滚动条是否应显示（已把 type 与 orientation 都计算在内）。 */
+  /** 当前滚动条是否应显示（已把 revealMode 与 orientation 都计算在内）。 */
   visible: boolean
   /** 滑块长度占轨道的比例，0-1。 */
   size: number
@@ -88,7 +88,7 @@ export interface ScrollAreaAxisState {
 }
 
 export interface ScrollAreaApi<T extends PropTypes = PropTypes> {
-  type: ScrollbarType
+  revealMode: ScrollbarRevealMode
   orientation: ScrollAreaOrientation
   vertical: ScrollAreaAxisState
   horizontal: ScrollAreaAxisState

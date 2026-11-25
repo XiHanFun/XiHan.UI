@@ -7989,7 +7989,7 @@
       "ResolvedNotification",
       "ResolvedTimeStep",
       "SANKEY_TRANSLATIONS",
-      "SCROLLBAR_DEFAULT_TYPE",
+      "SCROLLBAR_DEFAULT_REVEAL_MODE",
       "SCROLLBAR_HIDE_DELAY",
       "SCROLLBAR_HOST_ATTR",
       "SCROLLBAR_SCROLL_END_DELAY",
@@ -8047,10 +8047,10 @@
       "ScrollbarLayerBox",
       "ScrollbarPoint",
       "ScrollbarRefs",
+      "ScrollbarRevealMode",
       "ScrollbarSchema",
       "ScrollbarScrollDetails",
       "ScrollbarTranslations",
-      "ScrollbarType",
       "SelectApi",
       "SelectFocusIntent",
       "SelectGroupProps",
@@ -15151,8 +15151,8 @@
       "onReachEnd",
       "onScrollChange",
       "orientation",
+      "revealMode",
       "size",
-      "type",
       "variant"
     ],
     "scrollbar": [
@@ -15172,10 +15172,10 @@
       "onScrollEnd",
       "onScrollStart",
       "orientation",
+      "revealMode",
       "size",
       "step",
-      "translations",
-      "type"
+      "translations"
     ],
     "select": [
       "ariaLabel",
@@ -24040,8 +24040,8 @@
         "force-visible",
         "hide-delay",
         "orientation",
+        "reveal-mode",
         "size",
-        "type",
         "variant"
       ],
       "events": [
@@ -24061,9 +24061,9 @@
         "hide-delay",
         "min-thumb-size",
         "orientation",
+        "reveal-mode",
         "size",
-        "step",
-        "type"
+        "step"
       ],
       "events": [
         "drag-end",

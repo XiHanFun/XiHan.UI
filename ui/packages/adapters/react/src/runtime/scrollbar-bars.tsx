@@ -12,7 +12,7 @@ import type { Orientation, Scope, Service } from '@xihan-ui/core'
 import type { ScrollbarAnchor, ScrollbarSchema } from '@xihan-ui/headless'
 import type { ReactNode } from 'react'
 import type { ScrollbarsOptions, ScrollbarsProps } from './scrollbars-types'
-import { connectScrollbar, isOverflowing, SCROLLBAR_DEFAULT_TYPE, scrollbarMachine } from '@xihan-ui/headless'
+import { connectScrollbar, isOverflowing, SCROLLBAR_DEFAULT_REVEAL_MODE, scrollbarMachine } from '@xihan-ui/headless'
 import { useEffect, useRef, useSyncExternalStore } from 'react'
 import { reactNormalize } from './normalize-props'
 import { useMachine } from './use-machine'
@@ -57,8 +57,8 @@ export function createRegistry(scope: Scope, options: () => ScrollbarsOptions): 
   const standing = (service: Service<ScrollbarSchema>): boolean => {
     const given = options().props?.()
     const native = service.context.get('coarse') && !given?.forceVisible
-    const type = given?.type ?? SCROLLBAR_DEFAULT_TYPE
-    return !native && (type === 'always' || isOverflowing(service.context.get('metrics')))
+    const revealMode = given?.revealMode ?? SCROLLBAR_DEFAULT_REVEAL_MODE
+    return !native && (revealMode === 'always' || isOverflowing(service.context.get('metrics')))
   }
 
   return {

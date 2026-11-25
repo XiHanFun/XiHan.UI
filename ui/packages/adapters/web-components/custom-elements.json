@@ -60089,12 +60089,12 @@
             },
             {
               "kind": "field",
-              "name": "type",
+              "name": "revealMode",
               "privacy": "public",
               "type": {
-                "text": "ScrollbarType | undefined"
+                "text": "ScrollbarRevealMode | undefined"
               },
-              "attribute": "type"
+              "attribute": "reveal-mode"
             },
             {
               "kind": "field",
@@ -60384,17 +60384,17 @@
           "attributes": [
             {
               "type": {
-                "text": "ScrollbarType | undefined"
+                "text": "ScrollbarRevealMode | undefined"
               },
               "description": "滚动条显示的时机，默认 scroll-hover",
-              "name": "type",
-              "fieldName": "type"
+              "name": "reveal-mode",
+              "fieldName": "revealMode"
             },
             {
               "type": {
                 "text": "number | undefined"
               },
-              "description": "收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600",
+              "description": "收起前的等待毫秒（revealMode 为 scroll / hover / scroll-hover 时生效），默认 600",
               "name": "hide-delay",
               "fieldName": "hideDelay"
             },
@@ -60519,12 +60519,12 @@
             },
             {
               "kind": "field",
-              "name": "type",
+              "name": "revealMode",
               "privacy": "public",
               "type": {
-                "text": "ScrollbarType | undefined"
+                "text": "ScrollbarRevealMode | undefined"
               },
-              "attribute": "type"
+              "attribute": "reveal-mode"
             },
             {
               "kind": "field",
@@ -60739,17 +60739,17 @@
             },
             {
               "type": {
-                "text": "ScrollbarType | undefined"
+                "text": "ScrollbarRevealMode | undefined"
               },
               "description": "显示的时机，默认 scroll-hover",
-              "name": "type",
-              "fieldName": "type"
+              "name": "reveal-mode",
+              "fieldName": "revealMode"
             },
             {
               "type": {
                 "text": "number | undefined"
               },
-              "description": "收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600",
+              "description": "收起前的等待毫秒（revealMode 为 scroll / hover / scroll-hover 时生效），默认 600",
               "name": "hide-delay",
               "fieldName": "hideDelay"
             },

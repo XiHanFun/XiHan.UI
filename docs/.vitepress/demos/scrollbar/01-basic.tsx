@@ -26,7 +26,7 @@ export default function Demo(): ReactNode {
         ))}
       </div>
 
-      <XhScrollbarRoot scrollable={() => box.current} type="always">
+      <XhScrollbarRoot scrollable={() => box.current} revealMode="always">
         <XhScrollbarTrack>
           <XhScrollbarThumb />
         </XhScrollbarTrack>

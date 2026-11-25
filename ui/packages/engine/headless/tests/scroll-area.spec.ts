@@ -110,7 +110,7 @@ afterEach(() => {
 
 describe('两条轴各是一台 scrollbar', () => {
   it('两台机器都挂在同一个视口上：一次滚动两条轴各自读到自己的量', async () => {
-    const r = rig({ type: 'always' })
+    const r = rig({ revealMode: 'always' })
     await settle()
     expect(r.api().vertical).toMatchObject({ overflow: true, visible: true, size: 0.25, offset: 0 })
     expect(r.api().horizontal).toMatchObject({ overflow: true, visible: true, size: 0.25, offset: 0 })
@@ -122,13 +122,13 @@ describe('两条轴各是一台 scrollbar', () => {
   })
 
   it('视口带自绘滚动条的标记，皮肤据此藏原生条；两条共用一个视口，计数到 2', async () => {
-    const r = rig({ type: 'always' })
+    const r = rig({ revealMode: 'always' })
     await settle()
     expect(r.viewport.getAttribute(SCROLLBAR_HOST_ATTR)).toBe('2')
   })
 
   it('滑块的内联几何按轴取自各自那台机器', async () => {
-    const r = rig({ type: 'always' })
+    const r = rig({ revealMode: 'always' })
     await settle()
     const v = (r.api().getThumbProps({ orientation: 'vertical' }) as Dict).style as Record<string, string>
     const h = (r.api().getThumbProps({ orientation: 'horizontal' }) as Dict).style as Record<string, string>
@@ -141,7 +141,7 @@ describe('两条轴各是一台 scrollbar', () => {
 
 describe('orientation 关掉的那条轴', () => {
   it('按禁用跑：即便溢出也不显形，视口那一向由皮肤按 data-orientation 关掉', async () => {
-    const r = rig({ type: 'always', orientation: 'vertical' })
+    const r = rig({ revealMode: 'always', orientation: 'vertical' })
     await settle()
     expect(r.api().vertical.visible).toBe(true)
     expect(r.api().horizontal.visible).toBe(false)
@@ -151,7 +151,7 @@ describe('orientation 关掉的那条轴', () => {
   })
 
   it('作者只写了竖条：横轴不算在场——不显形、不占道，竖条也不必让位', async () => {
-    const r = rig({ type: 'always' }, undefined, ['vertical'])
+    const r = rig({ revealMode: 'always' }, undefined, ['vertical'])
     await settle()
     expect(r.api().vertical.visible).toBe(true)
     expect(r.api().horizontal.visible).toBe(false)
@@ -163,7 +163,7 @@ describe('orientation 关掉的那条轴', () => {
   })
 
   it('运行期再写一条 / 拆掉一条：在场与否跟着节点走，不等下一次滚动', async () => {
-    const r = rig({ type: 'always' }, undefined, ['vertical'])
+    const r = rig({ revealMode: 'always' }, undefined, ['vertical'])
     await settle()
     expect(r.api().horizontal.visible).toBe(false)
     r.written.add('horizontal')
@@ -183,7 +183,7 @@ describe('orientation 关掉的那条轴', () => {
   })
 
   it('运行期改 orientation：另一条轴立刻跟着开关', async () => {
-    const r = rig({ type: 'always', orientation: 'vertical' })
+    const r = rig({ revealMode: 'always', orientation: 'vertical' })
     await settle()
     r.setProps({ orientation: 'both' })
     expect(r.api().horizontal.visible).toBe(true)
@@ -192,8 +192,8 @@ describe('orientation 关掉的那条轴', () => {
 
 describe('占道、让位与交叉口', () => {
   it('always / auto 溢出时视口让出一条道；hover / scroll 浮在内容上不占', async () => {
-    const always = rig({ type: 'always' })
-    const hover = rig({ type: 'hover' })
+    const always = rig({ revealMode: 'always' })
+    const hover = rig({ revealMode: 'hover' })
     await settle()
     const lanes = (r: Rig): [unknown, unknown] => {
       const vp = r.api().getViewportProps() as Dict
@@ -207,13 +207,13 @@ describe('占道、让位与交叉口', () => {
     const r = rig()
     await settle()
     const vp = r.api().getViewportProps() as Dict
-    expect(r.api().type).toBe('scroll-hover')
+    expect(r.api().revealMode).toBe('scroll-hover')
     expect(vp['data-lane-vertical']).toBeUndefined()
     expect(vp['data-lane-horizontal']).toBeUndefined()
   })
 
   it('auto：只有溢出的那条轴占道', async () => {
-    const r = rig({ type: 'auto' }, { clientH: 100, clientW: 100, scrollH: 400, scrollW: 100 })
+    const r = rig({ revealMode: 'auto' }, { clientH: 100, clientW: 100, scrollH: 400, scrollW: 100 })
     await settle()
     const vp = r.api().getViewportProps() as Dict
     expect(vp['data-lane-vertical']).toBe('')
@@ -221,8 +221,8 @@ describe('占道、让位与交叉口', () => {
   })
 
   it('两条都溢出才互相让出交叉口、补丁才在场；只有一条时不让、补丁也收起', async () => {
-    const both = rig({ type: 'always' })
-    const one = rig({ type: 'auto' }, { clientH: 100, clientW: 100, scrollH: 400, scrollW: 100 })
+    const both = rig({ revealMode: 'always' })
+    const one = rig({ revealMode: 'auto' }, { clientH: 100, clientW: 100, scrollH: 400, scrollW: 100 })
     await settle()
     expect((both.api().getScrollbarProps({ orientation: 'vertical' }) as Dict)['data-gutter']).toBe('')
     expect((both.api().getScrollbarProps({ orientation: 'horizontal' }) as Dict)['data-gutter']).toBe('')
@@ -235,7 +235,7 @@ describe('占道、让位与交叉口', () => {
   })
 
   it('hover 档：让位按溢出算，指针进出只翻显形，不让长度在淡出里跳', async () => {
-    const r = rig({ type: 'hover' })
+    const r = rig({ revealMode: 'hover' })
     await settle()
     const gutters = (): [unknown, unknown] => [
       (r.api().getScrollbarProps({ orientation: 'vertical' }) as Dict)['data-gutter'],
@@ -252,7 +252,7 @@ describe('占道、让位与交叉口', () => {
   })
 
   it('挂载点戴滚动区的 scope，轨道与滑块戴 scrollbar 的 scope：两个组件共用一份滚动条', async () => {
-    const r = rig({ type: 'always' })
+    const r = rig({ revealMode: 'always' })
     await settle()
     const mount = r.api().getScrollbarProps({ orientation: 'vertical' }) as Dict
     expect(mount['data-scope']).toBe('scroll-area')
@@ -268,7 +268,7 @@ describe('滚动通知与命令式滚动', () => {
   it('两台机器各报各的轴，通知里带着轴向；到头按轴各报一次', async () => {
     const onScrollChange = vi.fn()
     const onReachEnd = vi.fn()
-    const r = rig({ type: 'always', onScrollChange, onReachEnd })
+    const r = rig({ revealMode: 'always', onScrollChange, onReachEnd })
     await settle()
     r.viewport.scrollTop = 120
     r.viewport.dispatchEvent(new Event('scroll'))
@@ -320,10 +320,10 @@ describe('滚动通知与命令式滚动', () => {
 
 describe('props 原样交给两台机器', () => {
   it('type / hideDelay / size / dir / forceVisible 透传，orientation 按轴拆', () => {
-    const props: ScrollAreaProps = { type: 'scroll', hideDelay: 250, size: 'lg', dir: 'rtl', forceVisible: true }
+    const props: ScrollAreaProps = { revealMode: 'scroll', hideDelay: 250, size: 'lg', dir: 'rtl', forceVisible: true }
     expect(scrollAreaScrollbarProps(props, 'horizontal')).toEqual({
       orientation: 'horizontal',
-      type: 'scroll',
+      revealMode: 'scroll',
       hideDelay: 250,
       size: 'lg',
       dir: 'rtl',
@@ -333,7 +333,7 @@ describe('props 原样交给两台机器', () => {
   })
 
   it('根与挂载点都带 size 与 type，皮肤按同一个数换厚度', async () => {
-    const r = rig({ type: 'auto', size: 'sm' })
+    const r = rig({ revealMode: 'auto', size: 'sm' })
     await settle()
     expect((r.api().getRootProps() as Dict)['data-size']).toBe('sm')
     expect((r.api().getRootProps() as Dict)['data-reveal-mode']).toBe('auto')
@@ -341,7 +341,7 @@ describe('props 原样交给两台机器', () => {
   })
 
   it('rtl：横轴滚动量写回时取负，读出来仍是逻辑距离', async () => {
-    const r = rig({ type: 'always', dir: 'rtl' })
+    const r = rig({ revealMode: 'always', dir: 'rtl' })
     await settle()
     r.viewport.scrollLeft = -150
     r.viewport.dispatchEvent(new Event('scroll'))

@@ -6,7 +6,7 @@
 // 提供 scroll area 相关实现。
 
 import type { Direction, Orientation, Size } from '@xihan-ui/core'
-import type { ScrollAreaApi, ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollbarProps, ScrollAreaScrollDetails, ScrollAreaScrollToOptions, ScrollAreaVariant, ScrollbarType } from '@xihan-ui/headless'
+import type { ScrollAreaApi, ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollbarProps, ScrollAreaScrollDetails, ScrollAreaScrollToOptions, ScrollAreaVariant, ScrollbarRevealMode } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -25,7 +25,7 @@ export const XhScrollAreaRoot = defineComponent({
   name: 'XhScrollAreaRoot',
   // 缺省值由 scrollbar 的机器与 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    type: { type: String as PropType<ScrollbarType> },
+    revealMode: { type: String as PropType<ScrollbarRevealMode> },
     hideDelay: { type: Number },
     orientation: { type: String as PropType<ScrollAreaOrientation> },
     variant: { type: String as PropType<ScrollAreaVariant> },

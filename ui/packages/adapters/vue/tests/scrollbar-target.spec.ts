@@ -43,7 +43,7 @@ describe('滚动条与作者的滚动容器', () => {
     const app = createApp(defineComponent({
       setup: () => () => [
         h('div', { ref: box }, '一段很长的内容'),
-        h(XhScrollbarRoot, { scrollable: box.value, type: 'always' }, () => [
+        h(XhScrollbarRoot, { scrollable: box.value, revealMode: 'always' }, () => [
           h(XhScrollbarTrack, () => [h(XhScrollbarThumb)]),
         ]),
       ],
@@ -85,7 +85,7 @@ describe('滚动条与作者的滚动容器', () => {
     const app = createApp(defineComponent({
       setup: () => () => [
         h('div', { ref: box }, '一段很长的内容'),
-        h(XhScrollbarRoot, { scrollable: box.value, type: type.value, disabled: disabled.value }, () => [
+        h(XhScrollbarRoot, { scrollable: box.value, revealMode: type.value, disabled: disabled.value }, () => [
           h(XhScrollbarTrack, () => [h(XhScrollbarThumb)]),
         ]),
       ],
@@ -127,7 +127,7 @@ describe('滚动条与作者的滚动容器', () => {
       setup: () => () => [
         h('div', { ref: first }, '第一个盒子'),
         h('div', { ref: second }, '第二个盒子'),
-        h(XhScrollbarRoot, { scrollable: useSecond.value ? second.value : first.value, type: 'always' }, () => [
+        h(XhScrollbarRoot, { scrollable: useSecond.value ? second.value : first.value, revealMode: 'always' }, () => [
           h(XhScrollbarTrack, () => [h(XhScrollbarThumb)]),
         ]),
       ],

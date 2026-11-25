@@ -19,7 +19,7 @@ export default function Demo(): ReactNode {
   return (
     <div style={{ display: "grid", gap: 12, justifyItems: "start", inlineSize: "min(360px, 100%)" }}>
       <XhScrollAreaRoot
-        type="always"
+        revealMode="always"
         aria-label="记录列表"
         style={{ blockSize: 180, inlineSize: "100%", borderRadius: "var(--xh-shape-surface)", background: "var(--xh-bg-subtle)" }}
         onReachEnd={(details) => {

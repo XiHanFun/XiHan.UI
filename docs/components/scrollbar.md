@@ -97,8 +97,8 @@
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `orientation` | `Orientation` |  | 该滚动条管理的轴，默认 vertical。 |
-| `type` | `ScrollbarType` |  | 显示的时机，默认 scroll-hover。 |
-| `hideDelay` | `number` |  | 收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600。 |
+| `revealMode` | `ScrollbarRevealMode` |  | 显示的时机，默认 scroll-hover。 |
+| `hideDelay` | `number` |  | 收起前的等待毫秒（revealMode 为 scroll / hover / scroll-hover 时生效），默认 600。 |
 | `minThumbSize` | `number` |  | 滑块的最小像素长度，默认 20。长文档中的滑块再短也可按下。 |
 | `step` | `number` |  | 方向键一步滚动的像素数，默认 40。翻页键按视口长度计算，不使用该值。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，影响滚动条厚度。 |
@@ -169,9 +169,9 @@
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `orientation` | `Orientation` |  |
-| `type` | `ScrollbarType` |  |
+| `revealMode` | `ScrollbarRevealMode` |  |
 | `overflow` | `boolean` | 内容比可视区长。不溢出时 auto 档整条不显示。 |
-| `visible` | `boolean` | 当前是否应显示（已把 type、disabled 与触屏原生路径都计算在内）。 |
+| `visible` | `boolean` | 当前是否应显示（已把 revealMode、disabled 与触屏原生路径都计算在内）。 |
 | `native` | `boolean` | 已交给原生滚动：粗指针设备且未开启 forceVisible，整条不显示。 |
 | `hover` | `boolean` | 指针当前在滚动容器或滚动条上。 |
 | `dragging` | `boolean` | 指针按在滑块上。 |
@@ -238,7 +238,7 @@
 | `root` | `data-gutter` | ''（条件成立时才出现） |
 | `root` | `data-native` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
-| `root` | `data-reveal-mode` | props.type |
+| `root` | `data-reveal-mode` | props.revealMode |
 | `root` | `data-scrolling` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'visible' \| 'hidden' |

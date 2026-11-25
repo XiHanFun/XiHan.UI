@@ -17,7 +17,7 @@ import type { ScrollAxisMetrics } from '../shared/scroll-geometry'
  * - scroll-hover 滚动时与指针进入时都显示，指针在容器内滚动不启动倒计时，
  *   指针离开或停止 hideDelay 毫秒后收起。
  */
-export type ScrollbarType = 'auto' | 'always' | 'scroll' | 'hover' | 'scroll-hover'
+export type ScrollbarRevealMode = 'auto' | 'always' | 'scroll' | 'hover' | 'scroll-hover'
 
 /**
  * 根节点的锚定方式：
@@ -80,8 +80,8 @@ export interface ScrollbarSchema extends MachineSchema {
     /** 该滚动条管理的轴，默认 vertical。 */
     orientation?: Orientation
     /** 显示的时机，默认 scroll-hover。 */
-    type?: ScrollbarType
-    /** 收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600。 */
+    revealMode?: ScrollbarRevealMode
+    /** 收起前的等待毫秒（revealMode 为 scroll / hover / scroll-hover 时生效），默认 600。 */
     hideDelay?: number
     /** 滑块的最小像素长度，默认 20。长文档中的滑块再短也可按下。 */
     minThumbSize?: number
@@ -157,8 +157,8 @@ export interface ScrollbarSchema extends MachineSchema {
   computed: Record<string, never>
   refs: ScrollbarRefs
   /**
-   * 只有 hover / scroll / scroll-hover 三种 type 会在这四个状态间转移，
-   * auto / always 的可见性由 connect 直接按 type 判定。
+   * 只有 hover / scroll / scroll-hover 三种 revealMode 会在这四个状态间转移，
+   * auto / always 的可见性由 connect 直接按 revealMode 判定。
    * hidden 收起；visible 显示且没有倒计时；hiding 显示且倒计时进行中；dragging 指针按在滑块上。
    */
   state: 'hidden' | 'visible' | 'hiding' | 'dragging'
@@ -203,10 +203,10 @@ export interface ScrollbarSchema extends MachineSchema {
 
 export interface ScrollbarApi<T extends PropTypes = PropTypes> {
   orientation: Orientation
-  type: ScrollbarType
+  revealMode: ScrollbarRevealMode
   /** 内容比可视区长。不溢出时 auto 档整条不显示。 */
   overflow: boolean
-  /** 当前是否应显示（已把 type、disabled 与触屏原生路径都计算在内）。 */
+  /** 当前是否应显示（已把 revealMode、disabled 与触屏原生路径都计算在内）。 */
   visible: boolean
   /** 已交给原生滚动：粗指针设备且未开启 forceVisible，整条不显示。 */
   native: boolean

@@ -37,13 +37,13 @@ export default function Demo(): ReactNode {
         ))}
       </div>
 
-      <XhScrollbarRoot scrollable={() => box.current} type="auto" gutter>
+      <XhScrollbarRoot scrollable={() => box.current} revealMode="auto" gutter>
         <XhScrollbarTrack>
           <XhScrollbarThumb />
         </XhScrollbarTrack>
         <XhScrollbarCorner />
       </XhScrollbarRoot>
-      <XhScrollbarRoot scrollable={() => box.current} type="auto" orientation="horizontal" gutter>
+      <XhScrollbarRoot scrollable={() => box.current} revealMode="auto" orientation="horizontal" gutter>
         <XhScrollbarTrack>
           <XhScrollbarThumb />
         </XhScrollbarTrack>

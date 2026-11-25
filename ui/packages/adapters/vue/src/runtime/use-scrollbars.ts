@@ -9,7 +9,7 @@ import type { Orientation, Scope, Service } from '@xihan-ui/core'
 import type { ScrollbarAnchor, ScrollbarApi, ScrollbarSchema } from '@xihan-ui/headless'
 import type { ComputedRef, MaybeRefOrGetter, Ref, VNode } from 'vue'
 import { createScope } from '@xihan-ui/core'
-import { connectScrollbar, isOverflowing, SCROLLBAR_DEFAULT_TYPE, scrollbarMachine } from '@xihan-ui/headless'
+import { connectScrollbar, isOverflowing, SCROLLBAR_DEFAULT_REVEAL_MODE, scrollbarMachine } from '@xihan-ui/headless'
 import { computed, h, ref, toValue } from 'vue'
 import { vueNormalize } from './normalize-props'
 import { useMachine } from './use-machine'
@@ -77,8 +77,8 @@ export function useScrollbars(options: ScrollbarsOptions): ScrollbarsHandle {
   const standing = (bar: Bar): boolean => {
     const given = toValue(options.props)
     const native = bar.service.context.get('coarse') && !given?.forceVisible
-    const type = given?.type ?? SCROLLBAR_DEFAULT_TYPE
-    return !native && (type === 'always' || isOverflowing(bar.service.context.get('metrics')))
+    const revealMode = given?.revealMode ?? SCROLLBAR_DEFAULT_REVEAL_MODE
+    return !native && (revealMode === 'always' || isOverflowing(bar.service.context.get('metrics')))
   }
 
   /** 两条轴都在场：各自在末端让出交叉口一格，只有一条时不让，避免滑块行程无故缩短。 */
@@ -87,7 +87,7 @@ export function useScrollbars(options: ScrollbarsOptions): ScrollbarsHandle {
   for (const axis of axes) {
     const rootRef = ref<HTMLElement | null>(null)
     const trackRef = ref<HTMLElement | null>(null)
-    // 每次取值现读 props：挂载后改 type / size 机器要跟着变
+    // 每次取值现读 props：挂载后改 revealMode / size 机器要跟着变
     const service = useMachine(scrollbarMachine, () => ({
       ...toValue(options.props),
       orientation: axis,

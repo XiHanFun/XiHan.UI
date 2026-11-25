@@ -102,12 +102,12 @@ scrollTo 滚动视口，reach-end 在滚到底那一下通知一次，常用来�
 | --- | --- | --- | --- |
 | `dir` | `Direction` |  | 排版方向，默认随文档。只影响横轴：RTL 下滚动量的正负、指针位移的方向都要翻转。 必须显式提供：组件不读取计算样式，无法感知从 RTL 祖先继承的方向。 |
 | `forceVisible` | `boolean` |  | 触屏（粗指针）上也绘制自绘滚动条，默认 false：默认交给原生滚动。 |
-| `hideDelay` | `number` |  | 收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600。 |
+| `hideDelay` | `number` |  | 收起前的等待毫秒（revealMode 为 scroll / hover / scroll-hover 时生效），默认 600。 |
 | `onReachEnd` | `(details: ScrollAreaScrollDetails) => void` |  | 某条轴滚到了末端：只在跨过末端那一下通知，停在末端不重复；内容不溢出时不通知。 |
 | `onScrollChange` | `(details: ScrollAreaScrollDetails) => void` |  | 某条轴的滚动量变了（滚轮、键盘、拖动与命令式滚动都算），按轴分别通知。 |
 | `orientation` | `ScrollAreaOrientation` |  | 归本组件管理的轴，默认 both。 |
+| `revealMode` | `ScrollbarRevealMode` |  | 滚动条显示的时机，默认 scroll-hover。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，影响滚动条厚度，也是边缘渐隐的带宽。 |
-| `type` | `ScrollbarType` |  | 滚动条显示的时机，默认 scroll-hover。 |
 | `variant` | `ScrollAreaVariant` |  | 形态：plain / fade，默认 plain。 |
 
 ### 事件
@@ -151,7 +151,7 @@ scrollTo 滚动视口，reach-end 在滚到底那一下通知一次，常用来�
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `type` | `ScrollbarType` |  |
+| `revealMode` | `ScrollbarRevealMode` |  |
 | `orientation` | `ScrollAreaOrientation` |  |
 | `vertical` | `ScrollAreaAxisState` |  |
 | `horizontal` | `ScrollAreaAxisState` |  |
@@ -202,7 +202,7 @@ scrollTo 滚动视口，reach-end 在滚到底那一下通知一次，常用来�
 | --- | --- | --- |
 | `root` | `data-dragging` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
-| `root` | `data-reveal-mode` | props.type |
+| `root` | `data-reveal-mode` | props.revealMode |
 | `root` | `data-size` | props.size |
 | `root` | `data-variant` | props.variant |
 | `viewport` | `data-at-max-horizontal` | ''（条件成立时才出现） |
@@ -220,7 +220,7 @@ scrollTo 滚动视口，reach-end 在滚到底那一下通知一次，常用来�
 | `scrollbar` | `data-gutter` | ''（条件成立时才出现） |
 | `scrollbar` | `data-native` | ''（条件成立时才出现） |
 | `scrollbar` | `data-orientation` | axis |
-| `scrollbar` | `data-reveal-mode` | props.type |
+| `scrollbar` | `data-reveal-mode` | props.revealMode |
 | `scrollbar` | `data-scrolling` | ''（条件成立时才出现） |
 | `scrollbar` | `data-size` | props.size |
 | `scrollbar` | `data-state` | 'visible' \| 'hidden' |

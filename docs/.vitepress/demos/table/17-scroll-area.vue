@@ -42,7 +42,7 @@ const rows = members.map(m => ({ id: m.id }));
 
 <template>
   <!-- 滚动区定高，表格不再自己滚；两条轴各写一条滚动条，交叉口写在竖条里 -->
-  <XhScrollAreaRoot type="auto" style="block-size: 260px; inline-size: 100%; max-inline-size: 420px">
+  <XhScrollAreaRoot reveal-mode="auto" style="block-size: 260px; inline-size: 100%; max-inline-size: 420px">
     <XhScrollAreaViewport>
       <XhScrollAreaContent>
         <XhTableRoot :columns="columns" :rows="rows" sticky-header>

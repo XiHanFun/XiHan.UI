@@ -37,7 +37,7 @@ import {
         </XhVirtualizerItem>
       </XhVirtualizerContent>
     </XhVirtualizerViewport>
-    <XhScrollbarRoot controls="virtualizer-scrollbar-viewport" type="always">
+    <XhScrollbarRoot controls="virtualizer-scrollbar-viewport" reveal-mode="always">
       <XhScrollbarTrack>
         <XhScrollbarThumb />
       </XhScrollbarTrack>

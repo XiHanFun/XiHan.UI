@@ -24,7 +24,7 @@ const items = [
 
 export default function Demo(): ReactNode {
   return (
-    <XhScrollAreaRoot type="always" aria-label="纵向滚动占位区块" style={{ blockSize: "180px", inlineSize: "min(360px, 100%)", borderRadius: "var(--xh-shape-surface)", background: "var(--xh-bg-subtle)" }}>
+    <XhScrollAreaRoot revealMode="always" aria-label="纵向滚动占位区块" style={{ blockSize: "180px", inlineSize: "min(360px, 100%)", borderRadius: "var(--xh-shape-surface)", background: "var(--xh-bg-subtle)" }}>
       <XhScrollAreaViewport>
         <XhScrollAreaContent style={{ padding: "12px 16px" }}>
           {items.map(item => (

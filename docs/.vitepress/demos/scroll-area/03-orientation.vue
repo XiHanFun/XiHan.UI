@@ -15,7 +15,7 @@ const cards = ["brand", "info", "success", "warning", "danger", "neutral"] as co
 <template>
   <XhScrollAreaRoot
     orientation="horizontal"
-    type="always"
+    reveal-mode="always"
     style="block-size: 110px; inline-size: min(420px, 100%); border-radius: var(--xh-shape-surface)"
   >
     <XhScrollAreaViewport>

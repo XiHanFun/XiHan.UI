@@ -10,7 +10,7 @@ import type { ScrollbarApi, ScrollbarSchema } from '../scrollbar/scrollbar.types
 import type { ScrollAreaApi, ScrollAreaAxisState, ScrollAreaProps, ScrollAreaServices } from './scroll-area.types'
 import { dataAttr, resolveScrollBehavior } from '@xihan-ui/core'
 import { connectScrollbar } from '../scrollbar/scrollbar.connect'
-import { SCROLLBAR_DEFAULT_TYPE } from '../scrollbar/scrollbar.machine'
+import { SCROLLBAR_DEFAULT_REVEAL_MODE } from '../scrollbar/scrollbar.machine'
 import { scrollAreaAnatomy } from './scroll-area.anatomy'
 
 const parts = scrollAreaAnatomy.build()
@@ -25,7 +25,7 @@ function axisEnabled(props: Pick<ScrollAreaProps, 'orientation'>, axis: Orientat
 }
 
 /**
- * 某条轴那台 scrollbar 机器的 props：滚动区的 type / hideDelay / size / dir / forceVisible
+ * 某条轴那台 scrollbar 机器的 props：滚动区的 revealMode / hideDelay / size / dir / forceVisible
  * 原样交下去；被 orientation 关掉的那条轴按禁用跑——不接指针、恒不显形。
  * 交叉口的让位（gutter）不在这里给：它取决于另一条轴此刻显不显形，由 connect 按帧算。
  */
@@ -34,7 +34,7 @@ export function scrollAreaScrollbarProps(props: ScrollAreaProps, axis: Orientati
   const { onScrollChange, onReachEnd } = props
   return {
     orientation: axis,
-    type: props.type,
+    revealMode: props.revealMode,
     hideDelay: props.hideDelay,
     size: props.size,
     dir: props.dir,
@@ -51,7 +51,7 @@ export function connectScrollArea<T extends PropTypes>(
   props: ScrollAreaProps,
   normalize: NormalizeProps<T>,
 ): ScrollAreaApi<T> {
-  const type = props.type ?? SCROLLBAR_DEFAULT_TYPE
+  const revealMode = props.revealMode ?? SCROLLBAR_DEFAULT_REVEAL_MODE
   const orientation = props.orientation ?? 'both'
   const dir = props.dir
 
@@ -89,10 +89,10 @@ export function connectScrollArea<T extends PropTypes>(
    * 判据取 overflow 而非 visible——visible 随指针进出翻转，占道与否不跟着翻。
    * 只喂给视口上的 data-lane-*，不进 ScrollAreaAxisState、不进公开 api。
    */
-  const persistent = type === 'always' || type === 'auto'
+  const persistent = revealMode === 'always' || revealMode === 'auto'
   /** 这条轴的滚动条常驻在场：在场、没交给原生滚动，且 always 恒在或确实溢出。 */
   const standing = (axis: Orientation): boolean =>
-    enabled(axis) && !bars[axis].native && (type === 'always' || bars[axis].overflow)
+    enabled(axis) && !bars[axis].native && (revealMode === 'always' || bars[axis].overflow)
   const lane = (axis: Orientation): boolean => persistent && standing(axis)
 
   /**
@@ -103,7 +103,7 @@ export function connectScrollArea<T extends PropTypes>(
   const gutter = (axis: Orientation): boolean => enabled(axis) && both
 
   return {
-    type,
+    revealMode,
     orientation,
     vertical,
     horizontal,
@@ -131,7 +131,7 @@ export function connectScrollArea<T extends PropTypes>(
       // 作者没给就不写：写死 ltr 会切断从 RTL 祖先继承来的方向
       'dir': dir,
       'data-orientation': orientation,
-      'data-reveal-mode': type,
+      'data-reveal-mode': revealMode,
       'data-dragging': dataAttr(draggingAxis != null),
       // 缺省档不写属性：皮肤的基础规则就是缺省档
       'data-variant': props.variant,
@@ -175,7 +175,7 @@ export function connectScrollArea<T extends PropTypes>(
         // 自绘滚动条只是视觉替身，键盘与读屏走原生滚动，不报 role=scrollbar
         'aria-hidden': true,
         'data-orientation': axis,
-        'data-reveal-mode': type,
+        'data-reveal-mode': revealMode,
         'data-state': shown ? 'visible' : 'hidden',
         'data-scrolling': dataAttr(bar.scrolling),
         'data-dragging': dataAttr(bar.dragging),

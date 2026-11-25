@@ -171,7 +171,7 @@ export const scrollAreaSuite: ConformanceSuite = {
     {
       name: 'type=always：两条滚动条恒露着；挂载点戴本组件的 scope，轨道与滑块戴 scrollbar 的；滚动条对读屏隐藏',
       spec: { apg: WCAG },
-      props: { type: 'always' },
+      props: { revealMode: 'always' },
       initial: {
         order: ['root', 'viewport', 'content', 'scrollbar[0]', 'scrollbar[1]'],
         counts: { root: 1, viewport: 1, content: 1, scrollbar: 2 },
@@ -275,7 +275,7 @@ export const scrollAreaSuite: ConformanceSuite = {
     {
       name: 'type=auto：量到溢出就露着并占道，之后一直露着',
       spec: { apg: WCAG },
-      props: { type: 'auto' },
+      props: { revealMode: 'auto' },
       steps: [
         {
           ...layoutStep,
@@ -293,7 +293,7 @@ export const scrollAreaSuite: ConformanceSuite = {
     {
       name: 'type=auto：内容不溢出（jsdom 里尺寸全空）时一条也不露、也不占道',
       spec: { apg: WCAG },
-      props: { type: 'auto' },
+      props: { revealMode: 'auto' },
       initial: {
         parts: {
           'viewport': { 'data-lane-vertical': null, 'data-lane-horizontal': null },
@@ -305,7 +305,7 @@ export const scrollAreaSuite: ConformanceSuite = {
     {
       name: 'hover：指针进入视口才露出，离开后要等满 hideDelay 才收起',
       spec: { apg: WCAG },
-      props: { type: 'hover', hideDelay: 300 },
+      props: { revealMode: 'hover', hideDelay: 300 },
       steps: [
         {
           // 两条都溢出：让位按溢出算，收着时就已经让出，露面时不会跳长度
@@ -331,7 +331,7 @@ export const scrollAreaSuite: ConformanceSuite = {
     {
       name: 'hover：只有指针进出算数，光滚动不会让滚动条露面',
       spec: { apg: WCAG },
-      props: { type: 'hover' },
+      props: { revealMode: 'hover' },
       steps: [
         {
           // layout 末尾那次 scroll 就是第一下滚动：成段标记打上了，但不露面
@@ -343,7 +343,7 @@ export const scrollAreaSuite: ConformanceSuite = {
     {
       name: 'scroll-hover：滚动时露出但不占道，指针进来也露出',
       spec: { apg: WCAG },
-      props: { type: 'scroll-hover', hideDelay: 300 },
+      props: { revealMode: 'scroll-hover', hideDelay: 300 },
       steps: [
         {
           // layout 末尾那次滚动就让它露了面；浮在内容上，视口一条道都不让
@@ -368,7 +368,7 @@ export const scrollAreaSuite: ConformanceSuite = {
     {
       name: 'scroll：滚动时露出，停手满 hideDelay 后收起',
       spec: { apg: WCAG },
-      props: { type: 'scroll', hideDelay: 300 },
+      props: { revealMode: 'scroll', hideDelay: 300 },
       steps: [
         {
           ...layoutStep,
@@ -383,7 +383,7 @@ export const scrollAreaSuite: ConformanceSuite = {
     {
       name: 'orientation 关掉的那条轴恒不显形，另一条不必让位，交叉口也就没了位置',
       spec: { apg: WCAG },
-      props: { type: 'always', orientation: 'vertical' },
+      props: { revealMode: 'always', orientation: 'vertical' },
       initial: {
         parts: {
           'root': { 'data-orientation': 'vertical' },
@@ -397,7 +397,7 @@ export const scrollAreaSuite: ConformanceSuite = {
     {
       name: '拖动滑块：按下带上 data-dragging，移动把滚动位置写回视口，松手收尾',
       spec: { apg: WCAG },
-      props: { type: 'always' },
+      props: { revealMode: 'always' },
       steps: [
         layoutStep,
         {
@@ -453,7 +453,7 @@ export const scrollAreaSuite: ConformanceSuite = {
     {
       name: '点轨道空白处：滑块中心跳到落点',
       spec: { apg: WCAG },
-      props: { type: 'always' },
+      props: { revealMode: 'always' },
       steps: [
         layoutStep,
         {
@@ -502,7 +502,7 @@ export const scrollAreaSuite: ConformanceSuite = {
     {
       name: '滚动后滑块跟着走：位置来自量到的尺寸，不来自渲染期读 DOM；视口带自绘滚动条的标记',
       spec: { apg: WCAG },
-      props: { type: 'always' },
+      props: { revealMode: 'always' },
       steps: [
         layoutStep,
         scrollTo(150),
@@ -526,7 +526,7 @@ export const scrollAreaSuite: ConformanceSuite = {
     {
       name: 'size 落到根与两条挂载点上：皮肤按同一个数换厚度与让道',
       spec: { apg: WCAG },
-      props: { type: 'always', size: 'lg' },
+      props: { revealMode: 'always', size: 'lg' },
       initial: {
         parts: {
           'root': { 'data-size': 'lg' },
@@ -538,7 +538,7 @@ export const scrollAreaSuite: ConformanceSuite = {
     {
       name: 'dir=rtl 写到根节点上：滑块用的全是逻辑属性，方向由它决定',
       spec: { apg: WCAG },
-      props: { type: 'always', dir: 'rtl' },
+      props: { revealMode: 'always', dir: 'rtl' },
       initial: { parts: { root: { dir: 'rtl' } } },
     },
   ],

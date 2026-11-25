@@ -140,7 +140,7 @@ export const scrollbarSuite: ConformanceSuite = {
     {
       name: 'type=always：恒露着；缺省不进 Tab 序，整条对读屏隐藏',
       spec: { apg: WCAG },
-      props: { ...BASE, type: 'always' },
+      props: { ...BASE, revealMode: 'always' },
       initial: {
         order: ['root', 'track', 'thumb'],
         counts: { root: 1, track: 1, thumb: 1 },
@@ -170,7 +170,7 @@ export const scrollbarSuite: ConformanceSuite = {
     {
       name: 'anchor=layer：根带 data-anchor，按滚动层在壳内的偏移盒写内联几何',
       spec: { apg: WCAG },
-      props: { ...BASE, type: 'always', anchor: 'layer' },
+      props: { ...BASE, revealMode: 'always', anchor: 'layer' },
       steps: [
         {
           kind: 'raw',
@@ -213,7 +213,7 @@ export const scrollbarSuite: ConformanceSuite = {
     {
       name: 'scroll-hover：滚动就露出，停手满 hideDelay 后收起',
       spec: { apg: WCAG },
-      props: { ...BASE, type: 'scroll-hover', hideDelay: 300 },
+      props: { ...BASE, revealMode: 'scroll-hover', hideDelay: 300 },
       steps: [
         // layout 末尾那一下滚动就是第一次滚动
         { ...layoutStep, expect: { parts: { root: { 'data-state': 'visible' } } } },
@@ -223,7 +223,7 @@ export const scrollbarSuite: ConformanceSuite = {
     {
       name: 'scroll-hover：指针进滚动容器也露出，占着的时候不收起',
       spec: { apg: WCAG },
-      props: { ...BASE, type: 'scroll-hover', hideDelay: 300 },
+      props: { ...BASE, revealMode: 'scroll-hover', hideDelay: 300 },
       steps: [
         layoutStep,
         { ...pointerOnTarget('pointerenter'), expect: { parts: { root: { 'data-state': 'visible' } } } },
@@ -233,7 +233,7 @@ export const scrollbarSuite: ConformanceSuite = {
     {
       name: 'type=auto：量到溢出就露着',
       spec: { apg: WCAG },
-      props: { ...BASE, type: 'auto' },
+      props: { ...BASE, revealMode: 'auto' },
       steps: [
         { ...layoutStep, expect: { parts: { root: { 'data-state': 'visible' } } } },
       ],
@@ -241,7 +241,7 @@ export const scrollbarSuite: ConformanceSuite = {
     {
       name: 'hover：指针进滚动容器才露出，离开后要等满 hideDelay 才收起',
       spec: { apg: WCAG },
-      props: { ...BASE, type: 'hover', hideDelay: 300 },
+      props: { ...BASE, revealMode: 'hover', hideDelay: 300 },
       steps: [
         layoutStep,
         { ...pointerOnTarget('pointerenter'), expect: { parts: { root: { 'data-state': 'visible' } } } },
@@ -253,7 +253,7 @@ export const scrollbarSuite: ConformanceSuite = {
       name: 'focusable：滑块进 Tab 序、报 role=scrollbar 与三个数，随滚动更新',
       spec: { apg: WCAG },
       covers: ['scrollbar.kbd.tab'],
-      props: { ...BASE, type: 'always', focusable: true },
+      props: { ...BASE, revealMode: 'always', focusable: true },
       steps: [
         {
           ...layoutStep,
@@ -289,7 +289,7 @@ export const scrollbarSuite: ConformanceSuite = {
         'scrollbar.kbd.start',
         'scrollbar.kbd.end',
       ],
-      props: { ...BASE, type: 'always', focusable: true, step: 40 },
+      props: { ...BASE, revealMode: 'always', focusable: true, step: 40 },
       steps: [
         layoutStep,
         pressThumb('ArrowDown'),
@@ -309,7 +309,7 @@ export const scrollbarSuite: ConformanceSuite = {
     {
       name: '点轨道空白处：把滑块中心挪到落点',
       spec: { apg: WCAG },
-      props: { ...BASE, type: 'always' },
+      props: { ...BASE, revealMode: 'always' },
       steps: [
         layoutStep,
         {
@@ -328,7 +328,7 @@ export const scrollbarSuite: ConformanceSuite = {
     {
       name: '拖动滑块：位移按行程换算成滚动量，拖过头停在端点',
       spec: { apg: WCAG },
-      props: { ...BASE, type: 'always' },
+      props: { ...BASE, revealMode: 'always' },
       steps: [
         layoutStep,
         {
@@ -363,7 +363,7 @@ export const scrollbarSuite: ConformanceSuite = {
     {
       name: '禁用：恒不显形，指针与键盘都不接',
       spec: { apg: WCAG },
-      props: { ...BASE, type: 'always', focusable: true, disabled: true },
+      props: { ...BASE, revealMode: 'always', focusable: true, disabled: true },
       steps: [
         {
           ...layoutStep,

@@ -9,7 +9,7 @@ export { scrollbarAnatomy } from './scrollbar.anatomy'
 export { connectScrollbar } from './scrollbar.connect'
 export { scrollbarKeyboard } from './scrollbar.keyboard'
 export {
-  SCROLLBAR_DEFAULT_TYPE,
+  SCROLLBAR_DEFAULT_REVEAL_MODE,
   SCROLLBAR_HIDE_DELAY,
   SCROLLBAR_HOST_ATTR,
   SCROLLBAR_SCROLL_END_DELAY,
@@ -27,5 +27,5 @@ export type {
   ScrollbarSchema,
   ScrollbarScrollDetails,
   ScrollbarTranslations,
-  ScrollbarType,
+  ScrollbarRevealMode,
 } from './scrollbar.types'

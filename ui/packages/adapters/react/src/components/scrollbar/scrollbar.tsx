@@ -6,7 +6,7 @@
 // 提供 scrollbar 相关实现。
 
 import type { Direction, Orientation, Size } from '@xihan-ui/core'
-import type { ScrollbarAnchor, ScrollbarApi, ScrollbarSchema, ScrollbarType } from '@xihan-ui/headless'
+import type { ScrollbarAnchor, ScrollbarApi, ScrollbarSchema, ScrollbarRevealMode } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import type { ScrollbarSource, ScrollbarTarget } from './use-scrollbar'
@@ -33,7 +33,7 @@ export interface XhScrollbarRootProps extends Omit<ComponentPropsWithRef<'div'>,
   /** 滚动容器的 id。未提供 scrollable 时按它查询节点；focusable 时它同时写到滑块的 aria-controls 上。 */
   controls?: string
   orientation?: Orientation
-  type?: ScrollbarType
+  revealMode?: ScrollbarRevealMode
   hideDelay?: number
   minThumbSize?: number
   step?: number
@@ -61,7 +61,7 @@ export function XhScrollbarRoot({
   scrollable,
   controls,
   orientation,
-  type,
+  revealMode,
   hideDelay,
   minThumbSize,
   step,
@@ -84,7 +84,7 @@ export function XhScrollbarRoot({
     scrollable,
     controls,
     orientation,
-    type,
+    revealMode,
     hideDelay,
     minThumbSize,
     step,

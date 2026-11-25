@@ -12,7 +12,7 @@
     const caption = document.createElement("span");
     caption.style.fontSize = "13px";
     caption.style.color = "var(--xh-fg-muted)";
-    caption.textContent = `type="${type}"`;
+    caption.textContent = `reveal-mode="${type}"`;
 
     const frame = document.createElement("div");
     frame.style.position = "relative";
@@ -33,7 +33,7 @@
 
     const bar = document.createElement("xh-scrollbar");
     bar.setAttribute("controls", box.id);
-    bar.setAttribute("type", type);
+    bar.setAttribute("reveal-mode", type);
     bar.setAttribute("hide-delay", "400");
     bar.innerHTML =
       '<div data-xh-part="root"><div data-xh-part="track"><div data-xh-part="thumb"></div></div></div>';

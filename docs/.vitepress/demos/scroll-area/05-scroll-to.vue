@@ -25,7 +25,7 @@ function onReachEnd(details: ScrollAreaScrollDetails): void {
   <div style="display: grid; gap: 12px; justify-items: start; inline-size: min(360px, 100%)">
     <XhScrollAreaRoot
       v-slot="{ scrollTo }"
-      type="always"
+      reveal-mode="always"
       aria-label="记录列表"
       style="block-size: 180px; inline-size: 100%; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
       @reach-end="onReachEnd"

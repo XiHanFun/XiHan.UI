@@ -34,13 +34,13 @@ const rows = Array.from({ length: 30 }, (_, r) => Array.from({ length: 12 }, (_,
       </div>
     </div>
 
-    <XhScrollbarRoot :scrollable="box" type="auto" gutter>
+    <XhScrollbarRoot :scrollable="box" reveal-mode="auto" gutter>
       <XhScrollbarTrack>
         <XhScrollbarThumb />
       </XhScrollbarTrack>
       <XhScrollbarCorner />
     </XhScrollbarRoot>
-    <XhScrollbarRoot :scrollable="box" type="auto" orientation="horizontal" gutter>
+    <XhScrollbarRoot :scrollable="box" reveal-mode="auto" orientation="horizontal" gutter>
       <XhScrollbarTrack>
         <XhScrollbarThumb />
       </XhScrollbarTrack>

@@ -6,7 +6,7 @@
 // 提供 scrollbar 相关实现。
 
 import type { Direction, Orientation, Service, Size } from '@xihan-ui/core'
-import type { ScrollbarAnchor, ScrollbarSchema, ScrollbarType } from '@xihan-ui/headless'
+import type { ScrollbarAnchor, ScrollbarSchema, ScrollbarRevealMode } from '@xihan-ui/headless'
 import { connectScrollbar, scrollbarAnatomy, scrollbarMachine, scrollbarMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
@@ -35,8 +35,8 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @customElement xh-scrollbar
  * @attr {string} controls - 滚动容器的 id；未设置 scrollable 属性时按它查找节点，focusable 时同时写到 aria-controls
  * @attr {'horizontal'|'vertical'} orientation - 该滚动条管理的轴，默认 vertical
- * @attr {'auto'|'always'|'scroll'|'hover'|'scroll-hover'} type - 显示的时机，默认 scroll-hover
- * @attr {number} hide-delay - 收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600
+ * @attr {'auto'|'always'|'scroll'|'hover'|'scroll-hover'} reveal-mode - 显示的时机，默认 scroll-hover
+ * @attr {number} hide-delay - 收起前的等待毫秒（revealMode 为 scroll / hover / scroll-hover 时生效），默认 600
  * @attr {number} min-thumb-size - 滑块的最小像素长度，默认 20
  * @attr {number} step - 方向键一步滚动的像素数，默认 40
  * @attr {'sm'|'md'|'lg'} size - 尺寸档，影响滚动条厚度
@@ -64,7 +64,7 @@ export class XhScrollbarElement extends XhElement {
   static override properties = {
     controls: { converter: STRING_CONVERTER },
     orientation: { converter: STRING_CONVERTER },
-    type: { converter: STRING_CONVERTER },
+    revealMode: { converter: STRING_CONVERTER, attribute: 'reveal-mode' },
     hideDelay: { converter: NUMBER_CONVERTER, attribute: 'hide-delay' },
     minThumbSize: { converter: NUMBER_CONVERTER, attribute: 'min-thumb-size' },
     step: { converter: NUMBER_CONVERTER },
@@ -82,7 +82,7 @@ export class XhScrollbarElement extends XhElement {
 
   declare controls?: string
   declare orientation?: Orientation
-  declare type?: ScrollbarType
+  declare revealMode?: ScrollbarRevealMode
   declare hideDelay?: number
   declare minThumbSize?: number
   declare step?: number
@@ -107,7 +107,7 @@ export class XhScrollbarElement extends XhElement {
     return {
       controls: this.controls,
       orientation: this.orientation,
-      type: this.type,
+      revealMode: this.revealMode,
       hideDelay: this.hideDelay,
       minThumbSize: this.minThumbSize,
       step: this.step,

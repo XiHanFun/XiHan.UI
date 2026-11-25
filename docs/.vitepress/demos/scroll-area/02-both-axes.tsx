@@ -16,7 +16,7 @@ const rows = Array.from({ length: 10 }, (_, index) => ({ id: index + 1, tone: to
 export default function Demo(): ReactNode {
   return (
     <XhScrollAreaRoot
-      type="always"
+      revealMode="always"
       aria-label="双轴滚动占位区块"
       style={{ blockSize: "160px", inlineSize: "min(420px, 100%)", borderRadius: "var(--xh-shape-surface)", background: "var(--xh-bg-subtle)" }}
     >

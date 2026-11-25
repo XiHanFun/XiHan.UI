@@ -24,7 +24,7 @@ const items = ["项目概览", "组件规范", "设计令牌", "无障碍", "交
       </div>
     </div>
 
-    <XhScrollbarRoot :scrollable="box" type="always">
+    <XhScrollbarRoot :scrollable="box" reveal-mode="always">
       <XhScrollbarTrack>
         <XhScrollbarThumb />
       </XhScrollbarTrack>

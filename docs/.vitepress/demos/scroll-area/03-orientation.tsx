@@ -15,7 +15,7 @@ export default function Demo(): ReactNode {
   return (
     <XhScrollAreaRoot
       orientation="horizontal"
-      type="always"
+      revealMode="always"
       style={{ blockSize: "110px", inlineSize: "min(420px, 100%)", borderRadius: "var(--xh-shape-surface)" }}
     >
       <XhScrollAreaViewport>
