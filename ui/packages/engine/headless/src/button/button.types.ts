@@ -26,15 +26,10 @@ export interface ButtonSchema extends MachineSchema {
     size?: Size
     /**
      * 仅图标：左右内边距清零、宽高相等。宽度跟随当前尺寸档的高度，
-     * 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行提供可及名。
+     * 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行提供可及名：
+     * 根上写 aria-label / aria-labelledby，或在按钮里放一段视觉隐藏的文字。
      */
     iconOnly?: boolean
-    /**
-     * 作者写在根节点上的可及名（aria-label / aria-labelledby）。
-     * 宿主只把它们转告连接层，用于判断图标按钮是否有名字；属性本身仍由宿主写入根节点。
-     */
-    ariaLabel?: string
-    ariaLabelledby?: string
     /** 撑满行宽：表单末尾的提交按钮与移动端常用。 */
     fullWidth?: boolean
     /**
@@ -49,7 +44,10 @@ export interface ButtonSchema extends MachineSchema {
     pressed: boolean
   }
   computed: Record<string, never>
-  refs: Record<string, never>
+  refs: {
+    /** 根节点：开发期挂载后据它判断仅图标的按钮有没有可及名。 */
+    getRootEl: () => HTMLElement | null
+  }
   /** 按钮没有业务状态：激活交给平台，机器只承载按压面。 */
   state: 'idle'
   // 按压通道（shared/press）：Space / Enter 或触屏按住与松开
@@ -59,7 +57,7 @@ export interface ButtonSchema extends MachineSchema {
   tag: never
   guard: 'canPress'
   action: 'startPress' | 'endPress' | 'releaseWhenInert'
-  effect: never
+  effect: 'checkAccessibleName'
 }
 
 export type ButtonProps = ButtonSchema['props']

@@ -14731,8 +14731,6 @@
       "translations"
     ],
     "button": [
-      "ariaLabel",
-      "ariaLabelledby",
       "as",
       "disabled",
       "fullWidth",

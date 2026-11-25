@@ -10,7 +10,7 @@ import type { ButtonProps } from '@xihan-ui/headless'
 import type { InjectionKey, PropType, Ref } from 'vue'
 import type { PropsOf } from '../runtime/props-of'
 import { buttonMachine, connectButton } from '@xihan-ui/headless'
-import { computed, defineComponent, h, inject, provide, useAttrs } from 'vue'
+import { computed, defineComponent, h, inject, provide, ref } from 'vue'
 import { vueNormalize } from '../runtime/normalize-props'
 import { useMachine } from '../runtime/use-machine'
 import { useButtonGroupContext } from './button-group/context'
@@ -42,24 +42,23 @@ export const XhButton = defineComponent({
     as: { type: String as PropType<ButtonProps['as']>, default: 'button' },
   },
   setup(props, { slots }) {
-    const attrs = useAttrs()
     // 外层按钮组禁用时整组一起禁用；段自己写了禁用的仍然禁用。
     // 组的 variant / tone / size 走同一条路下来，段自己写了的优先，组值再压过全局配置的 size
     const group = useButtonGroupContext()
-    // 机器只承载按压通道；全局配置（size）由 useMachine 那一处并入。
-    // 作者写在根节点上的可及名转告连接层，图标按钮缺名时由它提醒
+    // 机器只承载按压通道；全局配置（size）由 useMachine 那一处并入
     const service = useMachine(buttonMachine, () => ({
       ...props,
       disabled: props.disabled || !!group?.value.disabled,
       variant: props.variant ?? group?.value.variant,
       tone: props.tone ?? group?.value.tone,
       size: props.size ?? group?.value.size,
-      ariaLabel: attrs['aria-label'] as string | undefined,
-      ariaLabelledby: attrs['aria-labelledby'] as string | undefined,
     } as ButtonProps))
+    // 开发期挂载后据根节点判断仅图标的按钮有没有可及名
+    const rootRef = ref<HTMLElement | null>(null)
+    service.refs.set('getRootEl', () => rootRef.value)
     const api = computed(() => connectButton(service, vueNormalize))
     provide(ButtonKey, api)
-    return () => h(props.as, api.value.getRootProps(), slots.default?.())
+    return () => h(props.as, { ...api.value.getRootProps(), ref: rootRef }, slots.default?.())
   },
 })
 

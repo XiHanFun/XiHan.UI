@@ -9,7 +9,7 @@ import type { PropTypes } from '@xihan-ui/core'
 import type { ButtonProps } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { buttonMachine, connectButton } from '@xihan-ui/headless'
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useRef } from 'react'
 import { mergeReactProps } from '../runtime/merge-props'
 import { useNativeEvents } from '../runtime/native-events'
 import { reactNormalize } from '../runtime/normalize-props'
@@ -63,7 +63,8 @@ export function XhButton({
   // 组的 variant / tone / size 走同一条路下来，段自己写了的优先，组值再压过全局配置的 size
   const group = useButtonGroupContext()
   // 机器只承载按压通道；全局配置（size）由 useMachine 那一处并入。
-  // 作者写在根节点上的可及名转告连接层，图标按钮缺名时由它提醒
+  // 开发期挂载后据根节点判断仅图标的按钮有没有可及名
+  const rootRef = useRef<HTMLElement | null>(null)
   const service = useMachine(buttonMachine, () => ({
     type,
     disabled: disabled || !!group?.disabled,
@@ -74,9 +75,11 @@ export function XhButton({
     tone: tone ?? group?.tone,
     size: size ?? group?.size,
     as,
-    ariaLabel: (rest)['aria-label'] as string | undefined,
-    ariaLabelledby: (rest)['aria-labelledby'] as string | undefined,
-  } as ButtonProps))
+  } as ButtonProps), {
+    onCreate: (svc) => {
+      svc.refs.set('getRootEl', () => rootRef.current)
+    },
+  })
   const api = connectButton(service, reactNormalize)
   // 连接层的 onClick 在载入态里调 stopImmediatePropagation 把同节点上作者的处理器一并拦下。
   // 那是 DOM 语义：React 的合成事件既没有这个方法，两个处理器也早被合成一条链，拦不住。
@@ -85,7 +88,7 @@ export function XhButton({
   const Tag = as as 'button' | 'a'
   return (
     <ButtonCtx value={api}>
-      <Tag {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>
+      <Tag {...mergeReactProps(bind.attrs, rest, { ref: bind.ref }, { ref: rootRef })}>
         {children}
       </Tag>
     </ButtonCtx>

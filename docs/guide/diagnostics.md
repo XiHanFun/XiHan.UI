@@ -50,6 +50,7 @@ export const DIAGNOSTIC_CODES = {
   scrollbarMissingScrollable: "scrollbar.missing-scrollable", // 滚动条挂载时找不到它要管的滚动容器
   overlayMissingAnchor: "overlay.missing-anchor", // 浮层展开了却没有锚点，位置无从算起
   portalUnreadableStylesheet: "portal.unreadable-stylesheet", // 有跨域样式表没以 CORS 加载，Portal 视觉桥的样式索引作废，浮层同步退回整表枚举
+  buttonMissingName: "button.missing-name", // 仅图标的按钮没有可及名：aria-label、aria-labelledby、title 都没有，按钮里除去 aria-hidden 的部分也没有文字（视觉隐藏的文字算有）
   chartMissingName: "chart.missing-name", // 图表没有可及名：caption 部件、aria-label、aria-labelledby 都没有
   chartUnknownField: "chart.unknown-field", // 系列引用的字段在数据里不存在
   chartDuplicateSeries: "chart.duplicate-series", // 两个系列的 id 相同

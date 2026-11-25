@@ -65,7 +65,7 @@ describe('connectButton', () => {
   })
 
   it('只投影 Action Control 的稳定 profile 与 size，不计算 CSS 数值', () => {
-    const icon = connect({ iconOnly: true, size: 'lg', ariaLabel: '关闭' }).getRootProps() as Record<string, unknown>
+    const icon = connect({ iconOnly: true, size: 'lg' }).getRootProps() as Record<string, unknown>
     expect(icon['data-xh-action-profile']).toBe('icon')
     expect(icon['data-xh-action-size']).toBe('lg')
     expect(Object.keys(icon).includes('style')).toBe(false)
@@ -114,21 +114,11 @@ describe('connectButton', () => {
       return messages
     }
 
-    it('iconOnly 且没给 aria-label / aria-labelledby：提醒一次，重复调用不再提醒', () => {
+    it('连接层不按 props 判名字：缺名提醒交给挂载后读节点的那一次检查', () => {
       const records = collect(() => {
         connect({ iconOnly: true }).getRootProps()
-        connect({ iconOnly: true }).getRootProps()
       })
-      expect(records.filter(m => m.includes('iconOnly'))).toHaveLength(1)
-    })
-
-    it('给了可及名或不是图标按钮：不提醒', () => {
-      const records = collect(() => {
-        connect({ iconOnly: true, ariaLabel: '关闭' }).getRootProps()
-        connect({ iconOnly: true, ariaLabelledby: 'x' }).getRootProps()
-        connect({}).getRootProps()
-      })
-      expect(records.filter(m => m.includes('iconOnly'))).toHaveLength(0)
+      expect(records).toHaveLength(0)
     })
 
     it('装饰性子部件对读屏隐藏：aria-hidden 写布尔', () => {

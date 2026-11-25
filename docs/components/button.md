@@ -92,7 +92,7 @@ variant 设置按钮外观，size 分小、中、大三档，disabled 标出暂�
 ### 最佳实践
 
 - 每个视图只保留一个主要操作。
-- 图标按钮必须提供 `aria-label`。
+- 图标按钮必须有可及名：根上写 `aria-label`，或在按钮里放一段[视觉隐藏](./visually-hidden)的文字；开发期挂载后两样都没有会报 `button.missing-name`。
 - 加载时保留原有标签，避免按钮宽度变化。
 
 ### 反模式
@@ -121,9 +121,7 @@ variant 设置按钮外观，size 分小、中、大三档，disabled 标出暂�
 | `variant` | `ButtonVariant` |  | 变体：solid / subtle / outline / ghost / dashed / link，默认 solid——只有 Button 缺省品牌实心，其余触发器缺省中性。 dashed 与 outline 同一套面、描边改虚线；link 是不铺面的文字钮，悬停与按下加下划线。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  |  |
-| `iconOnly` | `boolean` |  | 仅图标：左右内边距清零、宽高相等。宽度跟随当前尺寸档的高度， 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行提供可及名。 |
-| `ariaLabel` | `string` |  | 作者写在根节点上的可及名（aria-label / aria-labelledby）。 宿主只把它们转告连接层，用于判断图标按钮是否有名字；属性本身仍由宿主写入根节点。 |
-| `ariaLabelledby` | `string` |  |  |
+| `iconOnly` | `boolean` |  | 仅图标：左右内边距清零、宽高相等。宽度跟随当前尺寸档的高度， 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行提供可及名： 根上写 aria-label / aria-labelledby，或在按钮里放一段视觉隐藏的文字。 |
 | `fullWidth` | `boolean` |  | 撑满行宽：表单末尾的提交按钮与移动端常用。 |
 | `as` | `ButtonElement` |  | 渲染的标签，默认 button。 写为 a 时不再产出 type 与原生 disabled（两者在链接上无效），禁用改由 aria-disabled 表达， 点击仍被拦截。href 由作者自行提供。 |
 

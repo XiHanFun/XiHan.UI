@@ -3960,7 +3960,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<ButtonSchema>(this, buttonMachine, () => this.machineProps())"
+              "default": "new MachineController<ButtonSchema>(this, buttonMachine, () => this.machineProps(), { onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')), })"
             },
             {
               "kind": "method",
@@ -4015,7 +4015,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "仅图标：左右内边距清零、宽高相等；作者须自行提供可及名",
+              "description": "仅图标：左右内边距清零、宽高相等；作者须自行提供可及名（根上的 aria-label，或根里一段视觉隐藏的文字）",
               "name": "icon-only",
               "fieldName": "iconOnly"
             },

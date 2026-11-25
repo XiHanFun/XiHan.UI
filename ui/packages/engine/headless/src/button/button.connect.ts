@@ -7,14 +7,11 @@
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ButtonApi, ButtonSchema } from './button.types'
-import { dataAttr, isDev } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/core'
 import { pressHandlers } from '../shared/press'
 import { buttonAnatomy } from './button.anatomy'
 
 const parts = buttonAnatomy.build()
-
-/** 图标按钮缺可及名的提醒只投一次，连接层每次重算都会经过这里。 */
-let iconOnlyNameWarned = false
 
 // Button 没有业务状态：禁用 / 加载来自 props 与原生伪类，机器只承载按压通道。
 export function connectButton<T extends PropTypes>(
@@ -33,11 +30,6 @@ export function connectButton<T extends PropTypes>(
   const nativeButton = (prop('as') ?? 'button') === 'button'
   // 键盘 / 触屏按住期间的按压面；指针按住由 :active 表出，皮肤两者同一档
   const press = pressHandlers(service)
-  // 图标按钮没有可见文字，没给 aria-label / aria-labelledby 就没有可及名；只在开发模式提醒一次
-  if (isDev() && !iconOnlyNameWarned && iconOnly && !prop('ariaLabel') && !prop('ariaLabelledby')) {
-    iconOnlyNameWarned = true
-    console.warn('[xh:button] iconOnly 按钮没有可见文字，须给 aria-label 或 aria-labelledby')
-  }
 
   return {
     disabled,

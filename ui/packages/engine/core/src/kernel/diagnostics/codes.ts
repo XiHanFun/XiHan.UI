@@ -55,6 +55,8 @@ export const DIAGNOSTIC_CODES = {
   overlayMissingAnchor: 'overlay.missing-anchor',
   /** 文档里有读不到规则的样式表（跨域且没以 CORS 加载）：Portal 视觉桥的样式索引整份作废，退回整表枚举与照旧重算。 */
   portalUnreadableStylesheet: 'portal.unreadable-stylesheet',
+  /** 仅图标的按钮没有可及名：aria-label、aria-labelledby、title 都没有，按钮里除去 aria-hidden 的部分也没有文字。 */
+  buttonMissingName: 'button.missing-name',
   /** 图表没有可及名：caption 部件、aria-label、aria-labelledby 都没有。 */
   chartMissingName: 'chart.missing-name',
   /** 系列引用的字段在数据里不存在。 */

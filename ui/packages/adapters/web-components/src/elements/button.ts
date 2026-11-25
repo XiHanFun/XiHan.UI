@@ -20,7 +20,7 @@ import { MachineController } from '../runtime/machine-controller'
  * @customElement xh-button
  * @attr {'button'|'submit'|'reset'} type - 原生按钮类型，默认 button
  * @attr {boolean} disabled - 禁用（原生 disabled，失去焦点）
- * @attr {boolean} icon-only - 仅图标：左右内边距清零、宽高相等；作者须自行提供可及名
+ * @attr {boolean} icon-only - 仅图标：左右内边距清零、宽高相等；作者须自行提供可及名（根上的 aria-label，或根里一段视觉隐藏的文字）
  * @attr {boolean} full-width - 撑满行宽
  * @attr {boolean} loading - 加载中（aria-disabled，保留焦点并拦截点击）
  * @attr {'solid'|'subtle'|'outline'|'ghost'|'dashed'|'link'} variant - 视觉变体，默认 solid（只有 Button 缺省品牌实心，其余触发器缺省中性）；dashed 描边改虚线，link 是不铺面的文字钮
@@ -54,10 +54,12 @@ export class XhButtonElement extends XhElement {
   declare size?: Size
   declare as?: ButtonProps['as']
 
-  private readonly ctrl = new MachineController<ButtonSchema>(this, buttonMachine, () => this.machineProps())
+  // 开发期挂载后据根节点判断仅图标的按钮有没有可及名；refs 属于机器实例，重建后要重注
+  private readonly ctrl = new MachineController<ButtonSchema>(this, buttonMachine, () => this.machineProps(), {
+    onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')),
+  })
 
   private machineProps(): Partial<ButtonSchema['props']> {
-    const root = this.getPart('root')
     return {
       type: this.type,
       disabled: this.disabled,
@@ -68,9 +70,6 @@ export class XhButtonElement extends XhElement {
       as: this.as,
       iconOnly: this.iconOnly,
       fullWidth: this.fullWidth,
-      // 作者写在根节点上的可及名转告连接层，图标按钮缺名时由它提醒
-      ariaLabel: root?.getAttribute('aria-label') ?? undefined,
-      ariaLabelledby: root?.getAttribute('aria-labelledby') ?? undefined,
     }
   }
 
