@@ -107,7 +107,7 @@ function onNodeMove(move: Move): void {
     <XhTreeRoot
       :collection="collection"
       :default-expanded-value="['inbox', 'archive', 'trash']"
-      :allow-drop="allowNodeDrop"
+      :allow-node-drop="allowNodeDrop"
       node-reorderable
       @node-move="onNodeMove"
     >
