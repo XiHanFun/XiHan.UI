@@ -64,7 +64,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
         :loading="loading"
         :disabled="done"
         class="composed__more"
-        @load="onLoad"
+        @load-more="onLoad"
       >
         <span v-if="loading">正在取下一页…</span>
         <span v-else-if="done">没有更多了，共 {{ TOTAL }} 条</span>

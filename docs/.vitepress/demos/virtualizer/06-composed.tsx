@@ -80,7 +80,7 @@ export default function Demo(): ReactNode {
             loading={loading}
             disabled={done}
             style={moreStyle}
-            onLoad={onLoad}
+            onLoadMore={onLoad}
           >
             {loading ? <span>正在取下一页…</span> : null}
             {!loading && done ? <span>{`没有更多了，共 ${TOTAL} 条`}</span> : null}

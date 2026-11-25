@@ -80,7 +80,7 @@
   host.addEventListener("range-change", (event) => render(event.detail.virtualItems));
 
   // 取下一页；这里用定时器代替真实请求
-  scroll.addEventListener("load", () => {
+  scroll.addEventListener("load-more", () => {
     if (done) return;
     scroll.loading = true;
     say("正在取下一页…");
