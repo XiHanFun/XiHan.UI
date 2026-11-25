@@ -14,7 +14,7 @@ import {
   isLoadingBarDeterminate,
   LOADING_BAR_MAX,
   nextLoadingBarValue,
-  resolveLoadingBarMinimum,
+  resolveLoadingBarStartValue,
 } from './loading-bar.trickle'
 
 const { createMachine } = setup<LoadingBarSchema>()
@@ -144,7 +144,7 @@ export const loadingBarMachine = createMachine({
           return
         const current = clampLoadingBarValue(context.get('value'))
         const alive = current > 0 && current < LOADING_BAR_MAX ? current : 0
-        context.set('value', Math.max(alive, resolveLoadingBarMinimum(prop('minimum'))))
+        context.set('value', Math.max(alive, resolveLoadingBarStartValue(prop('startValue'))))
       },
       advanceValue: ({ context, prop }) => {
         if (isLoadingBarDeterminate(prop('value')))

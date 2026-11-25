@@ -37,7 +37,7 @@ export interface LoadingBarSchema extends MachineSchema {
     /** 爬升节拍毫秒，默认 200；<=0 或非有限数等同于关闭爬升。 */
     trickleSpeed?: number
     /** 起步值，默认 8：开始加载时先跳到该值。 */
-    minimum?: number
+    startValue?: number
     /** 走满 100 之后的淡出时长毫秒，写进皮肤的淡出时长槽 --xh-loading-bar-fade，不给按退场令牌；淡出过渡真正播完才归零并收起。 */
     fadeDuration?: number
     translations?: Partial<LoadingBarTranslations>

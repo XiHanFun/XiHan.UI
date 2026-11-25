@@ -33,7 +33,7 @@ export interface LoadingBarServiceOptions {
   height?: string | number
   trickle?: boolean
   trickleSpeed?: number
-  minimum?: number
+  startValue?: number
   fadeDuration?: number
   translations?: LoadingBarTranslationsSource
   /**

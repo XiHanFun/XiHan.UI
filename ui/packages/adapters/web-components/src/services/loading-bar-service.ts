@@ -33,7 +33,7 @@ export function createLoadingBarService(options: LoadingBarServiceOptions = {}):
   bar.height = barProps.height
   bar.trickle = barProps.trickle
   bar.trickleSpeed = barProps.trickleSpeed
-  bar.minimum = barProps.minimum
+  bar.startValue = barProps.startValue
   bar.fadeDuration = barProps.fadeDuration
   bar.translations = translations
 

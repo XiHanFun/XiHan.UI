@@ -12,7 +12,7 @@ export const LOADING_BAR_MAX = 100
 export const LOADING_BAR_CEILING = 99.4
 
 /** 起步值缺省：开始加载时直接跳到这里。 */
-export const LOADING_BAR_MINIMUM = 8
+export const LOADING_BAR_START_VALUE = 8
 
 /** 一步吃掉剩余量的比例区间。 */
 export const LOADING_BAR_STEP_MIN_RATIO = 0.02
@@ -31,10 +31,10 @@ export function clampLoadingBarValue(value: number | undefined): number {
 }
 
 /** 起步值归一：夹进 [0, 爬升上限]，缺省或非有限数用默认值。 */
-export function resolveLoadingBarMinimum(minimum: number | undefined): number {
-  if (minimum == null || !Number.isFinite(minimum))
-    return LOADING_BAR_MINIMUM
-  return Math.min(Math.max(minimum, 0), LOADING_BAR_CEILING)
+export function resolveLoadingBarStartValue(startValue: number | undefined): number {
+  if (startValue == null || !Number.isFinite(startValue))
+    return LOADING_BAR_START_VALUE
+  return Math.min(Math.max(startValue, 0), LOADING_BAR_CEILING)
 }
 
 /**

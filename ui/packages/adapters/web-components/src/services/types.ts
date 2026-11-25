@@ -165,7 +165,7 @@ export interface LoadingBarServiceOptions extends ServiceHostOptions {
   color?: string
   trickle?: boolean
   trickleSpeed?: number
-  minimum?: number
+  startValue?: number
   fadeDuration?: number
   translations?: Partial<LoadingBarTranslations>
 }

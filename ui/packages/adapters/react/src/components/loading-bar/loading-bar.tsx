@@ -32,7 +32,7 @@ export interface XhLoadingBarRootProps extends RootElementProps {
   tone?: Tone
   trickle?: boolean
   trickleSpeed?: number
-  minimum?: number
+  startValue?: number
   fadeDuration?: number
   translations?: LoadingBarProps['translations']
   onValueChange?: LoadingBarProps['onValueChange']
@@ -47,7 +47,7 @@ export function XhLoadingBarRoot({
   tone,
   trickle,
   trickleSpeed,
-  minimum,
+  startValue,
   fadeDuration,
   translations,
   onValueChange,
@@ -62,7 +62,7 @@ export function XhLoadingBarRoot({
     tone,
     trickle,
     trickleSpeed,
-    minimum,
+    startValue,
     fadeDuration,
     translations,
     onValueChange,

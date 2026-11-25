@@ -23,11 +23,11 @@ export {
   isLoadingBarDeterminate,
   LOADING_BAR_CEILING,
   LOADING_BAR_MAX,
-  LOADING_BAR_MINIMUM,
+  LOADING_BAR_START_VALUE,
   LOADING_BAR_STEP_MAX_RATIO,
   LOADING_BAR_STEP_MIN_RATIO,
   nextLoadingBarValue,
-  resolveLoadingBarMinimum,
+  resolveLoadingBarStartValue,
 } from './loading-bar.trickle'
 export type {
   LoadingBarApi,

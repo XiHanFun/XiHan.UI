@@ -38,7 +38,7 @@ height 数字按像素、字符串按任意 CSS 长度；进度段的颜色经�
 
 ### 关闭爬升
 
-trickle 为 false 时进度条停在起步值 minimum 不动，向前推进全部由宿主收尾
+trickle 为 false 时进度条停在起步值 startValue 不动，向前推进全部由宿主收尾
 
 <XhDemo src="loading-bar/04-trickle" />
 
@@ -68,7 +68,7 @@ tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，
 ### 特性
 
 - 未提供确定进度时自动爬升（`trickle`）：先快后慢，不到 100%，收到完成信号后补满。
-- `minimum` 是起始位置，让用户立即看到反应。
+- `startValue` 是起始位置，让用户立即看到反应。
 - 可以挂在局部容器上，不限于页面顶部。
 
 ### 组合
@@ -108,7 +108,7 @@ tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定进度段使用哪族颜色。需要其他颜色时修改皮肤槽 --xh-loading-bar-range。 |
 | `trickle` | `boolean` |  | 不确定进度时自行向前爬升，默认开启。关闭则停在起步值等待宿主收尾。 |
 | `trickleSpeed` | `number` |  | 爬升节拍毫秒，默认 200；&lt;=0 或非有限数等同于关闭爬升。 |
-| `minimum` | `number` |  | 起步值，默认 8：开始加载时先跳到该值。 |
+| `startValue` | `number` |  | 起步值，默认 8：开始加载时先跳到该值。 |
 | `fadeDuration` | `number` |  | 走满 100 之后的淡出时长毫秒，写进皮肤的淡出时长槽 --xh-loading-bar-fade，不给按退场令牌；淡出过渡真正播完才归零并收起。 |
 | `translations` | `Partial<LoadingBarTranslations>` |  |  |
 | `onValueChange` | `(details: LoadingBarValueChangeDetails) => void` |  | 进度值变化。不确定进度下每爬升一步、到达 100、归零各通知一次。 |

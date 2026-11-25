@@ -167,10 +167,10 @@ export const loadingBarSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '不确定进度走完一轮：起步跳到 minimum，收尾先冲 100，没有可等的淡出过渡时随即归零',
+      name: '不确定进度走完一轮：起步跳到 startValue，收尾先冲 100，没有可等的淡出过渡时随即归零',
       spec: { apg: SPEC },
       // trickle 关掉，这一轮里除了起步/冲刺/归零之外没有第二个人改值
-      props: { loading: false, trickle: false, minimum: 25 },
+      props: { loading: false, trickle: false, startValue: 25 },
       environment: withoutTransitions,
       steps: [
         {
@@ -212,7 +212,7 @@ export const loadingBarSuite: ConformanceSuite = {
     {
       name: '收尾之后又开始加载：从起步值重来，不从满格接着走',
       spec: { apg: SPEC },
-      props: { loading: true, trickle: false, minimum: 12 },
+      props: { loading: true, trickle: false, startValue: 12 },
       environment: withoutTransitions,
       steps: [
         { kind: 'setProps', props: { loading: false } },
@@ -230,7 +230,7 @@ export const loadingBarSuite: ConformanceSuite = {
     {
       name: 'trickle 关掉：停在起步值等宿主收尾，自己一步都不挪',
       spec: { apg: SPEC },
-      props: { loading: true, trickle: false, minimum: 30, trickleSpeed: 10 },
+      props: { loading: true, trickle: false, startValue: 30, trickleSpeed: 10 },
       steps: [
         {
           kind: 'raw',
@@ -273,7 +273,7 @@ export const loadingBarSuite: ConformanceSuite = {
     {
       name: '不确定进度自行爬升：宽度真的往前长',
       spec: { apg: SPEC },
-      props: { loading: true, minimum: 5, trickleSpeed: 20 },
+      props: { loading: true, startValue: 5, trickleSpeed: 20 },
       skipParity: '爬升按真实时钟改值并派 value-change，两侧一次录制里跑到第几拍天然对不齐',
       steps: [
         {
@@ -286,7 +286,7 @@ export const loadingBarSuite: ConformanceSuite = {
     {
       name: '爬升永远到不了 100：一直爬也留着最后那一线',
       spec: { apg: SPEC },
-      props: { loading: true, minimum: 5, trickleSpeed: 5 },
+      props: { loading: true, startValue: 5, trickleSpeed: 5 },
       skipParity: '同上，爬升的帧序与时钟绑定',
       steps: [
         {

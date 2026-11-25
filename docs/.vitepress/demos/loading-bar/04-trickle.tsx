@@ -1,4 +1,4 @@
-// 关闭爬升 | trickle 为 false 时进度条停在起步值 minimum 不动，向前推进全部由宿主收尾
+// 关闭爬升 | trickle 为 false 时进度条停在起步值 startValue 不动，向前推进全部由宿主收尾
 import type { ReactNode } from "react";
 import {
   XhButton,
@@ -13,7 +13,7 @@ export default function Demo(): ReactNode {
 
   return (
     <>
-      <XhLoadingBarRoot loading={loading} trickle={false} minimum={30} height={6}>
+      <XhLoadingBarRoot loading={loading} trickle={false} startValue={30} height={6}>
         <XhLoadingBarTrack>
           <XhLoadingBarRange />
         </XhLoadingBarTrack>

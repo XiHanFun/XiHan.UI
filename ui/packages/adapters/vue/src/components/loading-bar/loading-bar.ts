@@ -30,7 +30,7 @@ export const XhLoadingBarRoot = defineComponent({
     tone: { type: String as PropType<Tone> },
     trickle: { type: Boolean, default: undefined },
     trickleSpeed: { type: Number },
-    minimum: { type: Number },
+    startValue: { type: Number },
     fadeDuration: { type: Number },
     translations: { type: Object as PropType<Partial<LoadingBarTranslations>> },
   },

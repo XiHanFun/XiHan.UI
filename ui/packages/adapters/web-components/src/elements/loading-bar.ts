@@ -32,7 +32,7 @@ const HEIGHT_CONVERTER = {
  * 元素运行 loading-bar 状态机并把 connect 产出接上。
  *
  * 两种模式互不相干：提供 `value` 即为确定进度，宽度按它显示、读屏可以获取 aria-valuenow；
- * 未提供时使用模拟进度：`loading` 置真时先跳到 `minimum`，随后按 `trickle-speed` 逐拍爬升，
+ * 未提供时使用模拟进度：`loading` 置真时先跳到 `startValue`，随后按 `trickle-speed` 逐拍爬升，
  * 步长按剩余量取，因此越接近满格越慢且永远到不了 100；此时按规范不报告 aria-valuenow，
  * 属性缺席本身就是进度未知的表达。`loading` 转为假时先到达 100，走完淡出窗口才归零收起。
  *
@@ -46,7 +46,7 @@ const HEIGHT_CONVERTER = {
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定进度段使用哪族颜色；提供 color 时以 color 为准
  * @attr {boolean} trickle - 不确定进度时自行向前爬升，默认开启；`trickle="false"` 关闭
  * @attr {number} trickle-speed - 爬升节拍毫秒，默认 200；<=0 等同于关闭爬升
- * @attr {number} minimum - 起步值，默认 8
+ * @attr {number} start-value - 起步值，默认 8
  * @attr {number} fade-duration - 到达 100 之后的淡出时长毫秒，写进皮肤的淡出时长槽；不给按退场令牌。淡出过渡真正播完才归零收起
  * @fires value-change - 进度值变化；detail 为 `{ value: number }`
  * @csspart root - progressbar 本身（承载名字、值域、data-state 与收起态）
@@ -66,7 +66,7 @@ export class XhLoadingBarElement extends XhElement {
     tone: { converter: STRING_CONVERTER },
     trickle: { converter: BOOLEAN_CONVERTER },
     trickleSpeed: { converter: NUMBER_CONVERTER, attribute: 'trickle-speed' },
-    minimum: { converter: NUMBER_CONVERTER },
+    startValue: { converter: NUMBER_CONVERTER, attribute: 'start-value' },
     fadeDuration: { converter: NUMBER_CONVERTER, attribute: 'fade-duration' },
     // 文案是对象，走不了属性；只作为 property 暴露，与 Vue 侧的 translations prop 对齐
     translations: { attribute: false },
@@ -79,7 +79,7 @@ export class XhLoadingBarElement extends XhElement {
   declare tone?: Tone
   declare trickle?: boolean
   declare trickleSpeed?: number
-  declare minimum?: number
+  declare startValue?: number
   declare fadeDuration?: number
   declare translations?: Partial<LoadingBarTranslations>
 
@@ -100,7 +100,7 @@ export class XhLoadingBarElement extends XhElement {
       tone: this.tone,
       trickle: this.trickle,
       trickleSpeed: this.trickleSpeed,
-      minimum: this.minimum,
+      startValue: this.startValue,
       fadeDuration: this.fadeDuration,
       translations: this.translations,
       onValueChange: this.notify,

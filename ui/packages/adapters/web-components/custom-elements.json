@@ -42943,7 +42943,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-loading-bar>`：Light-DOM 行为宿主：作者写 root / track / range 角色节点，\n元素运行 loading-bar 状态机并把 connect 产出接上。\n\n两种模式互不相干：提供 `value` 即为确定进度，宽度按它显示、读屏可以获取 aria-valuenow；\n未提供时使用模拟进度：`loading` 置真时先跳到 `minimum`，随后按 `trickle-speed` 逐拍爬升，\n步长按剩余量取，因此越接近满格越慢且永远到不了 100；此时按规范不报告 aria-valuenow，\n属性缺席本身就是进度未知的表达。`loading` 转为假时先到达 100，走完淡出窗口才归零收起。\n\n收起态只给 root 加 hidden 并写一条内联 display，作者编写的结构一个都不卸载。",
+          "description": "`<xh-loading-bar>`：Light-DOM 行为宿主：作者写 root / track / range 角色节点，\n元素运行 loading-bar 状态机并把 connect 产出接上。\n\n两种模式互不相干：提供 `value` 即为确定进度，宽度按它显示、读屏可以获取 aria-valuenow；\n未提供时使用模拟进度：`loading` 置真时先跳到 `startValue`，随后按 `trickle-speed` 逐拍爬升，\n步长按剩余量取，因此越接近满格越慢且永远到不了 100；此时按规范不报告 aria-valuenow，\n属性缺席本身就是进度未知的表达。`loading` 转为假时先到达 100，走完淡出窗口才归零收起。\n\n收起态只给 root 加 hidden 并写一条内联 display，作者编写的结构一个都不卸载。",
           "name": "XhLoadingBarElement",
           "cssParts": [
             {
@@ -43038,12 +43038,12 @@
             },
             {
               "kind": "field",
-              "name": "minimum",
+              "name": "startValue",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
-              "attribute": "minimum"
+              "attribute": "start-value"
             },
             {
               "kind": "field",
@@ -43167,8 +43167,8 @@
                 "text": "number | undefined"
               },
               "description": "起步值，默认 8",
-              "name": "minimum",
-              "fieldName": "minimum"
+              "name": "start-value",
+              "fieldName": "startValue"
             },
             {
               "type": {

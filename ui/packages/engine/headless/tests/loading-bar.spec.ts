@@ -10,14 +10,14 @@ import {
   isLoadingBarDeterminate,
   LOADING_BAR_CEILING,
   LOADING_BAR_HEIGHT,
-  LOADING_BAR_MINIMUM,
+  LOADING_BAR_START_VALUE,
   LOADING_BAR_STEP_MAX_RATIO,
   LOADING_BAR_STEP_MIN_RATIO,
   LOADING_BAR_TRICKLE_SPEED,
   loadingBarMachine,
   nextLoadingBarValue,
   resolveLoadingBarFadeDuration,
-  resolveLoadingBarMinimum,
+  resolveLoadingBarStartValue,
   resolveLoadingBarTrickleSpeed,
 } from '../src/loading-bar'
 
@@ -46,21 +46,21 @@ describe('clampLoadingBarValue', () => {
   })
 })
 
-describe('resolveLoadingBarMinimum', () => {
+describe('resolveLoadingBarStartValue', () => {
   it('缺省 8，给了就按给的算', () => {
-    expect(resolveLoadingBarMinimum(undefined)).toBe(LOADING_BAR_MINIMUM)
-    expect(resolveLoadingBarMinimum(20)).toBe(20)
+    expect(resolveLoadingBarStartValue(undefined)).toBe(LOADING_BAR_START_VALUE)
+    expect(resolveLoadingBarStartValue(20)).toBe(20)
   })
 
   it('0 是合法起步值，不能被当成"没给"', () => {
-    // 0 是假值，用 `minimum ||` 判会让"从零起步"整个失效
-    expect(resolveLoadingBarMinimum(0)).toBe(0)
+    // 0 是假值，用 `startValue ||` 判会让"从零起步"整个失效
+    expect(resolveLoadingBarStartValue(0)).toBe(0)
   })
 
   it('上界取爬升上限而不是 100：起步就顶到 100 等于宣布事情已经办完', () => {
-    expect(resolveLoadingBarMinimum(100)).toBe(LOADING_BAR_CEILING)
-    expect(resolveLoadingBarMinimum(-5)).toBe(0)
-    expect(resolveLoadingBarMinimum(Number.NaN)).toBe(LOADING_BAR_MINIMUM)
+    expect(resolveLoadingBarStartValue(100)).toBe(LOADING_BAR_CEILING)
+    expect(resolveLoadingBarStartValue(-5)).toBe(0)
+    expect(resolveLoadingBarStartValue(Number.NaN)).toBe(LOADING_BAR_START_VALUE)
   })
 })
 
@@ -230,13 +230,13 @@ describe('loadingBarMachine 起停', () => {
   it('loading=true 挂载即开跑，并先跳到起步值', () => {
     const bar = makeLoadingBar({ loading: true })
     expect(bar.state()).toBe('loading')
-    expect(bar.api().value).toBe(LOADING_BAR_MINIMUM)
+    expect(bar.api().value).toBe(LOADING_BAR_START_VALUE)
     expect(bar.api().visible).toBe(true)
   })
 
-  it('minimum 决定起步高度；0 也认', () => {
-    expect(makeLoadingBar({ loading: true, minimum: 30 }).api().value).toBe(30)
-    expect(makeLoadingBar({ loading: true, minimum: 0 }).api().value).toBe(0)
+  it('startValue 决定起步高度；0 也认', () => {
+    expect(makeLoadingBar({ loading: true, startValue: 30 }).api().value).toBe(30)
+    expect(makeLoadingBar({ loading: true, startValue: 0 }).api().value).toBe(0)
   })
 
   it('loading 翻 true：起步值经 onValueChange 报出去', () => {
@@ -246,7 +246,7 @@ describe('loadingBarMachine 起停', () => {
 
     bar.setProps({ loading: true })
     expect(bar.state()).toBe('loading')
-    expect(onValueChange).toHaveBeenCalledWith({ value: LOADING_BAR_MINIMUM })
+    expect(onValueChange).toHaveBeenCalledWith({ value: LOADING_BAR_START_VALUE })
   })
 
   it('挂载时的 defaultValue 不会被 idle 抹掉', () => {
@@ -329,13 +329,13 @@ describe('loadingBarMachine 爬升', () => {
   it('trickle=false：停在起步值等宿主收尾，不起计时器', () => {
     const bar = makeLoadingBar({ loading: true, trickle: false })
     vi.advanceTimersByTime(60_000)
-    expect(bar.api().value).toBe(LOADING_BAR_MINIMUM)
+    expect(bar.api().value).toBe(LOADING_BAR_START_VALUE)
   })
 
   it('trickleSpeed<=0 等同于关掉爬升', () => {
     const bar = makeLoadingBar({ loading: true, trickleSpeed: 0 })
     vi.advanceTimersByTime(60_000)
-    expect(bar.api().value).toBe(LOADING_BAR_MINIMUM)
+    expect(bar.api().value).toBe(LOADING_BAR_START_VALUE)
   })
 
   it('运行中关掉 trickle：当场停住，不再往前挪', () => {
@@ -436,7 +436,7 @@ describe('loadingBarMachine 收尾', () => {
 
     bar.setProps({ loading: true })
     expect(bar.state()).toBe('loading')
-    expect(bar.api().value).toBe(LOADING_BAR_MINIMUM)
+    expect(bar.api().value).toBe(LOADING_BAR_START_VALUE)
 
     fade.finish()
     await settle()
@@ -452,7 +452,7 @@ describe('loadingBarMachine 收尾', () => {
 
     bar.setProps({ loading: true })
     expect(bar.state()).toBe('loading')
-    expect(bar.api().value).toBe(LOADING_BAR_MINIMUM)
+    expect(bar.api().value).toBe(LOADING_BAR_START_VALUE)
 
     fill.finish()
     await settle()
@@ -460,7 +460,7 @@ describe('loadingBarMachine 收尾', () => {
   })
 
   it('中途重开保留已有进度：进度条绝不往回缩', () => {
-    const bar = makeLoadingBar({ loading: true, trickleSpeed: 100, minimum: 5 })
+    const bar = makeLoadingBar({ loading: true, trickleSpeed: 100, startValue: 5 })
     vi.advanceTimersByTime(500)
     const climbed = bar.api().value
     expect(climbed).toBeGreaterThan(5)

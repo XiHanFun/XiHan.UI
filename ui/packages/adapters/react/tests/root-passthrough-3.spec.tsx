@@ -96,8 +96,8 @@ const CASES: Case[] = [
     scope: 'loading-bar',
     tag: 'div',
     token: '--xh-loading-bar-probe',
-    machine: { height: 6, minimum: 0.2 },
-    leaks: ['height', 'minimum'],
+    machine: { height: 6, startValue: 20 },
+    leaks: ['height', 'startValue'],
     render: props => <XhLoadingBarRoot {...props} />,
   },
   {
