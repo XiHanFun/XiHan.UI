@@ -19,7 +19,7 @@ import { XhElement } from '../element-base'
  * overflow-item 可省略：未超出上限时没有「+N」。
  *
  * @customElement xh-avatar-group
- * @attr {number} max - 展示上限，如实写为根上的 data-max；裁剪与计数由作者完成
+ * @attr {number} max-visible - 展示上限，如实写为根上的 data-max；裁剪与计数由作者完成
  * @attr {'sm'|'md'|'lg'} size - 尺寸，决定组内每个头像的直径与字号
  * @csspart root - 组容器，承载 data-size 与 data-max
  * @csspart overflow-item - 溢出计数位，内容（「+N」）由作者填写
@@ -29,17 +29,17 @@ export class XhAvatarGroupElement extends XhElement {
 
   // 属性缺席翻成 undefined，缺省值由 connect 决定
   static override properties = {
-    max: { type: Number },
+    maxVisible: { type: Number, attribute: 'max-visible' },
     size: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
   }
 
-  declare max?: number
+  declare maxVisible?: number
   declare size?: Size
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
     const api = connectAvatarGroup(this.configured('avatar-group', {
-      max: this.max,
+      maxVisible: this.maxVisible,
       size: this.size,
     } satisfies AvatarGroupProps), wcNormalize)
 

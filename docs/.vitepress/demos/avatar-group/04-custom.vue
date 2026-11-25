@@ -14,7 +14,7 @@ const tokens = {
 </script>
 
 <template>
-  <XhAvatarGroupRoot :max="4" :style="tokens">
+  <XhAvatarGroupRoot :max-visible="4" :style="tokens">
     <XhAvatarRoot v-for="m in shown" :key="m">
       <XhAvatarFallback>{{ m }}</XhAvatarFallback>
     </XhAvatarRoot>

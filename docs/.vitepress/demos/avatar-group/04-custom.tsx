@@ -14,7 +14,7 @@ const tokens = {
 
 export default function Demo(): ReactNode {
   return (
-    <XhAvatarGroupRoot max={4} style={tokens}>
+    <XhAvatarGroupRoot maxVisible={4} style={tokens}>
       {shown.map(m => (
         <XhAvatarRoot key={m}>
           <XhAvatarFallback>{m}</XhAvatarFallback>

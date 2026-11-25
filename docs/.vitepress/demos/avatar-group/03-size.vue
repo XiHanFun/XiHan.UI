@@ -8,7 +8,7 @@ const shown = ["曦", "寒", "懿"];
 
 <template>
   <div style="display: grid; gap: 16px; justify-items: start">
-    <XhAvatarGroupRoot v-for="s in sizes" :key="s" :size="s" :max="3">
+    <XhAvatarGroupRoot v-for="s in sizes" :key="s" :size="s" :max-visible="3">
       <XhAvatarRoot v-for="m in shown" :key="m">
         <XhAvatarFallback>{{ m }}</XhAvatarFallback>
       </XhAvatarRoot>

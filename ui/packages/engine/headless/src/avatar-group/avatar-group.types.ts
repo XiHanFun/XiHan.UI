@@ -13,7 +13,7 @@ export interface AvatarGroupProps {
    * 头像由作者渲染，因此裁切数量与 +N 中的 N 都由作者决定；
    * 组件把这个上限如实写入根上的 data-max。
    */
-  max?: number
+  maxVisible?: number
   /** 尺寸：sm / md / lg，写入根上并沿继承流下发给组内每一个头像。 */
   size?: Size
 }

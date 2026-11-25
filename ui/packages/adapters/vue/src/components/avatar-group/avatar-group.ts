@@ -18,7 +18,7 @@ export const XhAvatarGroupRoot = defineComponent({
   name: 'XhAvatarGroupRoot',
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    max: { type: Number },
+    maxVisible: { type: Number },
     size: { type: String as PropType<Size> },
   },
   setup(props, { slots }) {

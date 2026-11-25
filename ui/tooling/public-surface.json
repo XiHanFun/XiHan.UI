@@ -13367,7 +13367,7 @@
       "tone"
     ],
     "avatar-group": [
-      "max",
+      "maxVisible",
       "size"
     ],
     "back-top": [
@@ -22074,7 +22074,7 @@
     },
     "xh-avatar-group": {
       "attributes": [
-        "max",
+        "max-visible",
         "size"
       ],
       "events": []

@@ -9,7 +9,7 @@ export default function Demo(): ReactNode {
   return (
     <div style={{ display: "grid", gap: "16px", justifyItems: "start" }}>
       {sizes.map(s => (
-        <XhAvatarGroupRoot key={s} size={s} max={3}>
+        <XhAvatarGroupRoot key={s} size={s} maxVisible={3}>
           {shown.map(m => (
             <XhAvatarRoot key={m}>
               <XhAvatarFallback>{m}</XhAvatarFallback>

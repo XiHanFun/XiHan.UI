@@ -28,14 +28,14 @@ const members = [
   { initial: "言", name: "言蹊", role: "产品" },
   { initial: "知", name: "知远", role: "数据" },
 ];
-const max = 4;
+const maxVisible = 4;
 
-const shown = members.slice(0, max);
-const rest = members.slice(max);
+const shown = members.slice(0, maxVisible);
+const rest = members.slice(maxVisible);
 </script>
 
 <template>
-  <XhAvatarGroupRoot :max="max">
+  <XhAvatarGroupRoot :max-visible="maxVisible">
     <XhAvatarRoot v-for="m in shown" :key="m.name">
       <XhAvatarFallback>{{ m.initial }}</XhAvatarFallback>
     </XhAvatarRoot>

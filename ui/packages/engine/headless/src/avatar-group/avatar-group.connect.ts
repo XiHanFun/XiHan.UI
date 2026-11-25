@@ -21,7 +21,7 @@ export function connectAvatarGroup<T extends PropTypes>(
     ...parts.root.attrs,
     'data-size': props.size,
     // 上限如实落成字符串，两个适配器写到 DOM 上的值一致
-    'data-max': props.max == null ? undefined : String(props.max),
+    'data-max': props.maxVisible == null ? undefined : String(props.maxVisible),
   }
 
   return {

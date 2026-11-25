@@ -33,7 +33,7 @@ export const avatarGroupSuite: ConformanceSuite = {
     {
       name: '上限如实落成 data-max',
       spec: { apg: APG },
-      props: { max: 4 },
+      props: { maxVisible: 4 },
       initial: {
         parts: {
           root: { 'data-max': '4' },

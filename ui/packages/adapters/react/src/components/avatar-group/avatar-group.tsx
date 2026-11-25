@@ -16,13 +16,13 @@ import { AvatarGroupProvider, useAvatarGroupContext } from './context'
 
 export interface XhAvatarGroupRootProps extends ComponentPropsWithRef<'div'> {
   /** 展示上限：该组显示几个头像，其余收进 overflow-item。 */
-  max?: number
+  maxVisible?: number
   /** 尺寸，落到根上沿继承流下发给组内每个头像。 */
   size?: Size
 }
 
-export function XhAvatarGroupRoot({ max, size, children, ...rest }: XhAvatarGroupRootProps): ReactNode {
-  const api = connectAvatarGroup(withXhConfig('avatar-group', { max, size }) as AvatarGroupProps, reactNormalize)
+export function XhAvatarGroupRoot({ maxVisible, size, children, ...rest }: XhAvatarGroupRootProps): ReactNode {
+  const api = connectAvatarGroup(withXhConfig('avatar-group', { maxVisible, size }) as AvatarGroupProps, reactNormalize)
   return (
     <AvatarGroupProvider value={{ api }}>
       <div {...mergeReactProps(api.getRootProps(), rest)}>

@@ -19,8 +19,8 @@ describe('connectAvatarGroup', () => {
   })
 
   it('上限如实落成字符串，尺寸落到根上', () => {
-    expect(api({ max: 3, size: 'sm' }).getRootProps()).toMatchObject({ 'data-max': '3', 'data-size': 'sm' })
-    expect((api({ max: 0 }).getRootProps() as Record<string, unknown>)['data-max']).toBe('0')
+    expect(api({ maxVisible: 3, size: 'sm' }).getRootProps()).toMatchObject({ 'data-max': '3', 'data-size': 'sm' })
+    expect((api({ maxVisible: 0 }).getRootProps() as Record<string, unknown>)['data-max']).toBe('0')
   })
 
   it('溢出计数只拿身份，内容由作者写', () => {

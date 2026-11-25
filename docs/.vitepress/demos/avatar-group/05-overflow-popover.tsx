@@ -28,10 +28,10 @@ const members = [
   { initial: "言", name: "言蹊", role: "产品" },
   { initial: "知", name: "知远", role: "数据" },
 ];
-const max = 4;
+const maxVisible = 4;
 
-const shown = members.slice(0, max);
-const rest = members.slice(max);
+const shown = members.slice(0, maxVisible);
+const rest = members.slice(maxVisible);
 
 // 计数那一枚换成按钮：直径、圆形与字号跟着组走。自定义属性不在 CSSProperties 的键里，整份样式按它断言
 const countStyle = {
@@ -42,7 +42,7 @@ const countStyle = {
 
 export default function Demo(): ReactNode {
   return (
-    <XhAvatarGroupRoot max={max}>
+    <XhAvatarGroupRoot maxVisible={maxVisible}>
       {shown.map(m => (
         <XhAvatarRoot key={m.name}>
           <XhAvatarFallback>{m.initial}</XhAvatarFallback>

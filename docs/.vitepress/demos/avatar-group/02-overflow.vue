@@ -3,14 +3,14 @@
 import { XhAvatarFallback, XhAvatarGroupOverflowItem, XhAvatarGroupRoot, XhAvatarRoot } from "@xihan-ui/vue";
 
 const members = ["曦", "寒", "懿", "承", "临", "旭"];
-const max = 4;
+const maxVisible = 4;
 
-const shown = members.slice(0, max);
+const shown = members.slice(0, maxVisible);
 const rest = members.length - shown.length;
 </script>
 
 <template>
-  <XhAvatarGroupRoot :max="max">
+  <XhAvatarGroupRoot :max-visible="maxVisible">
     <XhAvatarRoot v-for="m in shown" :key="m">
       <XhAvatarFallback>{{ m }}</XhAvatarFallback>
     </XhAvatarRoot>

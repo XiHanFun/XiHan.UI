@@ -13,7 +13,7 @@
 
 ## 特性
 
-- `max` 决定显示数量，其余进入 `overflow-item` 计数。
+- `maxVisible` 决定显示数量，其余进入 `overflow-item` 计数。
 - 尺寸写在组上，组内头像一并跟随。
 
 ## 组合
