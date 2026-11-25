@@ -11,6 +11,7 @@
 <XhComponentCard src="clipboard" name="Clipboard" label="剪贴板" href="/components/clipboard" />
 <XhComponentCard src="download-trigger" name="DownloadTrigger" label="下载触发器" href="/components/download-trigger" />
 <XhComponentCard src="float-button" name="FloatButton" label="浮动按钮" href="/components/float-button" />
+<XhComponentCard src="focus-trap" name="FocusTrap" label="焦点圈定" href="/components/focus-trap" />
 <XhComponentCard src="icon" name="Icon" label="图标" href="/components/icon" />
 <XhComponentCard src="kbd" name="Kbd" label="键盘按键" href="/components/kbd" />
 <XhComponentCard src="presence" name="Presence" label="进出场" href="/components/presence" />

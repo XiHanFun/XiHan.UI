@@ -63,6 +63,7 @@ import { XhFilterBuilderElement } from './elements/filter-builder'
 import { XhFlexElement } from './elements/flex'
 import { XhFloatButtonElement } from './elements/float-button'
 import { XhFloatingPanelElement } from './elements/floating-panel'
+import { XhFocusTrapElement } from './elements/focus-trap'
 import { XhFormElement } from './elements/form'
 import { XhFormatInputElement } from './elements/format-input'
 import { XhFunnelChartElement } from './elements/funnel-chart'
@@ -189,6 +190,7 @@ const XH_ELEMENTS = {
   'xh-flex': XhFlexElement,
   'xh-float-button': XhFloatButtonElement,
   'xh-floating-panel': XhFloatingPanelElement,
+  'xh-focus-trap': XhFocusTrapElement,
   'xh-format-input': XhFormatInputElement,
   'xh-funnel-chart': XhFunnelChartElement,
   'xh-graph-chart': XhGraphChartElement,
@@ -422,6 +424,7 @@ export {
   XhFlexElement,
   XhFloatButtonElement,
   XhFloatingPanelElement,
+  XhFocusTrapElement,
   XhFormatInputElement,
   XhFormElement,
   XhFunnelChartElement,

@@ -50,6 +50,7 @@ import {
   flexSuite,
   floatButtonSuite,
   floatingPanelSuite,
+  focusTrapSuite,
   formatInputSuite,
   formSuite,
   funnelChartSuite,
@@ -281,6 +282,7 @@ const SUITES: readonly ConformanceSuite[] = [
   aspectRatioSuite,
   containerSuite,
   presenceSuite,
+  focusTrapSuite,
   visuallyHiddenSuite,
 ]
 

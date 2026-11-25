@@ -26,6 +26,10 @@
           "name": "浮动按钮"
         },
         {
+          "id": "focus-trap",
+          "name": "焦点圈定"
+        },
+        {
           "id": "icon",
           "name": "图标"
         },

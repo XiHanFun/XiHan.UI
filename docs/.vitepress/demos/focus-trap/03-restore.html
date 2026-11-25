@@ -1,0 +1,24 @@
+<!-- 不归还焦点 | restoreFocus 为 false 时停用后焦点留在原处，适合停用后紧接着要把焦点交给别处的场合 -->
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--xh-space-2)">
+  <xh-button id="focus-trap-restore-on"><button data-xh-part="root">激活</button></xh-button>
+  <xh-focus-trap id="focus-trap-restore" active="false" restore-focus="false">
+    <div data-xh-part="root" style="display: flex; gap: var(--xh-space-2)">
+      <xh-button tone="neutral"><button data-xh-part="root">第一项</button></xh-button>
+      <xh-button tone="neutral" id="focus-trap-restore-off"><button data-xh-part="root">停用</button></xh-button>
+    </div>
+  </xh-focus-trap>
+</div>
+<p data-demo-output id="focus-trap-restore-output">未激活</p>
+<script type="module">
+  const on = document.getElementById("focus-trap-restore-on");
+  const trap = document.getElementById("focus-trap-restore");
+  const off = document.getElementById("focus-trap-restore-off");
+  const output = document.getElementById("focus-trap-restore-output");
+  const set = (active) => {
+    trap.active = active;
+    on.disabled = active;
+    output.textContent = active ? "焦点陷在右边两颗按钮里" : "未激活";
+  };
+  on.addEventListener("click", () => set(true));
+  off.addEventListener("click", () => set(false));
+</script>

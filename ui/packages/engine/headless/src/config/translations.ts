@@ -61,6 +61,7 @@ import type { FilterBuilderTranslations } from '../filter-builder/filter-builder
 import type { FlexTranslations } from '../flex/flex.types'
 import type { FloatButtonTranslations } from '../float-button/float-button.types'
 import type { FloatingPanelTranslations } from '../floating-panel/floating-panel.types'
+import type { FocusTrapTranslations } from '../focus-trap/focus-trap.types'
 import type { FormTranslations } from '../form/form.types'
 import type { FormatInputTranslations } from '../format-input/format-input.types'
 import type { FunnelChartTranslations } from '../funnel-chart/funnel-chart.types'
@@ -211,6 +212,7 @@ export interface XhTranslationOverrides {
   'flex'?: Partial<FlexTranslations>
   'float-button'?: Partial<FloatButtonTranslations>
   'floating-panel'?: Partial<FloatingPanelTranslations>
+  'focus-trap'?: Partial<FocusTrapTranslations>
   'form'?: Partial<FormTranslations>
   'format-input'?: Partial<FormatInputTranslations>
   'funnel-chart'?: Partial<FunnelChartTranslations>

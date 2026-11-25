@@ -53,6 +53,7 @@ import { filterBuilderSuite } from './filter-builder.suite'
 import { flexSuite } from './flex.suite'
 import { floatButtonSuite } from './float-button.suite'
 import { floatingPanelSuite } from './floating-panel.suite'
+import { focusTrapSuite } from './focus-trap.suite'
 import { formSuite } from './form.suite'
 import { formatInputSuite } from './format-input.suite'
 import { funnelChartSuite } from './funnel-chart.suite'
@@ -297,5 +298,6 @@ export const allSuites: readonly ConformanceSuite[] = [
   aspectRatioSuite,
   containerSuite,
   presenceSuite,
+  focusTrapSuite,
   visuallyHiddenSuite,
 ]

@@ -105,6 +105,7 @@
     "./float-button.css": "./dist/css/float-button.css",
     "./focus.css": "./dist/css/focus.css",
     "./floating-panel.css": "./dist/css/floating-panel.css",
+    "./focus-trap.css": "./dist/css/focus-trap.css",
     "./forced-colors.css": "./dist/css/forced-colors.css",
     "./form.css": "./dist/css/form.css",
     "./format-input.css": "./dist/css/format-input.css",

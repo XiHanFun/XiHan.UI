@@ -52,6 +52,7 @@
     "field [data-part='control'][data-scope='field'] [data-part='input'][data-scope='field']": "家族随皮肤引入的规则：field 的 control 就是作者的原生控件、自身即 chrome，没有盒内 input 部件，这条命不中；焦点由家族 :focus-within 换成聚焦描边标在控件自己身上",
     "field [data-part='control'][data-scope='field'] [data-xh-action-profile='field-inset']": "家族随皮肤引入的规则：field 没有内嵌动作钮，这条命不中",
     "floating-panel [data-part='content'][data-scope='floating-panel']": "面板本体不接收焦点，只是键盘事件的收口点；环长在标题栏的按钮上",
+    "focus-trap [data-part='root'][data-scope='focus-trap']": "程序兜底的落点（tabindex=-1）：区域里一个可聚焦元素都没有时焦点才落到根上，环留给里面真正的可聚焦元素",
     "form [data-part='error-summary'][data-scope='form']": "摘要不承载焦点（焦点直接送去出错的字段），它只是一段播报",
     "hover-card [data-part='content'][data-scope='hover-card']": "可编程聚焦的容器（tabindex=-1），环留给里面真正的可聚焦元素",
     "image-cropper [data-part='crop-handle'][data-scope='image-cropper']": "把手本体是跨越裁切边界的透明命中区，聚焦时由 ::after 的短条或折角自身切换为焦点色",

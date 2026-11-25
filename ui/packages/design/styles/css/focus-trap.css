@@ -1,0 +1,19 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/* 定义 focus trap 样式。 */
+
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='focus-trap'] {
+    --xh-focus-trap-skin: 1;
+  }
+
+  /* 根不排版、不画面：里面是什么由作者决定，这份皮肤只收一件事。
+     区域里一个可聚焦元素都没有时焦点落到根上，那是程序兜底给的落点，不是用户要操作的控件，不画聚焦环 */
+  [data-scope='focus-trap'][data-part='root']:focus-visible {
+    outline: none;
+  }
+}

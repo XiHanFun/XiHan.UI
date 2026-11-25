@@ -32228,6 +32228,192 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/focus-trap.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-focus-trap>` —— Light-DOM 行为宿主：激活期间焦点陷在 root 角色节点里，Tab 在里面回绕，停用时把焦点还回去。",
+          "name": "XhFocusTrapElement",
+          "cssParts": [
+            {
+              "description": "焦点陷在里面的容器（激活时带 tabindex=-1 与 data-state=active）",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: focusTrapAnatomy, meta: focusTrapMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "active",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "active"
+            },
+            {
+              "kind": "field",
+              "name": "loop",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "autoFocus",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "auto-focus"
+            },
+            {
+              "kind": "field",
+              "name": "restoreFocus",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "restore-focus"
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "trapScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<FocusTrapSchema>( this, focusTrapMachine, () => this.machineProps(), { scope: this.trapScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<FocusTrapSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "registerLayer",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<FocusTrapSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "是否陷住焦点，默认 true；写 `active=\"false\"` 停用",
+              "name": "active",
+              "fieldName": "active"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "Tab 走到两端时回绕，默认 true",
+              "name": "loop",
+              "fieldName": "loop"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "激活时把焦点移进来，默认 true",
+              "name": "auto-focus",
+              "fieldName": "autoFocus"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "停用或移除时把焦点还给激活前的持有者，默认 true",
+              "name": "restore-focus",
+              "fieldName": "restoreFocus"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-focus-trap",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhFocusTrapElement",
+          "declaration": {
+            "name": "XhFocusTrapElement",
+            "module": "src/elements/focus-trap.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/form.ts",
       "declarations": [
         {

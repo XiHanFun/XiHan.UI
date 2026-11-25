@@ -95,6 +95,7 @@
       "./flex.css",
       "./float-button.css",
       "./floating-panel.css",
+      "./focus-trap.css",
       "./focus.css",
       "./forced-colors.css",
       "./form.css",
@@ -407,6 +408,7 @@
       "FloatButtonRootSlotProps",
       "FloatingPanelContext",
       "FloatingPanelRootSlotProps",
+      "FocusTrapContext",
       "FormContext",
       "FormErrorSummaryItemSlotProps",
       "FormErrorSummarySlotProps",
@@ -1663,6 +1665,8 @@
       "XhFloatingPanelTriggerProps",
       "XhFloatingPanelWindowStateTrigger",
       "XhFloatingPanelWindowStateTriggerProps",
+      "XhFocusTrap",
+      "XhFocusTrapProps",
       "XhFormErrorSummary",
       "XhFormErrorSummaryItem",
       "XhFormErrorSummaryItemProps",
@@ -3302,6 +3306,7 @@
       "useFloatButtonContext",
       "useFloatingPanel",
       "useFloatingPanelContext",
+      "useFocusTrap",
       "useForm",
       "useFormContext",
       "useFormatInput",
@@ -3639,6 +3644,7 @@
       "FloatButtonRootSlotProps",
       "FloatingPanelContext",
       "FloatingPanelRootSlotProps",
+      "FocusTrapContext",
       "FormContext",
       "FormErrorSummaryItemSlotProps",
       "FormErrorSummarySlotProps",
@@ -4895,6 +4901,8 @@
       "XhFloatingPanelTriggerProps",
       "XhFloatingPanelWindowStateTrigger",
       "XhFloatingPanelWindowStateTriggerProps",
+      "XhFocusTrap",
+      "XhFocusTrapProps",
       "XhFormErrorSummary",
       "XhFormErrorSummaryItem",
       "XhFormErrorSummaryItemProps",
@@ -6532,6 +6540,7 @@
       "useFloatButtonContext",
       "useFloatingPanel",
       "useFloatingPanelContext",
+      "useFocusTrap",
       "useForm",
       "useFormContext",
       "useFormatInput",
@@ -6849,6 +6858,7 @@
       "XhFlexElement",
       "XhFloatButtonElement",
       "XhFloatingPanelElement",
+      "XhFocusTrapElement",
       "XhFormElement",
       "XhFormatInputElement",
       "XhFunnelChartElement",
@@ -8789,6 +8799,9 @@
       "FloatingPanelWindowState",
       "FloatingPanelWindowStateChangeDetails",
       "FloatingPanelWindowStateTriggerProps",
+      "FocusTrapApi",
+      "FocusTrapSchema",
+      "FocusTrapTranslations",
       "FormApi",
       "FormArrayMutation",
       "FormColumnCount",
@@ -10377,6 +10390,7 @@
       "connectFlex",
       "connectFloatButton",
       "connectFloatingPanel",
+      "connectFocusTrap",
       "connectForm",
       "connectFormatInput",
       "connectFunnelChart",
@@ -10673,6 +10687,10 @@
       "floatingPanelMeta",
       "floatingPanelRectStyle",
       "focusFormField",
+      "focusTrapAnatomy",
+      "focusTrapKeyboard",
+      "focusTrapMachine",
+      "focusTrapMeta",
       "formAnatomy",
       "formArrayItemPath",
       "formErrorNames",
@@ -13522,6 +13540,9 @@
       "trigger",
       "window-state-trigger"
     ],
+    "focus-trap": [
+      "root"
+    ],
     "form": [
       "error-summary",
       "error-summary-item",
@@ -15573,6 +15594,12 @@
       "resizable",
       "translations",
       "windowState"
+    ],
+    "focus-trap": [
+      "active",
+      "autoFocus",
+      "loop",
+      "restoreFocus"
     ],
     "form": [
       "columns",
@@ -24408,6 +24435,15 @@
         "position-change",
         "window-state-change"
       ]
+    },
+    "xh-focus-trap": {
+      "attributes": [
+        "active",
+        "auto-focus",
+        "loop",
+        "restore-focus"
+      ],
+      "events": []
     },
     "xh-form": {
       "attributes": [

@@ -1,0 +1,24 @@
+<!-- 基础用法 | 打开后焦点进到区域里，Tab 在三颗按钮之间回绕；完成后停用，焦点回到打开它的按钮 -->
+<xh-button id="focus-trap-basic-open"><button data-xh-part="root">编辑</button></xh-button>
+<xh-focus-trap id="focus-trap-basic" active="false" hidden>
+  <div data-xh-part="root" style="display: flex; gap: var(--xh-space-2)">
+    <xh-button><button data-xh-part="root">加粗</button></xh-button>
+    <xh-button><button data-xh-part="root">斜体</button></xh-button>
+    <xh-button tone="neutral" id="focus-trap-basic-done"><button data-xh-part="root">完成</button></xh-button>
+  </div>
+</xh-focus-trap>
+<script type="module">
+  const open = document.getElementById("focus-trap-basic-open");
+  const trap = document.getElementById("focus-trap-basic");
+  const done = document.getElementById("focus-trap-basic-done");
+  open.addEventListener("click", () => {
+    open.hidden = true;
+    trap.hidden = false;
+    trap.active = true;
+  });
+  done.addEventListener("click", () => {
+    trap.active = false;
+    trap.hidden = true;
+    open.hidden = false;
+  });
+</script>

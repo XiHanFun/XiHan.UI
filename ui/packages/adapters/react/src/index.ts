@@ -1322,6 +1322,10 @@ export type {
 } from './components/floating-panel/floating-panel'
 export { useFloatingPanel } from './components/floating-panel/use-floating-panel'
 export type { FloatingPanelContext } from './components/floating-panel/use-floating-panel'
+export { XhFocusTrap } from './components/focus-trap/focus-trap'
+export type { XhFocusTrapProps } from './components/focus-trap/focus-trap'
+export { useFocusTrap } from './components/focus-trap/use-focus-trap'
+export type { FocusTrapContext } from './components/focus-trap/use-focus-trap'
 export { useFormContext, useOptionalFormContext } from './components/form/context'
 export { useOptionalFormField } from './components/form/field-context'
 export {
