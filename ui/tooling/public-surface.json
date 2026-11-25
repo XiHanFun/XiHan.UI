@@ -13353,7 +13353,7 @@
       "scopes",
       "size",
       "status",
-      "timeoutMs",
+      "timeout",
       "tone",
       "translations",
       "variant"
@@ -22062,7 +22062,7 @@
         "require-reason",
         "size",
         "status",
-        "timeout-ms",
+        "timeout",
         "tone",
         "variant"
       ],

@@ -35,7 +35,7 @@ export const XhApprovalRoot = defineComponent({
     requestId: { type: String },
     status: { type: String as PropType<ApprovalStatus> },
     defaultStatus: { type: String as PropType<ApprovalStatus> },
-    timeoutMs: { type: Number },
+    timeout: { type: Number },
     scopes: { type: Array as PropType<readonly ApprovalScope[]> },
     grantedScopes: { type: Array as PropType<readonly string[]> },
     defaultGrantedScopes: { type: Array as PropType<readonly string[]> },

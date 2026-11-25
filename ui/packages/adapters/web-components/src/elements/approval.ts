@@ -39,7 +39,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {string} request-id - 本轮请求的身份，变化即重新进入待决并按新时长重新计时
  * @attr {string} status - 受控判定态：pending / approved / denied / expired
  * @attr {string} default-status - 非受控初值，默认 pending
- * @attr {number} timeout-ms - 超时无人应答时按拒绝收口；默认不启动计时器
+ * @attr {number} timeout - 超时无人应答时按拒绝收口；默认不启动计时器
  * @attr {string} note - 受控的备注文本，随判定载荷一起发出
  * @attr {string} default-note - 备注的非受控初值，默认空串
  * @attr {boolean} loading - 判定在途：只阻止重复批准，不阻止拒绝
@@ -77,7 +77,7 @@ export class XhApprovalElement extends XhElement {
     requestId: { converter: STRING_CONVERTER, attribute: 'request-id' },
     status: { converter: STRING_CONVERTER },
     defaultStatus: { converter: STRING_CONVERTER, attribute: 'default-status' },
-    timeoutMs: { converter: NUMBER_CONVERTER, attribute: 'timeout-ms' },
+    timeout: { converter: NUMBER_CONVERTER },
     note: { converter: STRING_CONVERTER },
     defaultNote: { converter: STRING_CONVERTER, attribute: 'default-note' },
     loading: { converter: BOOLEAN_CONVERTER },
@@ -98,7 +98,7 @@ export class XhApprovalElement extends XhElement {
   declare requestId?: string
   declare status?: ApprovalStatus
   declare defaultStatus?: ApprovalStatus
-  declare timeoutMs?: number
+  declare timeout?: number
   declare note?: string
   declare defaultNote?: string
   declare loading?: boolean
@@ -127,7 +127,7 @@ export class XhApprovalElement extends XhElement {
     requestId: this.requestId,
     status: this.status,
     defaultStatus: this.defaultStatus,
-    timeoutMs: this.timeoutMs,
+    timeout: this.timeout,
     scopes: this.scopes,
     grantedScopes: this.grantedScopes,
     defaultGrantedScopes: this.defaultGrantedScopes,

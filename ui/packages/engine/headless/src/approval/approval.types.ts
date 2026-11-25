@@ -62,7 +62,7 @@ export interface ApprovalSchema extends MachineSchema {
      * 超时无人应答时按拒绝收口。默认不提供默认值：替宿主决定安全策略比不决定更危险。
      * 非有限值或非正数同样不启动计时器，既不按 0ms 立即到期，也不视为无限期放行。
      */
-    timeoutMs?: number
+    timeout?: number
     scopes?: readonly ApprovalScope[]
     grantedScopes?: readonly string[]
     defaultGrantedScopes?: readonly string[]

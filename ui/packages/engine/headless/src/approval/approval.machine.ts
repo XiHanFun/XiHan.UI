@@ -236,7 +236,7 @@ export const approvalMachine = createMachine({
       }),
       /** 时长非有限或非正数时一个计时器都不起，停在待决。 */
       trackTimeout: ({ prop, send }) => {
-        const ms = prop('timeoutMs')
+        const ms = prop('timeout')
         if (ms === undefined || !Number.isFinite(ms) || ms <= 0)
           return undefined
         return setTimeoutEffect(() => send({ type: 'after.timeout' }), ms)

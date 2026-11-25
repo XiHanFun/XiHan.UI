@@ -38,7 +38,7 @@ export interface XhApprovalRootProps extends Omit<ComponentPropsWithRef<'div'>, 
   status?: ApprovalStatus
   defaultStatus?: ApprovalStatus
   /** 多长时间无人应答即按拒绝收口；默认不提供默认值。 */
-  timeoutMs?: number
+  timeout?: number
   scopes?: readonly ApprovalScope[]
   grantedScopes?: readonly string[]
   defaultGrantedScopes?: readonly string[]
@@ -70,7 +70,7 @@ export function XhApprovalRoot({
   requestId,
   status,
   defaultStatus,
-  timeoutMs,
+  timeout,
   scopes,
   grantedScopes,
   defaultGrantedScopes,
@@ -95,7 +95,7 @@ export function XhApprovalRoot({
     requestId,
     status,
     defaultStatus,
-    timeoutMs,
+    timeout,
     scopes,
     grantedScopes,
     defaultGrantedScopes,

@@ -117,7 +117,7 @@ requireReason 让用户拒绝时必须写明理由：备注空着就按拒绝或
 | `requestId` | `string` |  | 本轮请求的身份。变化即重新进入待决，并按新时长重新计时。 |
 | `status` | `ApprovalStatus` |  | 提供即受控。 |
 | `defaultStatus` | `ApprovalStatus` |  |  |
-| `timeoutMs` | `number` |  | 超时无人应答时按拒绝收口。默认不提供默认值：替宿主决定安全策略比不决定更危险。 非有限值或非正数同样不启动计时器，既不按 0ms 立即到期，也不视为无限期放行。 |
+| `timeout` | `number` |  | 超时无人应答时按拒绝收口。默认不提供默认值：替宿主决定安全策略比不决定更危险。 非有限值或非正数同样不启动计时器，既不按 0ms 立即到期，也不视为无限期放行。 |
 | `scopes` | `readonly ApprovalScope[]` |  |  |
 | `grantedScopes` | `readonly string[]` |  |  |
 | `defaultGrantedScopes` | `readonly string[]` |  |  |

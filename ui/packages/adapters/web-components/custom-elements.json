@@ -1388,12 +1388,12 @@
             },
             {
               "kind": "field",
-              "name": "timeoutMs",
+              "name": "timeout",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
-              "attribute": "timeout-ms"
+              "attribute": "timeout"
             },
             {
               "kind": "field",
@@ -1547,7 +1547,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<ApprovalSchema>(this, approvalMachine, () => ({ requestId: this.requestId, status: this.status, defaultStatus: this.defaultStatus, timeoutMs: this.timeoutMs, scopes: this.scopes, grantedScopes: this.grantedScopes, defaultGrantedScopes: this.defaultGrantedScopes, note: this.note, defaultNote: this.defaultNote, loading: this.loading, denyOnEscape: this.denyOnEscape, denyOnUnmount: this.denyOnUnmount, requireReason: this.requireReason, live: this.live, variant: this.variant, tone: this.tone, size: this.size, translations: this.translations, // 只引用作者写了的标题与说明 parts: renderedTitleDescription(this.getPart('title'), this.getPart('description')), onDecision: this.notifyDecision, onGrantedScopesChange: this.notifyScopes, onNoteChange: this.notifyNote, }))"
+              "default": "new MachineController<ApprovalSchema>(this, approvalMachine, () => ({ requestId: this.requestId, status: this.status, defaultStatus: this.defaultStatus, timeout: this.timeout, scopes: this.scopes, grantedScopes: this.grantedScopes, defaultGrantedScopes: this.defaultGrantedScopes, note: this.note, defaultNote: this.defaultNote, loading: this.loading, denyOnEscape: this.denyOnEscape, denyOnUnmount: this.denyOnUnmount, requireReason: this.requireReason, live: this.live, variant: this.variant, tone: this.tone, size: this.size, translations: this.translations, // 只引用作者写了的标题与说明 parts: renderedTitleDescription(this.getPart('title'), this.getPart('description')), onDecision: this.notifyDecision, onGrantedScopesChange: this.notifyScopes, onNoteChange: this.notifyNote, }))"
             },
             {
               "kind": "method",
@@ -1639,8 +1639,8 @@
                 "text": "number | undefined"
               },
               "description": "超时无人应答时按拒绝收口；默认不启动计时器",
-              "name": "timeout-ms",
-              "fieldName": "timeoutMs"
+              "name": "timeout",
+              "fieldName": "timeout"
             },
             {
               "type": {

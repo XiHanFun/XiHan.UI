@@ -39,7 +39,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 <template>
   <XhApprovalRoot
     v-slot="{ status }"
-    :timeout-ms="10000"
+    :timeout="10000"
     tone="danger"
     @decision="decided = `${$event.decision}（来源 ${$event.source}）`"
   >

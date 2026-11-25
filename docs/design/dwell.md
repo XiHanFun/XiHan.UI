@@ -42,7 +42,7 @@
 | --- | --- | ---: | --- |
 | Scrollbar、ScrollArea | `hideDelay` | 600ms | 停止滚动与离开后多久隐藏；`Infinity` 不隐藏 |
 | Image | `fallbackDelay` | 0 | 加载多久还没好才显示回退内容；`Infinity` 加载期间不显示 |
-| Approval | `timeoutMs` | 无 | 不设就不计时；设了到点按超时处理 |
+| Approval | `timeout` | 无 | 不设就不计时；设了到点按超时处理 |
 
 首字母检索（Menu、Select、Listbox、Tree 等集合）在最后一次按键 350ms 后清空已输入的前缀，这是内部取值，不作为属性开放。
 

@@ -331,7 +331,7 @@ describe('approval 按压通道：按 approve / deny / item:value 记按住的�
 
     vi.useFakeTimers()
     try {
-      const t = mount({ timeoutMs: 30 })
+      const t = mount({ timeout: 30 })
       fire(t.deny(), 'onKeyDown', key(' '))
       expect(t.deny()['data-pressed']).toBe('')
       vi.advanceTimersByTime(30)
@@ -423,7 +423,7 @@ describe('requireReason：用户拒绝要写理由', () => {
 
     vi.useFakeTimers()
     try {
-      const t = mount({ requireReason: true, timeoutMs: 1000 })
+      const t = mount({ requireReason: true, timeout: 1000 })
       vi.advanceTimersByTime(1000)
       expect(t.decisions.map(d => d.source)).toEqual(['timeout'])
     }

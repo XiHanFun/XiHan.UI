@@ -36,7 +36,7 @@ export default function Demo(): ReactNode {
   return (
     <>
       <XhApprovalRoot
-        timeoutMs={10000}
+        timeout={10000}
         tone="danger"
         onDecision={details => setDecided(`${details.decision}（来源 ${details.source}）`)}
       >

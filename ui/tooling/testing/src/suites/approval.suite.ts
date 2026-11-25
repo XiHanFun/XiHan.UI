@@ -261,7 +261,7 @@ export const approvalSuite: ConformanceSuite = {
     {
       name: '超时按拒绝收口：判定只有批准与拒绝两个取值，expired 只是显示态',
       spec: { apg: APG },
-      props: { timeoutMs: 30 },
+      props: { timeout: 30 },
       steps: [
         {
           kind: 'settle',
@@ -282,7 +282,7 @@ export const approvalSuite: ConformanceSuite = {
     {
       name: '时长非正数时一个计时器都不起：既不当 0ms 立刻到期，也不当无限期放行',
       spec: { apg: APG },
-      props: { timeoutMs: 0 },
+      props: { timeout: 0 },
       initial: { parts: { root: { 'data-state': 'pending' } } },
     },
     {
