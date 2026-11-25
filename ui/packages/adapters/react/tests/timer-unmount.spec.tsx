@@ -75,7 +75,7 @@ describe('timer 卸载之后不再走', () => {
       completed += 1
     }
     await mount(
-      <XhTimerRoot autoStart countdown startMs={200} onComplete={countComplete} />,
+      <XhTimerRoot autoStart countdown startValue={200} onComplete={countComplete} />,
     )
 
     await inAct(async () => {

@@ -11,7 +11,7 @@ const threeDays = 3 * 24 * 60 * 60 * 1000;
 </script>
 
 <template>
-  <XhTimerRoot countdown :start-ms="threeDays" auto-start>
+  <XhTimerRoot countdown :start-value="threeDays" auto-start>
     <XhTimerDisplay>
       <XhTimerItem unit="days" />
       <XhTimerSeparator>天</XhTimerSeparator>

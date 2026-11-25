@@ -108,7 +108,7 @@ export const timerSuite: ConformanceSuite = {
     {
       name: '倒着走：data-countdown 立起来，显示的是起点而不是 0',
       spec: { apg: SPEC },
-      props: { countdown: true, startMs: 90_000 },
+      props: { countdown: true, startValue: 90_000 },
       initial: {
         parts: {
           root: { 'data-countdown': '', 'data-state': 'idle' },
@@ -163,7 +163,7 @@ export const timerSuite: ConformanceSuite = {
       name: '文案整条可换：时间区与按钮的名字都走 translations',
       spec: { apg: SPEC },
       props: {
-        startMs: 65_000,
+        startValue: 65_000,
         translations: {
           // 只摆了分和秒时，内建那句「几时几分几秒」会多念一段，名字要作者自己给
           time: (s: TimerSegments) => `${s.minutes} 分 ${s.seconds} 秒`,
@@ -181,7 +181,7 @@ export const timerSuite: ConformanceSuite = {
       name: '走到终点：时间区与 root 都换到 completed，按钮的语义与名字换成归零',
       spec: { apg: SPEC },
       // 倒计 60 毫秒：一拍都跳不到就走完，两侧不必等真实时钟
-      props: { countdown: true, startMs: 60 },
+      props: { countdown: true, startValue: 60 },
       steps: [
         {
           kind: 'click',
@@ -206,7 +206,7 @@ export const timerSuite: ConformanceSuite = {
     {
       name: '每一段的数字由组件写进条目里，作者只声明这一段是什么',
       spec: { apg: SPEC },
-      props: { startMs: 3_661_000 },
+      props: { startValue: 3_661_000 },
       steps: [
         {
           kind: 'raw',
@@ -219,7 +219,7 @@ export const timerSuite: ConformanceSuite = {
       name: '条目里的文本恒归组件写：作者先写进去的字被这一段的数字盖掉',
       spec: { apg: SPEC },
       fixture: itemsWithText,
-      props: { startMs: 3_661_000 },
+      props: { startValue: 3_661_000 },
       steps: [
         {
           kind: 'raw',

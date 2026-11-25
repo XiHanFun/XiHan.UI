@@ -24,7 +24,7 @@ function restart(): void {
 <template>
   <XhTimerRoot
     countdown
-    :start-ms="5000"
+    :start-value="5000"
     :translations="translations"
     @tick="ticks++"
     @complete="done = true"

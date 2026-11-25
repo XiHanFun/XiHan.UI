@@ -413,14 +413,14 @@ describe('side-nav 当前页的品牌高亮有出口', () => {
 describe('timer 的数字段有自己的前景槽', () => {
   it('只染数字，记号不跟着走', async () => {
     setSlot('--xh-timer-item-fg', RED)
-    await mount(() => h(XhTimerRoot, { startMs: 0 }))
+    await mount(() => h(XhTimerRoot, { startValue: 0 }))
 
     expect(styleOf(part('timer', 'item'), 'color')).toBe(RED)
     expect(styleOf(part('timer', 'separator'), 'color')).not.toBe(RED)
   })
 
   it('不设时随时间区继承：走完退一档，数字段跟得上', async () => {
-    await mount(() => h(XhTimerRoot, { startMs: 0 }))
+    await mount(() => h(XhTimerRoot, { startValue: 0 }))
 
     expect(styleOf(part('timer', 'item'), 'color')).toBe(styleOf(part('timer', 'display'), 'color'))
   })

@@ -30,9 +30,9 @@ const DEFAULT_UNITS: readonly TimerUnit[] = ['hours', 'minutes', 'seconds']
 
 export interface XhTimerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   /** 起始值毫秒，默认 0。 */
-  startMs?: number
+  startValue?: number
   /** 终点值毫秒。倒计时默认 0；正计时未提供时一直运行。 */
-  targetMs?: number
+  targetValue?: number
   /** 倒计时，默认假。 */
   countdown?: boolean
   /** 受控剩余毫秒。提供后即进入受控通道。 */
@@ -59,8 +59,8 @@ export interface XhTimerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'ch
 }
 
 export function XhTimerRoot({
-  startMs,
-  targetMs,
+  startValue,
+  targetValue,
   countdown,
   value,
   active,
@@ -77,8 +77,8 @@ export function XhTimerRoot({
   ...rest
 }: XhTimerRootProps): ReactNode {
   const ctx = useTimer(withXhConfig('timer', {
-    startMs,
-    targetMs,
+    startValue,
+    targetValue,
     countdown,
     value,
     active,

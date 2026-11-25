@@ -26,7 +26,7 @@ export default function Demo(): ReactNode {
     <>
       <XhTimerRoot
         countdown
-        startMs={5000}
+        startValue={5000}
         translations={translations}
         onTick={() => setTicks(n => n + 1)}
         onComplete={() => setDone(true)}

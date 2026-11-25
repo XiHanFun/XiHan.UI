@@ -69,18 +69,18 @@ export interface TimerTranslations {
 export interface TimerSchema extends MachineSchema {
   props: {
     /** 起始值毫秒，默认 0。正计时从它向上走，倒计时从它向下走。 */
-    startMs?: number
+    startValue?: number
     /**
      * 终点值毫秒。倒计时默认 0；正计时未提供时持续运行，没有终点也不会通知完成。
      * 终点落在起点的反方向（倒计时提供了比起点更大的终点）时本轮长度为 0：
      * 显示值停在起点上，一开始运行即到期。
      */
-    targetMs?: number
+    targetValue?: number
     /** 倒计时，默认假。 */
     countdown?: boolean
     /**
      * 受控剩余毫秒。提供后即进入受控通道：它就是起点，方向锁定为倒计时、终点锁定为 0，
-     * startMs / targetMs / countdown 三者不再参与；改写它即把累计清零并从新值重新计时。
+     * startValue / targetValue / countdown 三者不再参与；改写它即把累计清零并从新值重新计时。
      */
     value?: number
     /**

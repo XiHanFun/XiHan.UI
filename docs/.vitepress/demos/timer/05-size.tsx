@@ -18,7 +18,7 @@ export default function Demo(): ReactNode {
     <>
       {sizes.map(size => (
         <div key={size} style={{ marginBlockEnd: "12px" }}>
-          <XhTimerRoot size={size} countdown startMs={oneMinute} translations={translations}>
+          <XhTimerRoot size={size} countdown startValue={oneMinute} translations={translations}>
             <XhTimerDisplay>
               <XhTimerItem unit="minutes" />
               <XhTimerSeparator>:</XhTimerSeparator>

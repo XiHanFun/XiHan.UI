@@ -11,7 +11,7 @@ const threeDays = 3 * 24 * 60 * 60 * 1000;
 
 export default function Demo(): ReactNode {
   return (
-    <XhTimerRoot countdown startMs={threeDays} autoStart>
+    <XhTimerRoot countdown startValue={threeDays} autoStart>
       <XhTimerDisplay>
         <XhTimerItem unit="days" />
         <XhTimerSeparator>天</XhTimerSeparator>

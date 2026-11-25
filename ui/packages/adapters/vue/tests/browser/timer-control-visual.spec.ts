@@ -16,7 +16,7 @@ function mountTimer(props: Record<string, unknown> = {}): void {
   host = document.createElement('div')
   document.body.append(host)
   app = createApp({
-    render: () => h(XhTimerRoot, { countdown: true, startMs: 90_000, ...props }, () => [
+    render: () => h(XhTimerRoot, { countdown: true, startValue: 90_000, ...props }, () => [
       h(XhTimerDisplay, null, () => [
         h(XhTimerItem, { unit: 'minutes' }),
         h(XhTimerSeparator),

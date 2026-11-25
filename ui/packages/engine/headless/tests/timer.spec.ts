@@ -163,7 +163,7 @@ describe('timerMachine 起停', () => {
   })
 
   it('缺省不开跑，显示的就是起始值', () => {
-    const t = makeTimer({ startMs: 30 * SECOND, countdown: true })
+    const t = makeTimer({ startValue: 30 * SECOND, countdown: true })
     expect(t.state()).toBe('idle')
     vi.advanceTimersByTime(10 * SECOND)
     expect(t.api().value).toBe(30 * SECOND)
@@ -194,7 +194,7 @@ describe('timerMachine 起停', () => {
   })
 
   it('归零回到没起步：累计清空，显示退回起始值', () => {
-    const t = makeTimer({ autoStart: true, startMs: 20 * SECOND, countdown: true })
+    const t = makeTimer({ autoStart: true, startValue: 20 * SECOND, countdown: true })
     vi.advanceTimersByTime(5 * SECOND)
     expect(t.api().value).toBe(15 * SECOND)
 
@@ -225,7 +225,7 @@ describe('timerMachine 到点', () => {
   it('终点不落在整拍上也精确落点：不多走那一拍', () => {
     const onComplete = vi.fn()
     // 2.5 秒的倒计时配一秒一拍：只靠拍子判定的话要到第 3 秒才结束
-    const t = makeTimer({ autoStart: true, countdown: true, startMs: 2500, onComplete })
+    const t = makeTimer({ autoStart: true, countdown: true, startValue: 2500, onComplete })
 
     vi.advanceTimersByTime(2500)
     expect(t.state()).toBe('completed')
@@ -236,7 +236,7 @@ describe('timerMachine 到点', () => {
 
   it('走完只通知一次，之后时间再过也不动', () => {
     const onComplete = vi.fn()
-    const t = makeTimer({ autoStart: true, countdown: true, startMs: SECOND, onComplete })
+    const t = makeTimer({ autoStart: true, countdown: true, startValue: SECOND, onComplete })
     vi.advanceTimersByTime(30 * SECOND)
     expect(onComplete).toHaveBeenCalledTimes(1)
     expect(t.api().value).toBe(0)
@@ -244,7 +244,7 @@ describe('timerMachine 到点', () => {
   })
 
   it('正计时给了终点就停在终点上；不给终点就一直走', () => {
-    const capped = makeTimer({ autoStart: true, targetMs: 3 * SECOND })
+    const capped = makeTimer({ autoStart: true, targetValue: 3 * SECOND })
     vi.advanceTimersByTime(30 * SECOND)
     expect(capped.state()).toBe('completed')
     expect(capped.api().value).toBe(3 * SECOND)
@@ -256,7 +256,7 @@ describe('timerMachine 到点', () => {
   })
 
   it('暂停过的倒计时仍落在同一个终点上：停着的那段不算进路程', () => {
-    const t = makeTimer({ autoStart: true, countdown: true, startMs: 10 * SECOND })
+    const t = makeTimer({ autoStart: true, countdown: true, startValue: 10 * SECOND })
     vi.advanceTimersByTime(4 * SECOND)
     t.api().pause()
     vi.advanceTimersByTime(60 * SECOND)
@@ -274,7 +274,7 @@ describe('timerMachine 到点', () => {
   it('每一拍通知一次，到点那一拍只发走完', () => {
     const onTick = vi.fn()
     const onComplete = vi.fn()
-    makeTimer({ autoStart: true, countdown: true, startMs: 3 * SECOND, onTick, onComplete })
+    makeTimer({ autoStart: true, countdown: true, startValue: 3 * SECOND, onTick, onComplete })
 
     vi.advanceTimersByTime(3 * SECOND)
     // 第 1、2 秒各一拍；第 3 秒是终点，那一刻只发走完
@@ -284,9 +284,9 @@ describe('timerMachine 到点', () => {
   })
 
   it('改了起止值就按新的这一轮接着走，累计不丢', () => {
-    const t = makeTimer({ autoStart: true, countdown: true, startMs: 10 * SECOND })
+    const t = makeTimer({ autoStart: true, countdown: true, startValue: 10 * SECOND })
     vi.advanceTimersByTime(4 * SECOND)
-    t.setProps({ startMs: 20 * SECOND })
+    t.setProps({ startValue: 20 * SECOND })
     // 走过的 4 秒仍算数，只是这一轮的起点换了
     expect(t.api().value).toBe(16 * SECOND)
 
@@ -318,7 +318,7 @@ describe('connectTimer 部件属性', () => {
   })
 
   it('时间区是 timer 角色，播报写死关掉，名字把每段说清楚', () => {
-    const t = makeTimer({ startMs: HOUR + 2 * MINUTE + 3 * SECOND })
+    const t = makeTimer({ startValue: HOUR + 2 * MINUTE + 3 * SECOND })
     const display = t.display()
     expect(display.role).toBe('timer')
     expect(display['aria-live']).toBe('off')
@@ -326,20 +326,20 @@ describe('connectTimer 部件属性', () => {
   })
 
   it('名字里的天数为 0 就不念它', () => {
-    const t = makeTimer({ startMs: DAY })
+    const t = makeTimer({ startValue: DAY })
     expect(t.display()['aria-label']).toBe('1 day 0 hours 0 minutes 0 seconds')
     expect(makeTimer({}).display()['aria-label']).toBe('0 hours 0 minutes 0 seconds')
   })
 
   it('内建名字按数量分单复数：1 用单数，0 与其余用复数', () => {
-    expect(makeTimer({ startMs: HOUR + MINUTE + SECOND }).display()['aria-label'])
+    expect(makeTimer({ startValue: HOUR + MINUTE + SECOND }).display()['aria-label'])
       .toBe('1 hour 1 minute 1 second')
-    expect(makeTimer({ startMs: 2 * HOUR + 2 * MINUTE + 2 * SECOND }).display()['aria-label'])
+    expect(makeTimer({ startValue: 2 * HOUR + 2 * MINUTE + 2 * SECOND }).display()['aria-label'])
       .toBe('2 hours 2 minutes 2 seconds')
   })
 
   it('终点落在起点反方向时显示值停在起点上，同时立刻算走完', () => {
-    const t = makeTimer({ autoStart: true, countdown: true, startMs: 5 * SECOND, targetMs: 9 * SECOND })
+    const t = makeTimer({ autoStart: true, countdown: true, startValue: 5 * SECOND, targetValue: 9 * SECOND })
     expect(t.api().value).toBe(5 * SECOND)
 
     vi.advanceTimersByTime(SECOND)
@@ -349,7 +349,7 @@ describe('connectTimer 部件属性', () => {
 
   it('文案可整条替换，实例给的胜过内建英文', () => {
     const t = makeTimer({
-      startMs: 65 * SECOND,
+      startValue: 65 * SECOND,
       translations: { time: s => `${s.minutes} 分 ${s.seconds} 秒`, start: '开始' },
     })
     expect(t.display()['aria-label']).toBe('1 分 5 秒')
@@ -365,7 +365,7 @@ describe('connectTimer 部件属性', () => {
   })
 
   it('起停按钮是原生 button，语义与名字随状态换', () => {
-    const t = makeTimer({ countdown: true, startMs: 5 * SECOND })
+    const t = makeTimer({ countdown: true, startValue: 5 * SECOND })
     expect(t.control().type).toBe('button')
     expect(t.control()['data-action']).toBe('start')
     expect(t.control()['aria-label']).toBe('Start')
@@ -401,7 +401,7 @@ describe('connectTimer 部件属性', () => {
   })
 
   it('段文本取自当前显示值', () => {
-    const t = makeTimer({ startMs: 90 * SECOND })
+    const t = makeTimer({ startValue: 90 * SECOND })
     expect(t.api().segmentText('minutes')).toBe('01')
     expect(t.api().segmentText('seconds')).toBe('30')
   })
@@ -445,10 +445,10 @@ describe('timer 受控通道', () => {
   })
 
   it('给了剩余量即接管起止与方向：起点是它、倒着走、终点是 0', () => {
-    expect(timerRunOf({ value: 5 * SECOND, startMs: 99, targetMs: 42, countdown: false }))
-      .toEqual({ startMs: 5 * SECOND, targetMs: 0, countdown: true })
-    expect(timerRunOf({ startMs: 99, targetMs: 42, countdown: true }))
-      .toEqual({ startMs: 99, targetMs: 42, countdown: true })
+    expect(timerRunOf({ value: 5 * SECOND, startValue: 99, targetValue: 42, countdown: false }))
+      .toEqual({ startValue: 5 * SECOND, targetValue: 0, countdown: true })
+    expect(timerRunOf({ startValue: 99, targetValue: 42, countdown: true }))
+      .toEqual({ startValue: 99, targetValue: 42, countdown: true })
   })
 
   it('给了剩余量或开关即算受控；两个都没给才看 autoStart', () => {
@@ -558,7 +558,7 @@ describe('timerMachine 按压通道：Space / Enter 与触屏按住投影 data-p
 
   it('按住途中起停翻转：Enter 在 keydown 即开跑 / 暂停 / 继续 / 归零，按压面不随之丢，keyup 才撤下；四段状态都接', () => {
     // 只用起始值不走受控通道：起停那一下由机器自己落态
-    const s = makeTimer({ startMs: 2 * SECOND, countdown: true, precision: 0 })
+    const s = makeTimer({ startValue: 2 * SECOND, countdown: true, precision: 0 })
     fire(s.control(), 'onKeyDown', key('Enter'))
     expect(s.control()['data-pressed']).toBe('')
     ;(s.control().onClick as () => void)()

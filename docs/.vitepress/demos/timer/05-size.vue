@@ -16,7 +16,7 @@ const translations = { start: "开始", pause: "暂停", resume: "继续", reset
 
 <template>
   <div v-for="size in sizes" :key="size" style="margin-block-end: 12px">
-    <XhTimerRoot :size="size" countdown :start-ms="oneMinute" :translations="translations">
+    <XhTimerRoot :size="size" countdown :start-value="oneMinute" :translations="translations">
       <XhTimerDisplay>
         <XhTimerItem unit="minutes" />
         <XhTimerSeparator>:</XhTimerSeparator>

@@ -15,7 +15,7 @@ import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 空串也当缺席：`start-ms=""` 经 Number() 会变成 0，那是「从零开始」，不是「没写」
+// 空串也当缺席：`start-value=""` 经 Number() 会变成 0，那是「从零开始」，不是「没写」
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /** 条目没写段单位或写错时退回秒：秒是最常显示的那一段。 */
@@ -36,8 +36,8 @@ const FALLBACK_UNIT: TimerUnit = 'seconds'
  * control 中的文字由作者编写（通常是一个图标），元素只按当前状态切换它的 `data-action` 与读屏名。
  *
  * @customElement xh-timer
- * @attr {number} start-ms - 起始值毫秒，默认 0；正计时从它向上，倒计时从它向下
- * @attr {number} target-ms - 终点值毫秒；倒计时默认 0，正计时未提供时没有终点
+ * @attr {number} start-value - 起始值毫秒，默认 0；正计时从它向上，倒计时从它向下
+ * @attr {number} target-value - 终点值毫秒；倒计时默认 0，正计时未提供时没有终点
  * @attr {boolean} countdown - 倒计时，默认关闭
  * @attr {number} value - 受控剩余毫秒；提供后即进入受控通道，起点锁定为它、方向锁定为倒计时、终点锁定为 0
  * @attr {boolean} active - 受控开关，默认真；提供后即进入受控通道，起停按钮不再改变状态
@@ -61,8 +61,8 @@ export class XhTimerElement extends XhElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   // camelCase 字段的属性名必须显式给：默认观察的是全小写形态，不是 kebab
   static override properties = {
-    startMs: { converter: NUMBER_CONVERTER, attribute: 'start-ms' },
-    targetMs: { converter: NUMBER_CONVERTER, attribute: 'target-ms' },
+    startValue: { converter: NUMBER_CONVERTER, attribute: 'start-value' },
+    targetValue: { converter: NUMBER_CONVERTER, attribute: 'target-value' },
     countdown: { converter: BOOLEAN_CONVERTER },
     value: { converter: NUMBER_CONVERTER },
     active: { converter: BOOLEAN_CONVERTER },
@@ -76,8 +76,8 @@ export class XhTimerElement extends XhElement {
     translations: { attribute: false },
   }
 
-  declare startMs?: number
-  declare targetMs?: number
+  declare startValue?: number
+  declare targetValue?: number
   declare countdown?: boolean
   declare value?: number
   declare active?: boolean
@@ -102,8 +102,8 @@ export class XhTimerElement extends XhElement {
 
   private machineProps(): Partial<TimerSchema['props']> {
     return {
-      startMs: this.startMs,
-      targetMs: this.targetMs,
+      startValue: this.startValue,
+      targetValue: this.targetValue,
       // 布尔一律原样透传：属性不在即 undefined，把缺省交回机器
       countdown: this.countdown,
       value: this.value,

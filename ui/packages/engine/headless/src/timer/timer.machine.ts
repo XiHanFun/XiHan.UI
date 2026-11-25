@@ -18,8 +18,8 @@ const { createMachine } = setup<TimerSchema>()
 function runOf(prop: PropFn<TimerSchema>): TimerRun {
   return timerRunOf({
     value: prop('value'),
-    startMs: prop('startMs'),
-    targetMs: prop('targetMs'),
+    startValue: prop('startValue'),
+    targetValue: prop('targetValue'),
     countdown: prop('countdown'),
   })
 }
@@ -27,13 +27,13 @@ function runOf(prop: PropFn<TimerSchema>): TimerRun {
 /** 这一轮要跑多久，undefined 即没有终点。 */
 function totalOf(prop: PropFn<TimerSchema>): number | undefined {
   const run = runOf(prop)
-  return timerTotalMs(run.startMs, run.targetMs, run.countdown)
+  return timerTotalMs(run.startValue, run.targetValue, run.countdown)
 }
 
 /** 累计走了 elapsed 毫秒时该显示的值。 */
 function valueOf(prop: PropFn<TimerSchema>, elapsed: number): number {
   const run = runOf(prop)
-  return timerValueAt(elapsed, run.startMs, run.targetMs, run.countdown)
+  return timerValueAt(elapsed, run.startValue, run.targetValue, run.countdown)
 }
 
 /**
@@ -59,7 +59,7 @@ export const timerMachine = createMachine({
   initialState: ({ prop }) => (timerRunsOnMount(prop('value'), prop('active'), prop('autoStart')) ? 'running' : 'idle'),
   watch: ({ track, prop, action }) => {
     track(
-      [() => prop('startMs'), () => prop('targetMs'), () => prop('countdown'), () => prop('interval')],
+      [() => prop('startValue'), () => prop('targetValue'), () => prop('countdown'), () => prop('interval')],
       () => action(['syncClock']),
     )
     // 受控通道：剩余量改写即重新计时，开关翻转即停走

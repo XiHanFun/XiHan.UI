@@ -6,5 +6,5 @@ const twoMinutes = 2 * 60 * 1000;
 </script>
 
 <template>
-  <XhTimerRoot countdown :start-ms="twoMinutes" auto-start />
+  <XhTimerRoot countdown :start-value="twoMinutes" auto-start />
 </template>

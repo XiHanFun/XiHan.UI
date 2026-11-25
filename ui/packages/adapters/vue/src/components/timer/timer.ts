@@ -32,8 +32,8 @@ export const XhTimerRoot = defineComponent({
   name: 'XhTimerRoot',
   // 缺省值由机器与 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    startMs: { type: Number },
-    targetMs: { type: Number },
+    startValue: { type: Number },
+    targetValue: { type: Number },
     countdown: { type: Boolean, default: undefined },
     value: { type: Number },
     active: { type: Boolean, default: undefined },

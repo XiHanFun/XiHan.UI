@@ -36,8 +36,8 @@ export function connectTimer<T extends PropTypes>(
   const phase = state.get()
   const run = timerRunOf({
     value: prop('value'),
-    startMs: prop('startMs'),
-    targetMs: prop('targetMs'),
+    startValue: prop('startValue'),
+    targetValue: prop('targetValue'),
     countdown: prop('countdown'),
   })
   const countdown = run.countdown
@@ -45,7 +45,7 @@ export function connectTimer<T extends PropTypes>(
   const elapsed = context.get('elapsed')
   // 量化一次，拆分与铺字都读这一个数，免得两处各自取整取出不一样的秒
   const value = quantizeTimer(
-    timerValueAt(elapsed, run.startMs, run.targetMs, countdown),
+    timerValueAt(elapsed, run.startValue, run.targetValue, countdown),
     resolveTimerPrecision(prop('precision')),
   )
   const segments = splitTimer(value)

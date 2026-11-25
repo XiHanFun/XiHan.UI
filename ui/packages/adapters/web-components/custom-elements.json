@@ -75250,21 +75250,21 @@
             },
             {
               "kind": "field",
-              "name": "startMs",
+              "name": "startValue",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
-              "attribute": "start-ms"
+              "attribute": "start-value"
             },
             {
               "kind": "field",
-              "name": "targetMs",
+              "name": "targetValue",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
-              "attribute": "target-ms"
+              "attribute": "target-value"
             },
             {
               "kind": "field",
@@ -75473,16 +75473,16 @@
                 "text": "number | undefined"
               },
               "description": "起始值毫秒，默认 0；正计时从它向上，倒计时从它向下",
-              "name": "start-ms",
-              "fieldName": "startMs"
+              "name": "start-value",
+              "fieldName": "startValue"
             },
             {
               "type": {
                 "text": "number | undefined"
               },
               "description": "终点值毫秒；倒计时默认 0，正计时未提供时没有终点",
-              "name": "target-ms",
-              "fieldName": "targetMs"
+              "name": "target-value",
+              "fieldName": "targetValue"
             },
             {
               "type": {

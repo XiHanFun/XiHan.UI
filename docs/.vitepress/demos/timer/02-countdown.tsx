@@ -5,5 +5,5 @@ import { XhTimerRoot } from "@xihan-ui/react";
 const twoMinutes = 2 * 60 * 1000;
 
 export default function Demo(): ReactNode {
-  return <XhTimerRoot countdown startMs={twoMinutes} autoStart />;
+  return <XhTimerRoot countdown startValue={twoMinutes} autoStart />;
 }

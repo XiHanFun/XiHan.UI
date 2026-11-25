@@ -43,10 +43,10 @@ export function resolveTimerInterval(interval: number | undefined): number {
 }
 
 /** 起始值归一：非有限数与负数一律按 0——时间不从负数开始数。 */
-export function resolveTimerStart(startMs: number | undefined): number {
-  if (startMs == null || !Number.isFinite(startMs) || startMs <= 0)
+export function resolveTimerStart(startValue: number | undefined): number {
+  if (startValue == null || !Number.isFinite(startValue) || startValue <= 0)
     return 0
-  return startMs
+  return startValue
 }
 
 /**
@@ -55,19 +55,19 @@ export function resolveTimerStart(startMs: number | undefined): number {
  * 倒计时缺省 0：倒着走总得有个底。正计时缺省 undefined，那是「没有终点、一直走」，
  * 不能归成 0——那会变成「一开跑就已经到点」，秒表从此按不动。
  */
-export function resolveTimerTarget(targetMs: number | undefined, countdown: boolean): number | undefined {
-  if (targetMs == null || !Number.isFinite(targetMs) || targetMs < 0)
+export function resolveTimerTarget(targetValue: number | undefined, countdown: boolean): number | undefined {
+  if (targetValue == null || !Number.isFinite(targetValue) || targetValue < 0)
     return countdown ? 0 : undefined
-  return targetMs
+  return targetValue
 }
 
 /**
  * 这一轮要跑多久。返回 undefined 即没有终点。
  * 终点落在起点的反方向时长度为 0：一开跑就到点，而不是往回跑。
  */
-export function timerTotalMs(startMs: number | undefined, targetMs: number | undefined, countdown: boolean): number | undefined {
-  const start = resolveTimerStart(startMs)
-  const target = resolveTimerTarget(targetMs, countdown)
+export function timerTotalMs(startValue: number | undefined, targetValue: number | undefined, countdown: boolean): number | undefined {
+  const start = resolveTimerStart(startValue)
+  const target = resolveTimerTarget(targetValue, countdown)
   if (target == null)
     return undefined
   return Math.max(countdown ? start - target : target - start, 0)
@@ -81,12 +81,12 @@ export function timerTotalMs(startMs: number | undefined, targetMs: number | und
  */
 export function timerValueAt(
   elapsed: number,
-  startMs: number | undefined,
-  targetMs: number | undefined,
+  startValue: number | undefined,
+  targetValue: number | undefined,
   countdown: boolean,
 ): number {
-  const start = resolveTimerStart(startMs)
-  const target = resolveTimerTarget(targetMs, countdown)
+  const start = resolveTimerStart(startValue)
+  const target = resolveTimerTarget(targetValue, countdown)
   const passed = Number.isFinite(elapsed) && elapsed > 0 ? elapsed : 0
   if (countdown) {
     // 倒着走时终点是下界，且不可能高于起点
@@ -189,8 +189,8 @@ export function formatTimerText(value: number, format?: string): string {
 
 /** 这一轮的起点、终点与方向。 */
 export interface TimerRun {
-  startMs: number | undefined
-  targetMs: number | undefined
+  startValue: number | undefined
+  targetValue: number | undefined
   countdown: boolean
 }
 
@@ -198,17 +198,17 @@ export interface TimerRun {
  * 解出这一轮的起止与方向。
  *
  * 受控剩余量 `value` 在场时由它接管：它就是起点，方向锁成倒着走、终点锁成 0，
- * 此时 `startMs` / `targetMs` / `countdown` 三个都不再参与。
+ * 此时 `startValue` / `targetValue` / `countdown` 三个都不再参与。
  */
 export function timerRunOf(props: {
   value?: number
-  startMs?: number
-  targetMs?: number
+  startValue?: number
+  targetValue?: number
   countdown?: boolean
 }): TimerRun {
   if (props.value != null)
-    return { startMs: props.value, targetMs: 0, countdown: true }
-  return { startMs: props.startMs, targetMs: props.targetMs, countdown: !!props.countdown }
+    return { startValue: props.value, targetValue: 0, countdown: true }
+  return { startValue: props.startValue, targetValue: props.targetValue, countdown: !!props.countdown }
 }
 
 /** 走的是受控通道吗：给了 value 或 active 即是。 */
