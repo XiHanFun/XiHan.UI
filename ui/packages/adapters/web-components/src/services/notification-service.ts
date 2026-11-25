@@ -20,7 +20,7 @@ import type {
   NotificationService,
   NotificationServiceOptions,
 } from './types'
-import { createFeedbackServiceController, NOTIFICATION_PLACEMENTS, notificationPresetOf, resolveFeedbackServiceTitle } from '@xihan-ui/headless'
+import { createNotificationServiceController, NOTIFICATION_PLACEMENTS, notificationPresetOf, resolveNotificationServiceTitle } from '@xihan-ui/headless'
 import { createServiceHolder, partNode, reportServiceFailure } from './host'
 import { defineFeedbackElements } from './register'
 
@@ -41,7 +41,7 @@ export function createNotificationService(options: NotificationServiceOptions = 
   const nodes = new Map<string, XhNotificationItemElement>()
   const shapes = new Map<string, string>()
   let mounted = true
-  const controller = createFeedbackServiceController<NotificationOptions, Partial<NotificationOptions>>({
+  const controller = createNotificationServiceController<NotificationOptions, Partial<NotificationOptions>>({
     name: 'notification',
     dismissOnUnmounted: false,
     onStateChange: () => render(),
@@ -126,7 +126,7 @@ export function createNotificationService(options: NotificationServiceOptions = 
 
     node.itemId = item.id
     node.preset = item.preset
-    node.titleText = resolveFeedbackServiceTitle(item)
+    node.titleText = resolveNotificationServiceTitle(item)
     node.description = item.description
     node.tone = item.tone
     node.loading = item.loading

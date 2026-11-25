@@ -1,6 +1,6 @@
-import type { FeedbackServiceQueue } from '../src/notification'
+import type { NotificationServiceQueue } from '../src/notification'
 import { describe, expect, it, vi } from 'vitest'
-import { createFeedbackServiceController, resolveFeedbackServiceTitle } from '../src/notification'
+import { createNotificationServiceController, resolveNotificationServiceTitle } from '../src/notification'
 
 interface RecordOptions {
   id?: string
@@ -12,7 +12,7 @@ interface RecordOptions {
 function makeQueue() {
   const records = new Map<string, RecordOptions>()
   let sequence = 0
-  const queue: FeedbackServiceQueue<RecordOptions, Partial<RecordOptions>> = {
+  const queue: NotificationServiceQueue<RecordOptions, Partial<RecordOptions>> = {
     create: (options) => {
       const id = options.id ?? `notification-${++sequence}`
       records.set(id, { ...records.get(id), ...options, id })
@@ -31,15 +31,15 @@ function makeQueue() {
 
 describe('feedback service controller', () => {
   it('两种预设共用合并计数标题投影', () => {
-    expect(resolveFeedbackServiceTitle({ title: '同步完成' })).toBe('同步完成')
-    expect(resolveFeedbackServiceTitle({ title: '同步完成', count: 1 })).toBe('同步完成')
-    expect(resolveFeedbackServiceTitle({ title: '同步完成', count: 3 })).toBe('同步完成 ×3')
-    expect(resolveFeedbackServiceTitle({ count: 3 })).toBeUndefined()
+    expect(resolveNotificationServiceTitle({ title: '同步完成' })).toBe('同步完成')
+    expect(resolveNotificationServiceTitle({ title: '同步完成', count: 1 })).toBe('同步完成')
+    expect(resolveNotificationServiceTitle({ title: '同步完成', count: 3 })).toBe('同步完成 ×3')
+    expect(resolveNotificationServiceTitle({ count: 3 })).toBeUndefined()
   })
 
   it('复用注入的 notification 队列端口完成 create/update/dismiss/dismissAll', () => {
     const { queue, records } = makeQueue()
-    const controller = createFeedbackServiceController<RecordOptions, Partial<RecordOptions>>({ name: 'notification' })
+    const controller = createNotificationServiceController<RecordOptions, Partial<RecordOptions>>({ name: 'notification' })
     controller.attach(queue)
 
     const first = controller.create({ title: '第一条' })
@@ -54,7 +54,7 @@ describe('feedback service controller', () => {
 
   it('没给 id 时由队列生成、命令交回队列给的那一个，显式 id 原样交给队列', () => {
     const { queue } = makeQueue()
-    const controller = createFeedbackServiceController<RecordOptions, Partial<RecordOptions>>({ name: 'notification' })
+    const controller = createNotificationServiceController<RecordOptions, Partial<RecordOptions>>({ name: 'notification' })
     controller.attach(queue)
 
     expect(controller.create({ id: 'fixed' })).toBe('fixed')
@@ -65,7 +65,7 @@ describe('feedback service controller', () => {
   it('动作按最终队列 id 保存，退场或 dismiss 后立即清掉', () => {
     const { queue } = makeQueue()
     const action = vi.fn()
-    const controller = createFeedbackServiceController<RecordOptions, Partial<RecordOptions>>({ name: 'notification' })
+    const controller = createNotificationServiceController<RecordOptions, Partial<RecordOptions>>({ name: 'notification' })
     controller.attach(queue)
     const id = controller.create({ title: '可撤销' }, action)
 
@@ -80,7 +80,7 @@ describe('feedback service controller', () => {
     const { queue } = makeQueue()
     const firstAction = vi.fn()
     const secondAction = vi.fn()
-    const controller = createFeedbackServiceController<RecordOptions, Partial<RecordOptions>>({ name: 'notification' })
+    const controller = createNotificationServiceController<RecordOptions, Partial<RecordOptions>>({ name: 'notification' })
     controller.attach(queue)
     const first = controller.create({ title: '低优先级' }, firstAction)
     const second = controller.create({ title: '保留项' }, secondAction)
@@ -95,7 +95,7 @@ describe('feedback service controller', () => {
   it('wc notification 可只清动作表，不重复删除元素自己已移除的记录', () => {
     const { queue } = makeQueue()
     const dismiss = vi.spyOn(queue, 'dismiss')
-    const controller = createFeedbackServiceController<RecordOptions, Partial<RecordOptions>>({
+    const controller = createNotificationServiceController<RecordOptions, Partial<RecordOptions>>({
       name: 'notification',
       dismissOnUnmounted: false,
     })
@@ -108,7 +108,7 @@ describe('feedback service controller', () => {
   it('暂停状态通过快照端口发布，新条目可直接读取当前状态', () => {
     const { queue } = makeQueue()
     const onStateChange = vi.fn()
-    const controller = createFeedbackServiceController<RecordOptions, Partial<RecordOptions>>({ name: 'notification', onStateChange })
+    const controller = createNotificationServiceController<RecordOptions, Partial<RecordOptions>>({ name: 'notification', onStateChange })
     controller.attach(queue)
     controller.pauseAll()
     expect(controller.state.paused).toBe(true)
@@ -119,7 +119,7 @@ describe('feedback service controller', () => {
 
   it('promise 先建 loading，同一 id 就地改写成功并原样返回结果', async () => {
     const { queue, records } = makeQueue()
-    const controller = createFeedbackServiceController<RecordOptions, Partial<RecordOptions>>({ name: 'notification' })
+    const controller = createNotificationServiceController<RecordOptions, Partial<RecordOptions>>({ name: 'notification' })
     controller.attach(queue)
 
     const result = controller.trackPromise(
@@ -136,7 +136,7 @@ describe('feedback service controller', () => {
   it('promise 拒绝就地改写失败并保留原拒绝原因', async () => {
     const { queue, records } = makeQueue()
     const cause = new Error('后端失败')
-    const controller = createFeedbackServiceController<RecordOptions, Partial<RecordOptions>>({ name: 'notification' })
+    const controller = createNotificationServiceController<RecordOptions, Partial<RecordOptions>>({ name: 'notification' })
     controller.attach(queue)
 
     const result = controller.trackPromise(
@@ -150,7 +150,7 @@ describe('feedback service controller', () => {
   })
 
   it('宿主不可用时静默丢消息，dispose 后则明确报已卸载', async () => {
-    const controller = createFeedbackServiceController<RecordOptions, Partial<RecordOptions>>({ name: 'notification' })
+    const controller = createNotificationServiceController<RecordOptions, Partial<RecordOptions>>({ name: 'notification' })
     expect(controller.create({ title: '丢掉' })).toBe('')
     const running = Promise.resolve(1)
     await expect(controller.trackPromise(running, {}, () => ({}), () => ({}))).resolves.toBe(1)
@@ -167,7 +167,7 @@ describe('feedback service controller', () => {
     const running = new Promise<number>((done) => {
       resolve = done
     })
-    const controller = createFeedbackServiceController<RecordOptions, Partial<RecordOptions>>({ name: 'notification' })
+    const controller = createNotificationServiceController<RecordOptions, Partial<RecordOptions>>({ name: 'notification' })
     controller.attach(queue)
     const result = controller.trackPromise(running, {}, () => ({ loading: false, tone: 'success' }), () => ({ loading: false, tone: 'danger' }))
     controller.dispose()

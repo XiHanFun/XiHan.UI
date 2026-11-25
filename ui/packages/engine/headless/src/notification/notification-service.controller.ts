@@ -3,37 +3,37 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 提供 feedback service.controller 相关实现。
+// 通知服务的控制器：把命令式 API 接到 notificationMachine 持有的记录队列，另给合并计数的标题显示规则。
 
-export interface FeedbackServiceRecord {
+export interface NotificationServiceRecord {
   id?: string
 }
 
 /** 记录队列仍由 notificationMachine 持有；控制器只经这个端口调用它。 */
-export interface FeedbackServiceQueue<TCreate extends FeedbackServiceRecord, TUpdate> {
+export interface NotificationServiceQueue<TCreate extends NotificationServiceRecord, TUpdate> {
   create: (options: TCreate) => string
   update: (id: string, options: TUpdate) => void
   dismiss: (id: string) => void
   dismissAll: () => void
 }
 
-export interface FeedbackServiceControllerState {
+export interface NotificationServiceControllerState {
   /** 服务级暂停，与单条的指针/焦点暂停并存。 */
   readonly paused: boolean
 }
 
-export interface FeedbackServiceControllerOptions {
+export interface NotificationServiceControllerOptions {
   /** 用于已卸载错误，例如 notification / dialog。 */
   name: string
   /** 单条退场后是否还要经队列端口删除记录，缺省需要。 */
   dismissOnUnmounted?: boolean
   /** 服务级暂停变化后通知宿主重渲或 paint。 */
-  onStateChange?: (state: FeedbackServiceControllerState) => void
+  onStateChange?: (state: NotificationServiceControllerState) => void
 }
 
-export interface FeedbackServiceController<TCreate extends FeedbackServiceRecord, TUpdate> {
-  readonly state: FeedbackServiceControllerState
-  attach: (queue: FeedbackServiceQueue<TCreate, TUpdate> | null) => void
+export interface NotificationServiceController<TCreate extends NotificationServiceRecord, TUpdate> {
+  readonly state: NotificationServiceControllerState
+  attach: (queue: NotificationServiceQueue<TCreate, TUpdate> | null) => void
   create: (options: TCreate, onAction?: () => void) => string
   update: (id: string, options: TUpdate) => void
   dismiss: (id: string) => void
@@ -57,16 +57,16 @@ export interface FeedbackServiceController<TCreate extends FeedbackServiceRecord
 }
 
 /** 通知命令式服务的框架无关生命周期控制器：动作回调表、整组暂停与 Promise 三态。 */
-export function createFeedbackServiceController<TCreate extends FeedbackServiceRecord, TUpdate>(
-  options: FeedbackServiceControllerOptions,
-): FeedbackServiceController<TCreate, TUpdate> {
-  let queue: FeedbackServiceQueue<TCreate, TUpdate> | null = null
+export function createNotificationServiceController<TCreate extends NotificationServiceRecord, TUpdate>(
+  options: NotificationServiceControllerOptions,
+): NotificationServiceController<TCreate, TUpdate> {
+  let queue: NotificationServiceQueue<TCreate, TUpdate> | null = null
   const actions = new Map<string, () => void>()
   let paused = false
   let disposed = false
   let state = snapshot()
 
-  function snapshot(): FeedbackServiceControllerState {
+  function snapshot(): NotificationServiceControllerState {
     return { paused }
   }
 
@@ -75,7 +75,7 @@ export function createFeedbackServiceController<TCreate extends FeedbackServiceR
     options.onStateChange?.(state)
   }
 
-  function useQueue(): FeedbackServiceQueue<TCreate, TUpdate> | null {
+  function useQueue(): NotificationServiceQueue<TCreate, TUpdate> | null {
     if (disposed)
       throw new Error(`${options.name} 服务已卸载`)
     return queue
@@ -92,7 +92,7 @@ export function createFeedbackServiceController<TCreate extends FeedbackServiceR
     return id
   }
 
-  const controller: FeedbackServiceController<TCreate, TUpdate> = {
+  const controller: NotificationServiceController<TCreate, TUpdate> = {
     get state() {
       return state
     },
@@ -177,4 +177,18 @@ export function createFeedbackServiceController<TCreate extends FeedbackServiceR
   }
 
   return controller
+}
+
+/** 带合并计数的通知标题；通知的两种预设使用同一条显示规则。 */
+export interface NotificationServiceTitleRecord {
+  title?: string
+  count?: number
+}
+
+/** 合并过的条目在标题后追加计数，没并过或没有标题时保持原值。 */
+export function resolveNotificationServiceTitle(record: NotificationServiceTitleRecord): string | undefined {
+  const count = record.count ?? 1
+  if (count <= 1 || record.title == null)
+    return record.title
+  return `${record.title} ×${count}`
 }

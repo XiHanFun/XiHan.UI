@@ -20,7 +20,7 @@ import type {
 import type { App, MaybeRefOrGetter, VNode } from 'vue'
 import type { XhConfig } from '../config/config'
 import { ensurePortalRoot } from '@xihan-ui/core'
-import { connectNotification, createFeedbackServiceController, notificationMachine, resolveFeedbackServiceTitle } from '@xihan-ui/headless'
+import { connectNotification, createNotificationServiceController, notificationMachine, resolveNotificationServiceTitle } from '@xihan-ui/headless'
 import { computed, createApp, defineComponent, Fragment, h, ref, shallowRef, toValue } from 'vue'
 import {
   XhNotificationItem,
@@ -120,7 +120,7 @@ function defaultCard(
   return h(XhNotificationItem, {
     id: item.id,
     preset: item.preset,
-    title: resolveFeedbackServiceTitle(item),
+    title: resolveNotificationServiceTitle(item),
     description: item.description,
     tone: item.tone,
     loading: item.loading,
@@ -156,7 +156,7 @@ export function createNotificationService(options: NotificationServiceOptions = 
     ensurePortalRoot(document).appendChild(holder)
 
   let publishState: (paused: boolean) => void = () => {}
-  const controller = createFeedbackServiceController<NotificationOptions, Partial<NotificationOptions>>({
+  const controller = createNotificationServiceController<NotificationOptions, Partial<NotificationOptions>>({
     name: 'notification',
     onStateChange: state => publishState(state.paused),
   })

@@ -19,7 +19,7 @@ import type { ReactNode } from 'react'
 import type { Root } from 'react-dom/client'
 import type { XhConfigSource } from './service-config'
 import { ensurePortalRoot } from '@xihan-ui/core'
-import { connectNotification, createFeedbackServiceController, notificationMachine, resolveFeedbackServiceTitle } from '@xihan-ui/headless'
+import { connectNotification, createNotificationServiceController, notificationMachine, resolveNotificationServiceTitle } from '@xihan-ui/headless'
 import { Fragment, useSyncExternalStore } from 'react'
 import {
   XhNotificationItem,
@@ -127,7 +127,7 @@ function DefaultCard(props: {
     <XhNotificationItem
       id={item.id}
       preset={item.preset}
-      title={resolveFeedbackServiceTitle(item)}
+      title={resolveNotificationServiceTitle(item)}
       description={item.description}
       tone={item.tone}
       loading={item.loading}
@@ -177,7 +177,7 @@ export function createNotificationService(options: NotificationServiceOptions = 
     subs.add(fn)
     return () => void subs.delete(fn)
   }
-  const controller = createFeedbackServiceController<NotificationOptions, Partial<NotificationOptions>>({
+  const controller = createNotificationServiceController<NotificationOptions, Partial<NotificationOptions>>({
     name: 'notification',
     onStateChange: notify,
   })

@@ -5,10 +5,8 @@
 
 // 导出 notification 模块的公共接口。
 
-export { resolveFeedbackServiceTitle } from '../shared/feedback-service'
-export type { FeedbackServiceTitleRecord } from '../shared/feedback-service'
-export { createFeedbackServiceController } from './feedback-service.controller'
-export type { FeedbackServiceController, FeedbackServiceControllerOptions, FeedbackServiceControllerState, FeedbackServiceQueue, FeedbackServiceRecord } from './feedback-service.controller'
+export { createNotificationServiceController, resolveNotificationServiceTitle } from './notification-service.controller'
+export type { NotificationServiceController, NotificationServiceControllerOptions, NotificationServiceControllerState, NotificationServiceQueue, NotificationServiceRecord, NotificationServiceTitleRecord } from './notification-service.controller'
 export { notificationItemMachine, resolveNotificationDuration, resolveNotificationItemId } from './notification-item.machine'
 export { notificationAnatomy } from './notification.anatomy'
 export { connectNotification, connectNotificationItem } from './notification.connect'
