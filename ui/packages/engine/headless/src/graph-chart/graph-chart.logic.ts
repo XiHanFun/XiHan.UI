@@ -16,11 +16,6 @@ import { GRAPH_CHART_EN_US } from '../locale/en-US'
 import { chartActiveSource, resolveChartTranslations } from '../shared/chart'
 import { graphNodeKey } from './graph-chart.model'
 
-/** 数据标记的缺省可及名，取自英文语言包。 */
-export function defaultGraphDatumLabel(details: ChartDatumDetails): string {
-  return GRAPH_CHART_EN_US.datumLabel(details)
-}
-
 /** 缺省摘要，取自英文语言包。 */
 export function defaultGraphSummary(model: GraphSummary): string {
   return GRAPH_CHART_EN_US.summary(model)

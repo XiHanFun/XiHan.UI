@@ -19,11 +19,6 @@ import { sankeyLinkKey, sankeyNodeKey } from './sankey-chart.model'
 /** 提示框里流入、流出各列几条；多出来的合成一行「其他」。 */
 const TOOLTIP_FLOWS = 6
 
-/** 数据标记的缺省可及名，取自英文语言包。 */
-export function defaultSankeyDatumLabel(details: ChartDatumDetails): string {
-  return SANKEY_CHART_EN_US.datumLabel(details)
-}
-
 /** 缺省摘要，取自英文语言包。 */
 export function defaultSankeySummary(model: SankeySummary): string {
   return SANKEY_CHART_EN_US.summary(model)

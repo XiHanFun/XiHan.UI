@@ -16,11 +16,6 @@ import { HIERARCHY_CHART_EN_US } from '../locale/en-US'
 import { chartActiveSource, resolveChartTranslations } from '../shared/chart'
 import { hierarchyNodeKey } from './hierarchy-chart.model'
 
-/** 数据标记的缺省可及名，取自英文语言包。 */
-export function defaultHierarchyDatumLabel(details: ChartDatumDetails): string {
-  return HIERARCHY_CHART_EN_US.datumLabel(details)
-}
-
 /** 缺省摘要，取自英文语言包。 */
 export function defaultHierarchySummary(model: HierarchySummary): string {
   return HIERARCHY_CHART_EN_US.summary(model)
@@ -74,11 +69,6 @@ export function hierarchyModelOf(source: HierarchyModelSource): HierarchyModel {
     locale: resolveLocale(prop('locale'), scope),
     translations: hierarchyTranslations(prop('translations')),
   })
-}
-
-/** 引用指着的看得见的节点的几何；不在当前视图里为 undefined。 */
-export function hierarchyGeometry(model: HierarchyModel, ref: ChartDatumRef | null | undefined): HierarchyNodeGeometry | undefined {
-  return ref ? model.scene?.layout.byKey.get(ref.seriesId) : undefined
 }
 
 /** 节点在看得见的节点里吗（不看几何：服务端与首帧没有布局也答得上）。 */

@@ -20,9 +20,6 @@ export type LinkDefs = ReadonlyMap<string, LinkDef>
 /** 一条定义的标签与内容。 */
 export type LinkDefEntry = readonly [label: string, def: LinkDef]
 
-/** 没有任何定义时用的空表。 */
-export const NO_DEFS: LinkDefs = new Map<string, LinkDef>()
-
 const WHITESPACE_RUN = /\s+/g
 
 /** 归一化引用标签：去首尾空白、内部空白折叠成一个空格、转小写。 */

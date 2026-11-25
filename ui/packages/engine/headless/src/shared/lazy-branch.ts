@@ -63,10 +63,6 @@ export interface BranchLoadRuntime<N> {
   owners: Map<string, N>
 }
 
-export function createBranchLoadRuntime<N>(): BranchLoadRuntime<N> {
-  return { controllers: new Map(), sequence: { n: 0 }, owners: new Map() }
-}
-
 /** 节点是懒分支的唯一判据：明确有孩子但孩子尚未在 collection 里。 */
 export function isLazyBranch(node: LazyTreeNode): boolean {
   return node.hasChildren === true && node.children === undefined

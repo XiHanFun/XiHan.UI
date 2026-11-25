@@ -143,7 +143,3 @@ export function getExitEnterStates<T extends MachineSchema>(
   const entering = toChain.slice(common)
   return { exiting, entering }
 }
-
-export function transitionsToArray<T>(v: T | T[]): T[] {
-  return toArray(v)
-}

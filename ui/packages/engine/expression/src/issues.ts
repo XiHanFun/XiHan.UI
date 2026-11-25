@@ -103,8 +103,3 @@ export class Fault {
     this.data = data
   }
 }
-
-/** 判断一个值是不是未定位的故障。 */
-export function isFault(value: unknown): value is Fault {
-  return value instanceof Fault
-}
