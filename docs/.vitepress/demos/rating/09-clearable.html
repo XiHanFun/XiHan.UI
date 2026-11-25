@@ -1,4 +1,4 @@
-<!-- 再点一次清空 | allowClear 默认开启：点击当前档位清回未评分，键盘在最低档再向下一步同样清零；设为 false 关闭 -->
+<!-- 再点一次清空 | clearable 默认开启：点击当前档位清回未评分，键盘在最低档再向下一步同样清零；设为 false 关闭 -->
 <div style="display: grid; gap: 12px">
   <xh-rating id="rating-clearable" value="3">
     <div data-xh-part="root">
@@ -12,7 +12,7 @@
       </div>
     </div>
   </xh-rating>
-  <xh-rating id="rating-sticky" value="3" allow-clear="false">
+  <xh-rating id="rating-sticky" value="3" clearable="false">
     <div data-xh-part="root">
       <span data-xh-part="label">关掉清空（再点不清）</span>
       <div data-xh-part="control">

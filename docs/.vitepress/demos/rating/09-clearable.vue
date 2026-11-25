@@ -1,4 +1,4 @@
-<!-- 再点一次清空 | allowClear 默认开启：点击当前档位清回未评分，键盘在最低档再向下一步同样清零；设为 false 关闭 -->
+<!-- 再点一次清空 | clearable 默认开启：点击当前档位清回未评分，键盘在最低档再向下一步同样清零；设为 false 关闭 -->
 <script setup lang="ts">
 import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -15,7 +15,7 @@ const sticky = ref(3);
         <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
-    <XhRatingRoot v-slot="{ items }" v-model:value="sticky" :allow-clear="false">
+    <XhRatingRoot v-slot="{ items }" v-model:value="sticky" :clearable="false">
       <XhRatingLabel>关掉清空（再点不清）</XhRatingLabel>
       <XhRatingControl>
         <XhRatingItem v-for="i in items" :key="i" :value="i" />

@@ -48,7 +48,7 @@ export const XhRatingRoot = defineComponent({
     defaultValue: { type: Number },
     count: { type: Number },
     allowHalf: Boolean,
-    allowClear: { type: Boolean, default: undefined },
+    clearable: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },

@@ -281,8 +281,8 @@ export const ratingSuite: ConformanceSuite = {
       name: 'Home / End 取两端；到顶到底再按都停住，不越界也不回绕',
       spec: { apg: APG_KBD },
       covers: ['rating.kbd.min', 'rating.kbd.max'],
-      // 关掉再点清零：本例只验边界不越界；最低档再往下清零的行为由 allowClear 用例另测
-      props: { defaultValue: 3, allowClear: false },
+      // 关掉再点清零：本例只验边界不越界；最低档再往下清零的行为由 clearable 用例另测
+      props: { defaultValue: 3, clearable: false },
       steps: [
         { kind: 'focus', part: 'control' },
         {

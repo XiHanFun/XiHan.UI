@@ -60,7 +60,7 @@ export interface XhRatingRootProps extends RootElementProps {
   /** 允许半颗星：档位从 1 变为 0.5。 */
   allowHalf?: boolean
   /** 再次点击当前档位即清零，默认开启。 */
-  allowClear?: boolean
+  clearable?: boolean
   disabled?: boolean
   readOnly?: boolean
   required?: boolean
@@ -86,7 +86,7 @@ export function XhRatingRoot({
   defaultValue,
   count,
   allowHalf,
-  allowClear,
+  clearable,
   disabled,
   readOnly,
   required,
@@ -107,7 +107,7 @@ export function XhRatingRoot({
     defaultValue,
     count,
     allowHalf,
-    allowClear,
+    clearable,
     disabled,
     readOnly,
     required,

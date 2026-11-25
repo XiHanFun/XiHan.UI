@@ -1,4 +1,4 @@
-// 再点一次清空 | allowClear 默认开启：点击当前档位清回未评分，键盘在最低档再向下一步同样清零；设为 false 关闭
+// 再点一次清空 | clearable 默认开启：点击当前档位清回未评分，键盘在最低档再向下一步同样清零；设为 false 关闭
 import type { ReactNode } from "react";
 import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/react";
 import { useState } from "react";
@@ -25,7 +25,7 @@ export default function Demo(): ReactNode {
         <XhRatingRoot
           value={sticky}
           onValueChange={details => setSticky(details.value)}
-          allowClear={false}
+          clearable={false}
         >
           {({ items }) => (
             <>

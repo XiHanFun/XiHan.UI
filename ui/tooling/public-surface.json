@@ -15075,9 +15075,9 @@
       "variant"
     ],
     "rating": [
-      "allowClear",
       "allowHalf",
       "ariaLabel",
+      "clearable",
       "count",
       "defaultValue",
       "dir",
@@ -23958,8 +23958,8 @@
     },
     "xh-rating": {
       "attributes": [
-        "allow-clear",
         "allow-half",
+        "clearable",
         "count",
         "default-value",
         "dir",

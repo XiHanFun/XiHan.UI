@@ -68,7 +68,7 @@ size 改变星的大小与间距，不写即默认中档
 
 ### 再点一次清空
 
-allowClear 默认开启：点击当前档位清回未评分，键盘在最低档再向下一步同样清零；设为 false 关闭
+clearable 默认开启：点击当前档位清回未评分，键盘在最低档再向下一步同样清零；设为 false 关闭
 
 <XhDemo src="rating/09-clearable" />
 
@@ -85,7 +85,7 @@ allowClear 默认开启：点击当前档位清回未评分，键盘在最低档
 
 ### 特性
 
-- `allowHalf` 支持半档，`allowClear` 允许再次点击清空。
+- `allowHalf` 支持半档，`clearable` 允许再次点击清空。
 - 悬停预览与实际值分开，`onHoverChange` 单独回调。
 - 条目留空时使用库内置的星形图标；也可传入自定义图标与颜色。
 - 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，星星带里每档一颗星，给了 `name` 再带表单影子。星星带旁的分值文本不在其中，要用时手写结构。Web Components 里标题可以写在宿主的直接子节点 `slot="label"` 上接管。
@@ -126,7 +126,7 @@ allowClear 默认开启：点击当前档位清回未评分，键盘在最低档
 | `defaultValue` | `number` |  | 非受控初值，默认 0（尚未评分）。 |
 | `count` | `number` |  | 星星颗数，默认 5。 |
 | `allowHalf` | `boolean` |  | 允许半颗星：档位从 1 变为 0.5。 |
-| `allowClear` | `boolean` |  | 再次点击当前档位即清零，键盘在最低档再向下一步同样清零；默认开启。 |
+| `clearable` | `boolean` |  | 再次点击当前档位即清零，键盘在最低档再向下一步同样清零；默认开启。 |
 | `disabled` | `boolean` |  | 完全不可交互：退出 Tab 序列，指针与键盘都不响应。 |
 | `readOnly` | `boolean` |  | 只读：仍可聚焦、仍能被读屏朗读，但不可修改，也不提供悬停预览。 |
 | `required` | `boolean` |  |  |

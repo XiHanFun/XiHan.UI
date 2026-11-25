@@ -57975,12 +57975,12 @@
             },
             {
               "kind": "field",
-              "name": "allowClear",
+              "name": "clearable",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "allow-clear"
+              "attribute": "clearable"
             },
             {
               "kind": "field",
@@ -58262,8 +58262,8 @@
                 "text": "boolean | undefined"
               },
               "description": "再次点击当前档位清零，键盘最低档再向下也清零；默认开启，写 \"false\" 关闭",
-              "name": "allow-clear",
-              "fieldName": "allowClear"
+              "name": "clearable",
+              "fieldName": "clearable"
             },
             {
               "type": {

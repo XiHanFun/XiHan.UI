@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-// rating allowClear（默认开）：再点当前档位清零，键盘在最低档再往下走一步同样清零；
+// rating clearable（默认开）：再点当前档位清零，键盘在最低档再往下走一步同样清零；
 // 设为 false 回到「再点不清」，命令式 setValue 不受影响。
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
@@ -50,7 +50,7 @@ function checkedValue(): string | null {
   return document.querySelector('[data-scope="rating"][data-part="item"][aria-checked="true"]')?.getAttribute('data-value') ?? null
 }
 
-describe('rating allowClear', () => {
+describe('rating clearable', () => {
   it('再点当前档位清零；点别的档照常落值', async () => {
     await mountRating({ defaultValue: 3 })
     expect(checkedValue()).toBe('3')
@@ -70,8 +70,8 @@ describe('rating allowClear', () => {
     expect(checkedValue()).toBeNull()
   })
 
-  it('allowClear=false：再点当前档位不清', async () => {
-    await mountRating({ 'defaultValue': 3, 'allow-clear': false })
+  it('clearable=false：再点当前档位不清', async () => {
+    await mountRating({ 'defaultValue': 3, 'clearable': false })
     star(3).click()
     await tick()
     expect(checkedValue()).toBe('3')

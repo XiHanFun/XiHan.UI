@@ -38,7 +38,7 @@ export function clampRating(value: number, count?: number, allowHalf?: boolean):
   return Math.min(Math.round(value / step) * step, max)
 }
 
-/** 键盘走一档，下界为一档而非 0；清零由 stepValue 动作按 allowClear 另判。 */
+/** 键盘走一档，下界为一档而非 0；清零由 stepValue 动作按 clearable 另判。 */
 export function stepRating(value: number, direction: 1 | -1, count?: number, allowHalf?: boolean): number {
   const max = ratingMax(count)
   if (max <= 0)
@@ -129,8 +129,8 @@ export const ratingMachine = createMachine({
         if (e.type !== 'VALUE.SET' && e.type !== 'ITEM.SELECT')
           return
         const next = clampRating(e.value, prop('count'), prop('allowHalf'))
-        // 再点当前档位即清零（allowClear，默认开）；命令式 VALUE.SET 不走这条
-        if (e.type === 'ITEM.SELECT' && (prop('allowClear') ?? true) && next === context.get('value')) {
+        // 再点当前档位即清零（clearable，默认开）；命令式 VALUE.SET 不走这条
+        if (e.type === 'ITEM.SELECT' && (prop('clearable') ?? true) && next === context.get('value')) {
           context.set('value', 0)
           return
         }
@@ -142,8 +142,8 @@ export const ratingMachine = createMachine({
           return
         const current = context.get('value')
         const step = ratingStep(prop('allowHalf'))
-        // allowClear（默认开）：已在最低档再往下走一步即清零，键盘也能清
-        if ((prop('allowClear') ?? true) && e.direction === -1 && current > 0 && current <= step) {
+        // clearable（默认开）：已在最低档再往下走一步即清零，键盘也能清
+        if ((prop('clearable') ?? true) && e.direction === -1 && current > 0 && current <= step) {
           context.set('value', 0)
           return
         }
