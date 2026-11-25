@@ -179,7 +179,7 @@ async function mountRows(rows: Ref<string[]>): Promise<HTMLElement> {
   host.style.cssText = 'inline-size: 360px'
   document.body.append(host)
   app = createApp({
-    setup: () => () => h(XhFieldArrayRoot, { 'value': rows.value, 'onUpdate:value': (next: unknown[]) => { rows.value = next as string[] }, 'movable': true }, {
+    setup: () => () => h(XhFieldArrayRoot, { 'value': rows.value, 'onUpdate:value': (next: unknown[]) => { rows.value = next as string[] }, 'reorderable': true }, {
       default: ({ items }: { items: Array<{ key: string, value: unknown, index: number }> }) => items.map(row => h(XhFieldArrayItem, { key: row.key, index: row.index }, () => [
         h('input', { 'aria-label': `第 ${row.index + 1} 行`, 'value': String(row.value) }),
         h(XhFieldArrayMoveDownTrigger),
