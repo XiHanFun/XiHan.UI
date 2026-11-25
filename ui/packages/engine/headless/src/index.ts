@@ -150,7 +150,7 @@ export { connectInputGroup, inputGroupAnatomy, inputGroupKeyboard, inputGroupMet
 export type { InputGroupApi, InputGroupProps, InputGroupTranslations } from './input-group'
 export { connectJsonViewer, flattenJson, formatJsonSource, groupJsonViewerNodesByParent, JSON_VIEWER_ROOT_PATH, JSON_VIEWER_TOOLS, jsonChildPath, jsonExpandedPathsToDepth, jsonSearch, jsonSearchQuery, jsonText, jsonValueText, jsonValueType, jsonViewerAnatomy, jsonViewerBranchQuery, jsonViewerItemQuery, jsonViewerKeyboard, jsonViewerMachine, jsonViewerMeta, resolveJsonViewerTools, tokenizeJsonText } from './json-viewer'
 export type { JsonSearchResult, JsonViewerApi, JsonViewerCopyErrorDetails, JsonViewerCopyStatus, JsonViewerExpandedValueChangeDetails, JsonViewerFlattenOptions, JsonViewerNode, JsonViewerNodeProps, JsonViewerNodesByParent, JsonViewerSchema, JsonViewerTextSegment, JsonViewerTokenKind, JsonViewerTokenProps, JsonViewerTool, JsonViewerToolTrigger, JsonViewerTranslations, JsonViewerValueType, JsonViewerView, JsonViewerViewChangeDetails, JsonViewerWalkOptions, JsonViewerWrapChangeDetails } from './json-viewer'
-export { connectKbd, isTypingTarget, kbdAnatomy, kbdKeyboard, kbdMeta } from './kbd'
+export { connectKbd, kbdAnatomy, kbdKeyboard, kbdMeta } from './kbd'
 export type { KbdApi, KbdKeyProps, KbdProps, KbdTarget, KbdTranslations, KbdTriggerDetails, KbdVariant } from './kbd'
 export { connectLayout, layoutAnatomy, layoutKeyboard, layoutMachine, layoutMeta } from './layout'
 export type { LayoutApi, LayoutBreakpoint, LayoutRefs, LayoutSchema, LayoutSiderBreakpointChangeDetails, LayoutSiderCollapsedChangeDetails, LayoutSiderPlacement, LayoutSiderPresentation, LayoutTranslations } from './layout'

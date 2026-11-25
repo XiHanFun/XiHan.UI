@@ -7,7 +7,7 @@
 import type { KbdProps, KbdTriggerDetails } from '../src/kbd'
 import { normalizeProps } from '@xihan-ui/core'
 import { afterEach, describe, expect, it } from 'vitest'
-import { connectKbd, isTypingTarget } from '../src/kbd'
+import { connectKbd } from '../src/kbd'
 
 afterEach(() => {
   document.body.innerHTML = ''
@@ -120,14 +120,5 @@ describe('kbd 快捷键注册', () => {
     expect(plain.hits).toHaveLength(0)
     plain.current.handleKeyDown(press('s'))
     expect(plain.hits).toHaveLength(1)
-  })
-
-  it('打字的地方：文本域、文本输入与可编辑区算，复选框不算', () => {
-    expect(isTypingTarget(document.createElement('textarea'))).toBe(true)
-    expect(isTypingTarget(document.createElement('input'))).toBe(true)
-    const checkbox = document.createElement('input')
-    checkbox.type = 'checkbox'
-    expect(isTypingTarget(checkbox)).toBe(false)
-    expect(isTypingTarget(null)).toBe(false)
   })
 })

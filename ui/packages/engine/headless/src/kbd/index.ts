@@ -5,7 +5,6 @@
 
 // 导出 kbd 模块的公共接口。
 
-export { isTypingTarget } from '../shared/hotkey'
 export { kbdAnatomy } from './kbd.anatomy'
 export { connectKbd } from './kbd.connect'
 export { kbdKeyboard } from './kbd.keyboard'
