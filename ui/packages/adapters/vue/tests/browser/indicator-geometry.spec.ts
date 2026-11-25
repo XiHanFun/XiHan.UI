@@ -22,7 +22,7 @@ const ITEMS = [
   { value: 'month', label: '月' },
 ]
 
-async function mountSegmented(options: { scale?: number, value?: string, block?: boolean, width?: string } = {}): Promise<{ value: ReturnType<typeof ref<string>> }> {
+async function mountSegmented(options: { scale?: number, value?: string, fullWidth?: boolean, width?: string } = {}): Promise<{ value: ReturnType<typeof ref<string>> }> {
   const value = ref(options.value ?? 'week')
   const host = document.createElement('div')
   if (options.scale)
@@ -31,7 +31,7 @@ async function mountSegmented(options: { scale?: number, value?: string, block?:
     host.style.inlineSize = options.width
   document.body.append(host)
   app = createApp({
-    render: () => h(XhRadioGroupRoot, { 'variant': 'segmented', 'block': options.block, 'value': value.value, 'onUpdate:value': (next: string | null) => (value.value = next ?? '') }, () => [
+    render: () => h(XhRadioGroupRoot, { 'variant': 'segmented', 'fullWidth': options.fullWidth, 'value': value.value, 'onUpdate:value': (next: string | null) => (value.value = next ?? '') }, () => [
       h(XhRadioGroupThumb),
       ...ITEMS.map(item => h(XhRadioGroupItem, { value: item.value }, () => [h(XhRadioGroupItemText, null, () => item.label)])),
     ]),
@@ -91,8 +91,8 @@ describe('radio-group segmented 形态的滑块几何', () => {
     expectCovers('month')
   })
 
-  it('block：整组撑满容器行宽，各段等分，滑块跟着等分后的段宽', async () => {
-    await mountSegmented({ block: true, width: '480px' })
+  it('fullWidth：整组撑满容器行宽，各段等分，滑块跟着等分后的段宽', async () => {
+    await mountSegmented({ fullWidth: true, width: '480px' })
     const root = part('root')
     const inner = root.clientWidth - Number.parseFloat(getComputedStyle(root).paddingInlineStart) - Number.parseFloat(getComputedStyle(root).paddingInlineEnd)
     expect(root.getBoundingClientRect().width).toBeCloseTo(480, 0)
@@ -102,7 +102,7 @@ describe('radio-group segmented 形态的滑块几何', () => {
     expectCovers('week')
   })
 
-  it('不写 block：轨道按内容收宽，各段按文字长短各自定宽', async () => {
+  it('不写 fullWidth：轨道按内容收宽，各段按文字长短各自定宽', async () => {
     await mountSegmented({ width: '480px' })
     expect(part('root').getBoundingClientRect().width).toBeLessThan(480)
     const [day, week] = [...document.querySelectorAll<HTMLElement>(`[data-scope='radio-group'][data-part='item']`)].map(el => el.getBoundingClientRect().width)
