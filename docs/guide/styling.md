@@ -376,20 +376,7 @@ const ratio = contrastRatio("oklch(0.2 0.02 250)", frosted, page);
 
 ## 门禁
 
-皮肤由多道门禁约束（`pnpm gate`）：
-
-| 门禁 | 拦截内容 |
-| --- | --- |
-| `check-token-refs` | 皮肤引用了令牌产物中不存在的令牌名。孤儿引用不报错也不降级，整条声明在计算值阶段静默失效 |
-| `check-shared-slots` | 同一个字面量在两个以上组件中作为默认值。这是一条未命名的设计决策，应先建立语义令牌 |
-| `check-disabled-contrast` | 禁用态的前景色令牌上又叠加 `opacity`。两种手段同时使用会把对比度压到无法阅读 |
-| `check-focus-ring-surface` | 改环色的声明（`--xh-_ring-color` / `outline-color` / 键盘聚焦规则中的 `outline` 简写）解不到库环两支（`currentColor`、前景色、底色、透明）；皮肤给库环令牌链上的名称赋值；`--xh-_ring-gap` 赋了 `var(--xh-ring-gap)` 以外的值；关环规则没在 `ringless` 中写明环由谁绘制，或登记了却已扫不到 |
-| `check-focus-outline-reset` | 皮肤在 `:focus:not(:focus-visible)` 下复位 `outline`（含 `outline-style` / `outline-width` / `outline-color`）。UA 只在 `:focus-visible` 绘制环，这条复位是死代码，而 `outline` 简写会把 `outline-color` 复位成 `currentColor`，描边色一旦进过渡，焦点离开时就闪出一圈近黑描边 |
-| `check-overlay-strategy` | 浮层的坐标系在状态机、`connect`、皮肤三处不一致 |
-| `check-part-wiring` | 解剖中声明、`connect` 中产出、适配器却未接线的部件。皮肤为它写了规则却匹配不到任何元素 |
-| `check-scrollbar-hosts` | 自绘条三端接线不齐、壳缺定位上下文或轨道底色、浮层没把壳记进层分支；皮肤里的滚动面没有登记进 `scroll-surface-registry.json`（或登记过期）、自绘面的轴与浮层 4px 档没接齐、`overscroll-behavior` / `scrollbar-gutter` 写在不该写的面上或该写的面上没写、原生面自己写 `scrollbar-width`、不是壳的部件声明 `--xh-scrollbar-track-bg` |
-| stylelint | 常规 CSS 规范，含皮肤不得手写 `scrollbar-width`（`none` 除外）/ `scrollbar-color` |
-| 家族门禁（`check-surface-edge` / `check-elevation-role` / `check-selection-marker` / `check-state-ladder` / `check-shape-scale` / `check-press-feedback` / `check-text-role` / `check-family-parity`） | 根面 `border` 颜色位落 `--xh-border-subtle` / `--xh-border-strong`、淡底面带影、ghost 档画边底影、raised 没登记或没带 `--xh-border-default` 描边；选中与当前态没按浮层集合 / 页内集合 / 导航 / 格状 / 开关的唯一标记走；hover / pressed 的底不从语义面派生或阶梯与承载面不符、焦点边不是 `--xh-border-control-focus`；取 circle / pill 的部件没在身份表登记、正方盒用 pill 冒充圆；铺满一行的部件登记成缩放、缩放不换底、集合行零反馈；标签 / 说明 / 标题 / 图标没按角色取令牌；同族成员不同值。存量登在 `tooling/scripts/family-backlog.json`，按门禁分段、一条一句理由，命中即放行、不命中判过期；`check-family-backlog` 用快照与 CEILING 钉住每段条目数，键集合只减不增——迁走一个组件 = 删条目 + 重录快照 + 下调 CEILING |
+皮肤由 `tokens`、`skin`、`visual`、`motion` 等模块的门禁约束：令牌引用写错、同值字面量没立语义令牌、禁用态叠了 `opacity`、部件退役后留下死规则，都会在这里报红。每个模块管什么、怎么只跑其中一块见[结构门禁](./testing#结构门禁)。常规 CSS 规范另由 stylelint 检查，其中一条是皮肤不得手写 `scrollbar-width`（`none` 除外）与 `scrollbar-color`。
 
 ## 完全自定义皮肤
 

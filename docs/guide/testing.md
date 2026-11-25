@@ -235,42 +235,7 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 
 改了哪一块先跑对应模块，提交前再跑一次全量。
 
-`pnpm gate` 运行 141 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
-
-| 门禁 | 拦截内容 |
-| --- | --- |
-| `check-runtime-deps` | 库包的运行时依赖引入了未登记的第三方 |
-| `check-exact-pins` | 库包依赖内联了版本号（只允许 `catalog:` / `workspace:`） |
-| `check-tokens-dist` | 令牌产物未入库 |
-| `check-overlay-strategy` | 浮层坐标系在机器 / `connect` / 皮肤三处不一致 |
-| `check-token-refs` | 皮肤引用了不存在的令牌名（整条声明会静默失效） |
-| `check-tone-tokens` | 语气轴对外的 `--xh-tone-*` 没声明在语气层的 `[data-tone]` 上，或与私有槽的取值分叉 |
-| `check-chart-palette` | 图表数据色在亮色或暗色下不过色板检查：分类色的明度带、对比度、相邻与任意两色的色差、色觉障碍分离、色相分散与离开告警色，以及有序、顺序、发散、涨跌色阶的结构 |
-| `check-shared-slots` | 同一字面量在多个组件中作为默认值，却未建立语义令牌 |
-| `check-motion-easing` | 皮肤的缓动下探到 `--xh-ease-*` 原语、手写 `cubic-bezier()`，或使用了未登记的字面曲线 |
-| `check-motion-amplitude` | 位移与缩放的幅度写成字面量（减弱动效档把 `--xh-motion-distance-*` 压成 `0px`、`--xh-motion-scale-*` 压成 `1`，写死的位置无法压缩）；居中用的百分比与 `0` / `1` 是几何，不在此列 |
-| `check-disabled-contrast` | 禁用态前景色令牌上叠加 `opacity`，对比度被压到无法阅读 |
-| `check-color-literals` | 颜色写死在 `background` 简写、`box-shadow` 颜色位或 `--xh-*` 槽赋值中：stylelint 的六个长属性白名单不覆盖这些位置 |
-| `check-print-surface` | 浮层定位层 / 遮罩 / 滚动条 / 固定在视口上的节点在打印时未收起，或投影未由令牌层取消 |
-| `check-placeholder-fg` | 占位文字两条通道（`::placeholder` 与 `[data-placeholder]`）取了不同的默认前景，或用 `opacity` 表达深浅 |
-| `check-autofill` | 渲染原生表单控件的输入框未写自动填充规则，或两种手段 / 两个引擎的选择器缺一 |
-| `check-part-wiring` | 解剖声明、`connect` 产出、适配器却未接线的部件 |
-| `check-dead-state-attr` | `connect` 发出的 `data-*` 在本组件的作用域中没有任何规则消费：其他组件的同名规则不计入，该规则永远无法选中它。信息钩子逐条登记，登记项过期同样判失败 |
-| `check-skin-parts` | 皮肤选择器中的 `[data-part]` 不在所属 scope 的解剖中：部件退役后遗留的规则永远无法选中节点，`surface:update` 还会把它的覆盖槽收回公开面。scope 按选择器计算（逐分支、逐复合：写在 `[data-part]` 前后的 `[data-scope]` 都约束这一节，未写的沿用左侧最近一节，`:is()` / `:where()` 中一致的 scope 带回外层，`:not()` / `:has()` 中各自计算），解剖外的名字逐条登记，登记项过期同样判失败；`data-scope` / `data-part` 的属性选择器无法读取的（转义、匹配符不是全等）同样判失败 |
-| `check-breakpoints` | 皮肤 `@media` 中的断点字面量不在令牌清单中（自定义属性在媒体条件中不生效，只能写字面量）；查询用了 `max-width` / `max-height` 上界写法：它在断点值上与 `min-width` 同时成立，窄档专属规则写补集 `not all and (min-width: …)` |
-| `check-focus-ring` | 聚焦环的粗细、颜色、偏移写了字面量而不是令牌，主题与全局调整对它无效 |
-| `check-focus-ring-surface` | 改环色的声明（`--xh-_ring-color` / `outline-color` / 键盘聚焦规则中的 `outline` 简写）解不到库环两支（`currentColor`、前景色、底色、透明）；皮肤给库环令牌链上的名称赋值；`--xh-_ring-gap` 赋了 `var(--xh-ring-gap)` 以外的值；关环规则没在 `ringless` 中写明环由谁绘制，或登记了却已扫不到 |
-| `check-focus-outline-reset` | 皮肤在 `:focus:not(:focus-visible)` 下复位 `outline`（含 `outline-style` / `outline-width` / `outline-color`）。UA 只在 `:focus-visible` 绘制环，这条复位是死代码，而 `outline` 简写会把 `outline-color` 复位成 `currentColor`，描边色一旦进过渡，焦点离开时就闪出一圈近黑描边 |
-| `check-exports` | 已实现却未从包级入口导出，包外无法获取，而构建与类型检查照常通过 |
-| `check-adapter-contexts` | Vue / React 组件上下文的读钩子没从包入口导出、两端同一部件的读钩子不同名，或提供方（`provide*`、Provider）出了包。实现机制用的读钩子逐条登记，登记项过期同样判失败 |
-| `check-adapter-props` | Vue / React 入口导出的组件没有同名的 `<组件名>Props` 类型、类型与组件不在同一个模块导出、导出了对不上组件的 `Xh*Props`（几个部件共用的类型名），或两端名单对不上。只在一端才有的组件逐条登记 |
-| `check-type-assertions` | 三个适配器源码里 `as Record<string, unknown>` 与 `as never` 的处数比登记的多：连接层的 getter 本来就按 `Record<string, unknown>` 出类型，逐处断言掩盖不了什么，只会把真需要断言的几处淹掉。处数只降不升，降了跑 `pnpm assertions:update` 收紧登记 |
-| `check-package-roles` | 包所在的角色组与其 `package.json` 中的依赖声明不一致 |
-| `check-public-surface` | 公开面基线中有而当前没有的名字：被删除或改名 |
-| `check-visual-performance-budget` | 固定设备、默认/reduce 场景、真实浏览器入口与既有 JS/CSS 体积真源任一脱节 |
-| `check-material-scope` | liquid 落在没登记的部件上：连接层投影 `data-xh-liquid` 的部件、皮肤里与 `[data-xh-liquid]` 写在同一个复合选择器上的部件，都必须是登记过的导航层（浮动钮、媒体控制、悬浮栏），每条写明它浮在什么之上；过期的登记同样判失败 |
-| `check-changeset-packages` | changeset 头部写了 `.changeset/config.json` ignore 表里的私有包（如 `@xihan-ui/testing`）或不在工作区的包：前者与发布包混写时 `changeset version` 直接报 Mixed changesets，只写它时整份被丢掉、正文进不了 CHANGELOG；后者报 not in the workspace。不依赖 git 基线，头部读不成「包名: 档位」也判红 |
-| `check-surface-edge` / `check-selection-marker` / `check-state-ladder` / `check-text-role` 与扩展后的 `check-elevation-role` / `check-shape-scale` / `check-press-feedback` / `check-family-parity` | 七条家族门禁：根面边界三选一、选中与当前态按语义分类、交互态按承载面阶梯、排版与图标按角色、raised 逐部件登记且必带描边、形状身份表、按压几何与换底、同族同值。尚未迁移的存量登在 `tooling/scripts/family-backlog.json`，每条必须真被放行过一次（登记了却没命中判过期），`check-family-backlog`（`gate:family` 里的 `family-backlog.spec.mjs`）把每段条目数钉在快照与 CEILING 上、键集合只许是快照的子集——表只减不增 |
+`pnpm gate` 运行 141 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策。每一项拦什么写在它脚本文件头的注释里，脚本按上表的模块放在 `ui/tooling/scripts/<模块>/` 下；`pnpm gate --list` 列出各模块与步数，门禁报红时的提示行会直接给出改法。
 
 另有分层依赖检查与十三项单独的门禁：
 
