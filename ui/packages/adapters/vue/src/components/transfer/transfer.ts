@@ -20,6 +20,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { transferStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onUpdated, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -436,3 +437,25 @@ const TRANSFER_PARTS = {
 function renderDefaultStructure(api: TransferApi): VNode[] {
   return renderStructure(transferStructure(api), TRANSFER_PARTS)
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhTransferEmptyProps = PropsOf<typeof XhTransferEmpty>
+export type XhTransferGroupProps = PropsOf<typeof XhTransferGroup>
+export type XhTransferGroupLabelProps = PropsOf<typeof XhTransferGroupLabel>
+export type XhTransferItemProps = PropsOf<typeof XhTransferItem>
+export type XhTransferItemCheckboxProps = PropsOf<typeof XhTransferItemCheckbox>
+export type XhTransferItemDescriptionProps = PropsOf<typeof XhTransferItemDescription>
+export type XhTransferItemSuffixProps = PropsOf<typeof XhTransferItemSuffix>
+export type XhTransferItemTextProps = PropsOf<typeof XhTransferItemText>
+export type XhTransferListProps = PropsOf<typeof XhTransferList>
+export type XhTransferLoadingProps = PropsOf<typeof XhTransferLoading>
+export type XhTransferPanelCountProps = PropsOf<typeof XhTransferPanelCount>
+export type XhTransferPanelHeaderProps = PropsOf<typeof XhTransferPanelHeader>
+export type XhTransferPanelTitleProps = PropsOf<typeof XhTransferPanelTitle>
+export type XhTransferRootProps = PropsOf<typeof XhTransferRoot>
+export type XhTransferSearchProps = PropsOf<typeof XhTransferSearch>
+export type XhTransferSelectAllTriggerProps = PropsOf<typeof XhTransferSelectAllTrigger>
+export type XhTransferSourcePanelProps = PropsOf<typeof XhTransferSourcePanel>
+export type XhTransferTargetPanelProps = PropsOf<typeof XhTransferTargetPanel>
+export type XhTransferToSourceTriggerProps = PropsOf<typeof XhTransferToSourceTrigger>
+export type XhTransferToTargetTriggerProps = PropsOf<typeof XhTransferToTargetTrigger>

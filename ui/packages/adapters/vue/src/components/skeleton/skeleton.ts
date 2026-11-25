@@ -7,6 +7,7 @@
 
 import type { SkeletonAnimation, SkeletonProps, SkeletonShape } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { provideSkeleton, useSkeletonContext } from './context'
 import { useSkeleton } from './use-skeleton'
@@ -40,3 +41,7 @@ export const XhSkeletonItem = defineComponent({
     )
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhSkeletonItemProps = PropsOf<typeof XhSkeletonItem>
+export type XhSkeletonRootProps = PropsOf<typeof XhSkeletonRoot>

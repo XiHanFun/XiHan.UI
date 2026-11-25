@@ -627,9 +627,15 @@ const truth = {
     },
   },
   VueXh导出数: {
-    how: 'public-surface.json 里 @xihan-ui/vue 的导出名中以 Xh 开头的条数',
+    how: 'public-surface.json 里 @xihan-ui/vue 的导出名中以 Xh 开头、不是 Xh*Props 类型的条数',
     async value() {
-      return (await surface()).exports['@xihan-ui/vue'].filter(n => n.startsWith('Xh')).length
+      return (await surface()).exports['@xihan-ui/vue'].filter(n => n.startsWith('Xh') && !/^Xh\w+Props$/.test(n)).length
+    },
+  },
+  VueProps类型数: {
+    how: 'public-surface.json 里 @xihan-ui/vue 的导出名中形如 Xh*Props 的条数',
+    async value() {
+      return (await surface()).exports['@xihan-ui/vue'].filter(n => /^Xh\w+Props$/.test(n)).length
     },
   },
   覆盖槽涉及的组件数: {
@@ -1376,6 +1382,7 @@ const TABLE = [
   ['docs/guide/versioning.md', /\| 关键帧名 \| (\d+) \|/, '基线关键帧数'],
   ['docs/guide/versioning.md', /\| 组件覆盖槽 \| \d+（覆盖 (\d+) 个组件）/, '覆盖槽涉及的组件数'],
   ['docs/guide/versioning.md', /\| Vue 组件导出 `Xh\*` \| (\d+)（\d+ 个家族）/, 'VueXh导出数'],
+  ['docs/guide/versioning.md', /\| Vue 组件 props 类型 `Xh\*Props` \| (\d+) \|/, 'VueProps类型数'],
   ['docs/guide/versioning.md', /\| `@xihan-ui\/vue` \| (\d+) 个组件、/, 'VueXh导出数'],
   ['docs/guide/versioning.md', /当前用到的 (\d+) 个 `data-state` 取值全部受约束/, '基线dataState取值数'],
   ['docs/guide/versioning.md', /\| (\d+) 个令牌名/, '全局令牌数'],

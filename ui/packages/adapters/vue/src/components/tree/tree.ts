@@ -9,6 +9,7 @@ import type { Direction } from '@xihan-ui/core'
 import type { CollectionVirtualizer, StructureNode, TreeApi, TreeNode, TreeNodeProps, TreeSchema } from '@xihan-ui/headless'
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import type { TreeContext } from './use-tree'
 import { treeStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onBeforeUnmount, onUnmounted, ref, watch } from 'vue'
@@ -462,3 +463,28 @@ function renderDefaultStructure(api: TreeApi, label: string | undefined, labelSl
   const nodes = treeStructure(api, { label, slotted: name => name === 'label' && labelSlot != null })
   return renderStructure(nodes, TREE_PARTS, (node: StructureNode) => node.slot?.name === 'label' ? labelSlot?.() : undefined)
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhTreeBranchProps = PropsOf<typeof XhTreeBranch>
+export type XhTreeBranchContentProps = PropsOf<typeof XhTreeBranchContent>
+export type XhTreeBranchControlProps = PropsOf<typeof XhTreeBranchControl>
+export type XhTreeBranchDescriptionProps = PropsOf<typeof XhTreeBranchDescription>
+export type XhTreeBranchEmptyProps = PropsOf<typeof XhTreeBranchEmpty>
+export type XhTreeBranchErrorProps = PropsOf<typeof XhTreeBranchError>
+export type XhTreeBranchIndicatorProps = PropsOf<typeof XhTreeBranchIndicator>
+export type XhTreeBranchLoadingProps = PropsOf<typeof XhTreeBranchLoading>
+export type XhTreeBranchRetryTriggerProps = PropsOf<typeof XhTreeBranchRetryTrigger>
+export type XhTreeBranchTextProps = PropsOf<typeof XhTreeBranchText>
+export type XhTreeBranchTriggerProps = PropsOf<typeof XhTreeBranchTrigger>
+export type XhTreeEmptyProps = PropsOf<typeof XhTreeEmpty>
+export type XhTreeItemProps = PropsOf<typeof XhTreeItem>
+export type XhTreeItemDescriptionProps = PropsOf<typeof XhTreeItemDescription>
+export type XhTreeItemIndicatorProps = PropsOf<typeof XhTreeItemIndicator>
+export type XhTreeItemSuffixProps = PropsOf<typeof XhTreeItemSuffix>
+export type XhTreeItemTextProps = PropsOf<typeof XhTreeItemText>
+export type XhTreeLabelProps = PropsOf<typeof XhTreeLabel>
+export type XhTreeLiveRegionProps = PropsOf<typeof XhTreeLiveRegion>
+export type XhTreeLoadingProps = PropsOf<typeof XhTreeLoading>
+export type XhTreeNodeDragTriggerProps = PropsOf<typeof XhTreeNodeDragTrigger>
+export type XhTreeRootProps = PropsOf<typeof XhTreeRoot>
+export type XhTreeTreeProps = PropsOf<typeof XhTreeTree>

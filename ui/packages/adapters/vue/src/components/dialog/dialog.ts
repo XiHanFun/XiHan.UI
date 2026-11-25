@@ -9,6 +9,7 @@ import type { OverlayBackdropVariant, Size } from '@xihan-ui/core'
 import type { DialogActionIntents, DialogApi, DialogConfirmErrorDetails, DialogSchema, DialogStructureActions } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { dialogStructure, withoutPanelShell } from '@xihan-ui/headless'
 import { defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -284,3 +285,18 @@ function renderDefaultStructure(options: DialogTextOptions, sections: DialogSect
   const nodes = withoutPanelShell(dialogStructure({ ...options, slotted: name => sections[name as keyof DialogSectionSlots] != null }))
   return renderStructure(nodes, DIALOG_PARTS, node => (node.slot ? sections[node.slot.name as keyof DialogSectionSlots]?.() : undefined))
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhDialogBodyProps = PropsOf<typeof XhDialogBody>
+export type XhDialogCancelTriggerProps = PropsOf<typeof XhDialogCancelTrigger>
+export type XhDialogCloseTriggerProps = PropsOf<typeof XhDialogCloseTrigger>
+export type XhDialogConfirmTriggerProps = PropsOf<typeof XhDialogConfirmTrigger>
+export type XhDialogContentProps = PropsOf<typeof XhDialogContent>
+export type XhDialogDescriptionProps = PropsOf<typeof XhDialogDescription>
+export type XhDialogDragTriggerProps = PropsOf<typeof XhDialogDragTrigger>
+export type XhDialogFooterProps = PropsOf<typeof XhDialogFooter>
+export type XhDialogHeaderProps = PropsOf<typeof XhDialogHeader>
+export type XhDialogIndicatorProps = PropsOf<typeof XhDialogIndicator>
+export type XhDialogRootProps = PropsOf<typeof XhDialogRoot>
+export type XhDialogTitleProps = PropsOf<typeof XhDialogTitle>
+export type XhDialogTriggerProps = PropsOf<typeof XhDialogTrigger>

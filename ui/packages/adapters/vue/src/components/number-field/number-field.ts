@@ -9,6 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { NumberFieldApi, NumberFieldSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { numberFieldStructure } from '@xihan-ui/headless'
 import { defineComponent, h, onUnmounted } from 'vue'
 import { renderStructure } from '../../runtime/structure'
@@ -173,3 +174,13 @@ function renderDefaultStructure(label: string | undefined, labelSlot?: () => VNo
   const nodes = numberFieldStructure({ label, slotted: name => name === 'label' && labelSlot != null })
   return renderStructure(nodes, NUMBER_FIELD_PARTS, node => (node.slot ? labelSlot?.() : undefined))
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhNumberFieldControlProps = PropsOf<typeof XhNumberFieldControl>
+export type XhNumberFieldDecrementTriggerProps = PropsOf<typeof XhNumberFieldDecrementTrigger>
+export type XhNumberFieldIncrementTriggerProps = PropsOf<typeof XhNumberFieldIncrementTrigger>
+export type XhNumberFieldInputProps = PropsOf<typeof XhNumberFieldInput>
+export type XhNumberFieldLabelProps = PropsOf<typeof XhNumberFieldLabel>
+export type XhNumberFieldPrefixProps = PropsOf<typeof XhNumberFieldPrefix>
+export type XhNumberFieldRootProps = PropsOf<typeof XhNumberFieldRoot>
+export type XhNumberFieldSuffixProps = PropsOf<typeof XhNumberFieldSuffix>

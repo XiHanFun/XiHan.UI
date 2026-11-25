@@ -9,6 +9,7 @@ import type { CodeToken, Size } from '@xihan-ui/core'
 import type { DiffChange, DiffModel, DiffSide, DiffViewApi, DiffViewCommentRequestDetails, DiffViewLineRef, DiffViewMode, DiffViewSchema, DiffViewTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { diffViewSides } from '@xihan-ui/headless'
 import { defineComponent, h, onBeforeUnmount, onMounted } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -232,3 +233,12 @@ export const XhDiffViewTruncation = defineComponent({
     }
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhDiffViewBodyProps = PropsOf<typeof XhDiffViewBody>
+export type XhDiffViewEmptyProps = PropsOf<typeof XhDiffViewEmpty>
+export type XhDiffViewHeaderProps = PropsOf<typeof XhDiffViewHeader>
+export type XhDiffViewRootProps = PropsOf<typeof XhDiffViewRoot>
+export type XhDiffViewSummaryProps = PropsOf<typeof XhDiffViewSummary>
+export type XhDiffViewTruncationProps = PropsOf<typeof XhDiffViewTruncation>
+export type XhDiffViewViewportProps = PropsOf<typeof XhDiffViewViewport>

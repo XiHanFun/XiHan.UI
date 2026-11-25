@@ -8,6 +8,7 @@
 import type { AffixApi, AffixSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { provideAffix, useAffixContext } from './context'
 import { useAffix } from './use-affix'
@@ -53,3 +54,7 @@ export const XhAffixContent = defineComponent({
     return () => h('div', ctx.api.value.getContentProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhAffixContentProps = PropsOf<typeof XhAffixContent>
+export type XhAffixRootProps = PropsOf<typeof XhAffixRoot>

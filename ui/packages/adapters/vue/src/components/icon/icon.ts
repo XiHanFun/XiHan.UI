@@ -8,6 +8,7 @@
 import type { ActionVariant, IconNode, IconRecord, Tone } from '@xihan-ui/core'
 import type { IconFlip, IconProps, IconRotate, IconSize, IconWeight } from '@xihan-ui/headless'
 import type { FunctionalComponent, PropType, VNode } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { connectIcon, iconStructure } from '@xihan-ui/headless'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -66,3 +67,6 @@ export const XhIcon = defineComponent({
     }
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhIconProps = PropsOf<typeof XhIcon>

@@ -8,6 +8,7 @@
 import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { BreadcrumbApi, BreadcrumbNode, BreadcrumbNodeMeta, BreadcrumbProps, BreadcrumbTranslations, StructureNode } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { breadcrumbStructure } from '@xihan-ui/headless'
 import { defineComponent, h, useId } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -154,3 +155,13 @@ function renderDefaultStructure(
     return undefined
   })
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhBreadcrumbEllipsisProps = PropsOf<typeof XhBreadcrumbEllipsis>
+export type XhBreadcrumbEllipsisTriggerProps = PropsOf<typeof XhBreadcrumbEllipsisTrigger>
+export type XhBreadcrumbItemProps = PropsOf<typeof XhBreadcrumbItem>
+export type XhBreadcrumbLinkProps = PropsOf<typeof XhBreadcrumbLink>
+export type XhBreadcrumbLinkIconProps = PropsOf<typeof XhBreadcrumbLinkIcon>
+export type XhBreadcrumbListProps = PropsOf<typeof XhBreadcrumbList>
+export type XhBreadcrumbRootProps = PropsOf<typeof XhBreadcrumbRoot>
+export type XhBreadcrumbSeparatorProps = PropsOf<typeof XhBreadcrumbSeparator>

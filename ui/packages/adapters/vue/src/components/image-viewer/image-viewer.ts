@@ -7,8 +7,9 @@
 
 import type { OverlayBackdropVariant, Size } from '@xihan-ui/core'
 import type { imageViewerCounterText as counterTextFn, ImageViewerApi, ImageViewerItem, ImageViewerSchema } from '@xihan-ui/headless'
-import type { PropType, SlotsType, VNode } from 'vue'
+import type { PropType, SetupContext, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { imageViewerCounterText } from '@xihan-ui/headless'
 import { defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -197,27 +198,24 @@ export const XhImageViewerToolbar = defineComponent({
   },
 })
 
-/** 工具条按钮共用的组件工厂：未写插槽内容时留空，皮肤据 :empty 绘制兜底图标。 */
-function toolTrigger(name: string, getProps: (api: ReturnType<typeof useImageViewerContext>['api']['value']) => Record<string, unknown>): ReturnType<typeof defineComponent> {
-  return defineComponent({
-    name,
-    setup(_, { slots }) {
-      const ctx = useImageViewerContext()
-      return () => h('button', getProps(ctx.api.value), slots.default?.())
-    },
-  })
+/** 工具条按钮共用的 setup：未写插槽内容时留空，皮肤据 :empty 绘制兜底图标。 */
+function toolTriggerSetup(getProps: (api: ReturnType<typeof useImageViewerContext>['api']['value']) => Record<string, unknown>): (props: unknown, ctx: Pick<SetupContext, 'slots'>) => () => VNode {
+  return (_, { slots }) => {
+    const ctx = useImageViewerContext()
+    return () => h('button', getProps(ctx.api.value), slots.default?.())
+  }
 }
 
-export const XhImageViewerZoomInTrigger = toolTrigger('XhImageViewerZoomInTrigger', api => api.getZoomInTriggerProps())
-export const XhImageViewerZoomOutTrigger = toolTrigger('XhImageViewerZoomOutTrigger', api => api.getZoomOutTriggerProps())
-export const XhImageViewerRotateLeftTrigger = toolTrigger('XhImageViewerRotateLeftTrigger', api => api.getRotateLeftTriggerProps())
-export const XhImageViewerRotateRightTrigger = toolTrigger('XhImageViewerRotateRightTrigger', api => api.getRotateRightTriggerProps())
-export const XhImageViewerFlipHorizontalTrigger = toolTrigger('XhImageViewerFlipHorizontalTrigger', api => api.getFlipHorizontalTriggerProps())
-export const XhImageViewerFlipVerticalTrigger = toolTrigger('XhImageViewerFlipVerticalTrigger', api => api.getFlipVerticalTriggerProps())
-export const XhImageViewerResetTrigger = toolTrigger('XhImageViewerResetTrigger', api => api.getResetTriggerProps())
-export const XhImageViewerPrevTrigger = toolTrigger('XhImageViewerPrevTrigger', api => api.getPrevTriggerProps())
-export const XhImageViewerNextTrigger = toolTrigger('XhImageViewerNextTrigger', api => api.getNextTriggerProps())
-export const XhImageViewerCloseTrigger = toolTrigger('XhImageViewerCloseTrigger', api => api.getCloseTriggerProps())
+export const XhImageViewerZoomInTrigger = defineComponent({ name: 'XhImageViewerZoomInTrigger', setup: toolTriggerSetup(api => api.getZoomInTriggerProps()) })
+export const XhImageViewerZoomOutTrigger = defineComponent({ name: 'XhImageViewerZoomOutTrigger', setup: toolTriggerSetup(api => api.getZoomOutTriggerProps()) })
+export const XhImageViewerRotateLeftTrigger = defineComponent({ name: 'XhImageViewerRotateLeftTrigger', setup: toolTriggerSetup(api => api.getRotateLeftTriggerProps()) })
+export const XhImageViewerRotateRightTrigger = defineComponent({ name: 'XhImageViewerRotateRightTrigger', setup: toolTriggerSetup(api => api.getRotateRightTriggerProps()) })
+export const XhImageViewerFlipHorizontalTrigger = defineComponent({ name: 'XhImageViewerFlipHorizontalTrigger', setup: toolTriggerSetup(api => api.getFlipHorizontalTriggerProps()) })
+export const XhImageViewerFlipVerticalTrigger = defineComponent({ name: 'XhImageViewerFlipVerticalTrigger', setup: toolTriggerSetup(api => api.getFlipVerticalTriggerProps()) })
+export const XhImageViewerResetTrigger = defineComponent({ name: 'XhImageViewerResetTrigger', setup: toolTriggerSetup(api => api.getResetTriggerProps()) })
+export const XhImageViewerPrevTrigger = defineComponent({ name: 'XhImageViewerPrevTrigger', setup: toolTriggerSetup(api => api.getPrevTriggerProps()) })
+export const XhImageViewerNextTrigger = defineComponent({ name: 'XhImageViewerNextTrigger', setup: toolTriggerSetup(api => api.getNextTriggerProps()) })
+export const XhImageViewerCloseTrigger = defineComponent({ name: 'XhImageViewerCloseTrigger', setup: toolTriggerSetup(api => api.getCloseTriggerProps()) })
 
 export const XhImageViewerCounter = defineComponent({
   name: 'XhImageViewerCounter',
@@ -235,3 +233,22 @@ export const XhImageViewerCounter = defineComponent({
     }
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhImageViewerCloseTriggerProps = PropsOf<typeof XhImageViewerCloseTrigger>
+export type XhImageViewerContentProps = PropsOf<typeof XhImageViewerContent>
+export type XhImageViewerCounterProps = PropsOf<typeof XhImageViewerCounter>
+export type XhImageViewerFlipHorizontalTriggerProps = PropsOf<typeof XhImageViewerFlipHorizontalTrigger>
+export type XhImageViewerFlipVerticalTriggerProps = PropsOf<typeof XhImageViewerFlipVerticalTrigger>
+export type XhImageViewerImageProps = PropsOf<typeof XhImageViewerImage>
+export type XhImageViewerNextTriggerProps = PropsOf<typeof XhImageViewerNextTrigger>
+export type XhImageViewerPrevTriggerProps = PropsOf<typeof XhImageViewerPrevTrigger>
+export type XhImageViewerResetTriggerProps = PropsOf<typeof XhImageViewerResetTrigger>
+export type XhImageViewerRootProps = PropsOf<typeof XhImageViewerRoot>
+export type XhImageViewerRotateLeftTriggerProps = PropsOf<typeof XhImageViewerRotateLeftTrigger>
+export type XhImageViewerRotateRightTriggerProps = PropsOf<typeof XhImageViewerRotateRightTrigger>
+export type XhImageViewerToolbarProps = PropsOf<typeof XhImageViewerToolbar>
+export type XhImageViewerTriggerProps = PropsOf<typeof XhImageViewerTrigger>
+export type XhImageViewerViewportProps = PropsOf<typeof XhImageViewerViewport>
+export type XhImageViewerZoomInTriggerProps = PropsOf<typeof XhImageViewerZoomInTrigger>
+export type XhImageViewerZoomOutTriggerProps = PropsOf<typeof XhImageViewerZoomOutTrigger>

@@ -9,6 +9,7 @@ import type { Direction, Orientation, Size } from '@xihan-ui/core'
 import type { CarouselApi, CarouselEffect, CarouselSchema, CarouselTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideCarousel, useCarouselContext } from './context'
@@ -189,3 +190,14 @@ export const XhCarouselIndicator = defineComponent({
     )
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhCarouselAutoplayTriggerProps = PropsOf<typeof XhCarouselAutoplayTrigger>
+export type XhCarouselIndicatorProps = PropsOf<typeof XhCarouselIndicator>
+export type XhCarouselIndicatorGroupProps = PropsOf<typeof XhCarouselIndicatorGroup>
+export type XhCarouselItemProps = PropsOf<typeof XhCarouselItem>
+export type XhCarouselListProps = PropsOf<typeof XhCarouselList>
+export type XhCarouselNextTriggerProps = PropsOf<typeof XhCarouselNextTrigger>
+export type XhCarouselPrevTriggerProps = PropsOf<typeof XhCarouselPrevTrigger>
+export type XhCarouselRootProps = PropsOf<typeof XhCarouselRoot>
+export type XhCarouselViewportProps = PropsOf<typeof XhCarouselViewport>

@@ -7,6 +7,7 @@
 
 import type { SeparatorAlign, SeparatorProps, SeparatorVariant } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { connectSeparator, separatorStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -80,3 +81,9 @@ export const XhSeparator = defineComponent({
     }
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhSeparatorProps = PropsOf<typeof XhSeparator>
+export type XhSeparatorContentProps = PropsOf<typeof XhSeparatorContent>
+export type XhSeparatorLineProps = PropsOf<typeof XhSeparatorLine>
+export type XhSeparatorRootProps = PropsOf<typeof XhSeparatorRoot>

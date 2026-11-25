@@ -9,6 +9,7 @@ import type { Size, Tone } from '@xihan-ui/core'
 import type { SwitchApi, SwitchSchema } from '@xihan-ui/headless'
 import type { InjectionKey, PropType, Ref } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { switchStructure } from '@xihan-ui/headless'
 import { defineComponent, h, inject, provide, useId } from 'vue'
 import { slotPaints } from '../../runtime/slot-content'
@@ -110,3 +111,6 @@ export const XhSwitch = defineComponent({
     }
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhSwitchProps = PropsOf<typeof XhSwitch>

@@ -23,6 +23,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideSankeyChart, useSankeyChartContext } from './context'
@@ -250,3 +251,12 @@ export const XhSankeyChartRoot = defineComponent({
     }
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhSankeyChartCaptionProps = PropsOf<typeof XhSankeyChartCaption>
+export type XhSankeyChartEmptyProps = PropsOf<typeof XhSankeyChartEmpty>
+export type XhSankeyChartLegendProps = PropsOf<typeof XhSankeyChartLegend>
+export type XhSankeyChartPlotProps = PropsOf<typeof XhSankeyChartPlot>
+export type XhSankeyChartRootProps = PropsOf<typeof XhSankeyChartRoot>
+export type XhSankeyChartTooltipProps = PropsOf<typeof XhSankeyChartTooltip>
+export type XhSankeyChartViewportProps = PropsOf<typeof XhSankeyChartViewport>

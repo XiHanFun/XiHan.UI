@@ -8,6 +8,7 @@
 import type { CalendarCellProps, CalendarGranularity, CalendarPickerApi, CalendarPickerSchema, CalendarPickerTranslations, CalendarView, CalendarWeekdayFormat } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideCalendarPicker, provideCalendarPickerCell, useCalendarPickerCellContext, useCalendarPickerContext } from './context'
@@ -320,3 +321,22 @@ export const XhCalendarPickerCellTrigger = defineComponent({
     return () => h('div', ctx.api.value.getCellTriggerProps(cell.value), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhCalendarPickerCellProps = PropsOf<typeof XhCalendarPickerCell>
+export type XhCalendarPickerCellTriggerProps = PropsOf<typeof XhCalendarPickerCellTrigger>
+export type XhCalendarPickerGridProps = PropsOf<typeof XhCalendarPickerGrid>
+export type XhCalendarPickerGridBodyProps = PropsOf<typeof XhCalendarPickerGridBody>
+export type XhCalendarPickerGridHeadProps = PropsOf<typeof XhCalendarPickerGridHead>
+export type XhCalendarPickerHeaderProps = PropsOf<typeof XhCalendarPickerHeader>
+export type XhCalendarPickerHeadingProps = PropsOf<typeof XhCalendarPickerHeading>
+export type XhCalendarPickerHeadingMonthTriggerProps = PropsOf<typeof XhCalendarPickerHeadingMonthTrigger>
+export type XhCalendarPickerHeadingYearTriggerProps = PropsOf<typeof XhCalendarPickerHeadingYearTrigger>
+export type XhCalendarPickerNextTriggerProps = PropsOf<typeof XhCalendarPickerNextTrigger>
+export type XhCalendarPickerNextYearTriggerProps = PropsOf<typeof XhCalendarPickerNextYearTrigger>
+export type XhCalendarPickerPrevTriggerProps = PropsOf<typeof XhCalendarPickerPrevTrigger>
+export type XhCalendarPickerPrevYearTriggerProps = PropsOf<typeof XhCalendarPickerPrevYearTrigger>
+export type XhCalendarPickerRootProps = PropsOf<typeof XhCalendarPickerRoot>
+export type XhCalendarPickerWeekDayProps = PropsOf<typeof XhCalendarPickerWeekDay>
+export type XhCalendarPickerWeekNumberProps = PropsOf<typeof XhCalendarPickerWeekNumber>
+export type XhCalendarPickerWeekRowProps = PropsOf<typeof XhCalendarPickerWeekRow>

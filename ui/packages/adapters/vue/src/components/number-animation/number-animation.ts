@@ -9,6 +9,7 @@ import type { Size, Tone } from '@xihan-ui/core'
 import type { NumberAnimationApi, NumberAnimationCompleteDetails, NumberAnimationEasing, NumberAnimationFormatOptions, NumberAnimationLive, NumberAnimationSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { createScope } from '@xihan-ui/core'
 import { connectNumberAnimation, numberAnimationMachine } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
@@ -70,3 +71,6 @@ export const XhNumberAnimation = defineComponent({
     }
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhNumberAnimationProps = PropsOf<typeof XhNumberAnimation>

@@ -10,6 +10,7 @@ import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { SideNavApi, SideNavFilter, SideNavNode, SideNavSchema, TooltipSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { createScope } from '@xihan-ui/core'
 import { connectSideNav, findSideNavRowEl, sideNavTooltipProps, tooltipMachine } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
@@ -412,3 +413,21 @@ export const XhSideNavLink = defineComponent({
     }
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhSideNavBranchProps = PropsOf<typeof XhSideNavBranch>
+export type XhSideNavBranchContentProps = PropsOf<typeof XhSideNavBranchContent>
+export type XhSideNavBranchIndicatorProps = PropsOf<typeof XhSideNavBranchIndicator>
+export type XhSideNavBranchTextProps = PropsOf<typeof XhSideNavBranchText>
+export type XhSideNavBranchTriggerProps = PropsOf<typeof XhSideNavBranchTrigger>
+export type XhSideNavEmptyProps = PropsOf<typeof XhSideNavEmpty>
+export type XhSideNavGroupProps = PropsOf<typeof XhSideNavGroup>
+export type XhSideNavGroupLabelProps = PropsOf<typeof XhSideNavGroupLabel>
+export type XhSideNavGroupListProps = PropsOf<typeof XhSideNavGroupList>
+export type XhSideNavInputProps = PropsOf<typeof XhSideNavInput>
+export type XhSideNavItemProps = PropsOf<typeof XhSideNavItem>
+export type XhSideNavLinkProps = PropsOf<typeof XhSideNavLink>
+export type XhSideNavLinkTextProps = PropsOf<typeof XhSideNavLinkText>
+export type XhSideNavListProps = PropsOf<typeof XhSideNavList>
+export type XhSideNavRootProps = PropsOf<typeof XhSideNavRoot>
+export type XhSideNavTooltipProps = PropsOf<typeof XhSideNavTooltip>

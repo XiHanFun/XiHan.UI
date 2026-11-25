@@ -8,6 +8,7 @@
 import type { Orientation, Size, Tone } from '@xihan-ui/core'
 import type { SpinnerProps, SpinnerTranslations, SpinnerVariant } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideSpinner, useSpinnerContext } from './context'
@@ -47,3 +48,7 @@ export const XhSpinnerLabel = defineComponent({
     )
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhSpinnerProps = PropsOf<typeof XhSpinner>
+export type XhSpinnerLabelProps = PropsOf<typeof XhSpinnerLabel>

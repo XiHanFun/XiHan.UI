@@ -8,6 +8,7 @@
 import type { Size, Tone } from '@xihan-ui/core'
 import type { BadgeApi, BadgePlacement, BadgeProps } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { createScope } from '@xihan-ui/core'
 import { badgeMachine, connectBadge } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
@@ -91,3 +92,8 @@ export const XhBadge = defineComponent({
     return () => h(XhBadgeRoot, props, () => [slots.default?.(), h(XhBadgeIndicator)])
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhBadgeProps = PropsOf<typeof XhBadge>
+export type XhBadgeIndicatorProps = PropsOf<typeof XhBadgeIndicator>
+export type XhBadgeRootProps = PropsOf<typeof XhBadgeRoot>

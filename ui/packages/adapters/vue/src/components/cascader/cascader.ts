@@ -19,6 +19,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import type { CascaderContext } from './use-cascader'
 import { cascaderStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onUnmounted, onUpdated, ref, watch } from 'vue'
@@ -679,3 +680,31 @@ function renderDefaultStructure(api: CascaderApi, options: { label?: string, cle
   const nodes = cascaderStructure(api, { ...options, slotted: name => name === 'label' && labelSlot != null })
   return renderStructure(withoutSelfAssembled(nodes), CASCADER_PARTS, node => (node.slot ? labelSlot?.() : undefined))
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhCascaderClearTriggerProps = PropsOf<typeof XhCascaderClearTrigger>
+export type XhCascaderColumnProps = PropsOf<typeof XhCascaderColumn>
+export type XhCascaderContentProps = PropsOf<typeof XhCascaderContent>
+export type XhCascaderControlProps = PropsOf<typeof XhCascaderControl>
+export type XhCascaderFooterProps = PropsOf<typeof XhCascaderFooter>
+export type XhCascaderGroupProps = PropsOf<typeof XhCascaderGroup>
+export type XhCascaderGroupLabelProps = PropsOf<typeof XhCascaderGroupLabel>
+export type XhCascaderIndicatorProps = PropsOf<typeof XhCascaderIndicator>
+export type XhCascaderInputProps = PropsOf<typeof XhCascaderInput>
+export type XhCascaderItemProps = PropsOf<typeof XhCascaderItem>
+export type XhCascaderItemDeleteTriggerProps = PropsOf<typeof XhCascaderItemDeleteTrigger>
+export type XhCascaderItemDescriptionProps = PropsOf<typeof XhCascaderItemDescription>
+export type XhCascaderItemIndicatorProps = PropsOf<typeof XhCascaderItemIndicator>
+export type XhCascaderItemSuffixProps = PropsOf<typeof XhCascaderItemSuffix>
+export type XhCascaderItemTextProps = PropsOf<typeof XhCascaderItemText>
+export type XhCascaderLabelProps = PropsOf<typeof XhCascaderLabel>
+export type XhCascaderLoadingProps = PropsOf<typeof XhCascaderLoading>
+export type XhCascaderOverflowTagProps = PropsOf<typeof XhCascaderOverflowTag>
+export type XhCascaderPositionerProps = PropsOf<typeof XhCascaderPositioner>
+export type XhCascaderRootProps = PropsOf<typeof XhCascaderRoot>
+export type XhCascaderSearchListProps = PropsOf<typeof XhCascaderSearchList>
+export type XhCascaderTagProps = PropsOf<typeof XhCascaderTag>
+export type XhCascaderTagLabelProps = PropsOf<typeof XhCascaderTagLabel>
+export type XhCascaderTagListProps = PropsOf<typeof XhCascaderTagList>
+export type XhCascaderTriggerProps = PropsOf<typeof XhCascaderTrigger>
+export type XhCascaderValueTextProps = PropsOf<typeof XhCascaderValueText>

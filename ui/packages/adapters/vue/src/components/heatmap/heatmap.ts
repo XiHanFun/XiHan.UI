@@ -25,6 +25,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { heatmapStructure, normalizeHeatmapNumber, normalizeHeatmapString } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -373,3 +374,19 @@ function renderDefaultStructure(
     return undefined
   })
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhHeatmapCellProps = PropsOf<typeof XhHeatmapCell>
+export type XhHeatmapColumnLabelProps = PropsOf<typeof XhHeatmapColumnLabel>
+export type XhHeatmapEmptyProps = PropsOf<typeof XhHeatmapEmpty>
+export type XhHeatmapGridProps = PropsOf<typeof XhHeatmapGrid>
+export type XhHeatmapLegendProps = PropsOf<typeof XhHeatmapLegend>
+export type XhHeatmapLegendItemProps = PropsOf<typeof XhHeatmapLegendItem>
+export type XhHeatmapLegendLabelProps = PropsOf<typeof XhHeatmapLegendLabel>
+export type XhHeatmapMonthBlockProps = PropsOf<typeof XhHeatmapMonthBlock>
+export type XhHeatmapMonthLabelProps = PropsOf<typeof XhHeatmapMonthLabel>
+export type XhHeatmapRootProps = PropsOf<typeof XhHeatmapRoot>
+export type XhHeatmapRowProps = PropsOf<typeof XhHeatmapRow>
+export type XhHeatmapRowLabelProps = PropsOf<typeof XhHeatmapRowLabel>
+export type XhHeatmapTooltipProps = PropsOf<typeof XhHeatmapTooltip>
+export type XhHeatmapWeekDayProps = PropsOf<typeof XhHeatmapWeekDay>

@@ -8,6 +8,7 @@
 import type { Size, Tone } from '@xihan-ui/core'
 import type { StatisticProps, StatisticTrend } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { connectStatistic } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -73,3 +74,11 @@ export const XhStatisticTrend = defineComponent({
     return () => h('span', ctx.api.value.getTrendProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhStatisticLabelProps = PropsOf<typeof XhStatisticLabel>
+export type XhStatisticPrefixProps = PropsOf<typeof XhStatisticPrefix>
+export type XhStatisticRootProps = PropsOf<typeof XhStatisticRoot>
+export type XhStatisticSuffixProps = PropsOf<typeof XhStatisticSuffix>
+export type XhStatisticTrendProps = PropsOf<typeof XhStatisticTrend>
+export type XhStatisticValueProps = PropsOf<typeof XhStatisticValue>

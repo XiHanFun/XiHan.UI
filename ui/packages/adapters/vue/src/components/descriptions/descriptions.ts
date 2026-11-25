@@ -8,6 +8,7 @@
 import type { ControlVariant, Size } from '@xihan-ui/core'
 import type { DescriptionsColumns, DescriptionsPlacement } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { connectDescriptions } from '@xihan-ui/headless'
 import { computed, defineComponent, Fragment, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -124,3 +125,12 @@ export const XhDescriptionsExtra = defineComponent({
     return () => h('div', ctx.api.value.getExtraProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhDescriptionsExtraProps = PropsOf<typeof XhDescriptionsExtra>
+export type XhDescriptionsHeaderProps = PropsOf<typeof XhDescriptionsHeader>
+export type XhDescriptionsItemProps = PropsOf<typeof XhDescriptionsItem>
+export type XhDescriptionsLabelProps = PropsOf<typeof XhDescriptionsLabel>
+export type XhDescriptionsRootProps = PropsOf<typeof XhDescriptionsRoot>
+export type XhDescriptionsTitleProps = PropsOf<typeof XhDescriptionsTitle>
+export type XhDescriptionsValueProps = PropsOf<typeof XhDescriptionsValue>

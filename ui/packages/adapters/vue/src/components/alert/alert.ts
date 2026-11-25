@@ -9,6 +9,7 @@ import type { Tone } from '@xihan-ui/core'
 import type { AlertSchema, AlertTranslations } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
@@ -94,3 +95,12 @@ export const XhAlertCloseTrigger = defineComponent({
     return () => h('button', ctx.api.value.getCloseTriggerProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhAlertActionProps = PropsOf<typeof XhAlertAction>
+export type XhAlertCloseTriggerProps = PropsOf<typeof XhAlertCloseTrigger>
+export type XhAlertContentProps = PropsOf<typeof XhAlertContent>
+export type XhAlertDescriptionProps = PropsOf<typeof XhAlertDescription>
+export type XhAlertIndicatorProps = PropsOf<typeof XhAlertIndicator>
+export type XhAlertRootProps = PropsOf<typeof XhAlertRoot>
+export type XhAlertTitleProps = PropsOf<typeof XhAlertTitle>

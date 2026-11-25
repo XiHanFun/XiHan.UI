@@ -7,6 +7,7 @@
 
 import type { WatermarkImageSize, WatermarkProps } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { connectWatermark, watermarkMachine } from '@xihan-ui/headless'
 import { computed, defineComponent, h, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -54,3 +55,7 @@ export const XhWatermarkContent = defineComponent({
     return () => h('div', ctx.api.value.getContentProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhWatermarkContentProps = PropsOf<typeof XhWatermarkContent>
+export type XhWatermarkRootProps = PropsOf<typeof XhWatermarkRoot>

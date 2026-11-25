@@ -22,6 +22,7 @@ import type {
   PointCloud,
 } from '@xihan-ui/backgrounds'
 import type { Directive, PropType, ShallowRef, VNodeRef } from 'vue'
+import type { PropsOf } from './runtime/props-of'
 import { createBackgroundSurface } from '@xihan-ui/backgrounds'
 import {
   defineComponent,
@@ -202,6 +203,9 @@ export const XhBackground = defineComponent({
     }
   },
 })
+
+/** XhBackground 接受的 props，与 React 同名。 */
+export type XhBackgroundProps = PropsOf<typeof XhBackground>
 
 export type BackgroundDirectiveValue = BackgroundEffect | string | UseBackgroundOptions
 

@@ -9,6 +9,7 @@ import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui
 import type { MentionApi, MentionInputEl, MentionInputHost, MentionItemProps, MentionNode, MentionNodeMeta, MentionSchema, MentionTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { mentionStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onMounted, onUnmounted, onUpdated, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -341,3 +342,17 @@ function renderDefaultStructure(api: MentionApi, options: { label?: string, mult
     }
   })
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhMentionContentProps = PropsOf<typeof XhMentionContent>
+export type XhMentionEmptyProps = PropsOf<typeof XhMentionEmpty>
+export type XhMentionInputProps = PropsOf<typeof XhMentionInput>
+export type XhMentionItemProps = PropsOf<typeof XhMentionItem>
+export type XhMentionItemDescriptionProps = PropsOf<typeof XhMentionItemDescription>
+export type XhMentionItemPrefixProps = PropsOf<typeof XhMentionItemPrefix>
+export type XhMentionItemSuffixProps = PropsOf<typeof XhMentionItemSuffix>
+export type XhMentionItemTextProps = PropsOf<typeof XhMentionItemText>
+export type XhMentionLabelProps = PropsOf<typeof XhMentionLabel>
+export type XhMentionLoadingProps = PropsOf<typeof XhMentionLoading>
+export type XhMentionPositionerProps = PropsOf<typeof XhMentionPositioner>
+export type XhMentionRootProps = PropsOf<typeof XhMentionRoot>

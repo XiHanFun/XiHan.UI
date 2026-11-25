@@ -21,6 +21,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { timePickerStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onUnmounted, onUpdated, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -532,3 +533,26 @@ function renderDefaultStructure(api: TimePickerApi, label: string | undefined, l
   const nodes = timePickerStructure(api, { label, slotted: name => name === 'label' && labelSlot != null })
   return renderStructure(nodes, TIME_PICKER_PARTS, node => node.slot?.name === 'label' ? labelSlot?.() : undefined)
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhTimePickerClearTriggerProps = PropsOf<typeof XhTimePickerClearTrigger>
+export type XhTimePickerColumnProps = PropsOf<typeof XhTimePickerColumn>
+export type XhTimePickerConfirmTriggerProps = PropsOf<typeof XhTimePickerConfirmTrigger>
+export type XhTimePickerContentProps = PropsOf<typeof XhTimePickerContent>
+export type XhTimePickerControlProps = PropsOf<typeof XhTimePickerControl>
+export type XhTimePickerFooterProps = PropsOf<typeof XhTimePickerFooter>
+export type XhTimePickerHiddenInputProps = PropsOf<typeof XhTimePickerHiddenInput>
+export type XhTimePickerItemProps = PropsOf<typeof XhTimePickerItem>
+export type XhTimePickerItemDeleteTriggerProps = PropsOf<typeof XhTimePickerItemDeleteTrigger>
+export type XhTimePickerLabelProps = PropsOf<typeof XhTimePickerLabel>
+export type XhTimePickerOverflowTagProps = PropsOf<typeof XhTimePickerOverflowTag>
+export type XhTimePickerPositionerProps = PropsOf<typeof XhTimePickerPositioner>
+export type XhTimePickerPresetProps = PropsOf<typeof XhTimePickerPreset>
+export type XhTimePickerPresetGroupProps = PropsOf<typeof XhTimePickerPresetGroup>
+export type XhTimePickerRootProps = PropsOf<typeof XhTimePickerRoot>
+export type XhTimePickerSegmentProps = PropsOf<typeof XhTimePickerSegment>
+export type XhTimePickerSegmentGroupProps = PropsOf<typeof XhTimePickerSegmentGroup>
+export type XhTimePickerTagProps = PropsOf<typeof XhTimePickerTag>
+export type XhTimePickerTagLabelProps = PropsOf<typeof XhTimePickerTagLabel>
+export type XhTimePickerTagListProps = PropsOf<typeof XhTimePickerTagList>
+export type XhTimePickerTriggerProps = PropsOf<typeof XhTimePickerTrigger>

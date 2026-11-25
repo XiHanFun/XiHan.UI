@@ -7,6 +7,7 @@
 
 import type { MatrixCodeFormat, MatrixCodeLevel, MatrixCodeProps } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { connectMatrixCode } from '@xihan-ui/headless'
 import { computed, defineComponent, h, shallowRef } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -94,3 +95,7 @@ export const XhMatrixCodeLogo = defineComponent({
     return () => h('svg', ctx.api.value.getLogoProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhMatrixCodeProps = PropsOf<typeof XhMatrixCode>
+export type XhMatrixCodeLogoProps = PropsOf<typeof XhMatrixCodeLogo>

@@ -10,6 +10,7 @@ import type { KbdPlatform } from '@xihan-ui/core/hotkey'
 import type { TooltipApi, TooltipSchema, TooltipTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { createTooltipGroup } from '@xihan-ui/headless'
 import { defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -184,3 +185,13 @@ export const XhTooltipArrow = defineComponent({
     return () => h('div', ctx.api.value.getArrowProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhTooltipArrowProps = PropsOf<typeof XhTooltipArrow>
+export type XhTooltipContentProps = PropsOf<typeof XhTooltipContent>
+export type XhTooltipPositionerProps = PropsOf<typeof XhTooltipPositioner>
+export type XhTooltipProviderProps = PropsOf<typeof XhTooltipProvider>
+export type XhTooltipRootProps = PropsOf<typeof XhTooltipRoot>
+export type XhTooltipShortcutProps = PropsOf<typeof XhTooltipShortcut>
+export type XhTooltipTextProps = PropsOf<typeof XhTooltipText>
+export type XhTooltipTriggerProps = PropsOf<typeof XhTooltipTrigger>

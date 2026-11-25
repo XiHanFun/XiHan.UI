@@ -17,6 +17,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideFloatButton, useFloatButtonContext } from './context'
@@ -93,3 +94,8 @@ export const XhFloatButtonList = defineComponent({
     return () => h('div', ctx.api.value.getListProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhFloatButtonListProps = PropsOf<typeof XhFloatButtonList>
+export type XhFloatButtonRootProps = PropsOf<typeof XhFloatButtonRoot>
+export type XhFloatButtonTriggerProps = PropsOf<typeof XhFloatButtonTrigger>

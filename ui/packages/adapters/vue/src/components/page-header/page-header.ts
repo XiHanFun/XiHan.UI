@@ -8,6 +8,7 @@
 import type { ControlVariant, Size } from '@xihan-ui/core'
 import type { PageHeaderProps } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { connectPageHeader } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -111,3 +112,13 @@ export const XhPageHeaderFooter = defineComponent({
     return () => h('div', ctx.api.value.getFooterProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhPageHeaderBackTriggerProps = PropsOf<typeof XhPageHeaderBackTrigger>
+export type XhPageHeaderBreadcrumbProps = PropsOf<typeof XhPageHeaderBreadcrumb>
+export type XhPageHeaderDescriptionProps = PropsOf<typeof XhPageHeaderDescription>
+export type XhPageHeaderExtraProps = PropsOf<typeof XhPageHeaderExtra>
+export type XhPageHeaderFooterProps = PropsOf<typeof XhPageHeaderFooter>
+export type XhPageHeaderMediaProps = PropsOf<typeof XhPageHeaderMedia>
+export type XhPageHeaderRootProps = PropsOf<typeof XhPageHeaderRoot>
+export type XhPageHeaderTitleProps = PropsOf<typeof XhPageHeaderTitle>

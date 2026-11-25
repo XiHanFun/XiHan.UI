@@ -7,6 +7,7 @@
 
 import type { FieldStructureOptions } from '@xihan-ui/headless'
 import type { SlotsType, VNode } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { fieldStructure, hasNamingContent } from '@xihan-ui/headless'
 import { defineComponent, h, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -165,3 +166,10 @@ function renderDefaultStructure(text: Pick<FieldStructureOptions, 'label' | 'des
     () => sections.control?.(),
   )
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhFieldControlProps = PropsOf<typeof XhFieldControl>
+export type XhFieldDescriptionProps = PropsOf<typeof XhFieldDescription>
+export type XhFieldErrorTextProps = PropsOf<typeof XhFieldErrorText>
+export type XhFieldLabelProps = PropsOf<typeof XhFieldLabel>
+export type XhFieldRootProps = PropsOf<typeof XhFieldRoot>

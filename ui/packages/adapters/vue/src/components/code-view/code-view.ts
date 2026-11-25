@@ -9,6 +9,7 @@ import type { HighlighterPort, Size } from '@xihan-ui/core'
 import type { CodeLine, CodeViewApi, CodeViewProps, CodeViewTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { createCodeViewHighlighterResource } from '@xihan-ui/headless'
 import { defineComponent, h, onBeforeUnmount, onMounted, shallowRef } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -249,3 +250,12 @@ export const XhCodeViewFoldTrigger = defineComponent({
     return () => h('button', ctx.api.value.getFoldTriggerProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhCodeViewCodeProps = PropsOf<typeof XhCodeViewCode>
+export type XhCodeViewFileNameProps = PropsOf<typeof XhCodeViewFileName>
+export type XhCodeViewFoldTriggerProps = PropsOf<typeof XhCodeViewFoldTrigger>
+export type XhCodeViewHeaderProps = PropsOf<typeof XhCodeViewHeader>
+export type XhCodeViewLangLabelProps = PropsOf<typeof XhCodeViewLangLabel>
+export type XhCodeViewPreProps = PropsOf<typeof XhCodeViewPre>
+export type XhCodeViewRootProps = PropsOf<typeof XhCodeViewRoot>

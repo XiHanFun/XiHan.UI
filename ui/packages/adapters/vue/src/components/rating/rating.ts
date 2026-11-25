@@ -9,6 +9,7 @@ import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { RatingApi, RatingItemState, RatingSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { hasNamingContent, ratingStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onBeforeUnmount, onMounted, onUnmounted, onUpdated, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -208,3 +209,11 @@ function renderDefaultStructure(api: RatingApi, label: string | undefined, hidde
   const nodes = ratingStructure(api, { label, hiddenInput, slotted: name => name === 'label' && labelSlot != null })
   return renderStructure(nodes, RATING_PARTS, node => (node.slot ? labelSlot?.() : undefined))
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhRatingControlProps = PropsOf<typeof XhRatingControl>
+export type XhRatingHiddenInputProps = PropsOf<typeof XhRatingHiddenInput>
+export type XhRatingItemProps = PropsOf<typeof XhRatingItem>
+export type XhRatingLabelProps = PropsOf<typeof XhRatingLabel>
+export type XhRatingRootProps = PropsOf<typeof XhRatingRoot>
+export type XhRatingValueTextProps = PropsOf<typeof XhRatingValueText>

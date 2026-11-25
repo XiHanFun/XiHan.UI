@@ -7,6 +7,7 @@
 
 import type { FieldsetProps, FieldsetTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { fieldsetStructure, hasNamingContent } from '@xihan-ui/headless'
 import { computed, defineComponent, h, ref } from 'vue'
 import { provideXhConfig, useXhConfig, withXhConfig } from '../../config/config'
@@ -124,3 +125,11 @@ function renderDefaultStructure(legend: string | undefined, sections: FieldsetSe
   const nodes = fieldsetStructure({ legend, slotted: name => sections[name as keyof FieldsetSectionSlots] != null })
   return renderStructure(nodes, FIELDSET_PARTS, node => (node.slot ? sections[node.slot.name as keyof FieldsetSectionSlots]?.() : undefined))
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhFieldsetActionsProps = PropsOf<typeof XhFieldsetActions>
+export type XhFieldsetDescriptionProps = PropsOf<typeof XhFieldsetDescription>
+export type XhFieldsetErrorTextProps = PropsOf<typeof XhFieldsetErrorText>
+export type XhFieldsetFieldGroupProps = PropsOf<typeof XhFieldsetFieldGroup>
+export type XhFieldsetLegendProps = PropsOf<typeof XhFieldsetLegend>
+export type XhFieldsetRootProps = PropsOf<typeof XhFieldsetRoot>

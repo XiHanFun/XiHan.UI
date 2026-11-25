@@ -9,6 +9,7 @@ import type { Size } from '@xihan-ui/core'
 import type { MessageFeedApi, MessageFeedItemRole, MessageFeedSchema, MessageFeedStatus, MessageFeedTranslations } from '@xihan-ui/headless'
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import type { MessageFeedContext } from './use-message-feed'
 import { defineComponent, h, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -213,3 +214,15 @@ export const XhMessageFeedLiveRegion = defineComponent({
     return () => h('div', ctx.api.value.getLiveRegionProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhMessageFeedItemProps = PropsOf<typeof XhMessageFeedItem>
+export type XhMessageFeedItemLabelProps = PropsOf<typeof XhMessageFeedItemLabel>
+export type XhMessageFeedListProps = PropsOf<typeof XhMessageFeedList>
+export type XhMessageFeedLiveRegionProps = PropsOf<typeof XhMessageFeedLiveRegion>
+export type XhMessageFeedPendingIndicatorProps = PropsOf<typeof XhMessageFeedPendingIndicator>
+export type XhMessageFeedRootProps = PropsOf<typeof XhMessageFeedRoot>
+export type XhMessageFeedScrollToEndTriggerProps = PropsOf<typeof XhMessageFeedScrollToEndTrigger>
+export type XhMessageFeedSeparatorProps = PropsOf<typeof XhMessageFeedSeparator>
+export type XhMessageFeedUnreadCountProps = PropsOf<typeof XhMessageFeedUnreadCount>
+export type XhMessageFeedViewportProps = PropsOf<typeof XhMessageFeedViewport>

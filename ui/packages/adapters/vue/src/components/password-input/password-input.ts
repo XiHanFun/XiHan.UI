@@ -9,6 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { PasswordInputApi, PasswordInputSchema, PasswordInputTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { passwordInputStructure } from '@xihan-ui/headless'
 import { defineComponent, h, onUnmounted } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -177,3 +178,12 @@ function renderDefaultStructure(api: PasswordInputApi, label: string | undefined
   const nodes = passwordInputStructure(api, { label, slotted: name => name === 'label' && labelSlot != null })
   return renderStructure(nodes, PASSWORD_INPUT_PARTS, node => (node.slot ? labelSlot?.() : undefined))
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhPasswordInputCapsLockIndicatorProps = PropsOf<typeof XhPasswordInputCapsLockIndicator>
+export type XhPasswordInputControlProps = PropsOf<typeof XhPasswordInputControl>
+export type XhPasswordInputInputProps = PropsOf<typeof XhPasswordInputInput>
+export type XhPasswordInputLabelProps = PropsOf<typeof XhPasswordInputLabel>
+export type XhPasswordInputRootProps = PropsOf<typeof XhPasswordInputRoot>
+export type XhPasswordInputStrengthMeterProps = PropsOf<typeof XhPasswordInputStrengthMeter>
+export type XhPasswordInputVisibilityTriggerProps = PropsOf<typeof XhPasswordInputVisibilityTrigger>

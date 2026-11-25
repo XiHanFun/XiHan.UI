@@ -9,6 +9,7 @@ import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { ToggleSchema } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { useToggle } from './use-toggle'
 
@@ -40,3 +41,6 @@ export const XhToggle = defineComponent({
     return () => h('button', api.value.getRootProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhToggleProps = PropsOf<typeof XhToggle>

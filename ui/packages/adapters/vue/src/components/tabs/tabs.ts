@@ -9,6 +9,7 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { TabsActivationMode, TabsApi, TabsNode, TabsNodeMeta, TabsSchema, TabsVariant } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { tabsOverflowMenuProps, tabsStructure } from '@xihan-ui/headless'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -276,3 +277,17 @@ function renderDefaultStructure(api: TabsApi, closable: boolean, panelSlot?: (no
   return renderStructure(nodes, TABS_PARTS, node =>
     node.slot?.name === 'panel' ? panelSlot?.(node.data as TabsNodeMeta) : undefined)
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhTabsCloseTriggerProps = PropsOf<typeof XhTabsCloseTrigger>
+export type XhTabsContentProps = PropsOf<typeof XhTabsContent>
+export type XhTabsIndicatorProps = PropsOf<typeof XhTabsIndicator>
+export type XhTabsListProps = PropsOf<typeof XhTabsList>
+export type XhTabsLiveRegionProps = PropsOf<typeof XhTabsLiveRegion>
+export type XhTabsNextTriggerProps = PropsOf<typeof XhTabsNextTrigger>
+export type XhTabsOverflowTriggerProps = PropsOf<typeof XhTabsOverflowTrigger>
+export type XhTabsPrevTriggerProps = PropsOf<typeof XhTabsPrevTrigger>
+export type XhTabsRootProps = PropsOf<typeof XhTabsRoot>
+export type XhTabsSeparatorProps = PropsOf<typeof XhTabsSeparator>
+export type XhTabsTabDragTriggerProps = PropsOf<typeof XhTabsTabDragTrigger>
+export type XhTabsTriggerProps = PropsOf<typeof XhTabsTrigger>

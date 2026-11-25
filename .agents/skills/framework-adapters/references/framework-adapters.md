@@ -10,6 +10,7 @@
 - 复合组件必须显式渲染完成其 required parts。
 - 样式由共享 CSS 处理，不在适配器写设计属性内联样式。
 - 部件上下文写进组件目录的 `context.ts`：读钩子（`use<部件>Context`）全部从包入口导出，Vue 与 React 同名；提供方（Vue 的 `provide*`、React 的 Provider）不出包。只服务实现机制的读钩子登进 `check-adapter-contexts` 并写明理由。
+- 每个组件导出同名的 props 类型 `Xh<组件><部件>Props`，与组件从同一个模块导出，两端同名。React 写在组件的函数签名上；Vue 在组件文件末尾用 `PropsOf<typeof Xh…>` 推导，值类型随泛型收窄的根组件写具名的泛型类型。几个部件共用的类型不出包，各自导出同名别名；部件工厂只产出共用的 `setup`，组件照常用 `defineComponent` 定义，否则推出来的是宽类型。`check-adapter-props` 核对。
 
 ## 2. Vue
 

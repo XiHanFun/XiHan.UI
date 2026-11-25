@@ -8,8 +8,9 @@
 import type { ControlVariant, Direction, ExpressionCheck, ExpressionCompletionSource, Placement, Size, Tone } from '@xihan-ui/core'
 import type { FunctionTable } from '@xihan-ui/expression'
 import type { ExpressionInputApi, ExpressionInputAutoSize, ExpressionInputEl, ExpressionInputHost, ExpressionInputItem, ExpressionInputSchema, ExpressionInputTranslations } from '@xihan-ui/headless'
-import type { PropType, SlotsType, VNode } from 'vue'
+import type { PropType, SetupContext, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { expressionInputStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onUnmounted, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -239,27 +240,26 @@ export const XhExpressionInputItem = defineComponent({
   },
 })
 
-function itemPart(name: string, props: (api: ExpressionInputApi, item: ExpressionInputItem) => unknown): ReturnType<typeof defineComponent> {
-  return defineComponent({
-    name,
-    props: {
-      value: { type: String },
-    },
-    setup(_, { slots }) {
-      const ctx = useExpressionInputContext()
-      const item = useExpressionInputItemContext()
-      return () => (item.value ? h('span', props(ctx.api.value, item.value) as Record<string, unknown>, slots.default?.()) : null)
-    },
-  })
+const expressionInputItemPartProps = {
+  value: { type: String },
+} as const
+
+/** 条目里几个小部件共用的 setup，只在取哪一份部件属性上不同。 */
+function itemPartSetup(getProps: (api: ExpressionInputApi, item: ExpressionInputItem) => unknown): (props: unknown, ctx: Pick<SetupContext, 'slots'>) => () => VNode | null {
+  return (_, { slots }) => {
+    const ctx = useExpressionInputContext()
+    const item = useExpressionInputItemContext()
+    return () => (item.value ? h('span', getProps(ctx.api.value, item.value) as Record<string, unknown>, slots.default?.()) : null)
+  }
 }
 
 /** 条目种类小标（变量 / 函数），对读屏隐藏。 */
-export const XhExpressionInputItemPrefix = itemPart('XhExpressionInputItemPrefix', (api, item) => api.getItemPrefixProps({ item }))
-export const XhExpressionInputItemText = itemPart('XhExpressionInputItemText', (api, item) => api.getItemTextProps({ item }))
+export const XhExpressionInputItemPrefix = defineComponent({ name: 'XhExpressionInputItemPrefix', props: expressionInputItemPartProps, setup: itemPartSetup((api, item) => api.getItemPrefixProps({ item })) })
+export const XhExpressionInputItemText = defineComponent({ name: 'XhExpressionInputItemText', props: expressionInputItemPartProps, setup: itemPartSetup((api, item) => api.getItemTextProps({ item })) })
 /** 名字后面的提示：函数是签名。 */
-export const XhExpressionInputItemSuffix = itemPart('XhExpressionInputItemSuffix', (api, item) => api.getItemSuffixProps({ item }))
+export const XhExpressionInputItemSuffix = defineComponent({ name: 'XhExpressionInputItemSuffix', props: expressionInputItemPartProps, setup: itemPartSetup((api, item) => api.getItemSuffixProps({ item })) })
 /** 条目的第 2 行说明。 */
-export const XhExpressionInputItemDescription = itemPart('XhExpressionInputItemDescription', (api, item) => api.getItemDescriptionProps({ item }))
+export const XhExpressionInputItemDescription = defineComponent({ name: 'XhExpressionInputItemDescription', props: expressionInputItemPartProps, setup: itemPartSetup((api, item) => api.getItemDescriptionProps({ item })) })
 
 /** 没有匹配的补全时显示的空态；与 content 同级。 */
 export const XhExpressionInputEmpty = defineComponent({
@@ -324,3 +324,21 @@ const EXPRESSION_INPUT_PARTS = {
 function renderDefaultStructure(api: ExpressionInputApi, label: string | undefined, multiline: boolean): VNode[] {
   return renderStructure(expressionInputStructure(api, { label, multiline }), EXPRESSION_INPUT_PARTS)
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhExpressionInputContentProps = PropsOf<typeof XhExpressionInputContent>
+export type XhExpressionInputControlProps = PropsOf<typeof XhExpressionInputControl>
+export type XhExpressionInputEmptyProps = PropsOf<typeof XhExpressionInputEmpty>
+export type XhExpressionInputHighlightProps = PropsOf<typeof XhExpressionInputHighlight>
+export type XhExpressionInputHighlightSegmentProps = PropsOf<typeof XhExpressionInputHighlightSegment>
+export type XhExpressionInputInputProps = PropsOf<typeof XhExpressionInputInput>
+export type XhExpressionInputIssueProps = PropsOf<typeof XhExpressionInputIssue>
+export type XhExpressionInputIssuesProps = PropsOf<typeof XhExpressionInputIssues>
+export type XhExpressionInputItemProps = PropsOf<typeof XhExpressionInputItem>
+export type XhExpressionInputItemDescriptionProps = PropsOf<typeof XhExpressionInputItemDescription>
+export type XhExpressionInputItemPrefixProps = PropsOf<typeof XhExpressionInputItemPrefix>
+export type XhExpressionInputItemSuffixProps = PropsOf<typeof XhExpressionInputItemSuffix>
+export type XhExpressionInputItemTextProps = PropsOf<typeof XhExpressionInputItemText>
+export type XhExpressionInputLabelProps = PropsOf<typeof XhExpressionInputLabel>
+export type XhExpressionInputPositionerProps = PropsOf<typeof XhExpressionInputPositioner>
+export type XhExpressionInputRootProps = PropsOf<typeof XhExpressionInputRoot>

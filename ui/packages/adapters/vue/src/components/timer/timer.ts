@@ -9,6 +9,7 @@ import type { Size } from '@xihan-ui/core'
 import type { TimerApi, TimerLive, TimerSchema, TimerTranslations, TimerUnit } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { slotPaints } from '../../runtime/slot-content'
@@ -165,3 +166,10 @@ function renderDefaultTree(): VNode {
   }
   return h(XhTimerDisplay, null, () => children)
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhTimerControlProps = PropsOf<typeof XhTimerControl>
+export type XhTimerDisplayProps = PropsOf<typeof XhTimerDisplay>
+export type XhTimerItemProps = PropsOf<typeof XhTimerItem>
+export type XhTimerRootProps = PropsOf<typeof XhTimerRoot>
+export type XhTimerSeparatorProps = PropsOf<typeof XhTimerSeparator>

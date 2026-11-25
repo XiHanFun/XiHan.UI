@@ -194,12 +194,15 @@ export function XhTransferRoot({
 
 XhTransferRoot.xhEvents = ['value-change', 'selection-change'] as const
 
-export interface XhTransferPanelProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
+/** 源与目标两个面板同一副 props。 */
+interface TransferPanelProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   children?: SlotChildren<TransferPanelSlotProps>
 }
+export type XhTransferSourcePanelProps = TransferPanelProps
+export type XhTransferTargetPanelProps = TransferPanelProps
 
 /** 源 / 目标两个面板的共同实现，两侧只在 side 上不同。 */
-function TransferPanel({ side, children, ...rest }: XhTransferPanelProps & { side: TransferSide }): ReactNode {
+function TransferPanel({ side, children, ...rest }: TransferPanelProps & { side: TransferSide }): ReactNode {
   const ctx = useTransferContext()
   const panel = useMemo(() => ({ side }), [side])
   const api = ctx.api
@@ -222,11 +225,11 @@ function TransferPanel({ side, children, ...rest }: XhTransferPanelProps & { sid
   )
 }
 
-export function XhTransferSourcePanel(props: XhTransferPanelProps): ReactNode {
+export function XhTransferSourcePanel(props: XhTransferSourcePanelProps): ReactNode {
   return <TransferPanel {...props} side="source" />
 }
 
-export function XhTransferTargetPanel(props: XhTransferPanelProps): ReactNode {
+export function XhTransferTargetPanel(props: XhTransferTargetPanelProps): ReactNode {
   return <TransferPanel {...props} side="target" />
 }
 

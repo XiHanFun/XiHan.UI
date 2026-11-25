@@ -7,6 +7,7 @@
 
 import type { FlexProps } from '@xihan-ui/headless'
 import type { PropType, Slot, SlotsType, VNode } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { connectFlex } from '@xihan-ui/headless'
 import { Comment, computed, defineComponent, Fragment, h, Text } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -92,3 +93,7 @@ export const XhFlex = defineComponent({
     }
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhFlexProps = PropsOf<typeof XhFlex>
+export type XhFlexSplitProps = PropsOf<typeof XhFlexSplit>

@@ -24,6 +24,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideFunnelChart, useFunnelChartContext } from './context'
@@ -227,3 +228,11 @@ export const XhFunnelChartRoot = defineComponent({
     }
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhFunnelChartCaptionProps = PropsOf<typeof XhFunnelChartCaption>
+export type XhFunnelChartEmptyProps = PropsOf<typeof XhFunnelChartEmpty>
+export type XhFunnelChartPlotProps = PropsOf<typeof XhFunnelChartPlot>
+export type XhFunnelChartRootProps = PropsOf<typeof XhFunnelChartRoot>
+export type XhFunnelChartTooltipProps = PropsOf<typeof XhFunnelChartTooltip>
+export type XhFunnelChartViewportProps = PropsOf<typeof XhFunnelChartViewport>

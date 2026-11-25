@@ -8,6 +8,7 @@
 import type { FileUploadApi, FileUploadFile, FileUploadItemProps, FileUploadRemoteFile, FileUploadSchema, FileUploadTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { fileUploadStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onUnmounted } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -348,3 +349,19 @@ function renderDefaultStructure(api: FileUploadApi, options: { label?: string, c
     }
   })
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhFileUploadClearTriggerProps = PropsOf<typeof XhFileUploadClearTrigger>
+export type XhFileUploadDropzoneProps = PropsOf<typeof XhFileUploadDropzone>
+export type XhFileUploadHiddenInputProps = PropsOf<typeof XhFileUploadHiddenInput>
+export type XhFileUploadItemProps = PropsOf<typeof XhFileUploadItem>
+export type XhFileUploadItemDeleteTriggerProps = PropsOf<typeof XhFileUploadItemDeleteTrigger>
+export type XhFileUploadItemLinkProps = PropsOf<typeof XhFileUploadItemLink>
+export type XhFileUploadItemNameProps = PropsOf<typeof XhFileUploadItemName>
+export type XhFileUploadItemPreviewProps = PropsOf<typeof XhFileUploadItemPreview>
+export type XhFileUploadItemProgressProps = PropsOf<typeof XhFileUploadItemProgress>
+export type XhFileUploadItemSizeTextProps = PropsOf<typeof XhFileUploadItemSizeText>
+export type XhFileUploadLabelProps = PropsOf<typeof XhFileUploadLabel>
+export type XhFileUploadListProps = PropsOf<typeof XhFileUploadList>
+export type XhFileUploadRootProps = PropsOf<typeof XhFileUploadRoot>
+export type XhFileUploadTriggerProps = PropsOf<typeof XhFileUploadTrigger>

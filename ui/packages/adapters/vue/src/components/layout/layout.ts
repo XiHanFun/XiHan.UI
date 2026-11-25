@@ -8,6 +8,7 @@
 import type { LayoutBreakpoint, LayoutSchema, LayoutSiderPlacement, LayoutSiderPresentation } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { provideLayout, useLayoutContext } from './context'
 import { useLayout } from './use-layout'
@@ -97,3 +98,12 @@ export const XhLayoutSiderTrigger = defineComponent({
     return () => h('button', ctx.api.value.getSiderTriggerProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhLayoutContentProps = PropsOf<typeof XhLayoutContent>
+export type XhLayoutFooterProps = PropsOf<typeof XhLayoutFooter>
+export type XhLayoutHeaderProps = PropsOf<typeof XhLayoutHeader>
+export type XhLayoutRootProps = PropsOf<typeof XhLayoutRoot>
+export type XhLayoutSiderProps = PropsOf<typeof XhLayoutSider>
+export type XhLayoutSiderBackdropProps = PropsOf<typeof XhLayoutSiderBackdrop>
+export type XhLayoutSiderTriggerProps = PropsOf<typeof XhLayoutSiderTrigger>

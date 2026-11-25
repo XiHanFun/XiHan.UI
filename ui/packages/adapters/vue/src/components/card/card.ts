@@ -8,6 +8,7 @@
 import type { ControlVariant } from '@xihan-ui/core'
 import type { CardProps } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { cardStructure, connectCard } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -130,3 +131,12 @@ function renderDefaultStructure(sections: CardSectionSlots): VNode[] {
   const nodes = cardStructure({ slotted: name => sections[name as keyof CardSectionSlots] != null })
   return renderStructure(nodes, CARD_PARTS, node => (node.slot ? sections[node.slot.name as keyof CardSectionSlots]?.() : undefined))
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhCardContentProps = PropsOf<typeof XhCardContent>
+export type XhCardDescriptionProps = PropsOf<typeof XhCardDescription>
+export type XhCardFooterProps = PropsOf<typeof XhCardFooter>
+export type XhCardHeaderProps = PropsOf<typeof XhCardHeader>
+export type XhCardRootProps = PropsOf<typeof XhCardRoot>
+export type XhCardTitleProps = PropsOf<typeof XhCardTitle>
+export type XhCardTriggerProps = PropsOf<typeof XhCardTrigger>

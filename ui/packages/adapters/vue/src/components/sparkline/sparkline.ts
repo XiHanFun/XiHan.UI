@@ -16,6 +16,7 @@ import type {
   SparklineVariant,
 } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { useSparkline } from './use-sparkline'
@@ -60,3 +61,6 @@ export const XhSparkline = defineComponent({
     }
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhSparklineProps = PropsOf<typeof XhSparkline>

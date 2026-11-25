@@ -8,6 +8,7 @@
 import type { MarqueeDirection, MarqueeSchema, MarqueeTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { createScope } from '@xihan-ui/core'
 import { connectMarquee, marqueeMachine } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
@@ -98,3 +99,8 @@ export const XhMarqueeAutoplayTrigger = defineComponent({
     return () => h('button', ctx.api.value.getAutoplayTriggerProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhMarqueeAutoplayTriggerProps = PropsOf<typeof XhMarqueeAutoplayTrigger>
+export type XhMarqueeContentProps = PropsOf<typeof XhMarqueeContent>
+export type XhMarqueeRootProps = PropsOf<typeof XhMarqueeRoot>

@@ -8,6 +8,7 @@
 import type { Tone } from '@xihan-ui/core'
 import type { HighlightProps } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { connectHighlight } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -45,3 +46,6 @@ export const XhHighlight = defineComponent({
     }
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhHighlightProps = PropsOf<typeof XhHighlight>

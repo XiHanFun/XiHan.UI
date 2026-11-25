@@ -10,6 +10,7 @@ import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { NavigationMenuApi, NavigationMenuNode, NavigationMenuNodeMeta, NavigationMenuSchema, NavigationMenuTranslations, StructureNode } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { navigationMenuStructure } from '@xihan-ui/headless'
 import { defineComponent, h, nextTick, onMounted, ref, useId } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -290,3 +291,17 @@ function renderDefaultStructure(api: NavigationMenuApi, panel: ((node: Navigatio
     return node.slot?.name === 'panel' && meta ? panel?.(meta) : undefined
   })
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhNavigationMenuBranchContentProps = PropsOf<typeof XhNavigationMenuBranchContent>
+export type XhNavigationMenuBranchIndicatorProps = PropsOf<typeof XhNavigationMenuBranchIndicator>
+export type XhNavigationMenuBranchTriggerProps = PropsOf<typeof XhNavigationMenuBranchTrigger>
+export type XhNavigationMenuContentProps = PropsOf<typeof XhNavigationMenuContent>
+export type XhNavigationMenuIndicatorProps = PropsOf<typeof XhNavigationMenuIndicator>
+export type XhNavigationMenuItemProps = PropsOf<typeof XhNavigationMenuItem>
+export type XhNavigationMenuLinkProps = PropsOf<typeof XhNavigationMenuLink>
+export type XhNavigationMenuListProps = PropsOf<typeof XhNavigationMenuList>
+export type XhNavigationMenuRootProps = PropsOf<typeof XhNavigationMenuRoot>
+export type XhNavigationMenuTriggerProps = PropsOf<typeof XhNavigationMenuTrigger>
+export type XhNavigationMenuTriggerIndicatorProps = PropsOf<typeof XhNavigationMenuTriggerIndicator>
+export type XhNavigationMenuViewportProps = PropsOf<typeof XhNavigationMenuViewport>

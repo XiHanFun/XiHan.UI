@@ -212,22 +212,27 @@ export function XhCitationSourceLink({ children, ...rest }: XhCitationSourceLink
   return <button {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>{children}</button>
 }
 
-export interface XhCitationSourcePartProps extends ComponentPropsWithRef<'span'> {}
-export function XhCitationSourceIndex({ children, ...rest }: XhCitationSourcePartProps): ReactNode {
+/** 来源条目里的序号、标题与元信息三个部件同一副 props。 */
+interface CitationSourcePartProps extends ComponentPropsWithRef<'span'> {}
+export type XhCitationSourceIndexProps = CitationSourcePartProps
+export type XhCitationSourceTitleProps = CitationSourcePartProps
+export type XhCitationSourceMetaProps = CitationSourcePartProps
+
+export function XhCitationSourceIndex({ children, ...rest }: XhCitationSourceIndexProps): ReactNode {
   const { api } = useCitationContext()
   const item = useCitationSource()
   const index = api.sources.findIndex(source => source.sourceId === item.sourceId) + 1
   return <span {...mergeReactProps(api.getSourceIndexProps(item), rest)}>{children ?? index}</span>
 }
 
-export function XhCitationSourceTitle({ children, ...rest }: XhCitationSourcePartProps): ReactNode {
+export function XhCitationSourceTitle({ children, ...rest }: XhCitationSourceTitleProps): ReactNode {
   const { api } = useCitationContext()
   const item = useCitationSource()
   const current = api.sources.find(source => source.sourceId === item.sourceId)
   return <span {...mergeReactProps(api.getSourceTitleProps(item), rest)}>{children ?? citationSourceTitle(current)}</span>
 }
 
-export function XhCitationSourceMeta({ children, ...rest }: XhCitationSourcePartProps): ReactNode {
+export function XhCitationSourceMeta({ children, ...rest }: XhCitationSourceMetaProps): ReactNode {
   const { api } = useCitationContext()
   const item = useCitationSource()
   const current = api.sources.find(source => source.sourceId === item.sourceId)

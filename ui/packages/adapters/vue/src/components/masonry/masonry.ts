@@ -7,6 +7,7 @@
 
 import type { MasonryColumns, MasonryMeasurement, MasonryProps } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { connectMasonry, distributeMasonry, measureMasonry, resolveMasonryColumns, sameMasonryHeights } from '@xihan-ui/headless'
 import { Comment, defineComponent, Fragment, h, onBeforeUnmount, onMounted, onUpdated, ref, Text } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -170,3 +171,6 @@ export const XhMasonry = defineComponent({
     }
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhMasonryProps = PropsOf<typeof XhMasonry>

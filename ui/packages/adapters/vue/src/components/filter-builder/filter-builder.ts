@@ -9,6 +9,7 @@ import type { ControlVariant, Size } from '@xihan-ui/core'
 import type { FilterBuilderApi, FilterBuilderCreateId, FilterBuilderSchema, FilterBuilderTranslations, FilterCondition, FilterField, FilterGroup, FilterParameter, FilterPath } from '@xihan-ui/headless'
 import type { ComputedRef, PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { filterBuilderStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onUnmounted } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -368,3 +369,27 @@ function renderDefaultStructure(api: FilterBuilderApi, translations: FilterBuild
   return renderStructure(nodes, FILTER_BUILDER_PARTS, node =>
     node.slot?.name === 'condition-extra' ? extraSlot?.(node.data as FilterBuilderConditionExtraSlotProps) : undefined, FILTER_BUILDER_INSTANCES)
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhFilterBuilderAddConditionTriggerProps = PropsOf<typeof XhFilterBuilderAddConditionTrigger>
+export type XhFilterBuilderAddGroupTriggerProps = PropsOf<typeof XhFilterBuilderAddGroupTrigger>
+export type XhFilterBuilderConditionProps = PropsOf<typeof XhFilterBuilderCondition>
+export type XhFilterBuilderConditionDeleteTriggerProps = PropsOf<typeof XhFilterBuilderConditionDeleteTrigger>
+export type XhFilterBuilderConditionErrorProps = PropsOf<typeof XhFilterBuilderConditionError>
+export type XhFilterBuilderConditionExtraProps = PropsOf<typeof XhFilterBuilderConditionExtra>
+export type XhFilterBuilderConditionFieldProps = PropsOf<typeof XhFilterBuilderConditionField>
+export type XhFilterBuilderConditionIgnoreCaseProps = PropsOf<typeof XhFilterBuilderConditionIgnoreCase>
+export type XhFilterBuilderConditionOperandProps = PropsOf<typeof XhFilterBuilderConditionOperand>
+export type XhFilterBuilderConditionOperatorProps = PropsOf<typeof XhFilterBuilderConditionOperator>
+export type XhFilterBuilderConditionSourceProps = PropsOf<typeof XhFilterBuilderConditionSource>
+export type XhFilterBuilderEmptyProps = PropsOf<typeof XhFilterBuilderEmpty>
+export type XhFilterBuilderGroupProps = PropsOf<typeof XhFilterBuilderGroup>
+export type XhFilterBuilderGroupDeleteTriggerProps = PropsOf<typeof XhFilterBuilderGroupDeleteTrigger>
+export type XhFilterBuilderGroupFooterProps = PropsOf<typeof XhFilterBuilderGroupFooter>
+export type XhFilterBuilderGroupHeaderProps = PropsOf<typeof XhFilterBuilderGroupHeader>
+export type XhFilterBuilderGroupItemsProps = PropsOf<typeof XhFilterBuilderGroupItems>
+export type XhFilterBuilderLabelProps = PropsOf<typeof XhFilterBuilderLabel>
+export type XhFilterBuilderLiveRegionProps = PropsOf<typeof XhFilterBuilderLiveRegion>
+export type XhFilterBuilderLogicProps = PropsOf<typeof XhFilterBuilderLogic>
+export type XhFilterBuilderRangeSeparatorProps = PropsOf<typeof XhFilterBuilderRangeSeparator>
+export type XhFilterBuilderRootProps = PropsOf<typeof XhFilterBuilderRoot>

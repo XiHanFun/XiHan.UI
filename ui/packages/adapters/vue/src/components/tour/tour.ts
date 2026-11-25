@@ -9,6 +9,7 @@ import type { Direction, Placement } from '@xihan-ui/core'
 import type { TourApi, TourSchema, TourStep, TourTarget } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
@@ -285,3 +286,20 @@ export const XhTourArrow = defineComponent({
     return () => h('div', ctx.api.value.getArrowProps())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhTourArrowProps = PropsOf<typeof XhTourArrow>
+export type XhTourBackdropProps = PropsOf<typeof XhTourBackdrop>
+export type XhTourCloseTriggerProps = PropsOf<typeof XhTourCloseTrigger>
+export type XhTourContentProps = PropsOf<typeof XhTourContent>
+export type XhTourDescriptionProps = PropsOf<typeof XhTourDescription>
+export type XhTourNextTriggerProps = PropsOf<typeof XhTourNextTrigger>
+export type XhTourPositionerProps = PropsOf<typeof XhTourPositioner>
+export type XhTourPrevTriggerProps = PropsOf<typeof XhTourPrevTrigger>
+export type XhTourProgressDotProps = PropsOf<typeof XhTourProgressDot>
+export type XhTourProgressIndicatorProps = PropsOf<typeof XhTourProgressIndicator>
+export type XhTourProgressTextProps = PropsOf<typeof XhTourProgressText>
+export type XhTourRootProps = PropsOf<typeof XhTourRoot>
+export type XhTourSkipTriggerProps = PropsOf<typeof XhTourSkipTrigger>
+export type XhTourSpotlightProps = PropsOf<typeof XhTourSpotlight>
+export type XhTourTitleProps = PropsOf<typeof XhTourTitle>

@@ -8,6 +8,7 @@
 import type { Size } from '@xihan-ui/core'
 import type { ColorSwatchProps } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { connectColorSwatch } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -34,3 +35,6 @@ export const XhColorSwatch = defineComponent({
     return () => h('span', api.value.getRootProps())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhColorSwatchProps = PropsOf<typeof XhColorSwatch>

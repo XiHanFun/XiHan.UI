@@ -9,6 +9,7 @@ import type { Direction, Placement, Size } from '@xihan-ui/core'
 import type { HoverCardApi, HoverCardSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h, mergeProps } from 'vue'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
@@ -149,3 +150,12 @@ export const XhHoverCardArrow = defineComponent({
     return () => h('div', ctx.api.value.getArrowProps())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhHoverCardArrowProps = PropsOf<typeof XhHoverCardArrow>
+export type XhHoverCardContentProps = PropsOf<typeof XhHoverCardContent>
+export type XhHoverCardDescriptionProps = PropsOf<typeof XhHoverCardDescription>
+export type XhHoverCardPositionerProps = PropsOf<typeof XhHoverCardPositioner>
+export type XhHoverCardRootProps = PropsOf<typeof XhHoverCardRoot>
+export type XhHoverCardTitleProps = PropsOf<typeof XhHoverCardTitle>
+export type XhHoverCardTriggerProps = PropsOf<typeof XhHoverCardTrigger>

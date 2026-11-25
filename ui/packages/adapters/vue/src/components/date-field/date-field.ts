@@ -9,6 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { DateFieldApi, DateFieldSchema, DateFieldSegmentState, DateFieldTranslations, DateGranularity, DateHourCycle, DateSegmentSet, DateSegmentType } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { dateFieldStructure } from '@xihan-ui/headless'
 import { defineComponent, h, onUnmounted } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -204,3 +205,12 @@ function renderDefaultStructure(api: DateFieldApi, label: string | undefined, la
   const nodes = dateFieldStructure(api, { label, slotted: name => name === 'label' && labelSlot != null })
   return renderStructure(nodes, DATE_FIELD_PARTS, node => (node.slot ? labelSlot?.() : undefined))
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhDateFieldClearTriggerProps = PropsOf<typeof XhDateFieldClearTrigger>
+export type XhDateFieldControlProps = PropsOf<typeof XhDateFieldControl>
+export type XhDateFieldHiddenInputProps = PropsOf<typeof XhDateFieldHiddenInput>
+export type XhDateFieldLabelProps = PropsOf<typeof XhDateFieldLabel>
+export type XhDateFieldRootProps = PropsOf<typeof XhDateFieldRoot>
+export type XhDateFieldSegmentProps = PropsOf<typeof XhDateFieldSegment>
+export type XhDateFieldSegmentGroupProps = PropsOf<typeof XhDateFieldSegmentGroup>

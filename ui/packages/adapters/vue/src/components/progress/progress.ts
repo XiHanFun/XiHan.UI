@@ -18,6 +18,7 @@ import type {
   ProgressVariant,
 } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { connectProgress } from '@xihan-ui/headless'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -97,3 +98,6 @@ export const XhProgress = defineComponent({
     }
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhProgressProps = PropsOf<typeof XhProgress>

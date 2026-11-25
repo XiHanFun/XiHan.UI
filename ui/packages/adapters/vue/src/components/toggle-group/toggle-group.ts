@@ -9,6 +9,7 @@ import type { ActionVariant, Direction, Orientation, PropTypes, Size, Tone } fro
 import type { SelectionValueKey, ToggleGroupApi, ToggleGroupModel, ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGroupSelection, ToggleGroupValueChangeDetails } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { BivariantCallback } from '../../runtime/bivariant'
+import type { PropsOf } from '../../runtime/props-of'
 import { toggleGroupStructure, valueKeyOf } from '@xihan-ui/headless'
 import { Comment, defineComponent, Fragment, h, onBeforeUnmount, ref, Text, watch } from 'vue'
 import { renderStructure } from '../../runtime/structure'
@@ -102,13 +103,16 @@ export interface XhToggleGroupRootValueProps<V, M extends boolean> {
 
 type XhToggleGroupRootInstance = InstanceType<typeof XhToggleGroupRootImpl>
 
+/** 根组件在模板与 `h()` 里接受的 props（含 onXxx 监听），随值类型收窄的几项取自 XhToggleGroupRootValueProps。 */
+export type XhToggleGroupRootProps<V = string, M extends boolean = false> = Omit<XhToggleGroupRootInstance['$props'], keyof XhToggleGroupRootValueProps<V, M>> & XhToggleGroupRootValueProps<V, M>
+
 /**
  * 按值类型与 multiple 收窄的根组件类型。模板里由 Volar 照 value / collection 推断 V、照 multiple 推断形状：
  * 写了 multiple 时 v-model:value 绑数组，没写时绑一个值或 null，数字、对象都不必断言。`h()` 推断不了泛型，那里按 unknown 收。
  */
 export type XhToggleGroupRootComponent = Omit<typeof XhToggleGroupRootImpl, never> & {
-  new<V = string, M extends boolean = false>(props?: Omit<XhToggleGroupRootInstance['$props'], keyof XhToggleGroupRootValueProps<V, M>> & XhToggleGroupRootValueProps<V, M>): Omit<XhToggleGroupRootInstance, '$props' | '$slots'> & {
-    $props: Omit<XhToggleGroupRootInstance['$props'], keyof XhToggleGroupRootValueProps<V, M>> & XhToggleGroupRootValueProps<V, M>
+  new<V = string, M extends boolean = false>(props?: XhToggleGroupRootProps<V, M>): Omit<XhToggleGroupRootInstance, '$props' | '$slots'> & {
+    $props: XhToggleGroupRootProps<V, M>
     $slots: Omit<XhToggleGroupRootInstance['$slots'], 'item'> & {
       item?: (node: ToggleGroupNodeMeta<V>) => VNode[]
     }
@@ -210,3 +214,7 @@ function renderDefaultStructure(api: ToggleGroupApi<PropTypes, unknown>, itemSlo
     return itemSlot?.(meta) ?? meta.label
   })
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhToggleGroupHiddenInputProps = PropsOf<typeof XhToggleGroupHiddenInput>
+export type XhToggleGroupItemProps = PropsOf<typeof XhToggleGroupItem>

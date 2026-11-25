@@ -8,6 +8,7 @@
 import type { ImageApi, ImageSchema } from '@xihan-ui/headless'
 import type { SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h, ref, watch } from 'vue'
 import { provideImage, useImageContext } from './context'
 import { useImage } from './use-image'
@@ -86,3 +87,9 @@ export const XhImageFallback = defineComponent({
     return () => h('div', ctx.api.value.getFallbackProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhImageFallbackProps = PropsOf<typeof XhImageFallback>
+export type XhImageImageProps = PropsOf<typeof XhImageImage>
+export type XhImagePlaceholderProps = PropsOf<typeof XhImagePlaceholder>
+export type XhImageRootProps = PropsOf<typeof XhImageRoot>

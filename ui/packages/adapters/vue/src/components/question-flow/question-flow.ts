@@ -17,6 +17,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideQuestionFlow, useQuestionFlowContext } from './context'
@@ -379,3 +380,25 @@ export const XhQuestionFlowLiveRegion = defineComponent({
     )
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhQuestionFlowCounterProps = PropsOf<typeof XhQuestionFlowCounter>
+export type XhQuestionFlowDescriptionProps = PropsOf<typeof XhQuestionFlowDescription>
+export type XhQuestionFlowFooterProps = PropsOf<typeof XhQuestionFlowFooter>
+export type XhQuestionFlowGroupProps = PropsOf<typeof XhQuestionFlowGroup>
+export type XhQuestionFlowItemProps = PropsOf<typeof XhQuestionFlowItem>
+export type XhQuestionFlowItemDescriptionProps = PropsOf<typeof XhQuestionFlowItemDescription>
+export type XhQuestionFlowItemIndicatorProps = PropsOf<typeof XhQuestionFlowItemIndicator>
+export type XhQuestionFlowItemTextProps = PropsOf<typeof XhQuestionFlowItemText>
+export type XhQuestionFlowLiveRegionProps = PropsOf<typeof XhQuestionFlowLiveRegion>
+export type XhQuestionFlowNextTriggerProps = PropsOf<typeof XhQuestionFlowNextTrigger>
+export type XhQuestionFlowNoteProps = PropsOf<typeof XhQuestionFlowNote>
+export type XhQuestionFlowPrevTriggerProps = PropsOf<typeof XhQuestionFlowPrevTrigger>
+export type XhQuestionFlowPromptProps = PropsOf<typeof XhQuestionFlowPrompt>
+export type XhQuestionFlowQuestionProps = PropsOf<typeof XhQuestionFlowQuestion>
+export type XhQuestionFlowResultProps = PropsOf<typeof XhQuestionFlowResult>
+export type XhQuestionFlowRootProps = PropsOf<typeof XhQuestionFlowRoot>
+export type XhQuestionFlowSkipTriggerProps = PropsOf<typeof XhQuestionFlowSkipTrigger>
+export type XhQuestionFlowSubmitTriggerProps = PropsOf<typeof XhQuestionFlowSubmitTrigger>
+export type XhQuestionFlowTrackProps = PropsOf<typeof XhQuestionFlowTrack>
+export type XhQuestionFlowViewportProps = PropsOf<typeof XhQuestionFlowViewport>

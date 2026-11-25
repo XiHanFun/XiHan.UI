@@ -9,6 +9,7 @@ import type { Direction, OverlayBackdropVariant, Size } from '@xihan-ui/core'
 import type { CommandApi, CommandGroup, CommandGroupMeta, CommandGroupProps, CommandItemProps, CommandNode, CommandNodeMeta, CommandSchema, StructureNode } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { commandStructure, resolveCommandGroups } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -403,3 +404,21 @@ function renderDefaultStructure(tree: readonly CommandGroupMeta[], empty: string
     return meta ? content[name]?.(meta) : undefined
   })
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhCommandContentProps = PropsOf<typeof XhCommandContent>
+export type XhCommandEmptyProps = PropsOf<typeof XhCommandEmpty>
+export type XhCommandFooterProps = PropsOf<typeof XhCommandFooter>
+export type XhCommandGroupProps = PropsOf<typeof XhCommandGroup>
+export type XhCommandGroupLabelProps = PropsOf<typeof XhCommandGroupLabel>
+export type XhCommandInputProps = PropsOf<typeof XhCommandInput>
+export type XhCommandItemProps = PropsOf<typeof XhCommandItem>
+export type XhCommandItemDescriptionProps = PropsOf<typeof XhCommandItemDescription>
+export type XhCommandItemPrefixProps = PropsOf<typeof XhCommandItemPrefix>
+export type XhCommandItemShortcutProps = PropsOf<typeof XhCommandItemShortcut>
+export type XhCommandItemSuffixProps = PropsOf<typeof XhCommandItemSuffix>
+export type XhCommandItemTextProps = PropsOf<typeof XhCommandItemText>
+export type XhCommandListProps = PropsOf<typeof XhCommandList>
+export type XhCommandLoadingProps = PropsOf<typeof XhCommandLoading>
+export type XhCommandRootProps = PropsOf<typeof XhCommandRoot>
+export type XhCommandTriggerProps = PropsOf<typeof XhCommandTrigger>

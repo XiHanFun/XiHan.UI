@@ -9,6 +9,7 @@ import type { Direction, Placement, Size } from '@xihan-ui/core'
 import type { PopconfirmApi, PopconfirmConfirmErrorDetails, PopconfirmNotifiers, PopconfirmOverlayProps, PopconfirmProps } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h, mergeProps } from 'vue'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
@@ -184,3 +185,14 @@ export const XhPopconfirmArrow = defineComponent({
     return () => h('div', ctx.api.value.getArrowProps())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhPopconfirmArrowProps = PropsOf<typeof XhPopconfirmArrow>
+export type XhPopconfirmCancelTriggerProps = PropsOf<typeof XhPopconfirmCancelTrigger>
+export type XhPopconfirmConfirmTriggerProps = PropsOf<typeof XhPopconfirmConfirmTrigger>
+export type XhPopconfirmContentProps = PropsOf<typeof XhPopconfirmContent>
+export type XhPopconfirmDescriptionProps = PropsOf<typeof XhPopconfirmDescription>
+export type XhPopconfirmPositionerProps = PropsOf<typeof XhPopconfirmPositioner>
+export type XhPopconfirmRootProps = PropsOf<typeof XhPopconfirmRoot>
+export type XhPopconfirmTitleProps = PropsOf<typeof XhPopconfirmTitle>
+export type XhPopconfirmTriggerProps = PropsOf<typeof XhPopconfirmTrigger>

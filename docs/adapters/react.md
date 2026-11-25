@@ -51,6 +51,8 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from "@
 
 类型是 `SlotChildren<P>`：传节点也可以，传函数才能获得载荷。每个组件的载荷类型（如 `SelectRootSlotProps`）都一并导出。
 
+每个组件的 props 类型同样导出，命名为 `Xh<组件名>Props`，与 Vue 一一对应，如 `XhDialogContentProps`。它在根元素的原生属性之上并入组件自己的 prop；选中值随类型收窄的根组件带类型参数，如 `XhSelectRootProps<number>`。
+
 ## asChild
 
 要把部件的行为落到自定义元素上，传 `asChild` 并提供单个子元素：

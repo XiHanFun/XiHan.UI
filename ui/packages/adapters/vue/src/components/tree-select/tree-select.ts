@@ -9,6 +9,7 @@ import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui
 import type { CollectionVirtualizer, TreeSelectApi, TreeSelectNode, TreeSelectNodeProps, TreeSelectSchema } from '@xihan-ui/headless'
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import type { TreeSelectContext } from './use-tree-select'
 import { treeSelectStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onMounted, onUnmounted, ref, watch } from 'vue'
@@ -737,3 +738,40 @@ function renderDefaultStructure(
   const nodes = treeSelectStructure(api, { label, clearable, searchable, slotted: name => name === 'label' && labelSlot != null })
   return renderStructure(nodes, TREE_SELECT_PARTS, node => node.slot?.name === 'label' ? labelSlot?.() : undefined)
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhTreeSelectBranchProps = PropsOf<typeof XhTreeSelectBranch>
+export type XhTreeSelectBranchContentProps = PropsOf<typeof XhTreeSelectBranchContent>
+export type XhTreeSelectBranchControlProps = PropsOf<typeof XhTreeSelectBranchControl>
+export type XhTreeSelectBranchEmptyProps = PropsOf<typeof XhTreeSelectBranchEmpty>
+export type XhTreeSelectBranchErrorProps = PropsOf<typeof XhTreeSelectBranchError>
+export type XhTreeSelectBranchIndicatorProps = PropsOf<typeof XhTreeSelectBranchIndicator>
+export type XhTreeSelectBranchLoadingProps = PropsOf<typeof XhTreeSelectBranchLoading>
+export type XhTreeSelectBranchRetryTriggerProps = PropsOf<typeof XhTreeSelectBranchRetryTrigger>
+export type XhTreeSelectBranchTextProps = PropsOf<typeof XhTreeSelectBranchText>
+export type XhTreeSelectBranchTriggerProps = PropsOf<typeof XhTreeSelectBranchTrigger>
+export type XhTreeSelectClearTriggerProps = PropsOf<typeof XhTreeSelectClearTrigger>
+export type XhTreeSelectContentProps = PropsOf<typeof XhTreeSelectContent>
+export type XhTreeSelectControlProps = PropsOf<typeof XhTreeSelectControl>
+export type XhTreeSelectEmptyProps = PropsOf<typeof XhTreeSelectEmpty>
+export type XhTreeSelectFooterProps = PropsOf<typeof XhTreeSelectFooter>
+export type XhTreeSelectHiddenInputProps = PropsOf<typeof XhTreeSelectHiddenInput>
+export type XhTreeSelectIndicatorProps = PropsOf<typeof XhTreeSelectIndicator>
+export type XhTreeSelectInputProps = PropsOf<typeof XhTreeSelectInput>
+export type XhTreeSelectItemProps = PropsOf<typeof XhTreeSelectItem>
+export type XhTreeSelectItemDeleteTriggerProps = PropsOf<typeof XhTreeSelectItemDeleteTrigger>
+export type XhTreeSelectItemDescriptionProps = PropsOf<typeof XhTreeSelectItemDescription>
+export type XhTreeSelectItemIndicatorProps = PropsOf<typeof XhTreeSelectItemIndicator>
+export type XhTreeSelectItemSuffixProps = PropsOf<typeof XhTreeSelectItemSuffix>
+export type XhTreeSelectItemTextProps = PropsOf<typeof XhTreeSelectItemText>
+export type XhTreeSelectLabelProps = PropsOf<typeof XhTreeSelectLabel>
+export type XhTreeSelectLoadingProps = PropsOf<typeof XhTreeSelectLoading>
+export type XhTreeSelectOverflowTagProps = PropsOf<typeof XhTreeSelectOverflowTag>
+export type XhTreeSelectPositionerProps = PropsOf<typeof XhTreeSelectPositioner>
+export type XhTreeSelectRootProps = PropsOf<typeof XhTreeSelectRoot>
+export type XhTreeSelectTagProps = PropsOf<typeof XhTreeSelectTag>
+export type XhTreeSelectTagLabelProps = PropsOf<typeof XhTreeSelectTagLabel>
+export type XhTreeSelectTagListProps = PropsOf<typeof XhTreeSelectTagList>
+export type XhTreeSelectTreeProps = PropsOf<typeof XhTreeSelectTree>
+export type XhTreeSelectTriggerProps = PropsOf<typeof XhTreeSelectTrigger>
+export type XhTreeSelectValueTextProps = PropsOf<typeof XhTreeSelectValueText>

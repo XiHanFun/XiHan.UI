@@ -9,6 +9,7 @@ import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { DownloadTriggerApi, DownloadTriggerData, DownloadTriggerSchema, DownloadTriggerTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { useDownloadTrigger } from './use-download-trigger'
@@ -64,3 +65,6 @@ export const XhDownloadTrigger = defineComponent({
     }))
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhDownloadTriggerProps = PropsOf<typeof XhDownloadTrigger>

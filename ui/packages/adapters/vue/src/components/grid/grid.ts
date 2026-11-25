@@ -7,6 +7,7 @@
 
 import type { GridColumnCount, GridColumnOffset, GridItemProps, GridProps, GridRowCount } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { connectGrid, normalizeGridCount, normalizeGridTier } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -80,3 +81,7 @@ export const XhGridItem = defineComponent({
     )
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhGridItemProps = PropsOf<typeof XhGridItem>
+export type XhGridRootProps = PropsOf<typeof XhGridRoot>

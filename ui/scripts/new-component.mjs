@@ -336,6 +336,7 @@ export function use${n.P}(
 import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { use${n.P} } from './use-${n.c}'
 
@@ -365,6 +366,9 @@ export const Xh${n.P} = defineComponent({
     return () => h('button', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type Xh${n.P}Props = PropsOf<typeof Xh${n.P}>
 `
 
   t['wc-element'] = `import type { ${n.P}PressedChangeDetails, ${n.P}Schema } from '@xihan-ui/headless'
@@ -756,6 +760,7 @@ const HANDLERS = {
     hit => hit[1],
     [
       `export { Xh${n.P} } from './components/${n.c}/${n.c}'`,
+      `export type { Xh${n.P}Props } from './components/${n.c}/${n.c}'`,
       `export { use${n.P} } from './components/${n.c}/use-${n.c}'`,
       `export type { ${n.P}Context } from './components/${n.c}/use-${n.c}'`,
     ],

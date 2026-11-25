@@ -7,8 +7,9 @@
 
 import type { Direction, IconRecord, Placement, Size, Tone } from '@xihan-ui/core'
 import type { ContextMenuAnyItemProps, ContextMenuApi, ContextMenuGroupProps, ContextMenuNode, ContextMenuNodeMeta, ContextMenuRadioValue, ContextMenuSchema, MenuApi, MenuNode, MenuSchema, StructureNode } from '@xihan-ui/headless'
-import type { PropType, SlotsType, VNode } from 'vue'
+import type { ExtractPropTypes, PropType, SetupContext, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { mergeProps } from '@xihan-ui/core'
 import { contextMenuStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps as mergeVueProps, onBeforeUnmount, ref, watch } from 'vue'
@@ -240,59 +241,59 @@ export const XhContextMenuGroupLabel = defineComponent({
   },
 })
 
-function createContextMenuItemComponent(name: string, kind: 'item' | 'checkbox' | 'radio'): ReturnType<typeof defineComponent> {
-  return defineComponent({
-    name,
-    props: {
-      value: { type: String, required: true },
-      disabled: { type: Boolean, default: undefined },
-      closeOnSelect: { type: Boolean, default: undefined },
-    },
-    setup(props, { slots }) {
-      const ctx = useContextMenuContext()
-      const radioGroup = kind === 'radio' ? useContextMenuGroupContext() : null
-      const item = computed<ContextMenuAnyItemProps>(() => kind === 'radio'
-        ? { value: props.value, disabled: props.disabled, closeOnSelect: props.closeOnSelect, kind, group: radioGroup!.group.value.value }
-        : kind === 'checkbox'
-          ? { value: props.value, disabled: props.disabled, closeOnSelect: props.closeOnSelect, kind }
-          : { value: props.value, disabled: props.disabled, kind })
-      provideContextMenuItem({ item })
-      // 本条目持有焦点时，value 变更按新值重报焦点条目，卸载时上报焦点丢失
-      const itemEl = ref<HTMLElement | null>(null)
-      watch(() => props.value, (next, prev) => {
-        if (next === prev)
-          return
-        const { service } = ctx
-        if (service.getStatus() !== 'Started')
-          return
-        if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
-          service.send({ type: 'ITEM.FOCUS', value: next })
-      })
-      onBeforeUnmount(() => {
-        const { service } = ctx
-        // 根已停机时不再送事件
-        if (service.getStatus() !== 'Started')
-          return
-        // 按「本节点当下正持有焦点」判定，不按 value 比对
-        if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
-          service.send({ type: 'ITEM.LOST' })
-      })
-      return () => {
-        const declaration = item.value
-        const part = declaration.kind === 'checkbox'
-          ? ctx.api.value.getCheckboxItemProps(declaration)
-          : declaration.kind === 'radio'
-            ? ctx.api.value.getRadioItemProps(declaration)
-            : ctx.api.value.getItemProps(declaration)
-        return h('div', { ...part, ref: itemEl }, slots.default?.())
-      }
-    },
-  })
+/** 普通、勾选与单选三种条目共用的 props。 */
+const contextMenuItemProps = {
+  value: { type: String, required: true },
+  disabled: { type: Boolean, default: undefined },
+  closeOnSelect: { type: Boolean, default: undefined },
+} as const
+
+/** 普通、勾选与单选三种条目共用的 setup，只在 kind 上不同。 */
+function contextMenuItemSetup(kind: 'item' | 'checkbox' | 'radio'): (props: Readonly<ExtractPropTypes<typeof contextMenuItemProps>>, ctx: Pick<SetupContext, 'slots'>) => () => VNode {
+  return (props, { slots }) => {
+    const ctx = useContextMenuContext()
+    const radioGroup = kind === 'radio' ? useContextMenuGroupContext() : null
+    const item = computed<ContextMenuAnyItemProps>(() => kind === 'radio'
+      ? { value: props.value, disabled: props.disabled, closeOnSelect: props.closeOnSelect, kind, group: radioGroup!.group.value.value }
+      : kind === 'checkbox'
+        ? { value: props.value, disabled: props.disabled, closeOnSelect: props.closeOnSelect, kind }
+        : { value: props.value, disabled: props.disabled, kind })
+    provideContextMenuItem({ item })
+    // 本条目持有焦点时，value 变更按新值重报焦点条目，卸载时上报焦点丢失
+    const itemEl = ref<HTMLElement | null>(null)
+    watch(() => props.value, (next, prev) => {
+      if (next === prev)
+        return
+      const { service } = ctx
+      if (service.getStatus() !== 'Started')
+        return
+      if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
+        service.send({ type: 'ITEM.FOCUS', value: next })
+    })
+    onBeforeUnmount(() => {
+      const { service } = ctx
+      // 根已停机时不再送事件
+      if (service.getStatus() !== 'Started')
+        return
+      // 按「本节点当下正持有焦点」判定，不按 value 比对
+      if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
+        service.send({ type: 'ITEM.LOST' })
+    })
+    return () => {
+      const declaration = item.value
+      const part = declaration.kind === 'checkbox'
+        ? ctx.api.value.getCheckboxItemProps(declaration)
+        : declaration.kind === 'radio'
+          ? ctx.api.value.getRadioItemProps(declaration)
+          : ctx.api.value.getItemProps(declaration)
+      return h('div', { ...part, ref: itemEl }, slots.default?.())
+    }
+  }
 }
 
-export const XhContextMenuItem = /* @__PURE__ */ createContextMenuItemComponent('XhContextMenuItem', 'item')
-export const XhContextMenuCheckboxItem = /* @__PURE__ */ createContextMenuItemComponent('XhContextMenuCheckboxItem', 'checkbox')
-export const XhContextMenuRadioItem = /* @__PURE__ */ createContextMenuItemComponent('XhContextMenuRadioItem', 'radio')
+export const XhContextMenuItem = defineComponent({ name: 'XhContextMenuItem', props: contextMenuItemProps, setup: contextMenuItemSetup('item') })
+export const XhContextMenuCheckboxItem = defineComponent({ name: 'XhContextMenuCheckboxItem', props: contextMenuItemProps, setup: contextMenuItemSetup('checkbox') })
+export const XhContextMenuRadioItem = defineComponent({ name: 'XhContextMenuRadioItem', props: contextMenuItemProps, setup: contextMenuItemSetup('radio') })
 
 /**
  * 上下文菜单中的子菜单：子层运行一台 submenu 模式的 menu 状态机，触发条目由
@@ -545,3 +546,25 @@ function renderDefaultStructure(api: ContextMenuApi, trigger: (() => VNode[]) | 
     return meta ? itemSlots[name]?.(meta) : undefined
   }, CONTEXT_MENU_INSTANCES)
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhContextMenuArrowProps = PropsOf<typeof XhContextMenuArrow>
+export type XhContextMenuCheckboxItemProps = PropsOf<typeof XhContextMenuCheckboxItem>
+export type XhContextMenuContentProps = PropsOf<typeof XhContextMenuContent>
+export type XhContextMenuGroupProps = PropsOf<typeof XhContextMenuGroup>
+export type XhContextMenuGroupLabelProps = PropsOf<typeof XhContextMenuGroupLabel>
+export type XhContextMenuItemProps = PropsOf<typeof XhContextMenuItem>
+export type XhContextMenuItemDescriptionProps = PropsOf<typeof XhContextMenuItemDescription>
+export type XhContextMenuItemIconProps = PropsOf<typeof XhContextMenuItemIcon>
+export type XhContextMenuItemIndicatorProps = PropsOf<typeof XhContextMenuItemIndicator>
+export type XhContextMenuItemShortcutProps = PropsOf<typeof XhContextMenuItemShortcut>
+export type XhContextMenuItemSuffixProps = PropsOf<typeof XhContextMenuItemSuffix>
+export type XhContextMenuItemTextProps = PropsOf<typeof XhContextMenuItemText>
+export type XhContextMenuPositionerProps = PropsOf<typeof XhContextMenuPositioner>
+export type XhContextMenuRadioGroupProps = PropsOf<typeof XhContextMenuRadioGroup>
+export type XhContextMenuRadioItemProps = PropsOf<typeof XhContextMenuRadioItem>
+export type XhContextMenuRootProps = PropsOf<typeof XhContextMenuRoot>
+export type XhContextMenuSeparatorProps = PropsOf<typeof XhContextMenuSeparator>
+export type XhContextMenuSubProps = PropsOf<typeof XhContextMenuSub>
+export type XhContextMenuSubTriggerProps = PropsOf<typeof XhContextMenuSubTrigger>
+export type XhContextMenuTriggerProps = PropsOf<typeof XhContextMenuTrigger>

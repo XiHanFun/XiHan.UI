@@ -7,8 +7,9 @@
 
 import type { ControlVariant, Direction, Size, Tone } from '@xihan-ui/core'
 import type { GridListNode, GridListRowProps, GridListSchema, GridListSelectionMode, GridListTranslations } from '@xihan-ui/headless'
-import type { PropType, SlotsType, VNode } from 'vue'
+import type { PropType, SetupContext, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { computed, defineComponent, h, onUnmounted } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideGridList, provideGridListRow, useGridListContext, useGridListRow } from './context'
@@ -87,26 +88,24 @@ export const XhGridListRow = defineComponent({
   },
 })
 
-function rowPart(name: string, getter: keyof Pick<
+/** 行里几个部件共用的 setup，只在取哪一份部件属性与渲染成什么标签上不同。 */
+function rowPartSetup(getter: keyof Pick<
   ReturnType<typeof useGridList>['api']['value'],
   'getRowSelectionIndicatorProps' | 'getRowContentProps' | 'getRowTextProps' | 'getRowDescriptionProps' | 'getRowActionsProps'
->, tag: 'div' | 'span' = 'div'): ReturnType<typeof defineComponent> {
-  return defineComponent({
-    name,
-    setup(_, { slots }) {
-      const context = useGridListContext()
-      const row = useGridListRow()
-      return () => h(tag, (context.api.value[getter] as (props: GridListRowProps) => Record<string, unknown>)(row.value), slots.default?.())
-    },
-  })
+>, tag: 'div' | 'span' = 'div'): (props: unknown, ctx: Pick<SetupContext, 'slots'>) => () => VNode {
+  return (_, { slots }) => {
+    const context = useGridListContext()
+    const row = useGridListRow()
+    return () => h(tag, (context.api.value[getter] as (props: GridListRowProps) => Record<string, unknown>)(row.value), slots.default?.())
+  }
 }
 
 // 选择标记与同族条目指示器一样是 span，与 React 版同一个标签
-export const XhGridListRowSelectionIndicator = rowPart('XhGridListRowSelectionIndicator', 'getRowSelectionIndicatorProps', 'span')
-export const XhGridListRowContent = rowPart('XhGridListRowContent', 'getRowContentProps')
-export const XhGridListRowText = rowPart('XhGridListRowText', 'getRowTextProps')
-export const XhGridListRowDescription = rowPart('XhGridListRowDescription', 'getRowDescriptionProps')
-export const XhGridListRowActions = rowPart('XhGridListRowActions', 'getRowActionsProps')
+export const XhGridListRowSelectionIndicator = defineComponent({ name: 'XhGridListRowSelectionIndicator', setup: rowPartSetup('getRowSelectionIndicatorProps', 'span') })
+export const XhGridListRowContent = defineComponent({ name: 'XhGridListRowContent', setup: rowPartSetup('getRowContentProps') })
+export const XhGridListRowText = defineComponent({ name: 'XhGridListRowText', setup: rowPartSetup('getRowTextProps') })
+export const XhGridListRowDescription = defineComponent({ name: 'XhGridListRowDescription', setup: rowPartSetup('getRowDescriptionProps') })
+export const XhGridListRowActions = defineComponent({ name: 'XhGridListRowActions', setup: rowPartSetup('getRowActionsProps') })
 
 export const XhGridListRowAction = defineComponent({
   name: 'XhGridListRowAction',
@@ -132,3 +131,16 @@ export const XhGridListLoading = defineComponent({
     return () => h('div', context.api.value.getLoadingProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhGridListEmptyProps = PropsOf<typeof XhGridListEmpty>
+export type XhGridListLabelProps = PropsOf<typeof XhGridListLabel>
+export type XhGridListLoadingProps = PropsOf<typeof XhGridListLoading>
+export type XhGridListRootProps = PropsOf<typeof XhGridListRoot>
+export type XhGridListRowProps = PropsOf<typeof XhGridListRow>
+export type XhGridListRowActionProps = PropsOf<typeof XhGridListRowAction>
+export type XhGridListRowActionsProps = PropsOf<typeof XhGridListRowActions>
+export type XhGridListRowContentProps = PropsOf<typeof XhGridListRowContent>
+export type XhGridListRowDescriptionProps = PropsOf<typeof XhGridListRowDescription>
+export type XhGridListRowSelectionIndicatorProps = PropsOf<typeof XhGridListRowSelectionIndicator>
+export type XhGridListRowTextProps = PropsOf<typeof XhGridListRowText>

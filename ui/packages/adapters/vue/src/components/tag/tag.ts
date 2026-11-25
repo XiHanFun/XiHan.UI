@@ -9,6 +9,7 @@ import type { Size, Tone } from '@xihan-ui/core'
 import type { TagSchema, TagTranslations, TagVariant } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { slotIsPlainText } from '../../runtime/slot-content'
@@ -70,3 +71,8 @@ export const XhTagCloseTrigger = defineComponent({
     return () => h('button', ctx.api.value.getCloseTriggerProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhTagCloseTriggerProps = PropsOf<typeof XhTagCloseTrigger>
+export type XhTagLabelProps = PropsOf<typeof XhTagLabel>
+export type XhTagRootProps = PropsOf<typeof XhTagRoot>

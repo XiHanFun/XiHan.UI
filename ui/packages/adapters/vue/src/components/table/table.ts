@@ -26,6 +26,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { Component, PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import type { StructureVirtualSlot } from '../virtualizer/structure-slot'
 import type { VirtualizerContext } from '../virtualizer/use-virtualizer'
 import type { TableContext } from './use-table'
@@ -386,13 +387,16 @@ export interface XhTableRootRowProps<TRow extends object> {
 
 type XhTableRootInstance = InstanceType<typeof XhTableRootImpl>
 
+/** 根组件在模板与 `h()` 里接受的 props（含 onXxx 监听），随值类型收窄的几项取自 XhTableRootRowProps。 */
+export type XhTableRootProps<TRow extends object = TableRecord> = Omit<XhTableRootInstance['$props'], keyof XhTableRootRowProps<TRow>> & XhTableRootRowProps<TRow>
+
 /**
  * 按行类型收窄的根组件类型。模板里由 Volar 照 data 的元素类型推断 TRow：columns 的 id / field 写错即报错，
  * format、compare、filter 与 cell 插槽的参数跟着收窄。`h()` 推断不了泛型，那里按宽松的记录检查。
  */
 export type XhTableRootComponent = Omit<typeof XhTableRootImpl, never> & {
-  new<TRow extends object = TableRecord>(props?: Omit<XhTableRootInstance['$props'], keyof XhTableRootRowProps<TRow>> & XhTableRootRowProps<TRow>): Omit<XhTableRootInstance, '$props' | '$slots'> & {
-    $props: Omit<XhTableRootInstance['$props'], keyof XhTableRootRowProps<TRow>> & XhTableRootRowProps<TRow>
+  new<TRow extends object = TableRecord>(props?: XhTableRootProps<TRow>): Omit<XhTableRootInstance, '$props' | '$slots'> & {
+    $props: XhTableRootProps<TRow>
     $slots: Omit<XhTableRootInstance['$slots'], 'cell'> & {
       cell?: (props: TableCellSlotData<TRow>) => VNode[]
     }
@@ -784,3 +788,27 @@ function renderDefaultStructure(api: TableApi, virtualItems: readonly StructureV
     }
   }, TABLE_INSTANCES)
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhTableBodyProps = PropsOf<typeof XhTableBody>
+export type XhTableCaptionProps = PropsOf<typeof XhTableCaption>
+export type XhTableCellProps = PropsOf<typeof XhTableCell>
+export type XhTableColumnDragTriggerProps = PropsOf<typeof XhTableColumnDragTrigger>
+export type XhTableColumnHeaderProps = PropsOf<typeof XhTableColumnHeader>
+export type XhTableColumnLabelProps = PropsOf<typeof XhTableColumnLabel>
+export type XhTableColumnListProps = PropsOf<typeof XhTableColumnList>
+export type XhTableColumnResizeTriggerProps = PropsOf<typeof XhTableColumnResizeTrigger>
+export type XhTableColumnVisibilityTriggerProps = PropsOf<typeof XhTableColumnVisibilityTrigger>
+export type XhTableEmptyProps = PropsOf<typeof XhTableEmpty>
+export type XhTableExpandedRowProps = PropsOf<typeof XhTableExpandedRow>
+export type XhTableExpandTriggerProps = PropsOf<typeof XhTableExpandTrigger>
+export type XhTableFooterProps = PropsOf<typeof XhTableFooter>
+export type XhTableHeaderProps = PropsOf<typeof XhTableHeader>
+export type XhTableLoadingProps = PropsOf<typeof XhTableLoading>
+export type XhTableLoadMoreTriggerProps = PropsOf<typeof XhTableLoadMoreTrigger>
+export type XhTableRowProps = PropsOf<typeof XhTableRow>
+export type XhTableRowDragTriggerProps = PropsOf<typeof XhTableRowDragTrigger>
+export type XhTableRowSelectTriggerProps = PropsOf<typeof XhTableRowSelectTrigger>
+export type XhTableSelectAllTriggerProps = PropsOf<typeof XhTableSelectAllTrigger>
+export type XhTableSortTriggerProps = PropsOf<typeof XhTableSortTrigger>
+export type XhTableToolbarProps = PropsOf<typeof XhTableToolbar>

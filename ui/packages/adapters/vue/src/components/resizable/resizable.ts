@@ -10,6 +10,7 @@ import type { ResizableDimensions, ResizableOffset, ResizableSchema, ResizableTr
 import type { ResizeEdge } from '@xihan-ui/pointer'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideResizable, useResizableContext } from './context'
@@ -96,3 +97,7 @@ export const XhResizableHandle = defineComponent({
     )
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhResizableHandleProps = PropsOf<typeof XhResizableHandle>
+export type XhResizableRootProps = PropsOf<typeof XhResizableRoot>

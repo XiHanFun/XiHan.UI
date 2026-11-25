@@ -178,16 +178,27 @@ export function XhImageViewerToolbar({ children, ...rest }: XhImageViewerToolbar
   )
 }
 
-export interface XhImageViewerToolTriggerProps extends ComponentPropsWithRef<'button'> {}
+/** 工具条上各按钮同一副 props。 */
+interface ImageViewerToolTriggerProps extends ComponentPropsWithRef<'button'> {}
+export type XhImageViewerZoomInTriggerProps = ImageViewerToolTriggerProps
+export type XhImageViewerZoomOutTriggerProps = ImageViewerToolTriggerProps
+export type XhImageViewerRotateLeftTriggerProps = ImageViewerToolTriggerProps
+export type XhImageViewerRotateRightTriggerProps = ImageViewerToolTriggerProps
+export type XhImageViewerFlipHorizontalTriggerProps = ImageViewerToolTriggerProps
+export type XhImageViewerFlipVerticalTriggerProps = ImageViewerToolTriggerProps
+export type XhImageViewerResetTriggerProps = ImageViewerToolTriggerProps
+export type XhImageViewerPrevTriggerProps = ImageViewerToolTriggerProps
+export type XhImageViewerNextTriggerProps = ImageViewerToolTriggerProps
+export type XhImageViewerCloseTriggerProps = ImageViewerToolTriggerProps
 
-type ToolTrigger = (props: XhImageViewerToolTriggerProps) => ReactNode
+type ToolTrigger = (props: ImageViewerToolTriggerProps) => ReactNode
 
 /** 工具条按钮共用的组件工厂：未写内容时留空，皮肤据 :empty 绘制兜底图标。 */
 function toolTrigger(
   name: string,
   getProps: (api: ImageViewerApi) => Record<string, unknown>,
 ): ToolTrigger {
-  function Trigger({ children, ...rest }: XhImageViewerToolTriggerProps): ReactNode {
+  function Trigger({ children, ...rest }: ImageViewerToolTriggerProps): ReactNode {
     const ctx = useImageViewerContext()
     return (
       <button {...mergeReactProps(getProps(ctx.api), rest)}>

@@ -16,6 +16,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { colorPickerStructure, colorPickerToInputChannel } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onUnmounted } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -499,3 +500,29 @@ function renderDefaultStructure(api: ColorPickerApi, label: string | undefined, 
   const nodes = colorPickerStructure(api, { label, hiddenInput, slotted: name => name === 'label' && labelSlot != null })
   return renderStructure(withoutSelfAssembled(nodes), COLOR_PICKER_PARTS, node => (node.slot ? labelSlot?.() : undefined))
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhColorPickerAlphaSliderProps = PropsOf<typeof XhColorPickerAlphaSlider>
+export type XhColorPickerAreaThumbProps = PropsOf<typeof XhColorPickerAreaThumb>
+export type XhColorPickerChannelInputProps = PropsOf<typeof XhColorPickerChannelInput>
+export type XhColorPickerClearTriggerProps = PropsOf<typeof XhColorPickerClearTrigger>
+export type XhColorPickerConfirmTriggerProps = PropsOf<typeof XhColorPickerConfirmTrigger>
+export type XhColorPickerContentProps = PropsOf<typeof XhColorPickerContent>
+export type XhColorPickerControlProps = PropsOf<typeof XhColorPickerControl>
+export type XhColorPickerEyeDropperTriggerProps = PropsOf<typeof XhColorPickerEyeDropperTrigger>
+export type XhColorPickerHiddenInputProps = PropsOf<typeof XhColorPickerHiddenInput>
+export type XhColorPickerHueSliderProps = PropsOf<typeof XhColorPickerHueSlider>
+export type XhColorPickerItemDeleteTriggerProps = PropsOf<typeof XhColorPickerItemDeleteTrigger>
+export type XhColorPickerLabelProps = PropsOf<typeof XhColorPickerLabel>
+export type XhColorPickerOverflowTagProps = PropsOf<typeof XhColorPickerOverflowTag>
+export type XhColorPickerPositionerProps = PropsOf<typeof XhColorPickerPositioner>
+export type XhColorPickerRecentSwatchPickerProps = PropsOf<typeof XhColorPickerRecentSwatchPicker>
+export type XhColorPickerRootProps = PropsOf<typeof XhColorPickerRoot>
+export type XhColorPickerSaturationAreaProps = PropsOf<typeof XhColorPickerSaturationArea>
+export type XhColorPickerSwatchProps = PropsOf<typeof XhColorPickerSwatch>
+export type XhColorPickerSwatchPickerProps = PropsOf<typeof XhColorPickerSwatchPicker>
+export type XhColorPickerTagProps = PropsOf<typeof XhColorPickerTag>
+export type XhColorPickerTagLabelProps = PropsOf<typeof XhColorPickerTagLabel>
+export type XhColorPickerTagListProps = PropsOf<typeof XhColorPickerTagList>
+export type XhColorPickerTriggerProps = PropsOf<typeof XhColorPickerTrigger>
+export type XhColorPickerValueTextProps = PropsOf<typeof XhColorPickerValueText>

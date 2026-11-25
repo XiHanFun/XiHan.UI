@@ -9,6 +9,7 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { StepNode, StepsApi, StepsSchema, StepStatus, StepsTranslations, StepsVariant } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideSteps, provideStepsItem, useStepsContext, useStepsItemContext } from './context'
@@ -184,3 +185,14 @@ export const XhStepsContent = defineComponent({
     )
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhStepsContentProps = PropsOf<typeof XhStepsContent>
+export type XhStepsDescriptionProps = PropsOf<typeof XhStepsDescription>
+export type XhStepsIndicatorProps = PropsOf<typeof XhStepsIndicator>
+export type XhStepsItemProps = PropsOf<typeof XhStepsItem>
+export type XhStepsListProps = PropsOf<typeof XhStepsList>
+export type XhStepsRootProps = PropsOf<typeof XhStepsRoot>
+export type XhStepsSeparatorProps = PropsOf<typeof XhStepsSeparator>
+export type XhStepsTitleProps = PropsOf<typeof XhStepsTitle>
+export type XhStepsTriggerProps = PropsOf<typeof XhStepsTrigger>

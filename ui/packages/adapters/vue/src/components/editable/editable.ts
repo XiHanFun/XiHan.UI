@@ -9,6 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { EditableActivationMode, EditableApi, EditableSchema, EditableSubmitMode } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h, onUnmounted } from 'vue'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideEditable, useEditableContext } from './context'
@@ -150,3 +151,13 @@ export const XhEditableControl = defineComponent({
     return () => h('div', ctx.api.value.getControlProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhEditableCancelTriggerProps = PropsOf<typeof XhEditableCancelTrigger>
+export type XhEditableControlProps = PropsOf<typeof XhEditableControl>
+export type XhEditableEditTriggerProps = PropsOf<typeof XhEditableEditTrigger>
+export type XhEditableInputProps = PropsOf<typeof XhEditableInput>
+export type XhEditableLabelProps = PropsOf<typeof XhEditableLabel>
+export type XhEditablePreviewProps = PropsOf<typeof XhEditablePreview>
+export type XhEditableRootProps = PropsOf<typeof XhEditableRoot>
+export type XhEditableSubmitTriggerProps = PropsOf<typeof XhEditableSubmitTrigger>

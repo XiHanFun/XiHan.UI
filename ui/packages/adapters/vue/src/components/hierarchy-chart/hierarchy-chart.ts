@@ -22,6 +22,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideHierarchyChart, useHierarchyChartContext } from './context'
@@ -263,3 +264,13 @@ export const XhHierarchyChartRoot = defineComponent({
     }
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhHierarchyChartCaptionProps = PropsOf<typeof XhHierarchyChartCaption>
+export type XhHierarchyChartEmptyProps = PropsOf<typeof XhHierarchyChartEmpty>
+export type XhHierarchyChartLegendProps = PropsOf<typeof XhHierarchyChartLegend>
+export type XhHierarchyChartPathProps = PropsOf<typeof XhHierarchyChartPath>
+export type XhHierarchyChartPlotProps = PropsOf<typeof XhHierarchyChartPlot>
+export type XhHierarchyChartRootProps = PropsOf<typeof XhHierarchyChartRoot>
+export type XhHierarchyChartTooltipProps = PropsOf<typeof XhHierarchyChartTooltip>
+export type XhHierarchyChartViewportProps = PropsOf<typeof XhHierarchyChartViewport>

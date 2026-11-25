@@ -29,6 +29,7 @@ import type {
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { BivariantCallback } from '../../runtime/bivariant'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { formFieldModel } from '@xihan-ui/headless'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -191,13 +192,16 @@ export interface XhFormRootValueProps<TValues> {
 
 type XhFormRootInstance = InstanceType<typeof XhFormRootImpl>
 
+/** 根组件在模板与 `h()` 里接受的 props（含 onXxx 监听），随值类型收窄的几项取自 XhFormRootValueProps。 */
+export type XhFormRootProps<TValues extends object = FormValues> = Omit<XhFormRootInstance['$props'], keyof XhFormRootValueProps<TValues>> & XhFormRootValueProps<TValues>
+
 /**
  * 按值类型收窄的根组件类型。模板里由 Volar 照 defaultValues（或 values）推断值类型：rules 的键、validate 交回的键
  * 只能写它的字段，onSubmit 与默认插槽里按字段取写的值都按它收窄。`h()` 推断不了泛型，那里按缺省的值表收。
  */
 export type XhFormRootComponent = Omit<typeof XhFormRootImpl, never> & {
-  new<TValues extends object = FormValues>(props?: Omit<XhFormRootInstance['$props'], keyof XhFormRootValueProps<TValues>> & XhFormRootValueProps<TValues>): Omit<XhFormRootInstance, '$props' | '$slots'> & {
-    $props: Omit<XhFormRootInstance['$props'], keyof XhFormRootValueProps<TValues>> & XhFormRootValueProps<TValues>
+  new<TValues extends object = FormValues>(props?: XhFormRootProps<TValues>): Omit<XhFormRootInstance, '$props' | '$slots'> & {
+    $props: XhFormRootProps<TValues>
     $slots: { default?: (props: FormRootSlotProps<TValues>) => VNode[] }
   }
 }
@@ -291,18 +295,24 @@ export const XhFormResetTrigger = defineComponent({
 type XhFormFieldGroupInstance = InstanceType<typeof XhFormFieldGroup>
 type XhFormErrorSummaryItemInstance = InstanceType<typeof XhFormErrorSummaryItem>
 
+/** 字段组接受的 props（含 onXxx 监听），name 收窄成值表 TValues 的字段路径 P。 */
+export type XhFormFieldGroupProps<TValues = FormValues, P extends FormFieldPath<TValues> = FormFieldPath<TValues>> = Omit<XhFormFieldGroupInstance['$props'], 'name'> & { name: P }
+
 /** 按值类型收窄的字段组：name 只能写值表的字段，作用域插槽里的 value 与 setValue 是那个字段的类型。 */
 export type XhFormFieldGroupComponent<TValues> = Omit<typeof XhFormFieldGroup, never> & {
-  new<P extends FormFieldPath<TValues>>(props: Omit<XhFormFieldGroupInstance['$props'], 'name'> & { name: P }): Omit<XhFormFieldGroupInstance, '$props' | '$slots'> & {
-    $props: Omit<XhFormFieldGroupInstance['$props'], 'name'> & { name: P }
+  new<P extends FormFieldPath<TValues>>(props: XhFormFieldGroupProps<TValues, P>): Omit<XhFormFieldGroupInstance, '$props' | '$slots'> & {
+    $props: XhFormFieldGroupProps<TValues, P>
     $slots: { default?: (props: FormFieldGroupSlotProps<TValues, P>) => VNode[] }
   }
 }
 
+/** 错误摘要条目接受的 props（含 onXxx 监听），name 收窄成值表 TValues 的字段路径 P。 */
+export type XhFormErrorSummaryItemProps<TValues = FormValues, P extends FormFieldPath<TValues> = FormFieldPath<TValues>> = Omit<XhFormErrorSummaryItemInstance['$props'], 'name'> & { name: P }
+
 /** 按值类型收窄的错误摘要条目：name 只能写值表的字段。 */
 export type XhFormErrorSummaryItemComponent<TValues> = Omit<typeof XhFormErrorSummaryItem, never> & {
-  new<P extends FormFieldPath<TValues>>(props: Omit<XhFormErrorSummaryItemInstance['$props'], 'name'> & { name: P }): Omit<XhFormErrorSummaryItemInstance, '$props' | '$slots'> & {
-    $props: Omit<XhFormErrorSummaryItemInstance['$props'], 'name'> & { name: P }
+  new<P extends FormFieldPath<TValues>>(props: XhFormErrorSummaryItemProps<TValues, P>): Omit<XhFormErrorSummaryItemInstance, '$props' | '$slots'> & {
+    $props: XhFormErrorSummaryItemProps<TValues, P>
     $slots: { default?: (props: FormErrorSummaryItemSlotProps<P>) => VNode[] }
   }
 }
@@ -322,3 +332,8 @@ export function defineFormFields<TValues extends object>(): {
     ErrorSummaryItem: XhFormErrorSummaryItem as unknown as XhFormErrorSummaryItemComponent<TValues>,
   }
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhFormErrorSummaryProps = PropsOf<typeof XhFormErrorSummary>
+export type XhFormResetTriggerProps = PropsOf<typeof XhFormResetTrigger>
+export type XhFormSubmitTriggerProps = PropsOf<typeof XhFormSubmitTrigger>

@@ -9,6 +9,7 @@ import type { KbdPlatform } from '@xihan-ui/core/hotkey'
 import type { KbdProps, KbdTarget, KbdTranslations, KbdVariant } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { connectKbd } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onBeforeUnmount, watchEffect } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -28,7 +29,7 @@ export const XhKbd = defineComponent({
     translations: { type: Object as PropType<Partial<KbdTranslations>> },
   },
   emits: {
-    'hotkey': (_details: PayloadOf<KbdProps, 'onHotkey'>) => true,
+    hotkey: (_details: PayloadOf<KbdProps, 'onHotkey'>) => true,
   },
   setup(props, { emit }) {
     const detected = useKbdPlatform()
@@ -88,3 +89,6 @@ export const XhKbd = defineComponent({
     )))
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhKbdProps = PropsOf<typeof XhKbd>

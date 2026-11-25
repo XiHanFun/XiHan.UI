@@ -9,6 +9,7 @@ import type { ControlVariant, Direction, Orientation, Size, Tone } from '@xihan-
 import type { AccordionApi, AccordionNode, AccordionNodeMeta, AccordionSchema } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { accordionStructure } from '@xihan-ui/headless'
 import { defineComponent, h, ref } from 'vue'
 import { renderStructure } from '../../runtime/structure'
@@ -154,3 +155,12 @@ function renderDefaultStructure(api: AccordionApi, contentSlot?: (node: Accordio
   return renderStructure(nodes, ACCORDION_PARTS, node =>
     node.slot?.name === 'content' ? contentSlot?.(node.data as AccordionNodeMeta) ?? (node.data as AccordionNodeMeta).content : undefined)
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhAccordionContentProps = PropsOf<typeof XhAccordionContent>
+export type XhAccordionHeaderProps = PropsOf<typeof XhAccordionHeader>
+export type XhAccordionIndicatorProps = PropsOf<typeof XhAccordionIndicator>
+export type XhAccordionItemProps = PropsOf<typeof XhAccordionItem>
+export type XhAccordionItemSeparatorProps = PropsOf<typeof XhAccordionItemSeparator>
+export type XhAccordionRootProps = PropsOf<typeof XhAccordionRoot>
+export type XhAccordionTriggerProps = PropsOf<typeof XhAccordionTrigger>

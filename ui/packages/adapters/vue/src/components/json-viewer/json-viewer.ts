@@ -9,6 +9,7 @@ import type { ControlVariant, Direction, Size } from '@xihan-ui/core'
 import type { HighlightSegment, JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTool, JsonViewerTranslations, JsonViewerView } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { groupJsonViewerNodesByParent } from '@xihan-ui/headless'
 import { defineComponent, Fragment, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -212,3 +213,6 @@ export const XhJsonViewerRoot = defineComponent({
     }
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhJsonViewerRootProps = PropsOf<typeof XhJsonViewerRoot>

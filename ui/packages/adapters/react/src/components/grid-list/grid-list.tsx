@@ -118,7 +118,9 @@ export function XhGridListRow({ value, disabled, children, ...rest }: XhGridList
   )
 }
 
-function RowSelectionIndicator({ children, ...rest }: ComponentPropsWithRef<'span'>): ReactNode {
+export interface XhGridListRowSelectionIndicatorProps extends ComponentPropsWithRef<'span'> {}
+
+function RowSelectionIndicator({ children, ...rest }: XhGridListRowSelectionIndicatorProps): ReactNode {
   const { api } = useGridListContext()
   const row = useGridListRow()
   return <span {...mergeReactProps(api.getRowSelectionIndicatorProps(row), rest)}>{children}</span>
@@ -135,17 +137,23 @@ function rowPart(
   return <div {...mergeReactProps(api[getter](row), rest)}>{children}</div>
 }
 
-export interface XhGridListRowPartProps extends ComponentPropsWithRef<'div'> {}
-export function XhGridListRowContent(props: XhGridListRowPartProps): ReactNode {
+/** 行里的内容、文本、说明与操作区四个部件同一副 props。 */
+interface GridListRowPartProps extends ComponentPropsWithRef<'div'> {}
+export type XhGridListRowContentProps = GridListRowPartProps
+export type XhGridListRowTextProps = GridListRowPartProps
+export type XhGridListRowDescriptionProps = GridListRowPartProps
+export type XhGridListRowActionsProps = GridListRowPartProps
+
+export function XhGridListRowContent(props: XhGridListRowContentProps): ReactNode {
   return rowPart('getRowContentProps', props)
 }
-export function XhGridListRowText(props: XhGridListRowPartProps): ReactNode {
+export function XhGridListRowText(props: XhGridListRowTextProps): ReactNode {
   return rowPart('getRowTextProps', props)
 }
-export function XhGridListRowDescription(props: XhGridListRowPartProps): ReactNode {
+export function XhGridListRowDescription(props: XhGridListRowDescriptionProps): ReactNode {
   return rowPart('getRowDescriptionProps', props)
 }
-export function XhGridListRowActions(props: XhGridListRowPartProps): ReactNode {
+export function XhGridListRowActions(props: XhGridListRowActionsProps): ReactNode {
   return rowPart('getRowActionsProps', props)
 }
 

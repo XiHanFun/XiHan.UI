@@ -7,6 +7,7 @@
 
 import type { BarCodeFormat, BarCodeProps } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { connectBarCode } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -64,3 +65,6 @@ export const XhBarCode = defineComponent({
     }
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhBarCodeProps = PropsOf<typeof XhBarCode>

@@ -10,6 +10,7 @@ import type { CollectionVirtualizer, ComboboxApi, ComboboxFilter, ComboboxFilter
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { BivariantCallback } from '../../runtime/bivariant'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { comboboxStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onMounted, onUnmounted, onUpdated, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -181,13 +182,16 @@ export interface XhComboboxRootValueProps<V> {
 
 type XhComboboxRootInstance = InstanceType<typeof XhComboboxRootImpl>
 
+/** 根组件在模板与 `h()` 里接受的 props（含 onXxx 监听），随值类型收窄的几项取自 XhComboboxRootValueProps。 */
+export type XhComboboxRootProps<V = string> = Omit<XhComboboxRootInstance['$props'], keyof XhComboboxRootValueProps<V>> & XhComboboxRootValueProps<V>
+
 /**
  * 按值类型收窄的根组件类型。模板里由 Volar 照 value / collection 推断 V：v-model:value 绑数字或对象的数组都不必断言，
  * 默认插槽、条目插槽与自定义过滤拿到的也是 V。`h()` 推断不了泛型，那里按 unknown 收。
  */
 export type XhComboboxRootComponent = Omit<typeof XhComboboxRootImpl, never> & {
-  new<V = string>(props?: Omit<XhComboboxRootInstance['$props'], keyof XhComboboxRootValueProps<V>> & XhComboboxRootValueProps<V>): Omit<XhComboboxRootInstance, '$props' | '$slots'> & {
-    $props: Omit<XhComboboxRootInstance['$props'], keyof XhComboboxRootValueProps<V>> & XhComboboxRootValueProps<V>
+  new<V = string>(props?: XhComboboxRootProps<V>): Omit<XhComboboxRootInstance, '$props' | '$slots'> & {
+    $props: XhComboboxRootProps<V>
     $slots: Omit<XhComboboxRootInstance['$slots'], 'default' | 'item' | 'item-prefix' | 'item-suffix'> & {
       'default'?: (props: ComboboxRootSlotProps<V>) => VNode[]
       'item'?: (node: ComboboxNodeMeta<V>) => VNode[]
@@ -564,3 +568,28 @@ function renderDefaultStructure(
     }
   })
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhComboboxClearTriggerProps = PropsOf<typeof XhComboboxClearTrigger>
+export type XhComboboxContentProps = PropsOf<typeof XhComboboxContent>
+export type XhComboboxControlProps = PropsOf<typeof XhComboboxControl>
+export type XhComboboxEmptyProps = PropsOf<typeof XhComboboxEmpty>
+export type XhComboboxGroupProps = PropsOf<typeof XhComboboxGroup>
+export type XhComboboxGroupLabelProps = PropsOf<typeof XhComboboxGroupLabel>
+export type XhComboboxHiddenInputProps = PropsOf<typeof XhComboboxHiddenInput>
+export type XhComboboxInputProps = PropsOf<typeof XhComboboxInput>
+export type XhComboboxItemProps = PropsOf<typeof XhComboboxItem>
+export type XhComboboxItemDeleteTriggerProps = PropsOf<typeof XhComboboxItemDeleteTrigger>
+export type XhComboboxItemDescriptionProps = PropsOf<typeof XhComboboxItemDescription>
+export type XhComboboxItemIndicatorProps = PropsOf<typeof XhComboboxItemIndicator>
+export type XhComboboxItemPrefixProps = PropsOf<typeof XhComboboxItemPrefix>
+export type XhComboboxItemSuffixProps = PropsOf<typeof XhComboboxItemSuffix>
+export type XhComboboxItemTextProps = PropsOf<typeof XhComboboxItemText>
+export type XhComboboxLabelProps = PropsOf<typeof XhComboboxLabel>
+export type XhComboboxLoadingProps = PropsOf<typeof XhComboboxLoading>
+export type XhComboboxOverflowTagProps = PropsOf<typeof XhComboboxOverflowTag>
+export type XhComboboxPositionerProps = PropsOf<typeof XhComboboxPositioner>
+export type XhComboboxTagProps = PropsOf<typeof XhComboboxTag>
+export type XhComboboxTagLabelProps = PropsOf<typeof XhComboboxTagLabel>
+export type XhComboboxTagListProps = PropsOf<typeof XhComboboxTagList>
+export type XhComboboxTriggerProps = PropsOf<typeof XhComboboxTrigger>

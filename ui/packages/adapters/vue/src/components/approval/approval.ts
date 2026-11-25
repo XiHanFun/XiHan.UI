@@ -9,6 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { ApprovalApi, ApprovalSchema, ApprovalScope, ApprovalStatus, ApprovalTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
@@ -248,3 +249,20 @@ export const XhApprovalDenyTrigger = defineComponent({
     return () => h('button', ctx.api.value.getDenyTriggerProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhApprovalApproveTriggerProps = PropsOf<typeof XhApprovalApproveTrigger>
+export type XhApprovalDenyTriggerProps = PropsOf<typeof XhApprovalDenyTrigger>
+export type XhApprovalDescriptionProps = PropsOf<typeof XhApprovalDescription>
+export type XhApprovalFooterProps = PropsOf<typeof XhApprovalFooter>
+export type XhApprovalGroupProps = PropsOf<typeof XhApprovalGroup>
+export type XhApprovalItemProps = PropsOf<typeof XhApprovalItem>
+export type XhApprovalItemIndicatorProps = PropsOf<typeof XhApprovalItemIndicator>
+export type XhApprovalItemTextProps = PropsOf<typeof XhApprovalItemText>
+export type XhApprovalLiveRegionProps = PropsOf<typeof XhApprovalLiveRegion>
+export type XhApprovalNoteProps = PropsOf<typeof XhApprovalNote>
+export type XhApprovalPendingIndicatorProps = PropsOf<typeof XhApprovalPendingIndicator>
+export type XhApprovalResultProps = PropsOf<typeof XhApprovalResult>
+export type XhApprovalRootProps = PropsOf<typeof XhApprovalRoot>
+export type XhApprovalTimerProps = PropsOf<typeof XhApprovalTimer>
+export type XhApprovalTitleProps = PropsOf<typeof XhApprovalTitle>

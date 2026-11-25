@@ -5,8 +5,9 @@
 
 // 提供 timestamp 相关实现。
 
-import type { TimestampTranslations, TimestampDisplay, TimestampValue } from '@xihan-ui/headless'
+import type { TimestampDisplay, TimestampTranslations, TimestampValue } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { createScope } from '@xihan-ui/core'
 import { connectTimestamp, timestampMachine } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
@@ -61,3 +62,6 @@ export const XhTimestamp = defineComponent({
     }
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhTimestampProps = PropsOf<typeof XhTimestamp>

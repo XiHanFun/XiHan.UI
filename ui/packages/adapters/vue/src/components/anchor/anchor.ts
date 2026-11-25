@@ -9,6 +9,7 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { AnchorSchema, AnchorTranslations } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideAnchor, useAnchorContext } from './context'
@@ -105,3 +106,11 @@ export const XhAnchorIndicator = defineComponent({
     return () => h('li', ctx.api.value.getIndicatorProps())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhAnchorIndicatorProps = PropsOf<typeof XhAnchorIndicator>
+export type XhAnchorItemProps = PropsOf<typeof XhAnchorItem>
+export type XhAnchorLinkProps = PropsOf<typeof XhAnchorLink>
+export type XhAnchorLinkTextProps = PropsOf<typeof XhAnchorLinkText>
+export type XhAnchorListProps = PropsOf<typeof XhAnchorList>
+export type XhAnchorRootProps = PropsOf<typeof XhAnchorRoot>

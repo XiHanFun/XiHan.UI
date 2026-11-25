@@ -102,7 +102,7 @@
     {
       "id": "vue-index",
       "path": "packages/adapters/vue/src/index.ts",
-      "what": "Vue 包入口的三行导出（组件 / 组合式 / 上下文类型）",
+      "what": "Vue 包入口的四行导出（组件 / props 类型 / 组合式 / 上下文类型）",
       "probeAnchor": "(?m)^export \\{ Xh{P} \\} from '\\./components/{c}/{c}'$"
     },
     {

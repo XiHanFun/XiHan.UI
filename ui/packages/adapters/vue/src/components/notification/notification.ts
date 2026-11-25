@@ -20,6 +20,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, Fragment, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
@@ -235,3 +236,15 @@ export const XhNotificationItemCloseTrigger = defineComponent({
     return () => h('button', ctx.api.value.getItemCloseTriggerProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhNotificationGroupProps = PropsOf<typeof XhNotificationGroup>
+export type XhNotificationItemProps = PropsOf<typeof XhNotificationItem>
+export type XhNotificationItemActionTriggerProps = PropsOf<typeof XhNotificationItemActionTrigger>
+export type XhNotificationItemCloseTriggerProps = PropsOf<typeof XhNotificationItemCloseTrigger>
+export type XhNotificationItemContentProps = PropsOf<typeof XhNotificationItemContent>
+export type XhNotificationItemDescriptionProps = PropsOf<typeof XhNotificationItemDescription>
+export type XhNotificationItemIndicatorProps = PropsOf<typeof XhNotificationItemIndicator>
+export type XhNotificationItemProgressProps = PropsOf<typeof XhNotificationItemProgress>
+export type XhNotificationItemTitleProps = PropsOf<typeof XhNotificationItemTitle>
+export type XhNotificationRootProps = PropsOf<typeof XhNotificationRoot>

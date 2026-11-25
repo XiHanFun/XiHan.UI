@@ -9,6 +9,7 @@ import type { Size, Tone } from '@xihan-ui/core'
 import type { AvatarSchema } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h, ref, watch } from 'vue'
 import { provideAvatar, useAvatarContext } from './context'
 import { useAvatar } from './use-avatar'
@@ -70,3 +71,8 @@ export const XhAvatarFallback = defineComponent({
     return () => h('span', ctx.api.value.getFallbackProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhAvatarFallbackProps = PropsOf<typeof XhAvatarFallback>
+export type XhAvatarImageProps = PropsOf<typeof XhAvatarImage>
+export type XhAvatarRootProps = PropsOf<typeof XhAvatarRoot>

@@ -5,6 +5,7 @@
 
 // 提供 field boundary 相关实现。
 
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent } from 'vue'
 import { clearFieldContext } from './context'
 
@@ -20,3 +21,6 @@ export const XhFieldBoundary = defineComponent({
     return () => slots.default?.()
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhFieldBoundaryProps = PropsOf<typeof XhFieldBoundary>

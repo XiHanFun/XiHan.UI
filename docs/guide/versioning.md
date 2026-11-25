@@ -59,6 +59,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | 包名 | 23 | 把代码从一个包移到另一个包 = major |
 | `exports` 子路径 | 70 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）会被 Node 与打包器拒绝，这些路径不是 API |
 | Vue 组件导出 `Xh*` | 1260（143 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
+| Vue 组件 props 类型 `Xh*Props` | 1256 | `XhSelectRootProps`、`XhDialogContentProps`。每个组件一个，名字与 React 一一对应，内容随下方 prop 名与 emit 名两行走；带类型参数的几个根组件，参数的个数与缺省同样受约束 |
 | Vue 组合式函数 `use<家族>` | 113 | `useSelect`、`useCombobox`。不使用库内部件、自行编写标记时的唯一入口 |
 | Vue 上下文读钩子 `use*Context` | 205 | `useSelectContext`、`useAccordionItemContext`。供自行编写的部件放进现成组件后读取同一份 `api` 与部件身份，名字与 React 一一对应，只能在对应部件之内调用。上下文只由库内部件提供，提供方不导出 |
 | Vue 指令 | 2 | `vBackground`（`@xihan-ui/vue/backgrounds`）、`vSound`（`@xihan-ui/vue/sound`），两个子入口各依赖一个可选 peer |
@@ -430,10 +431,10 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，20772 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，22189 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 246 条子入口、11029 个导出名、143 个 `data-scope` 与 1427 条部件配对、
+覆盖：包名与 246 条子入口、12446 个导出名、143 个 `data-scope` 与 1427 条部件配对、
 143 个组件的 2351 个 prop 名、321 种 `data-*`、33 个 `data-state` 取值、812 个令牌、
 5 个 `@layer` 名、4832 个组件覆盖槽、147 个自定义元素及其 attribute 与事件。
 

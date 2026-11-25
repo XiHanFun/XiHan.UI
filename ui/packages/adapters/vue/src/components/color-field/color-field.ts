@@ -10,6 +10,7 @@ import type { ColorFormat } from '@xihan-ui/core/color'
 import type { ColorFieldApi, ColorFieldSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { colorFieldStructure } from '@xihan-ui/headless'
 import { defineComponent, h, onUnmounted } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -171,3 +172,12 @@ function renderDefaultStructure(api: ColorFieldApi, label: string | undefined, h
   const nodes = colorFieldStructure(api, { label, hiddenInput, slotted: name => name === 'label' && labelSlot != null })
   return renderStructure(nodes, COLOR_FIELD_PARTS, node => (node.slot ? labelSlot?.() : undefined))
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhColorFieldClearTriggerProps = PropsOf<typeof XhColorFieldClearTrigger>
+export type XhColorFieldControlProps = PropsOf<typeof XhColorFieldControl>
+export type XhColorFieldHiddenInputProps = PropsOf<typeof XhColorFieldHiddenInput>
+export type XhColorFieldInputProps = PropsOf<typeof XhColorFieldInput>
+export type XhColorFieldLabelProps = PropsOf<typeof XhColorFieldLabel>
+export type XhColorFieldRootProps = PropsOf<typeof XhColorFieldRoot>
+export type XhColorFieldSwatchProps = PropsOf<typeof XhColorFieldSwatch>

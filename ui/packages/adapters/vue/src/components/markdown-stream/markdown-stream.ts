@@ -8,6 +8,7 @@
 import type { Size } from '@xihan-ui/core'
 import type { MarkdownBlock, MarkdownInlineMount, MarkdownStreamApi, MarkdownStreamProps, MarkdownStreamTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { markdownBlockHtml, queryMarkdownInlines, sameMarkdownInlines, trackMarkdownStreamCaret } from '@xihan-ui/headless'
 import { defineComponent, h, onBeforeUnmount, onMounted, onUpdated, ref, shallowRef, Teleport } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -172,3 +173,8 @@ export const XhMarkdownStreamLiveRegion = defineComponent({
     )
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhMarkdownStreamContentProps = PropsOf<typeof XhMarkdownStreamContent>
+export type XhMarkdownStreamLiveRegionProps = PropsOf<typeof XhMarkdownStreamLiveRegion>
+export type XhMarkdownStreamRootProps = PropsOf<typeof XhMarkdownStreamRoot>

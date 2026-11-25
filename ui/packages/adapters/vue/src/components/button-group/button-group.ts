@@ -8,6 +8,7 @@
 import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { ButtonGroupProps } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { connectButtonGroup } from '@xihan-ui/headless'
 import { Comment, computed, defineComponent, Fragment, h, Text } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -77,3 +78,6 @@ export const XhButtonGroup = defineComponent({
     )
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhButtonGroupProps = PropsOf<typeof XhButtonGroup>

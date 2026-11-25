@@ -7,6 +7,7 @@
 
 import type { ControlVariant, Size } from '@xihan-ui/core'
 import type { PropType } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { connectList } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -92,3 +93,12 @@ export const XhListItemAction = defineComponent({
     return () => h('div', ctx.api.value.getItemActionProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhListItemProps = PropsOf<typeof XhListItem>
+export type XhListItemActionProps = PropsOf<typeof XhListItemAction>
+export type XhListItemContentProps = PropsOf<typeof XhListItemContent>
+export type XhListItemDescriptionProps = PropsOf<typeof XhListItemDescription>
+export type XhListItemMediaProps = PropsOf<typeof XhListItemMedia>
+export type XhListItemTitleProps = PropsOf<typeof XhListItemTitle>
+export type XhListRootProps = PropsOf<typeof XhListRoot>

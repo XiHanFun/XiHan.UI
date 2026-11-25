@@ -26,6 +26,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { ComputedRef, InjectionKey, PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { datePickerStructure, resolveDatePickerPanelIndex } from '@xihan-ui/headless'
 import { computed, defineComponent, h, inject, mergeProps, onUnmounted, onUpdated, provide, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -896,3 +897,44 @@ function renderDefaultStructure(api: DatePickerApi, label: string | undefined, l
   const nodes = datePickerStructure(api, { label, slotted: name => name === 'label' && labelSlot != null })
   return renderStructure(nodes, DATE_PICKER_PARTS, node => node.slot?.name === 'label' ? labelSlot?.() : undefined)
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhDatePickerCalendarProps = PropsOf<typeof XhDatePickerCalendar>
+export type XhDatePickerCellProps = PropsOf<typeof XhDatePickerCell>
+export type XhDatePickerCellTriggerProps = PropsOf<typeof XhDatePickerCellTrigger>
+export type XhDatePickerClearTriggerProps = PropsOf<typeof XhDatePickerClearTrigger>
+export type XhDatePickerConfirmTriggerProps = PropsOf<typeof XhDatePickerConfirmTrigger>
+export type XhDatePickerContentProps = PropsOf<typeof XhDatePickerContent>
+export type XhDatePickerControlProps = PropsOf<typeof XhDatePickerControl>
+export type XhDatePickerFooterProps = PropsOf<typeof XhDatePickerFooter>
+export type XhDatePickerGridProps = PropsOf<typeof XhDatePickerGrid>
+export type XhDatePickerGridBodyProps = PropsOf<typeof XhDatePickerGridBody>
+export type XhDatePickerGridHeadProps = PropsOf<typeof XhDatePickerGridHead>
+export type XhDatePickerHeaderProps = PropsOf<typeof XhDatePickerHeader>
+export type XhDatePickerHeadingProps = PropsOf<typeof XhDatePickerHeading>
+export type XhDatePickerHeadingMonthTriggerProps = PropsOf<typeof XhDatePickerHeadingMonthTrigger>
+export type XhDatePickerHeadingYearTriggerProps = PropsOf<typeof XhDatePickerHeadingYearTrigger>
+export type XhDatePickerHiddenInputProps = PropsOf<typeof XhDatePickerHiddenInput>
+export type XhDatePickerItemDeleteTriggerProps = PropsOf<typeof XhDatePickerItemDeleteTrigger>
+export type XhDatePickerLabelProps = PropsOf<typeof XhDatePickerLabel>
+export type XhDatePickerNextTriggerProps = PropsOf<typeof XhDatePickerNextTrigger>
+export type XhDatePickerNextYearTriggerProps = PropsOf<typeof XhDatePickerNextYearTrigger>
+export type XhDatePickerOverflowTagProps = PropsOf<typeof XhDatePickerOverflowTag>
+export type XhDatePickerPositionerProps = PropsOf<typeof XhDatePickerPositioner>
+export type XhDatePickerPresetProps = PropsOf<typeof XhDatePickerPreset>
+export type XhDatePickerPresetGroupProps = PropsOf<typeof XhDatePickerPresetGroup>
+export type XhDatePickerPrevTriggerProps = PropsOf<typeof XhDatePickerPrevTrigger>
+export type XhDatePickerPrevYearTriggerProps = PropsOf<typeof XhDatePickerPrevYearTrigger>
+export type XhDatePickerRootProps = PropsOf<typeof XhDatePickerRoot>
+export type XhDatePickerSegmentProps = PropsOf<typeof XhDatePickerSegment>
+export type XhDatePickerSegmentGroupProps = PropsOf<typeof XhDatePickerSegmentGroup>
+export type XhDatePickerTagProps = PropsOf<typeof XhDatePickerTag>
+export type XhDatePickerTagLabelProps = PropsOf<typeof XhDatePickerTagLabel>
+export type XhDatePickerTagListProps = PropsOf<typeof XhDatePickerTagList>
+export type XhDatePickerTimeColumnProps = PropsOf<typeof XhDatePickerTimeColumn>
+export type XhDatePickerTimeItemProps = PropsOf<typeof XhDatePickerTimeItem>
+export type XhDatePickerTimePanelProps = PropsOf<typeof XhDatePickerTimePanel>
+export type XhDatePickerTriggerProps = PropsOf<typeof XhDatePickerTrigger>
+export type XhDatePickerWeekDayProps = PropsOf<typeof XhDatePickerWeekDay>
+export type XhDatePickerWeekNumberProps = PropsOf<typeof XhDatePickerWeekNumber>
+export type XhDatePickerWeekRowProps = PropsOf<typeof XhDatePickerWeekRow>

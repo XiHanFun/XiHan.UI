@@ -9,6 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { PromptInputApi, PromptInputSchema, PromptInputSubmitKey, PromptInputTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { providePromptInput, usePromptInputContext } from './context'
@@ -98,3 +99,9 @@ export const XhPromptInputSubmitTrigger = defineComponent({
     return () => h('button', ctx.api.value.getSubmitTriggerProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhPromptInputControlProps = PropsOf<typeof XhPromptInputControl>
+export type XhPromptInputInputProps = PropsOf<typeof XhPromptInputInput>
+export type XhPromptInputRootProps = PropsOf<typeof XhPromptInputRoot>
+export type XhPromptInputSubmitTriggerProps = PropsOf<typeof XhPromptInputSubmitTrigger>

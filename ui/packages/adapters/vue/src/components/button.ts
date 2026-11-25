@@ -8,6 +8,7 @@
 import type { PropTypes } from '@xihan-ui/core'
 import type { ButtonProps } from '@xihan-ui/headless'
 import type { InjectionKey, PropType, Ref } from 'vue'
+import type { PropsOf } from '../runtime/props-of'
 import { buttonMachine, connectButton } from '@xihan-ui/headless'
 import { computed, defineComponent, h, inject, provide, useAttrs } from 'vue'
 import { vueNormalize } from '../runtime/normalize-props'
@@ -94,3 +95,10 @@ export const XhButtonIndicator = defineComponent({
     return () => h('span', api.value.getIndicatorProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhButtonProps = PropsOf<typeof XhButton>
+export type XhButtonIndicatorProps = PropsOf<typeof XhButtonIndicator>
+export type XhButtonLabelProps = PropsOf<typeof XhButtonLabel>
+export type XhButtonPrefixProps = PropsOf<typeof XhButtonPrefix>
+export type XhButtonSuffixProps = PropsOf<typeof XhButtonSuffix>

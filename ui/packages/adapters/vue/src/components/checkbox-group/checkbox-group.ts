@@ -19,6 +19,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { BivariantCallback } from '../../runtime/bivariant'
+import type { PropsOf } from '../../runtime/props-of'
 import { checkboxGroupStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onUnmounted } from 'vue'
 import { renderStructure } from '../../runtime/structure'
@@ -119,13 +120,16 @@ export interface XhCheckboxGroupRootValueProps<V> {
 
 type XhCheckboxGroupRootInstance = InstanceType<typeof XhCheckboxGroupRootImpl>
 
+/** 根组件在模板与 `h()` 里接受的 props（含 onXxx 监听），随值类型收窄的几项取自 XhCheckboxGroupRootValueProps。 */
+export type XhCheckboxGroupRootProps<V = string> = Omit<XhCheckboxGroupRootInstance['$props'], keyof XhCheckboxGroupRootValueProps<V>> & XhCheckboxGroupRootValueProps<V>
+
 /**
  * 按值类型收窄的根组件类型。模板里由 Volar 照 value / collection 推断 V：v-model:value 绑数字或对象的数组都不必断言，
  * 默认插槽与条目插槽交出来的也是 V。`h()` 推断不了泛型，那里按 unknown 收。
  */
 export type XhCheckboxGroupRootComponent = Omit<typeof XhCheckboxGroupRootImpl, never> & {
-  new<V = string>(props?: Omit<XhCheckboxGroupRootInstance['$props'], keyof XhCheckboxGroupRootValueProps<V>> & XhCheckboxGroupRootValueProps<V>): Omit<XhCheckboxGroupRootInstance, '$props' | '$slots'> & {
-    $props: Omit<XhCheckboxGroupRootInstance['$props'], keyof XhCheckboxGroupRootValueProps<V>> & XhCheckboxGroupRootValueProps<V>
+  new<V = string>(props?: XhCheckboxGroupRootProps<V>): Omit<XhCheckboxGroupRootInstance, '$props' | '$slots'> & {
+    $props: XhCheckboxGroupRootProps<V>
     $slots: Omit<XhCheckboxGroupRootInstance['$slots'], 'default' | 'item'> & {
       default?: (props: CheckboxGroupRootSlotProps<V>) => VNode[]
       item?: (node: CheckboxGroupNodeMeta<V>) => VNode[]
@@ -251,3 +255,11 @@ function renderDefaultStructure(api: CheckboxGroupApi<PropTypes, unknown>, label
 function renderLabel(title: (VNode | string)[] | null): VNode[] {
   return title ? [h(XhCheckboxGroupLabel, null, () => title)] : []
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhCheckboxGroupIndicatorProps = PropsOf<typeof XhCheckboxGroupIndicator>
+export type XhCheckboxGroupItemProps = PropsOf<typeof XhCheckboxGroupItem>
+export type XhCheckboxGroupItemDescriptionProps = PropsOf<typeof XhCheckboxGroupItemDescription>
+export type XhCheckboxGroupItemTextProps = PropsOf<typeof XhCheckboxGroupItemText>
+export type XhCheckboxGroupLabelProps = PropsOf<typeof XhCheckboxGroupLabel>
+export type XhCheckboxGroupSelectAllTriggerProps = PropsOf<typeof XhCheckboxGroupSelectAllTrigger>

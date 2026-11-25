@@ -9,6 +9,7 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { TagGroupApi, TagGroupItemProps, TagGroupNode, TagGroupNodeMeta, TagGroupSchema, TagGroupSelectionMode, TagGroupTranslations, TagVariant } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { tagGroupStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onBeforeUnmount, onUnmounted, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -234,3 +235,13 @@ function renderDefaultStructure(api: TagGroupApi, label: string | undefined, aut
     }
   })
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhTagGroupCellProps = PropsOf<typeof XhTagGroupCell>
+export type XhTagGroupItemProps = PropsOf<typeof XhTagGroupItem>
+export type XhTagGroupItemDeleteTriggerProps = PropsOf<typeof XhTagGroupItemDeleteTrigger>
+export type XhTagGroupItemIndicatorProps = PropsOf<typeof XhTagGroupItemIndicator>
+export type XhTagGroupItemTextProps = PropsOf<typeof XhTagGroupItemText>
+export type XhTagGroupLabelProps = PropsOf<typeof XhTagGroupLabel>
+export type XhTagGroupListProps = PropsOf<typeof XhTagGroupList>
+export type XhTagGroupRootProps = PropsOf<typeof XhTagGroupRoot>

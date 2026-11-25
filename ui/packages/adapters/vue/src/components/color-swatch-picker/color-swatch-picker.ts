@@ -9,6 +9,7 @@ import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { ColorSwatchPickerApi, ColorSwatchPickerItemProps, ColorSwatchPickerNode, ColorSwatchPickerSchema, StructureChild } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { colorSwatchPickerStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onBeforeUnmount, onUnmounted, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -173,3 +174,8 @@ function renderDefaultStructure(api: ColorSwatchPickerApi, label: string | undef
 function renderLabel(title: (VNode | string)[] | null): VNode[] {
   return title ? [h(XhColorSwatchPickerLabel, null, () => title)] : []
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhColorSwatchPickerItemProps = PropsOf<typeof XhColorSwatchPickerItem>
+export type XhColorSwatchPickerLabelProps = PropsOf<typeof XhColorSwatchPickerLabel>
+export type XhColorSwatchPickerRootProps = PropsOf<typeof XhColorSwatchPickerRoot>

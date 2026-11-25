@@ -10,6 +10,7 @@ import type { SortableItemState, SortableMode, SortableSchema, SortableTranslati
 import type { SortableAxis } from '@xihan-ui/pointer'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideSortable, useSortableContext } from './context'
@@ -164,3 +165,10 @@ export const XhSortableLiveRegion = defineComponent({
     )
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhSortableDropIndicatorProps = PropsOf<typeof XhSortableDropIndicator>
+export type XhSortableItemProps = PropsOf<typeof XhSortableItem>
+export type XhSortableItemDragTriggerProps = PropsOf<typeof XhSortableItemDragTrigger>
+export type XhSortableLiveRegionProps = PropsOf<typeof XhSortableLiveRegion>
+export type XhSortableRootProps = PropsOf<typeof XhSortableRoot>

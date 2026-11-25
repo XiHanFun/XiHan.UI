@@ -8,6 +8,7 @@
 import type { FieldArrayApi, FieldArrayCellSlotData, FieldArrayColumn, FieldArrayItem, FieldArrayItemProps, FieldArrayLayout, FieldArraySchema, FieldArrayTranslations, FormPath } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { fieldArrayStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -285,3 +286,19 @@ function renderDefaultStructure(api: FieldArrayApi, content: FieldArrayStructure
     return undefined
   })
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhFieldArrayAddTriggerProps = PropsOf<typeof XhFieldArrayAddTrigger>
+export type XhFieldArrayColumnHeaderProps = PropsOf<typeof XhFieldArrayColumnHeader>
+export type XhFieldArrayHeaderProps = PropsOf<typeof XhFieldArrayHeader>
+export type XhFieldArrayItemProps = PropsOf<typeof XhFieldArrayItem>
+export type XhFieldArrayItemActionProps = PropsOf<typeof XhFieldArrayItemAction>
+export type XhFieldArrayItemCellProps = PropsOf<typeof XhFieldArrayItemCell>
+export type XhFieldArrayItemContentProps = PropsOf<typeof XhFieldArrayItemContent>
+export type XhFieldArrayItemDeleteTriggerProps = PropsOf<typeof XhFieldArrayItemDeleteTrigger>
+export type XhFieldArrayItemDragTriggerProps = PropsOf<typeof XhFieldArrayItemDragTrigger>
+export type XhFieldArrayItemLabelProps = PropsOf<typeof XhFieldArrayItemLabel>
+export type XhFieldArrayMoveDownTriggerProps = PropsOf<typeof XhFieldArrayMoveDownTrigger>
+export type XhFieldArrayMoveUpTriggerProps = PropsOf<typeof XhFieldArrayMoveUpTrigger>
+export type XhFieldArrayRootProps = PropsOf<typeof XhFieldArrayRoot>
+export type XhFieldArrayTableProps = PropsOf<typeof XhFieldArrayTable>

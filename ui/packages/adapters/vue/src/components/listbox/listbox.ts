@@ -9,6 +9,7 @@ import type { Direction, Orientation, PropTypes, Size, Tone } from '@xihan-ui/co
 import type { CollectionVirtualizer, ListboxApi, ListboxGroupProps, ListboxItemProps, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode, ListboxTranslations, ListboxValueChangeDetails, SelectionValueKey } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { BivariantCallback } from '../../runtime/bivariant'
+import type { PropsOf } from '../../runtime/props-of'
 import { listboxStructure, valueKeyOf } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onUnmounted, onUpdated, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -121,13 +122,16 @@ export interface XhListboxRootValueProps<V> {
 
 type XhListboxRootInstance = InstanceType<typeof XhListboxRootImpl>
 
+/** 根组件在模板与 `h()` 里接受的 props（含 onXxx 监听），随值类型收窄的几项取自 XhListboxRootValueProps。 */
+export type XhListboxRootProps<V = string> = Omit<XhListboxRootInstance['$props'], keyof XhListboxRootValueProps<V>> & XhListboxRootValueProps<V>
+
 /**
  * 按值类型收窄的根组件类型。模板里由 Volar 照 value / collection 推断 V：v-model:value 绑数字或对象的数组都不必断言，
  * 默认插槽与条目插槽交出来的也是 V。`h()` 推断不了泛型，那里按 unknown 收。
  */
 export type XhListboxRootComponent = Omit<typeof XhListboxRootImpl, never> & {
-  new<V = string>(props?: Omit<XhListboxRootInstance['$props'], keyof XhListboxRootValueProps<V>> & XhListboxRootValueProps<V>): Omit<XhListboxRootInstance, '$props' | '$slots'> & {
-    $props: Omit<XhListboxRootInstance['$props'], keyof XhListboxRootValueProps<V>> & XhListboxRootValueProps<V>
+  new<V = string>(props?: XhListboxRootProps<V>): Omit<XhListboxRootInstance, '$props' | '$slots'> & {
+    $props: XhListboxRootProps<V>
     $slots: Omit<XhListboxRootInstance['$slots'], 'default' | 'item' | 'item-prefix' | 'item-suffix'> & {
       'default'?: (props: ListboxRootSlotProps<V>) => VNode[]
       'item'?: (node: ListboxNodeMeta<V>) => VNode[]
@@ -370,3 +374,18 @@ function renderDefaultStructure(api: ListboxApi<PropTypes, unknown>, label: stri
     }
   })
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhListboxContentProps = PropsOf<typeof XhListboxContent>
+export type XhListboxEmptyProps = PropsOf<typeof XhListboxEmpty>
+export type XhListboxGroupProps = PropsOf<typeof XhListboxGroup>
+export type XhListboxGroupLabelProps = PropsOf<typeof XhListboxGroupLabel>
+export type XhListboxItemProps = PropsOf<typeof XhListboxItem>
+export type XhListboxItemDescriptionProps = PropsOf<typeof XhListboxItemDescription>
+export type XhListboxItemIndicatorProps = PropsOf<typeof XhListboxItemIndicator>
+export type XhListboxItemPrefixProps = PropsOf<typeof XhListboxItemPrefix>
+export type XhListboxItemSuffixProps = PropsOf<typeof XhListboxItemSuffix>
+export type XhListboxItemTextProps = PropsOf<typeof XhListboxItemText>
+export type XhListboxLabelProps = PropsOf<typeof XhListboxLabel>
+export type XhListboxLoadingProps = PropsOf<typeof XhListboxLoading>
+export type XhListboxLoadMoreTriggerProps = PropsOf<typeof XhListboxLoadMoreTrigger>

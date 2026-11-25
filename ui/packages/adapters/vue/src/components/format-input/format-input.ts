@@ -10,6 +10,7 @@ import type { FormatSpec } from '@xihan-ui/expression'
 import type { FormatInputApi, FormatInputKind, FormatInputOption, FormatInputSchema, FormatInputTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { formatInputItemLabelTag, formatInputItemTag, formatInputStructure } from '@xihan-ui/headless'
 import { defineComponent, h, onUnmounted } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -205,3 +206,14 @@ const FORMAT_INPUT_INSTANCES = {
 function renderDefaultStructure(api: FormatInputApi, translations: FormatInputTranslations): VNode[] {
   return renderStructure(formatInputStructure(api, translations), FORMAT_INPUT_PARTS, undefined, FORMAT_INPUT_INSTANCES)
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhFormatInputErrorTextProps = PropsOf<typeof XhFormatInputErrorText>
+export type XhFormatInputFieldGroupProps = PropsOf<typeof XhFormatInputFieldGroup>
+export type XhFormatInputItemProps = PropsOf<typeof XhFormatInputItem>
+export type XhFormatInputItemLabelProps = PropsOf<typeof XhFormatInputItemLabel>
+export type XhFormatInputKindProps = PropsOf<typeof XhFormatInputKind>
+export type XhFormatInputLabelProps = PropsOf<typeof XhFormatInputLabel>
+export type XhFormatInputPatternDescriptionProps = PropsOf<typeof XhFormatInputPatternDescription>
+export type XhFormatInputPreviewProps = PropsOf<typeof XhFormatInputPreview>
+export type XhFormatInputRootProps = PropsOf<typeof XhFormatInputRoot>

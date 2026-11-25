@@ -9,6 +9,7 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { SliderApi, SliderMark, SliderMarkMeta, SliderSchema, SliderValueTextDetails, StructureChild } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { normalizeItemIndex } from '@xihan-ui/core'
 import { sliderStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onUnmounted } from 'vue'
@@ -230,3 +231,14 @@ function renderDefaultStructure(api: SliderApi, label: string | undefined, hidde
   const nodes = sliderStructure(api, { label, hiddenInput, slotted: name => name === 'label' && labelSlot != null })
   return renderStructure(withoutSelfAssembled(nodes), SLIDER_PARTS, node => (node.slot ? labelSlot?.() : undefined))
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhSliderControlProps = PropsOf<typeof XhSliderControl>
+export type XhSliderHiddenInputProps = PropsOf<typeof XhSliderHiddenInput>
+export type XhSliderLabelProps = PropsOf<typeof XhSliderLabel>
+export type XhSliderRangeProps = PropsOf<typeof XhSliderRange>
+export type XhSliderRootProps = PropsOf<typeof XhSliderRoot>
+export type XhSliderThumbProps = PropsOf<typeof XhSliderThumb>
+export type XhSliderTickGroupProps = PropsOf<typeof XhSliderTickGroup>
+export type XhSliderTrackProps = PropsOf<typeof XhSliderTrack>
+export type XhSliderValueTextProps = PropsOf<typeof XhSliderValueText>

@@ -642,7 +642,10 @@ export function XhDatePickerTimeColumn({ unit, children, ...rest }: XhDatePicker
   )
 }
 
-export function XhDatePickerTimePanel(): ReactNode {
+/** 时间面板按 showTime 自己铺列，不接受 props。 */
+export type XhDatePickerTimePanelProps = Record<string, never>
+
+export function XhDatePickerTimePanel(_props: XhDatePickerTimePanelProps): ReactNode {
   const ctx = useDatePickerContext()
   const api = ctx.api
   return (

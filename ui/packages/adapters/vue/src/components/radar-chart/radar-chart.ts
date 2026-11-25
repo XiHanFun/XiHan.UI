@@ -22,6 +22,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideRadarChart, useRadarChartContext } from './context'
@@ -253,3 +254,12 @@ export const XhRadarChartRoot = defineComponent({
     }
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhRadarChartCaptionProps = PropsOf<typeof XhRadarChartCaption>
+export type XhRadarChartEmptyProps = PropsOf<typeof XhRadarChartEmpty>
+export type XhRadarChartLegendProps = PropsOf<typeof XhRadarChartLegend>
+export type XhRadarChartPlotProps = PropsOf<typeof XhRadarChartPlot>
+export type XhRadarChartRootProps = PropsOf<typeof XhRadarChartRoot>
+export type XhRadarChartTooltipProps = PropsOf<typeof XhRadarChartTooltip>
+export type XhRadarChartViewportProps = PropsOf<typeof XhRadarChartViewport>

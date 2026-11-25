@@ -9,6 +9,7 @@ import type { Direction, Orientation } from '@xihan-ui/core'
 import type { SplitterApi, SplitterPanelProps, SplitterPanelState, SplitterSchema, SplitterTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { normalizeItemIndex } from '@xihan-ui/core'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -107,3 +108,8 @@ export const XhSplitterResizeTrigger = defineComponent({
     return () => h('div', ctx.api.value.getResizeTriggerProps(index.value), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhSplitterPanelProps = PropsOf<typeof XhSplitterPanel>
+export type XhSplitterResizeTriggerProps = PropsOf<typeof XhSplitterResizeTrigger>
+export type XhSplitterRootProps = PropsOf<typeof XhSplitterRoot>

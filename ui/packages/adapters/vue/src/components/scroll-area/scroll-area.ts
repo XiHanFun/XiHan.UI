@@ -8,6 +8,7 @@
 import type { Direction, Orientation, Size } from '@xihan-ui/core'
 import type { ScrollAreaApi, ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollbarProps, ScrollAreaScrollDetails, ScrollAreaScrollToOptions, ScrollAreaVariant, ScrollbarRevealMode } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import {
@@ -136,3 +137,12 @@ export const XhScrollAreaCorner = defineComponent({
     return () => h('div', ctx.api.value.getCornerProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhScrollAreaContentProps = PropsOf<typeof XhScrollAreaContent>
+export type XhScrollAreaCornerProps = PropsOf<typeof XhScrollAreaCorner>
+export type XhScrollAreaRootProps = PropsOf<typeof XhScrollAreaRoot>
+export type XhScrollAreaScrollbarProps = PropsOf<typeof XhScrollAreaScrollbar>
+export type XhScrollAreaThumbProps = PropsOf<typeof XhScrollAreaThumb>
+export type XhScrollAreaTrackProps = PropsOf<typeof XhScrollAreaTrack>
+export type XhScrollAreaViewportProps = PropsOf<typeof XhScrollAreaViewport>

@@ -8,6 +8,7 @@
 import type { Size, Tone } from '@xihan-ui/core'
 import type { TypographyAlign, TypographyLevel, TypographyProps, TypographyVariant, TypographyWeight } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { connectTypography } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -117,3 +118,11 @@ export const XhTypographyLink = defineComponent({
     return () => h('a', ctx.api.value.getLinkProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhTypographyHeadingProps = PropsOf<typeof XhTypographyHeading>
+export type XhTypographyLinkProps = PropsOf<typeof XhTypographyLink>
+export type XhTypographyParagraphProps = PropsOf<typeof XhTypographyParagraph>
+export type XhTypographyProseProps = PropsOf<typeof XhTypographyProse>
+export type XhTypographyRootProps = PropsOf<typeof XhTypographyRoot>
+export type XhTypographyTextProps = PropsOf<typeof XhTypographyText>

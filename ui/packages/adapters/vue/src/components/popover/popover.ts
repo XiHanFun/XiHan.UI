@@ -9,6 +9,7 @@ import type { Direction, Placement, Size } from '@xihan-ui/core'
 import type { PopoverApi, PopoverSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
@@ -160,3 +161,13 @@ export const XhPopoverArrow = defineComponent({
     return () => h('div', ctx.api.value.getArrowProps())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhPopoverArrowProps = PropsOf<typeof XhPopoverArrow>
+export type XhPopoverCloseTriggerProps = PropsOf<typeof XhPopoverCloseTrigger>
+export type XhPopoverContentProps = PropsOf<typeof XhPopoverContent>
+export type XhPopoverDescriptionProps = PropsOf<typeof XhPopoverDescription>
+export type XhPopoverPositionerProps = PropsOf<typeof XhPopoverPositioner>
+export type XhPopoverRootProps = PropsOf<typeof XhPopoverRoot>
+export type XhPopoverTitleProps = PropsOf<typeof XhPopoverTitle>
+export type XhPopoverTriggerProps = PropsOf<typeof XhPopoverTrigger>

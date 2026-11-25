@@ -131,6 +131,22 @@ declare module 'vue' {
 
 升级时同样建议开启 `checkUnknownProps` 与 `checkUnknownEvents`：移除或改名的属性不会报错，只会被当成原生属性透传到根元素上而静默失效，这两项检查能把它们一次扫出来。
 
+## 组件的 props 类型
+
+每个组件的 props 类型以 `Xh<组件名>Props` 从主入口导出，名字与 React 一一对应。它就是组件在模板与 `h()` 里接受的 props：声明的 prop、`emits` 对应的 `on*` 监听，以及 `class`、`style`、`key`、`ref`；上一节扩进 `ComponentCustomProps` 的原生属性也在其中。选中值随类型收窄的根组件（Select、Combobox、Listbox、CheckboxGroup、RadioGroup、ToggleGroup、Table、Form）带类型参数，缺省与 React 相同：
+
+```ts
+import type { XhSelectRootProps } from "@xihan-ui/vue";
+
+// 值类型是 number：defaultValue 与 collection 里的 value 都按 number 检查
+const selectProps: XhSelectRootProps<number> = {
+  defaultValue: 1,
+  collection: [{ value: 1, label: "一" }, { value: 2, label: "二" }],
+};
+```
+
+这些类型由组件定义推导而来，SFC 的 `defineProps<…>()` 解析不了推导出的类型。封装组件时用它标注 `h()` 的参数、算好的 props 对象或配置项。
+
 ## asChild 与事件取消
 
 支持 `asChild` 的部件可以把行为接到作者提供的单个子节点上。Fragment 会展开后检查，仅忽略空白、注释和条件占位；零个或多个可挂载子节点、元素旁并列的非空文本或数字都会明确报错，不会生成默认按钮或丢弃可见内容。需要默认按钮时移除 `asChild`，组合多个内容时提供一个实际宿主节点。

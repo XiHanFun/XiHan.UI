@@ -17,6 +17,7 @@ export const MODULES = [
       'node tooling/scripts/package/check-exports.mjs',
       'node tooling/scripts/package/check-headless-export-names.mjs',
       'node tooling/scripts/package/check-adapter-contexts.mjs',
+      'node tooling/scripts/package/check-adapter-props.mjs',
       'node tooling/scripts/package/check-package-roles.mjs',
       'node tooling/scripts/package/check-package-manifests.mjs',
       'node tooling/scripts/package/check-published-refs.mjs',

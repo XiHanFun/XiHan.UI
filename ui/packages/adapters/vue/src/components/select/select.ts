@@ -9,6 +9,7 @@ import type { ControlVariant, Direction, Placement, PropTypes, Size, Tone } from
 import type { CollectionVirtualizer, SelectApi, SelectGroupProps, SelectionValueKey, SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails, StructureVirtualItem } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { BivariantCallback } from '../../runtime/bivariant'
+import type { PropsOf } from '../../runtime/props-of'
 import type { StructureVirtualSlot } from '../virtualizer/structure-slot'
 import { selectStructure, valueKeyOf } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onUnmounted, ref, shallowRef, watch } from 'vue'
@@ -191,13 +192,16 @@ export interface XhSelectRootValueProps<V> {
 
 type XhSelectRootInstance = InstanceType<typeof XhSelectRootImpl>
 
+/** 根组件在模板与 `h()` 里接受的 props（含 onXxx 监听），随值类型收窄的几项取自 XhSelectRootValueProps。 */
+export type XhSelectRootProps<V = string> = Omit<XhSelectRootInstance['$props'], keyof XhSelectRootValueProps<V>> & XhSelectRootValueProps<V>
+
 /**
  * 按值类型收窄的根组件类型。模板里由 Volar 照 value / collection 推断 V：v-model:value 绑数字或对象的数组都不必断言，
  * 默认插槽与条目插槽交出来的也是 V。`h()` 推断不了泛型，那里按 unknown 收。
  */
 export type XhSelectRootComponent = Omit<typeof XhSelectRootImpl, never> & {
-  new<V = string>(props?: Omit<XhSelectRootInstance['$props'], keyof XhSelectRootValueProps<V>> & XhSelectRootValueProps<V>): Omit<XhSelectRootInstance, '$props' | '$slots'> & {
-    $props: Omit<XhSelectRootInstance['$props'], keyof XhSelectRootValueProps<V>> & XhSelectRootValueProps<V>
+  new<V = string>(props?: XhSelectRootProps<V>): Omit<XhSelectRootInstance, '$props' | '$slots'> & {
+    $props: XhSelectRootProps<V>
     $slots: Omit<XhSelectRootInstance['$slots'], 'default' | 'item' | 'item-prefix' | 'item-suffix'> & {
       'default'?: (props: SelectRootSlotProps<V>) => VNode[]
       'item'?: (node: SelectNodeMeta<V>) => VNode[]
@@ -618,3 +622,32 @@ function renderDefaultStructure(api: SelectApi<PropTypes, unknown>, options: { l
     }
   })
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhSelectClearTriggerProps = PropsOf<typeof XhSelectClearTrigger>
+export type XhSelectContentProps = PropsOf<typeof XhSelectContent>
+export type XhSelectControlProps = PropsOf<typeof XhSelectControl>
+export type XhSelectEmptyProps = PropsOf<typeof XhSelectEmpty>
+export type XhSelectErrorProps = PropsOf<typeof XhSelectError>
+export type XhSelectFooterProps = PropsOf<typeof XhSelectFooter>
+export type XhSelectGroupProps = PropsOf<typeof XhSelectGroup>
+export type XhSelectGroupLabelProps = PropsOf<typeof XhSelectGroupLabel>
+export type XhSelectIndicatorProps = PropsOf<typeof XhSelectIndicator>
+export type XhSelectItemProps = PropsOf<typeof XhSelectItem>
+export type XhSelectItemDeleteTriggerProps = PropsOf<typeof XhSelectItemDeleteTrigger>
+export type XhSelectItemDescriptionProps = PropsOf<typeof XhSelectItemDescription>
+export type XhSelectItemIndicatorProps = PropsOf<typeof XhSelectItemIndicator>
+export type XhSelectItemPrefixProps = PropsOf<typeof XhSelectItemPrefix>
+export type XhSelectItemSuffixProps = PropsOf<typeof XhSelectItemSuffix>
+export type XhSelectItemTextProps = PropsOf<typeof XhSelectItemText>
+export type XhSelectLabelProps = PropsOf<typeof XhSelectLabel>
+export type XhSelectListProps = PropsOf<typeof XhSelectList>
+export type XhSelectLoadingProps = PropsOf<typeof XhSelectLoading>
+export type XhSelectOverflowTagProps = PropsOf<typeof XhSelectOverflowTag>
+export type XhSelectPositionerProps = PropsOf<typeof XhSelectPositioner>
+export type XhSelectRetryTriggerProps = PropsOf<typeof XhSelectRetryTrigger>
+export type XhSelectTagProps = PropsOf<typeof XhSelectTag>
+export type XhSelectTagLabelProps = PropsOf<typeof XhSelectTagLabel>
+export type XhSelectTagListProps = PropsOf<typeof XhSelectTagList>
+export type XhSelectTriggerProps = PropsOf<typeof XhSelectTrigger>
+export type XhSelectValueTextProps = PropsOf<typeof XhSelectValueText>

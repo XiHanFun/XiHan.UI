@@ -27,6 +27,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { ComputedRef, PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { dateRangePickerFieldAt, dateRangePickerStructure, resolveDateRangePickerFieldIndex, resolveDateRangePickerPanelIndex } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onUnmounted, onUpdated, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -917,3 +918,42 @@ function renderDefaultStructure(api: DateRangePickerApi, label: string | undefin
   const nodes = dateRangePickerStructure(api, { label, slotted: name => name === 'label' && labelSlot != null })
   return renderStructure(nodes, DATE_RANGE_PICKER_PARTS, node => node.slot?.name === 'label' ? labelSlot?.() : undefined)
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhDateRangePickerCalendarProps = PropsOf<typeof XhDateRangePickerCalendar>
+export type XhDateRangePickerCellProps = PropsOf<typeof XhDateRangePickerCell>
+export type XhDateRangePickerCellTriggerProps = PropsOf<typeof XhDateRangePickerCellTrigger>
+export type XhDateRangePickerClearTriggerProps = PropsOf<typeof XhDateRangePickerClearTrigger>
+export type XhDateRangePickerColumnGroupProps = PropsOf<typeof XhDateRangePickerColumnGroup>
+export type XhDateRangePickerColumnGroupLabelProps = PropsOf<typeof XhDateRangePickerColumnGroupLabel>
+export type XhDateRangePickerConfirmTriggerProps = PropsOf<typeof XhDateRangePickerConfirmTrigger>
+export type XhDateRangePickerContentProps = PropsOf<typeof XhDateRangePickerContent>
+export type XhDateRangePickerControlProps = PropsOf<typeof XhDateRangePickerControl>
+export type XhDateRangePickerFooterProps = PropsOf<typeof XhDateRangePickerFooter>
+export type XhDateRangePickerGridProps = PropsOf<typeof XhDateRangePickerGrid>
+export type XhDateRangePickerGridBodyProps = PropsOf<typeof XhDateRangePickerGridBody>
+export type XhDateRangePickerGridHeadProps = PropsOf<typeof XhDateRangePickerGridHead>
+export type XhDateRangePickerHeaderProps = PropsOf<typeof XhDateRangePickerHeader>
+export type XhDateRangePickerHeadingProps = PropsOf<typeof XhDateRangePickerHeading>
+export type XhDateRangePickerHeadingMonthTriggerProps = PropsOf<typeof XhDateRangePickerHeadingMonthTrigger>
+export type XhDateRangePickerHeadingYearTriggerProps = PropsOf<typeof XhDateRangePickerHeadingYearTrigger>
+export type XhDateRangePickerHiddenInputProps = PropsOf<typeof XhDateRangePickerHiddenInput>
+export type XhDateRangePickerLabelProps = PropsOf<typeof XhDateRangePickerLabel>
+export type XhDateRangePickerNextTriggerProps = PropsOf<typeof XhDateRangePickerNextTrigger>
+export type XhDateRangePickerNextYearTriggerProps = PropsOf<typeof XhDateRangePickerNextYearTrigger>
+export type XhDateRangePickerPositionerProps = PropsOf<typeof XhDateRangePickerPositioner>
+export type XhDateRangePickerPresetProps = PropsOf<typeof XhDateRangePickerPreset>
+export type XhDateRangePickerPresetGroupProps = PropsOf<typeof XhDateRangePickerPresetGroup>
+export type XhDateRangePickerPrevTriggerProps = PropsOf<typeof XhDateRangePickerPrevTrigger>
+export type XhDateRangePickerPrevYearTriggerProps = PropsOf<typeof XhDateRangePickerPrevYearTrigger>
+export type XhDateRangePickerRangeSeparatorProps = PropsOf<typeof XhDateRangePickerRangeSeparator>
+export type XhDateRangePickerRootProps = PropsOf<typeof XhDateRangePickerRoot>
+export type XhDateRangePickerSegmentProps = PropsOf<typeof XhDateRangePickerSegment>
+export type XhDateRangePickerSegmentGroupProps = PropsOf<typeof XhDateRangePickerSegmentGroup>
+export type XhDateRangePickerTimeColumnProps = PropsOf<typeof XhDateRangePickerTimeColumn>
+export type XhDateRangePickerTimeItemProps = PropsOf<typeof XhDateRangePickerTimeItem>
+export type XhDateRangePickerTimePanelProps = PropsOf<typeof XhDateRangePickerTimePanel>
+export type XhDateRangePickerTriggerProps = PropsOf<typeof XhDateRangePickerTrigger>
+export type XhDateRangePickerWeekDayProps = PropsOf<typeof XhDateRangePickerWeekDay>
+export type XhDateRangePickerWeekNumberProps = PropsOf<typeof XhDateRangePickerWeekNumber>
+export type XhDateRangePickerWeekRowProps = PropsOf<typeof XhDateRangePickerWeekRow>

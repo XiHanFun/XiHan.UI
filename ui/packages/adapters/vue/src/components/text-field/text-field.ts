@@ -9,6 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { TextFieldApi, TextFieldInputHost, TextFieldSchema, TextFieldType } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { autoSizeTextarea, textFieldStructure } from '@xihan-ui/headless'
 import { defineComponent, h, onBeforeUnmount, onMounted, onUnmounted, onUpdated, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -227,3 +228,13 @@ function renderDefaultStructure(api: TextFieldApi, options: { label?: string, mu
   const parts = options.multiline ? { ...TEXT_FIELD_PARTS, input: XhTextFieldTextarea } : TEXT_FIELD_PARTS
   return renderStructure(nodes, parts, node => (node.slot ? labelSlot?.() : undefined))
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhTextFieldClearTriggerProps = PropsOf<typeof XhTextFieldClearTrigger>
+export type XhTextFieldControlProps = PropsOf<typeof XhTextFieldControl>
+export type XhTextFieldCountProps = PropsOf<typeof XhTextFieldCount>
+export type XhTextFieldInputProps = PropsOf<typeof XhTextFieldInput>
+export type XhTextFieldLabelProps = PropsOf<typeof XhTextFieldLabel>
+export type XhTextFieldPrefixProps = PropsOf<typeof XhTextFieldPrefix>
+export type XhTextFieldRootProps = PropsOf<typeof XhTextFieldRoot>
+export type XhTextFieldSuffixProps = PropsOf<typeof XhTextFieldSuffix>

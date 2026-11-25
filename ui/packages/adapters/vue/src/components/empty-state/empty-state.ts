@@ -8,6 +8,7 @@
 import type { Tone } from '@xihan-ui/core'
 import type { EmptyStateLive, EmptyStateProps, EmptyStateStatus } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideEmptyState, useEmptyStateContext } from './context'
@@ -72,3 +73,11 @@ export const XhEmptyStateAction = defineComponent({
     return () => h('div', ctx.api.value.getActionProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhEmptyStateActionProps = PropsOf<typeof XhEmptyStateAction>
+export type XhEmptyStateDescriptionProps = PropsOf<typeof XhEmptyStateDescription>
+export type XhEmptyStateIndicatorProps = PropsOf<typeof XhEmptyStateIndicator>
+export type XhEmptyStateMediaProps = PropsOf<typeof XhEmptyStateMedia>
+export type XhEmptyStateRootProps = PropsOf<typeof XhEmptyStateRoot>
+export type XhEmptyStateTitleProps = PropsOf<typeof XhEmptyStateTitle>

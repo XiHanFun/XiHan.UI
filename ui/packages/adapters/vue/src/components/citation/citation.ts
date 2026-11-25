@@ -9,6 +9,7 @@ import type { Direction, Placement, Size } from '@xihan-ui/core'
 import type { CitationPreviewMode, CitationPreviewProps, CitationSchema, CitationSource, CitationSourceItemProps } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { citationSourceTitle } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -236,3 +237,16 @@ function renderPreview(api: ReturnType<typeof useCitationContext>['api']['value'
     h(linkTag, api.getPreviewLinkProps(item), api.previewLinkText(item)),
   ]
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhCitationListProps = PropsOf<typeof XhCitationList>
+export type XhCitationPositionerProps = PropsOf<typeof XhCitationPositioner>
+export type XhCitationPreviewProps = PropsOf<typeof XhCitationPreview>
+export type XhCitationRootProps = PropsOf<typeof XhCitationRoot>
+export type XhCitationSourceProps = PropsOf<typeof XhCitationSource>
+export type XhCitationSourceIndexProps = PropsOf<typeof XhCitationSourceIndex>
+export type XhCitationSourceLinkProps = PropsOf<typeof XhCitationSourceLink>
+export type XhCitationSourceMetaProps = PropsOf<typeof XhCitationSourceMeta>
+export type XhCitationSourceTitleProps = PropsOf<typeof XhCitationSourceTitle>
+export type XhCitationTextProps = PropsOf<typeof XhCitationText>
+export type XhCitationTriggerProps = PropsOf<typeof XhCitationTrigger>

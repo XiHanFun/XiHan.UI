@@ -9,6 +9,7 @@ import type { Size } from '@xihan-ui/core'
 import type { CollectionVirtualizer, LogAnsiSegment, LogApi, LogLevel, LogProps, LogSchema, LogTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { parseAnsi } from '@xihan-ui/headless'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -134,3 +135,12 @@ export const XhLogLiveRegion = defineComponent({
     return () => h('div', ctx.api.value.getLiveRegionProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhLogContentProps = PropsOf<typeof XhLogContent>
+export type XhLogLineProps = PropsOf<typeof XhLogLine>
+export type XhLogLiveRegionProps = PropsOf<typeof XhLogLiveRegion>
+export type XhLogRootProps = PropsOf<typeof XhLogRoot>
+export type XhLogScrollToEndTriggerProps = PropsOf<typeof XhLogScrollToEndTrigger>
+export type XhLogSegmentProps = PropsOf<typeof XhLogSegment>
+export type XhLogViewportProps = PropsOf<typeof XhLogViewport>

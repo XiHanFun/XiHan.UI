@@ -9,6 +9,7 @@ import type { Direction, Orientation, PropTypes, Size, Tone } from '@xihan-ui/co
 import type { RadioGroupApi, RadioGroupItemProps, RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema, RadioGroupValueChangeDetails, RadioGroupVariant, SelectionValueKey, StructureChild } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { BivariantCallback } from '../../runtime/bivariant'
+import type { PropsOf } from '../../runtime/props-of'
 import { radioGroupStructure, valueKeyOf } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onBeforeUnmount, onUnmounted, ref, watch } from 'vue'
 import { renderStructure } from '../../runtime/structure'
@@ -87,13 +88,16 @@ export interface XhRadioGroupRootValueProps<V> {
 
 type XhRadioGroupRootInstance = InstanceType<typeof XhRadioGroupRootImpl>
 
+/** 根组件在模板与 `h()` 里接受的 props（含 onXxx 监听），随值类型收窄的几项取自 XhRadioGroupRootValueProps。 */
+export type XhRadioGroupRootProps<V = string> = Omit<XhRadioGroupRootInstance['$props'], keyof XhRadioGroupRootValueProps<V>> & XhRadioGroupRootValueProps<V>
+
 /**
  * 按值类型收窄的根组件类型。模板里由 Volar 照 value / collection 推断 V：v-model:value 绑数字或对象都不必断言，
  * 条目插槽交出来的也是 V。`h()` 推断不了泛型，那里按 unknown 收。
  */
 export type XhRadioGroupRootComponent = Omit<typeof XhRadioGroupRootImpl, never> & {
-  new<V = string>(props?: Omit<XhRadioGroupRootInstance['$props'], keyof XhRadioGroupRootValueProps<V>> & XhRadioGroupRootValueProps<V>): Omit<XhRadioGroupRootInstance, '$props' | '$slots'> & {
-    $props: Omit<XhRadioGroupRootInstance['$props'], keyof XhRadioGroupRootValueProps<V>> & XhRadioGroupRootValueProps<V>
+  new<V = string>(props?: XhRadioGroupRootProps<V>): Omit<XhRadioGroupRootInstance, '$props' | '$slots'> & {
+    $props: XhRadioGroupRootProps<V>
     $slots: Omit<XhRadioGroupRootInstance['$slots'], 'item'> & {
       item?: (node: RadioGroupNodeMeta<V>) => VNode[]
     }
@@ -242,3 +246,11 @@ function renderDefaultStructure(api: RadioGroupApi<PropTypes, unknown>, label: s
 function renderLabel(title: (VNode | string)[] | null): VNode[] {
   return title ? [h(XhRadioGroupLabel, null, () => title)] : []
 }
+
+// 各组件接受的 props，与 React 同名
+export type XhRadioGroupItemProps = PropsOf<typeof XhRadioGroupItem>
+export type XhRadioGroupItemDescriptionProps = PropsOf<typeof XhRadioGroupItemDescription>
+export type XhRadioGroupItemIconProps = PropsOf<typeof XhRadioGroupItemIcon>
+export type XhRadioGroupItemTextProps = PropsOf<typeof XhRadioGroupItemText>
+export type XhRadioGroupLabelProps = PropsOf<typeof XhRadioGroupLabel>
+export type XhRadioGroupThumbProps = PropsOf<typeof XhRadioGroupThumb>

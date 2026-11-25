@@ -9,6 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { ToolCallApi, ToolCallPhase, ToolCallProps, ToolCallSchema, ToolCallTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { isToolCallRunning } from '@xihan-ui/headless'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -207,3 +208,17 @@ export const XhToolCallError = defineComponent({
     return () => h('div', ctx.api.value.getErrorProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhToolCallApprovalProps = PropsOf<typeof XhToolCallApproval>
+export type XhToolCallContentProps = PropsOf<typeof XhToolCallContent>
+export type XhToolCallDurationProps = PropsOf<typeof XhToolCallDuration>
+export type XhToolCallErrorProps = PropsOf<typeof XhToolCallError>
+export type XhToolCallIndicatorProps = PropsOf<typeof XhToolCallIndicator>
+export type XhToolCallInputProps = PropsOf<typeof XhToolCallInput>
+export type XhToolCallLabelProps = PropsOf<typeof XhToolCallLabel>
+export type XhToolCallOutputProps = PropsOf<typeof XhToolCallOutput>
+export type XhToolCallRootProps = PropsOf<typeof XhToolCallRoot>
+export type XhToolCallStatusProps = PropsOf<typeof XhToolCallStatus>
+export type XhToolCallSummaryProps = PropsOf<typeof XhToolCallSummary>
+export type XhToolCallTriggerProps = PropsOf<typeof XhToolCallTrigger>

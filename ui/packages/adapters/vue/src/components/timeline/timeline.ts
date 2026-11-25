@@ -8,6 +8,7 @@
 import type { Orientation, Size, Tone } from '@xihan-ui/core'
 import type { TimelinePlacement, TimelineProps } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { connectTimeline } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -103,3 +104,14 @@ export const XhTimelineTime = defineComponent({
     return () => h('time', ctx.api.value.getTimeProps(), slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhTimelineConnectorProps = PropsOf<typeof XhTimelineConnector>
+export type XhTimelineContentProps = PropsOf<typeof XhTimelineContent>
+export type XhTimelineDescriptionProps = PropsOf<typeof XhTimelineDescription>
+export type XhTimelineIndicatorProps = PropsOf<typeof XhTimelineIndicator>
+export type XhTimelineItemProps = PropsOf<typeof XhTimelineItem>
+export type XhTimelineLabelProps = PropsOf<typeof XhTimelineLabel>
+export type XhTimelineRootProps = PropsOf<typeof XhTimelineRoot>
+export type XhTimelineTimeProps = PropsOf<typeof XhTimelineTime>
+export type XhTimelineTitleProps = PropsOf<typeof XhTimelineTitle>

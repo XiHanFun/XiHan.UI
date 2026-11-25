@@ -24,6 +24,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { providePieChart, usePieChartContext } from './context'
@@ -285,3 +286,13 @@ export const XhPieChartRoot = defineComponent({
     }
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhPieChartCaptionProps = PropsOf<typeof XhPieChartCaption>
+export type XhPieChartCenterProps = PropsOf<typeof XhPieChartCenter>
+export type XhPieChartEmptyProps = PropsOf<typeof XhPieChartEmpty>
+export type XhPieChartLegendProps = PropsOf<typeof XhPieChartLegend>
+export type XhPieChartPlotProps = PropsOf<typeof XhPieChartPlot>
+export type XhPieChartRootProps = PropsOf<typeof XhPieChartRoot>
+export type XhPieChartTooltipProps = PropsOf<typeof XhPieChartTooltip>
+export type XhPieChartViewportProps = PropsOf<typeof XhPieChartViewport>

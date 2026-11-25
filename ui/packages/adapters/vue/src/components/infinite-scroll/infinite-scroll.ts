@@ -7,6 +7,7 @@
 
 import type { InfiniteScrollApi, InfiniteScrollEdge, InfiniteScrollSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h } from 'vue'
 import { provideInfiniteScroll, useInfiniteScrollContext } from './context'
 import { useInfiniteScroll } from './use-infinite-scroll'
@@ -76,3 +77,8 @@ export const XhInfiniteScrollSentinel = defineComponent({
     }, slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhInfiniteScrollLoadMoreTriggerProps = PropsOf<typeof XhInfiniteScrollLoadMoreTrigger>
+export type XhInfiniteScrollRootProps = PropsOf<typeof XhInfiniteScrollRoot>
+export type XhInfiniteScrollSentinelProps = PropsOf<typeof XhInfiniteScrollSentinel>

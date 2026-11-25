@@ -8,6 +8,7 @@
 import type { VirtualizerAnchor, VirtualizerApi, VirtualizerRangeChangeDetails, VirtualizerSchema, VirtualizerScrollContainer } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { PropsOf } from '../../runtime/props-of'
 import { defineComponent, h, onBeforeUnmount, onMounted, onUpdated, ref } from 'vue'
 import { provideVirtualizer, useVirtualizerContext } from './context'
 import { useVirtualizer } from './use-virtualizer'
@@ -140,3 +141,9 @@ export const XhVirtualizerItem = defineComponent({
     }, slots.default?.())
   },
 })
+
+// 各组件接受的 props，与 React 同名
+export type XhVirtualizerContentProps = PropsOf<typeof XhVirtualizerContent>
+export type XhVirtualizerItemProps = PropsOf<typeof XhVirtualizerItem>
+export type XhVirtualizerRootProps = PropsOf<typeof XhVirtualizerRoot>
+export type XhVirtualizerViewportProps = PropsOf<typeof XhVirtualizerViewport>

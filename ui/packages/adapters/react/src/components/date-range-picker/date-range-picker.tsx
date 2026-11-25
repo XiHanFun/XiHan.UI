@@ -652,8 +652,11 @@ export function XhDateRangePickerColumnGroup({ index = 0, children, ...rest }: X
   )
 }
 
+/** 时间面板按 showTime 自己铺列，不接受 props。 */
+export type XhDateRangePickerTimePanelProps = Record<string, never>
+
 /** 起止两组时间列整组自动铺设：每组一个外壳、一行小标题与时/分[/秒][/上下午]各一列；未开启 showTime 时整组带 hidden。 */
-export function XhDateRangePickerTimePanel(): ReactNode {
+export function XhDateRangePickerTimePanel(_props: XhDateRangePickerTimePanelProps): ReactNode {
   const ctx = useDateRangePickerContext()
   return (
     <>
