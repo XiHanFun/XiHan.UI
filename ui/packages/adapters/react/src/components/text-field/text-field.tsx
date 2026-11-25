@@ -50,6 +50,8 @@ export interface XhTextFieldRootProps extends Omit<ComponentPropsWithRef<'div'>,
   /** 表单字段名；提供后才参与提交。 */
   name?: string
   maxLength?: number
+  /** 掩码：9 收数字、a 收字母、* 收字母或数字，其余字符是自动补上的分隔符。 */
+  mask?: string
   clearable?: boolean
   showCount?: boolean
   autoSize?: TextFieldProps['autoSize']
@@ -77,6 +79,7 @@ export function XhTextFieldRoot({
   invalid,
   name,
   maxLength,
+  mask,
   clearable,
   showCount,
   autoSize,
@@ -101,6 +104,7 @@ export function XhTextFieldRoot({
     invalid,
     name,
     maxLength,
+    mask,
     clearable,
     showCount,
     autoSize,

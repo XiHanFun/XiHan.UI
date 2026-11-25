@@ -8,8 +8,10 @@
 import type { ControlVariant, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 export interface TextFieldValueChangeDetails {
-  /** 输入框中的原始串；提交进 FormData 的即它。 */
+  /** 输入框中的原始串；提交进 FormData 的即它。写了 mask 时是排好的值，含分隔符。 */
   value: string
+  /** 写了 mask 时才有：去掉分隔符、只剩填进占位符的字符。 */
+  unmaskedValue?: string
 }
 
 /** 输入框渲染的标签：单行 input（默认）或多行 textarea。 */
@@ -66,6 +68,12 @@ export interface TextFieldSchema extends MachineSchema {
      * 超出的部分由连接层从这次新插入的文本里截掉（与原生 maxlength 同样的做法），输入法组合期间不截、落定时再截。
      */
     maxLength?: number
+    /**
+     * 掩码：`9` 收数字，`a` 收字母，`*` 收字母或数字，其余字符是分隔符、按到那一位时自动补上；
+     * 在 9 / a / * / \ 前面写 `\` 即当分隔符原样写出。例如手机号 `999 9999 9999`。
+     * 值是排好的串（含分隔符）；非受控初值按它排一遍，受控值按原样显示。
+     */
+    mask?: string
     /** 开启清空能力：有值时显示清空按钮、Escape 接管。关闭时按钮带 hidden 收起。 */
     clearable?: boolean
     /** 显示字数部件：关闭时 count 部件带 hidden 收起。 */
@@ -125,6 +133,10 @@ export interface TextFieldApi<T extends PropTypes = PropTypes> {
   maxLength: number | undefined
   /** 字数部件当前是否显示（开启了 showCount）。 */
   showCount: boolean
+  /** 写了 mask 时去掉分隔符的值；没写 mask 时与 value 相同。 */
+  unmaskedValue: string
+  /** 写了 mask 且每个占位符都填上了；没写 mask 时为 false。 */
+  maskComplete: boolean
   /** 清空按钮当前是否可用（开启 clearable、可编辑、且有值）。 */
   canClear: boolean
   /** 直接写值，只受 disabled / readOnly 与 maxLength 约束，与 clearable 无关。 */

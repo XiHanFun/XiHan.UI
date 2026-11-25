@@ -1,0 +1,18 @@
+<!-- 掩码 | mask 把输入排成固定格式：9 收数字、a 收字母，分隔符按到那一位时自动补上；值含分隔符，value-change 另带去掉分隔符的 unmaskedValue -->
+<xh-text-field id="text-field-mask" name="phone" mask="999 9999 9999" placeholder="138 0000 0000">
+  <div data-xh-part="root">
+    <label data-xh-part="label">手机号</label>
+    <div data-xh-part="control">
+      <input data-xh-part="input" />
+    </div>
+  </div>
+</xh-text-field>
+<span data-demo-output>去掉分隔符：<span id="text-field-mask-digits">（未输入）</span></span>
+
+<script type="module">
+  const field = document.getElementById("text-field-mask");
+  const digits = document.getElementById("text-field-mask-digits");
+  field.addEventListener("value-change", (event) => {
+    digits.textContent = event.detail.unmaskedValue || "（未输入）";
+  });
+</script>

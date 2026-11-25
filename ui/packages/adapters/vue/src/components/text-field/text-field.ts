@@ -52,6 +52,8 @@ export const XhTextFieldRoot = defineComponent({
     invalid: { type: Boolean, default: undefined },
     name: { type: String },
     maxLength: { type: Number },
+    /** 掩码：9 收数字、a 收字母、* 收字母或数字，其余字符是自动补上的分隔符。 */
+    mask: { type: String },
     clearable: Boolean,
     showCount: Boolean,
     autoSize: { type: [Boolean, Object] as PropType<TextFieldProps['autoSize']>, default: undefined },

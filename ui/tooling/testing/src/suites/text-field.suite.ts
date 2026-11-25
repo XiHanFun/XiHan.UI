@@ -246,6 +246,28 @@ export const textFieldSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'mask：敲进去的字按掩码排好、分隔符自动补上，数字掩码请移动端弹数字键盘，回调带去掉分隔符的值',
+      spec: { apg: HTML_SPEC },
+      props: { mask: '999 9999 9999' },
+      initial: {
+        parts: { input: { inputmode: 'numeric' } },
+      },
+      steps: [
+        { kind: 'focus', part: 'input' },
+        {
+          kind: 'raw',
+          why: '排值发生在 input 事件里，框里的值是 property',
+          run: async (ctx) => {
+            await typeInto(ctx, '1381234')
+            expectValue(ctx.doc, '138 1234', '分隔符应在按到那一位时补上')
+          },
+          expect: {
+            events: [{ type: 'value-change', detail: { value: '138 1234', unmaskedValue: '1381234' } }],
+          },
+        },
+      ],
+    },
+    {
       name: 'maxLength：组合 emoji 与国旗各算一个字',
       spec: { apg: HTML_SPEC },
       props: { maxLength: 2 },

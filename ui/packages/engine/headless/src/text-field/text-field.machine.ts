@@ -9,6 +9,7 @@ import type { TextFieldSchema } from './text-field.types'
 import { resetDeclaredValue, setup } from '@xihan-ui/core'
 import { graphemeLength, graphemes } from '../shared/grapheme'
 import { validateTextFieldAutoSize } from './text-field.autosize'
+import { applyTextFieldMask } from './text-field.mask'
 
 const { createMachine } = setup<TextFieldSchema>()
 
@@ -65,6 +66,11 @@ export function fitToMaxLength(prev: string, next: string, maxLength: number | u
   return { value: before + kept + after, caret: before.length + kept.length }
 }
 
+/** 写了 mask 就按它排一遍；空掩码当没写。 */
+function maskValue(mask: string | undefined, value: string): string {
+  return mask ? applyTextFieldMask(mask, value).value : value
+}
+
 export const textFieldMachine = createMachine({
   name: 'text-field',
   props: ({ props }) => ({
@@ -75,8 +81,11 @@ export const textFieldMachine = createMachine({
     // 值住在 cell 里，受控/非受控在此收口，不需要 CONTROLLED.* 影子事件
     value: cell<string>(() => ({
       value: prop('value'),
-      defaultValue: prop('defaultValue') ?? '',
-      onChange: value => prop('onValueChange')?.({ value }),
+      defaultValue: maskValue(prop('mask'), prop('defaultValue') ?? ''),
+      onChange: (value) => {
+        const mask = prop('mask')
+        prop('onValueChange')?.(mask ? { value, unmaskedValue: applyTextFieldMask(mask, value).unmasked } : { value })
+      },
     })),
     // 按压通道：清空按钮被 Space / Enter 或触屏按住期间为 true
     pressed: cell<boolean>(() => ({ defaultValue: false })),
@@ -112,7 +121,7 @@ export const textFieldMachine = createMachine({
         const e = event.current()
         if (e.type === 'VALUE.SET')
           // 输入法组合中的拼音字母不是最终的字，截了会把候选打断；落定时连接层再送一次
-          context.set('value', e.composing ? e.value : clampToMaxLength(e.value, prop('maxLength')))
+          context.set('value', e.composing ? e.value : clampToMaxLength(maskValue(prop('mask'), e.value), prop('maxLength')))
       },
       clearValue: ({ context }) => {
         context.set('value', '')

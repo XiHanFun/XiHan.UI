@@ -44,6 +44,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {boolean} invalid - 校验失败标注
  * @attr {string} name - 表单字段名；提供后才参与提交
  * @attr {number} max-length - 字符数上限；同时落为原生 maxlength 与状态机侧截断
+ * @attr {string} mask - 掩码：9 收数字、a 收字母、* 收字母或数字，其余字符是按到那一位时自动补上的分隔符；值是排好的串
  * @attr {boolean} clearable - 开启清空：有值时显示清空按钮，Escape 接管
  * @attr {boolean} show-count - 显示字数部件；关闭时该部件收起
  * @attr {boolean} auto-size - 多行宿主（input 部件写为 textarea）的自动高度；行数界限对象经 autoSize property 赋值
@@ -51,7 +52,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @prop {object} translations - 读屏文案（只能通过 property 设置）：clearTrigger 是清空按钮的名字
- * @fires value-change - 值变化；detail 为 `{ value: string }`
+ * @fires value-change - 值变化；detail 为 `{ value: string, unmaskedValue?: string }`，写了 mask 时带去掉分隔符的值
  * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-at-max 的容器
  * @csspart control - 视觉盒；提供后由它绘制描边、底色与聚焦环，输入框与清空按钮排列在其中
@@ -91,6 +92,7 @@ export class XhTextFieldElement extends XhElement {
     invalid: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
     maxLength: { converter: NUMBER_CONVERTER, attribute: 'max-length' },
+    mask: { converter: STRING_CONVERTER },
     clearable: { converter: BOOLEAN_CONVERTER },
     showCount: { converter: BOOLEAN_CONVERTER, attribute: 'show-count' },
     autoSize: { converter: BOOLEAN_CONVERTER, attribute: 'auto-size' },
@@ -112,6 +114,7 @@ export class XhTextFieldElement extends XhElement {
   declare invalid?: boolean
   declare name?: string
   declare maxLength?: number
+  declare mask?: string
   declare clearable?: boolean
   declare showCount?: boolean
   /** 布尔值使用 auto-size 属性；行数界限对象无法表达为属性，只作为 property 赋值。 */
@@ -153,6 +156,7 @@ export class XhTextFieldElement extends XhElement {
       invalid: control.invalid,
       name: this.name,
       maxLength: this.maxLength,
+      mask: this.mask,
       clearable: this.clearable ?? false,
       showCount: this.showCount ?? false,
       autoSize: this.autoSize,

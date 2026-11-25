@@ -71608,6 +71608,15 @@
             },
             {
               "kind": "field",
+              "name": "mask",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "mask"
+            },
+            {
+              "kind": "field",
               "name": "clearable",
               "privacy": "public",
               "type": {
@@ -71800,7 +71809,7 @@
           ],
           "events": [
             {
-              "description": "值变化；detail 为 `{ value: string }`",
+              "description": "值变化；detail 为 `{ value: string, unmaskedValue?: string }`，写了 mask 时带去掉分隔符的值",
               "name": "value-change",
               "type": {
                 "text": "TextFieldValueChangeDetails"
@@ -71907,6 +71916,14 @@
               "description": "字符数上限；同时落为原生 maxlength 与状态机侧截断",
               "name": "max-length",
               "fieldName": "maxLength"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "掩码：9 收数字、a 收字母、* 收字母或数字，其余字符是按到那一位时自动补上的分隔符；值是排好的串",
+              "name": "mask",
+              "fieldName": "mask"
             },
             {
               "type": {

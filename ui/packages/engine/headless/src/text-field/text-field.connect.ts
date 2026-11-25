@@ -15,6 +15,7 @@ import { resolveTranslations } from '../shared/translations'
 import { textFieldAnatomy } from './text-field.anatomy'
 import { autoSizeTextarea } from './text-field.autosize'
 import { fitToMaxLength, isAtLimit } from './text-field.machine'
+import { applyTextFieldMask, fitToTextFieldMask, isNumericTextFieldMask } from './text-field.mask'
 
 const parts = textFieldAnatomy.build()
 
@@ -50,7 +51,18 @@ export function connectTextField<T extends PropTypes>(
 
   // 用户的一次编辑超出上限：截掉这次新插入的文本里放不下的那一截，光标落回保留下来的文本之后。
   // 直接改节点：宿主随后按同一个值重渲，值没变就不再挪光标。email 这类不支持选区的类型 selectionStart 为 null，不动光标
+  const mask = prop('mask') || undefined
+  const masked = mask ? applyTextFieldMask(mask, value) : undefined
   const fitInput = (el: HTMLInputElement | HTMLTextAreaElement, prev: string): void => {
+    // 掩码：值重排、光标落到排好之后的位置，同样直接改节点
+    if (mask) {
+      const fit = fitToTextFieldMask(mask, el.value, el.selectionStart)
+      if (fit.value !== el.value)
+        el.value = fit.value
+      if (el.selectionStart != null)
+        el.setSelectionRange(fit.caret, fit.caret)
+      return
+    }
     const fit = fitToMaxLength(prev, el.value, maxLength)
     if (!fit)
       return
@@ -70,6 +82,8 @@ export function connectTextField<T extends PropTypes>(
     count,
     maxLength,
     showCount,
+    unmaskedValue: masked ? masked.unmasked : value,
+    maskComplete: masked ? masked.complete : false,
     canClear,
     autoSize,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
@@ -119,6 +133,8 @@ export function connectTextField<T extends PropTypes>(
       'name': prop('name'),
       'value': value,
       'placeholder': prop('placeholder'),
+      // 掩码只收数字时请移动端弹数字键盘
+      'inputMode': mask && isNumericTextFieldMask(mask) ? 'numeric' : undefined,
       // 多行宿主首帧先按 minRows 站好，量高补在挂载后
       'rows': (input.as ?? 'input') === 'textarea' && typeof autoSize === 'object' ? autoSize.minRows : undefined,
       'disabled': disabled || undefined,
