@@ -1332,7 +1332,7 @@ export type {
   XhFormSubmitTriggerProps,
 } from './components/form/form'
 export { useForm } from './components/form/use-form'
-export type { FormCallbacks, FormContext } from './components/form/use-form'
+export type { FormNotifiers, FormContext } from './components/form/use-form'
 export { useFormatInputContext } from './components/format-input/context'
 export {
   XhFormatInputErrorText,

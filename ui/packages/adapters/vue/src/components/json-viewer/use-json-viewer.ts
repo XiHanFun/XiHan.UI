@@ -22,13 +22,13 @@ export interface JsonViewerContext {
 }
 
 /** 工具条的三路通知：Vue 的 props 里不带回调，由组件把各自的 emit 接进来。 */
-export type JsonViewerToolEvents = Pick<JsonViewerSchema['props'], 'onViewChange' | 'onWrapChange' | 'onCopyError'>
+export type JsonViewerToolNotifiers = Pick<JsonViewerSchema['props'], 'onViewChange' | 'onWrapChange' | 'onCopyError'>
 
 // 根与树的 id 由 scope 派生：子层的高度补间与按键导航按 id 找到它们，服务端与客户端得出同一个号
 export function useJsonViewer(
   props: JsonViewerSchema['props'],
   onExpandedValueChange?: JsonViewerSchema['props']['onExpandedValueChange'],
-  events: JsonViewerToolEvents = {},
+  events: JsonViewerToolNotifiers = {},
 ): JsonViewerContext {
   const scope = createScope(null, createVueIdGenerator())
   const service = useMachine(jsonViewerMachine, () => ({ ...props, onExpandedValueChange, ...events }), scope)

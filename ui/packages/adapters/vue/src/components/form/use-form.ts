@@ -17,7 +17,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 
 type Props = FormSchema['props']
 
-export interface FormCallbacks {
+export interface FormNotifiers {
   onValuesChange?: Props['onValuesChange']
   onErrorsChange?: Props['onErrorsChange']
   onSubmit?: Props['onSubmit']
@@ -44,7 +44,7 @@ export interface FormContext {
   reset: () => void
 }
 
-export function useForm(props: Props, callbacks: FormCallbacks = {}): FormContext {
+export function useForm(props: Props, callbacks: FormNotifiers = {}): FormContext {
   const rootRef = ref<HTMLElement | null>(null)
 
   const idGen = createVueIdGenerator()

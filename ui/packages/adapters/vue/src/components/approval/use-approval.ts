@@ -18,7 +18,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 
 type Props = ApprovalSchema['props']
 
-export interface ApprovalCallbacks {
+export interface ApprovalNotifiers {
   onDecision?: Props['onDecision']
   onGrantedScopesChange?: Props['onGrantedScopesChange']
   onNoteChange?: Props['onNoteChange']
@@ -30,7 +30,7 @@ export interface ApprovalContext {
   presence: TitleDescriptionPresence
 }
 
-export function useApproval(props: Props, callbacks: ApprovalCallbacks = {}): ApprovalContext {
+export function useApproval(props: Props, callbacks: ApprovalNotifiers = {}): ApprovalContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   const presence = useTitleDescriptionPresence()

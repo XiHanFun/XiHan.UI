@@ -17,7 +17,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 
 type Props = EditableSchema['props']
 
-export interface EditableCallbacks {
+export interface EditableNotifiers {
   onValueChange?: Props['onValueChange']
   onValueCommit?: Props['onValueCommit']
   onValueRevert?: Props['onValueRevert']
@@ -39,7 +39,7 @@ export interface EditableContext {
   previewRef: Ref<HTMLElement | null>
 }
 
-export function useEditable(props: Props, callbacks: EditableCallbacks = {}): EditableContext {
+export function useEditable(props: Props, callbacks: EditableNotifiers = {}): EditableContext {
   const inputRef = ref<HTMLElement | null>(null)
   const previewRef = ref<HTMLElement | null>(null)
 

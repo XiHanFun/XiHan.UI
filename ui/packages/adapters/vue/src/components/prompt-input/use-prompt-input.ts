@@ -16,7 +16,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 
 type Props = PromptInputSchema['props']
 
-export interface PromptInputCallbacks {
+export interface PromptInputNotifiers {
   onValueChange?: Props['onValueChange']
   onSubmit?: Props['onSubmit']
   onStop?: Props['onStop']
@@ -26,7 +26,7 @@ export interface PromptInputContext {
   api: ComputedRef<PromptInputApi>
 }
 
-export function usePromptInput(props: Props, callbacks: PromptInputCallbacks = {}): PromptInputContext {
+export function usePromptInput(props: Props, callbacks: PromptInputNotifiers = {}): PromptInputContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   // 回调由组件外壳或调用方提供，随 props 一并传给机器；整台机器不碰 DOM，不需要 RuntimeConfig

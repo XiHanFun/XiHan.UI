@@ -21,7 +21,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import type { FormCallbacks } from './use-form'
+import type { FormNotifiers } from './use-form'
 import { formFieldModel } from '@xihan-ui/headless'
 import { useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
@@ -161,7 +161,7 @@ export function XhFormRoot<TValues extends object = FormValues>({
       disabled,
       readOnly,
     } as unknown as FormProps),
-    { onValuesChange, onErrorsChange, onSubmit, onInvalid, onValidationError, onSubmitError } as unknown as FormCallbacks,
+    { onValuesChange, onErrorsChange, onSubmit, onInvalid, onValidationError, onSubmitError } as unknown as FormNotifiers,
   )
   const api = ctx.api
   return (

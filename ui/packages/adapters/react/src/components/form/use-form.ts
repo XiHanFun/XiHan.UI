@@ -16,7 +16,7 @@ import { useMachine } from '../../runtime/use-machine'
 
 type Props = FormSchema['props']
 
-export interface FormCallbacks {
+export interface FormNotifiers {
   onValuesChange?: Props['onValuesChange']
   onErrorsChange?: Props['onErrorsChange']
   onSubmit?: Props['onSubmit']
@@ -43,7 +43,7 @@ export interface FormContext {
   reset: () => void
 }
 
-export function useForm(props: Props, callbacks: FormCallbacks = {}): FormContext {
+export function useForm(props: Props, callbacks: FormNotifiers = {}): FormContext {
   const rootRef = useRef<HTMLElement | null>(null)
   const scope = useReactScope()
 

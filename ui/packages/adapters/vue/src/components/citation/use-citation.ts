@@ -30,9 +30,9 @@ export interface CitationContext {
   portalTarget: ComputedRef<string | Element>
 }
 
-type CitationCallbacks = Pick<CitationSchema['props'], 'onActiveSourceChange' | 'onOpenChange' | 'onSourceOpen'>
+type CitationNotifiers = Pick<CitationSchema['props'], 'onActiveSourceChange' | 'onOpenChange' | 'onSourceOpen'>
 
-export function useCitation(props: CitationSchema['props'], callbacks: CitationCallbacks = {}): CitationContext {
+export function useCitation(props: CitationSchema['props'], callbacks: CitationNotifiers = {}): CitationContext {
   const xhConfig = useXhConfig()
   const rootRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)

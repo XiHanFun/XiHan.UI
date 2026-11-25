@@ -16,7 +16,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 
 type Props = QuestionFlowSchema['props']
 
-export interface QuestionFlowCallbacks {
+export interface QuestionFlowNotifiers {
   onIndexChange?: Props['onIndexChange']
   onAnswersChange?: Props['onAnswersChange']
   onNotesChange?: Props['onNotesChange']
@@ -30,7 +30,7 @@ export interface QuestionFlowContext {
   trackRef: Ref<HTMLElement | null>
 }
 
-export function useQuestionFlow(props: Props, callbacks: QuestionFlowCallbacks = {}): QuestionFlowContext {
+export function useQuestionFlow(props: Props, callbacks: QuestionFlowNotifiers = {}): QuestionFlowContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   const trackRef = ref<HTMLElement | null>(null)
