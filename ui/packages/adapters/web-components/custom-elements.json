@@ -1977,6 +1977,88 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/aspect-ratio.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-aspect-ratio>`：Light-DOM 行为宿主，无状态机，按 ratio 给作者写的 root 定出宽高比。\n\n作者写一个块级容器作为 root，把图片、视频、地图等内容直接放进去：盒宽随容器，\n高由比例算出，root 的直接子元素铺满整个盒子，图片与视频按 cover 裁切填满。\n内容不撑高盒子，超出的部分被裁掉。\n\n宿主本身不占一层盒子，root 直接参与外层的弹性或网格排布。\n根上不写 role：内容是什么，语义由内容自己给。",
+          "name": "XhAspectRatioElement",
+          "cssParts": [
+            {
+              "description": "定出宽高比的盒子，直接子元素铺满它；比例写在内联私有槽 --xh-_aspect-ratio 上",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: aspectRatioAnatomy, meta: aspectRatioMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "ratio",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "宽高比：宽 ÷ 高，缺省 1。",
+              "attribute": "ratio"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "宽高比：宽 ÷ 高，缺省 1。",
+              "name": "ratio",
+              "fieldName": "ratio"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-aspect-ratio",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-aspect-ratio-radius"
+            },
+            {
+              "name": "--xh-aspect-ratio-w"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhAspectRatioElement",
+          "declaration": {
+            "name": "XhAspectRatioElement",
+            "module": "src/elements/aspect-ratio.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/avatar-group.ts",
       "declarations": [
         {

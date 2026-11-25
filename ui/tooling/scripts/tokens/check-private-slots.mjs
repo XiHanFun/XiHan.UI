@@ -8,6 +8,8 @@ import { join } from 'node:path'
 const STYLE_DIRS = ['packages/design/styles/css', 'packages/design/styles/family']
 const RUNTIME_PRIVATE_SLOTS = new Map([
   ['--xh-_layer', 'packages/engine/core/src/kernel/structure/layer-registry.ts'],
+  // 宽高比盒子的比例：连接层把归一后的宽 ÷ 高写进根的内联样式，皮肤交给 aspect-ratio
+  ['--xh-_aspect-ratio', 'packages/engine/headless/src/aspect-ratio/aspect-ratio.connect.ts'],
   // 值类填充的比例（0–1）与倒计时条的分段数：连接层写进部件的内联样式，皮肤只读
   ['--xh-_loading-bar-value', 'packages/engine/headless/src/loading-bar/loading-bar.connect.ts'],
   ['--xh-_notification-progress-steps', 'packages/engine/headless/src/notification/notification.connect.ts'],

@@ -53,6 +53,7 @@
     "./affix.css": "./dist/css/affix.css",
     "./alert.css": "./dist/css/alert.css",
     "./anchor.css": "./dist/css/anchor.css",
+    "./aspect-ratio.css": "./dist/css/aspect-ratio.css",
     "./avatar-group.css": "./dist/css/avatar-group.css",
     "./approval.css": "./dist/css/approval.css",
     "./avatar.css": "./dist/css/avatar.css",

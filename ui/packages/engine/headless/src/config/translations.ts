@@ -12,6 +12,7 @@ import type { AffixTranslations } from '../affix/affix.types'
 import type { AlertTranslations } from '../alert/alert.types'
 import type { AnchorTranslations } from '../anchor/anchor.types'
 import type { ApprovalTranslations } from '../approval/approval.types'
+import type { AspectRatioTranslations } from '../aspect-ratio/aspect-ratio.types'
 import type { AvatarGroupTranslations } from '../avatar-group/avatar-group.types'
 import type { AvatarTranslations } from '../avatar/avatar.types'
 import type { BackTopTranslations } from '../back-top/back-top.types'
@@ -159,6 +160,7 @@ export interface XhTranslationOverrides {
   'alert'?: Partial<AlertTranslations>
   'anchor'?: Partial<AnchorTranslations>
   'approval'?: Partial<ApprovalTranslations>
+  'aspect-ratio'?: Partial<AspectRatioTranslations>
   'avatar'?: Partial<AvatarTranslations>
   'avatar-group'?: Partial<AvatarGroupTranslations>
   'back-top'?: Partial<BackTopTranslations>

@@ -39,6 +39,7 @@
       "./alert.css",
       "./anchor.css",
       "./approval.css",
+      "./aspect-ratio.css",
       "./avatar-group.css",
       "./avatar.css",
       "./back-top.css",
@@ -691,6 +692,8 @@
       "XhApprovalTimerProps",
       "XhApprovalTitle",
       "XhApprovalTitleProps",
+      "XhAspectRatio",
+      "XhAspectRatioProps",
       "XhAvatarFallback",
       "XhAvatarFallbackProps",
       "XhAvatarGroupOverflowItem",
@@ -3920,6 +3923,8 @@
       "XhApprovalTimerProps",
       "XhApprovalTitle",
       "XhApprovalTitleProps",
+      "XhAspectRatio",
+      "XhAspectRatioProps",
       "XhAvatarFallback",
       "XhAvatarFallbackProps",
       "XhAvatarGroupOverflowItem",
@@ -6778,6 +6783,7 @@
       "XhAlertElement",
       "XhAnchorElement",
       "XhApprovalElement",
+      "XhAspectRatioElement",
       "XhAvatarElement",
       "XhAvatarGroupElement",
       "XhBackTopElement",
@@ -8069,6 +8075,9 @@
       "ApprovalScopesChangeDetails",
       "ApprovalStatus",
       "ApprovalTranslations",
+      "AspectRatioApi",
+      "AspectRatioProps",
+      "AspectRatioTranslations",
       "AvatarApi",
       "AvatarGroupApi",
       "AvatarGroupProps",
@@ -10072,6 +10081,9 @@
       "approvalKeyboard",
       "approvalMachine",
       "approvalMeta",
+      "aspectRatioAnatomy",
+      "aspectRatioKeyboard",
+      "aspectRatioMeta",
       "autoSizeTextarea",
       "avatarAnatomy",
       "avatarGroupAnatomy",
@@ -10299,6 +10311,7 @@
       "connectAlert",
       "connectAnchor",
       "connectApproval",
+      "connectAspectRatio",
       "connectAvatar",
       "connectAvatarGroup",
       "connectBackTop",
@@ -12862,6 +12875,9 @@
       "timer",
       "title"
     ],
+    "aspect-ratio": [
+      "root"
+    ],
     "avatar": [
       "fallback",
       "image",
@@ -14606,6 +14622,9 @@
       "tone",
       "translations",
       "variant"
+    ],
+    "aspect-ratio": [
+      "ratio"
     ],
     "avatar": [
       "alt",
@@ -18512,6 +18531,8 @@
     "--xh-approval-title-fg",
     "--xh-approval-title-font-size",
     "--xh-approval-title-font-weight",
+    "--xh-aspect-ratio-radius",
+    "--xh-aspect-ratio-w",
     "--xh-avatar-bg",
     "--xh-avatar-fg",
     "--xh-avatar-font-size",
@@ -23327,6 +23348,12 @@
         "granted-scopes-change",
         "note-change"
       ]
+    },
+    "xh-aspect-ratio": {
+      "attributes": [
+        "ratio"
+      ],
+      "events": []
     },
     "xh-avatar-group": {
       "attributes": [

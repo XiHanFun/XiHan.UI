@@ -1,0 +1,21 @@
+<!-- 放图片 | 直接放进去的图片铺满盒子并按 cover 裁切：同一张图放进不同比例，都不变形、不留边 -->
+<div
+  style="
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(var(--xh-layout-col-min-sm), 1fr));
+    gap: var(--xh-space-3);
+    inline-size: 100%;
+  "
+>
+  <xh-aspect-ratio>
+    <div data-xh-part="root">
+      <img src="/images/image-cropper-landscape.svg" alt="清晨的山谷与湖泊" />
+    </div>
+  </xh-aspect-ratio>
+
+  <xh-aspect-ratio ratio="16/9">
+    <div data-xh-part="root">
+      <img src="/images/image-cropper-landscape.svg" alt="清晨的山谷与湖泊" />
+    </div>
+  </xh-aspect-ratio>
+</div>

@@ -1,0 +1,54 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/* 定义 aspect ratio 样式。 */
+
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='aspect-ratio'] {
+    --xh-aspect-ratio-skin: 1;
+  }
+
+  /* Web Components 的宿主不占一层盒子：root 直接参与外层排布，与 Vue / React 直接渲染 root 一致。
+     否则放进弹性容器时宿主按内容收缩包裹，而内容全是绝对定位的，宿主连同盒子一起缩成零宽。
+     零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+  :where(xh-aspect-ratio:not([hidden])) {
+    display: contents;
+  }
+
+  /* 比例由连接层写进内联私有槽：盒宽随容器（或使用者槽），块向尺寸由比例算出。
+     盒子是一格网格，格子与盒子等大：直接子元素作为网格项按缺省对齐拉伸，铺满整个盒子，
+     不必给子元素另写一条通配规则（那条规则每个元素重算样式都要试一遍）。
+     overflow 不是 visible，盒子的自动最小高度归零：内容比它高也不撑开，多出的部分被裁掉；
+     布局容器不带壳，缺省直角、无底；圆角给使用者槽，裁切同样由 overflow 兑现。
+     弹性行缺省按 stretch 把交叉轴拉满，几个比例不同的盒子会被拉成同一个高、比例当场失效，
+     所以自己贴交叉轴起始缘；网格里带比例的项本来就不拉伸，这条不改它的排布 */
+  [data-scope='aspect-ratio'][data-part='root'] {
+    position: relative;
+    display: grid;
+    grid-template: 100% / 100%;
+    overflow: hidden;
+    align-self: start;
+    inline-size: var(--xh-aspect-ratio-w, 100%);
+    max-inline-size: 100%;
+    aspect-ratio: var(--xh-_aspect-ratio, 1);
+    border-radius: var(--xh-aspect-ratio-radius, 0);
+  }
+
+  /* 图片与视频是替换元素，网格项的缺省对齐不拉伸它们：宽高写满再按比例裁切填满，不留黑边也不变形。
+     按标签分写两条，各进标签桶；要整幅露出时在图片上写 object-fit: contain 即可，不另开槽 */
+  [data-scope='aspect-ratio'][data-part='root'] > img,
+  [data-scope='aspect-ratio'][data-part='root'] > video {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+     写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+  [data-scope='aspect-ratio'][data-part='root'][hidden] {
+    display: none;
+  }
+}

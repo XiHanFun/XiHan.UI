@@ -4,6 +4,7 @@ import { affixSuite } from './affix.suite'
 import { alertSuite } from './alert.suite'
 import { anchorSuite } from './anchor.suite'
 import { approvalSuite } from './approval.suite'
+import { aspectRatioSuite } from './aspect-ratio.suite'
 import { avatarGroupSuite } from './avatar-group.suite'
 import { avatarSuite } from './avatar.suite'
 import { backTopSuite } from './back-top.suite'
@@ -291,5 +292,6 @@ export const allSuites: readonly ConformanceSuite[] = [
   expressionInputSuite,
   formatInputSuite,
   filterBuilderSuite,
+  aspectRatioSuite,
   containerSuite,
 ]

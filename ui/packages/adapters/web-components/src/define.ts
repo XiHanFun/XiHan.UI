@@ -13,6 +13,7 @@ import { XhAffixElement } from './elements/affix'
 import { XhAlertElement } from './elements/alert'
 import { XhAnchorElement } from './elements/anchor'
 import { XhApprovalElement } from './elements/approval'
+import { XhAspectRatioElement } from './elements/aspect-ratio'
 import { XhAvatarElement } from './elements/avatar'
 import { XhAvatarGroupElement } from './elements/avatar-group'
 import { XhBackTopElement } from './elements/back-top'
@@ -161,6 +162,7 @@ import { defineElement } from './runtime/registry'
 const XH_ELEMENTS = {
   'xh-affix': XhAffixElement,
   'xh-alert': XhAlertElement,
+  'xh-aspect-ratio': XhAspectRatioElement,
   'xh-avatar-group': XhAvatarGroupElement,
   'xh-back-top': XhBackTopElement,
   'xh-bar-code': XhBarCodeElement,
@@ -365,6 +367,7 @@ export {
   XhAlertElement,
   XhAnchorElement,
   XhApprovalElement,
+  XhAspectRatioElement,
   XhAvatarElement,
   XhAvatarGroupElement,
   XhBackTopElement,

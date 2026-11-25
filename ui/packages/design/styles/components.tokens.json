@@ -2881,6 +2881,42 @@
       "description": "approval 的 title 部件 font-weight 覆盖槽。"
     },
     {
+      "name": "--xh-aspect-ratio-radius",
+      "component": "aspect-ratio",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "0"
+      ],
+      "visibility": "public",
+      "description": "aspect-ratio 的 root 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-aspect-ratio-w",
+      "component": "aspect-ratio",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "100%"
+      ],
+      "visibility": "public",
+      "description": "aspect-ratio 的 root 部件 inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-avatar-bg",
       "component": "avatar",
       "part": [

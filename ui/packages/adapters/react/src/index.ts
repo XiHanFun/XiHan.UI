@@ -114,6 +114,8 @@ export type {
 export { useApprovalContext } from './components/approval/context'
 export { useApproval } from './components/approval/use-approval'
 export type { ApprovalContext } from './components/approval/use-approval'
+export { XhAspectRatio } from './components/aspect-ratio/aspect-ratio'
+export type { XhAspectRatioProps } from './components/aspect-ratio/aspect-ratio'
 export {
   XhAvatarGroupOverflowItem,
   XhAvatarGroupRoot,

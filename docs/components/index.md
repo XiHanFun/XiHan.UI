@@ -26,6 +26,7 @@
 
 <div class="xh-component-grid" data-category="layout">
 
+<XhComponentCard src="aspect-ratio" name="AspectRatio" label="宽高比" href="/components/aspect-ratio" />
 <XhComponentCard src="container" name="Container" label="容器" href="/components/container" />
 <XhComponentCard src="flex" name="Flex" label="弹性布局" href="/components/flex" />
 <XhComponentCard src="grid" name="Grid" label="栅格" href="/components/grid" />

@@ -65,6 +65,10 @@
       "description": "只分配空间、不承载内容语义的容器。",
       "components": [
         {
+          "id": "aspect-ratio",
+          "name": "宽高比"
+        },
+        {
           "id": "container",
           "name": "容器"
         },

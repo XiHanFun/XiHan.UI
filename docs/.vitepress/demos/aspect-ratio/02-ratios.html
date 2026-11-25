@@ -1,0 +1,28 @@
+<!-- 常用比例 | 同样的列宽下，1 : 1、4 : 3、16 : 9 各按自己的比例定高，并排时也不被拉成同一个高 -->
+<!-- 宿主不占一层盒子：root 直接是网格的一项 -->
+<div
+  style="
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(var(--xh-layout-col-min-xs), 1fr));
+    gap: var(--xh-space-3);
+    inline-size: 100%;
+  "
+>
+  <xh-aspect-ratio ratio="1">
+    <div data-xh-part="root">
+      <span data-demo-block data-tone="brand" style="--xh-demo-block-block-size: 100%"></span>
+    </div>
+  </xh-aspect-ratio>
+
+  <xh-aspect-ratio ratio="4/3">
+    <div data-xh-part="root">
+      <span data-demo-block data-tone="info" style="--xh-demo-block-block-size: 100%"></span>
+    </div>
+  </xh-aspect-ratio>
+
+  <xh-aspect-ratio ratio="16/9">
+    <div data-xh-part="root">
+      <span data-demo-block data-tone="success" style="--xh-demo-block-block-size: 100%"></span>
+    </div>
+  </xh-aspect-ratio>
+</div>

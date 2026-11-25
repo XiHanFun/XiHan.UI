@@ -43,6 +43,8 @@ export type { ApprovalRootSlotProps, ApprovalScopeSlotProps, XhApprovalApproveTr
 export { useApprovalContext } from './components/approval/context'
 export { useApproval } from './components/approval/use-approval'
 export type { ApprovalContext, ApprovalNotifiers } from './components/approval/use-approval'
+export { XhAspectRatio } from './components/aspect-ratio/aspect-ratio'
+export type { XhAspectRatioProps } from './components/aspect-ratio/aspect-ratio'
 export { XhAvatarGroupOverflowItem, XhAvatarGroupRoot } from './components/avatar-group/avatar-group'
 export type { XhAvatarGroupOverflowItemProps, XhAvatarGroupRootProps } from './components/avatar-group/avatar-group'
 export { useAvatarGroupContext } from './components/avatar-group/context'

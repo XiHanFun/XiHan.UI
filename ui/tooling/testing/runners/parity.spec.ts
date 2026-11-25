@@ -11,6 +11,7 @@ import {
   allSuites,
   anchorSuite,
   approvalSuite,
+  aspectRatioSuite,
   avatarGroupSuite,
   avatarSuite,
   backTopSuite,
@@ -275,6 +276,7 @@ const SUITES: readonly ConformanceSuite[] = [
   expressionInputSuite,
   formatInputSuite,
   filterBuilderSuite,
+  aspectRatioSuite,
   containerSuite,
 ]
 
