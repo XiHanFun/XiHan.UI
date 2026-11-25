@@ -202,7 +202,7 @@ export const codeViewSuite: ConformanceSuite = {
           kind: 'click',
           part: 'fold-trigger',
           expect: {
-            events: [{ type: 'clamp-toggle', detail: { clamped: true } }],
+            events: [{ type: 'clamped-change', detail: { clamped: true } }],
             parts: { 'root': { 'data-clamped': null }, 'fold-trigger': { 'aria-expanded': 'true' } },
           },
         },

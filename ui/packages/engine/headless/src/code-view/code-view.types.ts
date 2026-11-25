@@ -28,7 +28,7 @@ export interface CodeLine {
   readonly tokens: readonly CodeToken[]
 }
 
-export interface CodeViewClampToggleDetails {
+export interface CodeViewClampedChangeDetails {
   clamped: boolean
 }
 
@@ -104,7 +104,7 @@ export interface CodeViewSchema extends MachineSchema {
     size?: Size
     translations?: Partial<CodeViewTranslations>
     /** 折叠态切换的意图回调；clamped 是纯受控的，是否落定由宿主决定。 */
-    onClampToggle?: (details: CodeViewClampToggleDetails) => void
+    onClampedChange?: (details: CodeViewClampedChangeDetails) => void
   }
   context: {
     /**

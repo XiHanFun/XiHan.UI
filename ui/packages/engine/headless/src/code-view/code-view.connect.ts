@@ -142,7 +142,7 @@ export function connectCodeView<T extends PropTypes>(
 
   const setClamped = (next: boolean): void => {
     if (next !== clamped)
-      prop('onClampToggle')?.({ clamped: next })
+      prop('onClampedChange')?.({ clamped: next })
   }
 
   const lineAttrs = ({ index }: CodeViewLineProps): Record<string, unknown> => ({

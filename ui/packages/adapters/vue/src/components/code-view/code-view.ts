@@ -56,7 +56,7 @@ export const XhCodeViewRoot = defineComponent({
     translations: { type: Object as PropType<Partial<CodeViewTranslations>> },
   },
   emits: {
-    'clamp-toggle': (_details: PayloadOf<CodeViewProps, 'onClampToggle'>) => true,
+    'clamped-change': (_details: PayloadOf<CodeViewProps, 'onClampedChange'>) => true,
     'update:clamped': (_clamped: boolean) => true,
     // folded-change 携带 { folded }，块头行号升序
     'folded-change': (_details: PayloadOf<CodeViewProps, 'onFoldedChange'>) => true,
@@ -129,8 +129,8 @@ export const XhCodeViewRoot = defineComponent({
       get translations() {
         return configured.translations
       },
-      onClampToggle: (details) => {
-        emit('clamp-toggle', details)
+      onClampedChange: (details) => {
+        emit('clamped-change', details)
         emit('update:clamped', details.clamped)
       },
       onFoldedChange: (details) => {

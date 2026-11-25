@@ -69,7 +69,7 @@ const step24 = pipeline.at(23)</code></pre>
   // 读屏名由元素按折叠态取 translations 里的一句，钮上的字由作者写：两边取同一张表，看到的与读到的才对得上
   const translations = { expand: "展开全部 24 行", collapse: "收起" };
   view.translations = translations;
-  view.addEventListener("clamp-toggle", (event) => {
+  view.addEventListener("clamped-change", (event) => {
     view.toggleAttribute("clamped", event.detail.clamped);
     trigger.textContent = event.detail.clamped ? translations.expand : translations.collapse;
   });

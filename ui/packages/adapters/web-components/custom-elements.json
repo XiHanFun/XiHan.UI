@@ -11533,7 +11533,7 @@
           ],
           "events": [
             {
-              "name": "clamp-toggle",
+              "name": "clamped-change",
               "type": {
                 "text": "CustomEvent"
               },

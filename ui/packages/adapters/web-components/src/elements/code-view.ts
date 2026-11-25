@@ -6,7 +6,7 @@
 // 提供 code view 相关实现。
 
 import type { HighlighterPort, IdGenerator } from '@xihan-ui/core'
-import type { CodeViewApi, CodeViewClampToggleDetails, CodeViewFoldedChangeDetails, CodeViewProps, CodeViewSchema, CodeViewTranslations } from '@xihan-ui/headless'
+import type { CodeViewApi, CodeViewClampedChangeDetails, CodeViewFoldedChangeDetails, CodeViewProps, CodeViewSchema, CodeViewTranslations } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { codeViewAnatomy, codeViewMachine, codeViewMeta, connectCodeView, createCodeViewHighlighterResource } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
@@ -56,7 +56,7 @@ const LINE_LIST_CONVERTER = {
  * @attr {string} default-folded - 非受控时一开始就折叠着的块，写法同 folded
  * @attr {boolean} highlight-while-streaming - 未闭合时也着色，默认关闭
  * @attr {string} size - 尺寸：sm / md / lg
- * @fires clamp-toggle - 折叠态切换的意图；detail 为 `{ clamped: boolean }`
+ * @fires clamped-change - 折叠态切换的意图；detail 为 `{ clamped: boolean }`
  * @fires folded-change - 语法块的折叠集合变化；detail 为 `{ folded: number[] }`
  * @csspart root - 外壳，承载 data-lang / data-complete / data-clamped / data-digits
  * @csspart header - 文件名与语言角标所在的行
@@ -174,8 +174,8 @@ export class XhCodeViewElement extends XhElement {
       highlightWhileStreaming: this.highlightWhileStreaming,
       size: this.size,
       translations: this.translations,
-      onClampToggle: (details: CodeViewClampToggleDetails) => {
-        this.dispatchEvent(new CustomEvent('clamp-toggle', { detail: details, bubbles: true, composed: true }))
+      onClampedChange: (details: CodeViewClampedChangeDetails) => {
+        this.dispatchEvent(new CustomEvent('clamped-change', { detail: details, bubbles: true, composed: true }))
       },
       onFoldedChange: (details: CodeViewFoldedChangeDetails) => {
         this.dispatchEvent(new CustomEvent('folded-change', { detail: details, bubbles: true, composed: true }))

@@ -67,7 +67,7 @@ export interface XhCodeViewRootProps extends RootElementProps {
   size?: Size
   translations?: Partial<CodeViewTranslations>
   /** 切换折叠态的意图；clamped 是纯受控的，是否落实由宿主决定。 */
-  onClampToggle?: CodeViewProps['onClampToggle']
+  onClampedChange?: CodeViewProps['onClampedChange']
   children?: SlotChildren<CodeViewRootSlotProps>
 }
 
@@ -90,7 +90,7 @@ export function XhCodeViewRoot({
   highlightWhileStreaming,
   size,
   translations,
-  onClampToggle,
+  onClampedChange,
   children,
   ...rest
 }: XhCodeViewRootProps): ReactNode {
@@ -112,7 +112,7 @@ export function XhCodeViewRoot({
     highlightWhileStreaming,
     size,
     translations,
-    onClampToggle,
+    onClampedChange,
   })
   const fallback = useDefaultHighlighter(highlighter === undefined)
   const ctx = useCodeView({
@@ -137,7 +137,7 @@ export function XhCodeViewRoot({
   )
 }
 
-XhCodeViewRoot.xhEvents = ['clamp-toggle', 'folded-change'] as const
+XhCodeViewRoot.xhEvents = ['clamped-change', 'folded-change'] as const
 
 export interface XhCodeViewHeaderProps extends ComponentPropsWithRef<'div'> {}
 export function XhCodeViewHeader({ children, ...rest }: XhCodeViewHeaderProps): ReactNode {

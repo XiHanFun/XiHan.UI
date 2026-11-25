@@ -17,7 +17,7 @@ export default function Demo(): ReactNode {
   return (
     <XhCodeViewRoot
       clamped={clamped}
-      onClampToggle={details => setClamped(details.clamped)}
+      onClampedChange={details => setClamped(details.clamped)}
       code={sample}
       lang="typescript"
       complete

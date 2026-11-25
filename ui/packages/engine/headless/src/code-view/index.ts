@@ -25,7 +25,7 @@ export {
 export type {
   CodeLine,
   CodeViewApi,
-  CodeViewClampToggleDetails,
+  CodeViewClampedChangeDetails,
   CodeViewFoldedChangeDetails,
   CodeViewFoldRegion,
   CodeViewLineProps,

@@ -6802,7 +6802,7 @@
       "ClipboardTranslations",
       "CodeLine",
       "CodeViewApi",
-      "CodeViewClampToggleDetails",
+      "CodeViewClampedChangeDetails",
       "CodeViewFoldRegion",
       "CodeViewFoldedChangeDetails",
       "CodeViewHighlighterLoader",
@@ -13667,7 +13667,7 @@
       "labelled",
       "lang",
       "lineNumbers",
-      "onClampToggle",
+      "onClampedChange",
       "onFoldedChange",
       "size",
       "startLine",
@@ -22415,7 +22415,7 @@
         "wrap"
       ],
       "events": [
-        "clamp-toggle",
+        "clamped-change",
         "folded-change"
       ]
     },

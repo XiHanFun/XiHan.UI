@@ -225,17 +225,17 @@ describe('折叠', () => {
   })
 
   it('纯受控：点按钮只发意图，自己不落态', () => {
-    const onClampToggle = vi.fn()
-    const a = api({ code: 'a\nb\nc', clamp: 2, onClampToggle })
+    const onClampedChange = vi.fn()
+    const a = api({ code: 'a\nb\nc', clamp: 2, onClampedChange })
     ;(a.getFoldTriggerProps() as { onClick: () => void }).onClick()
-    expect(onClampToggle).toHaveBeenCalledWith({ clamped: true })
+    expect(onClampedChange).toHaveBeenCalledWith({ clamped: true })
     expect(a.clamped).toBe(false)
   })
 
   it('setClamped 与当前态相同时不发', () => {
-    const onClampToggle = vi.fn()
-    api({ code: 'a\nb\nc', clamp: 2, onClampToggle }).setClamped(false)
-    expect(onClampToggle).not.toHaveBeenCalled()
+    const onClampedChange = vi.fn()
+    api({ code: 'a\nb\nc', clamp: 2, onClampedChange }).setClamped(false)
+    expect(onClampedChange).not.toHaveBeenCalled()
   })
 })
 
@@ -254,8 +254,8 @@ describe('isCodeViewFoldable', () => {
 
 describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () => {
   it('keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路；折叠意图不动', () => {
-    const onClampToggle = vi.fn()
-    const h = makeCodeView({ code: 'a\nb\nc', clamp: 2, onClampToggle })
+    const onClampedChange = vi.fn()
+    const h = makeCodeView({ code: 'a\nb\nc', clamp: 2, onClampedChange })
     const trigger = (): Dict => h.api().getFoldTriggerProps() as Dict
     expect(trigger()['data-pressed']).toBeUndefined()
     fire(trigger(), 'onKeyDown', key(' '))
@@ -276,7 +276,7 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () =
     expect(trigger()['data-pressed']).toBeUndefined()
     fire(trigger(), 'onPointerDown', { pointerType: 'mouse' })
     expect(trigger()['data-pressed']).toBeUndefined()
-    expect(onClampToggle).not.toHaveBeenCalled()
+    expect(onClampedChange).not.toHaveBeenCalled()
     h.stop()
   })
 

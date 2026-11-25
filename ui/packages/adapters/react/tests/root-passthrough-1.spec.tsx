@@ -200,9 +200,9 @@ const cases: Case[] = [
   {
     name: 'code-view',
     render: extra => (
-      <XhCodeViewRoot code="const a = 1" lang="ts" startLine={3} onClampToggle={noop} {...extra} />
+      <XhCodeViewRoot code="const a = 1" lang="ts" startLine={3} onClampedChange={noop} {...extra} />
     ),
-    schemaKeys: ['code', 'lang', 'startLine', 'onClampToggle'],
+    schemaKeys: ['code', 'lang', 'startLine', 'onClampedChange'],
   },
   {
     name: 'collapsible',

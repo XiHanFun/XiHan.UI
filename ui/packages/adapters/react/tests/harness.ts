@@ -15,7 +15,7 @@ const PUBLIC_EVENTS = {
   'retry': 'onRetry',
   'decision': 'onDecision',
   'granted-scopes-change': 'onGrantedScopesChange',
-  'clamp-toggle': 'onClampToggle',
+  'clamped-change': 'onClampedChange',
   'folded-change': 'onFoldedChange',
   'comment-request': 'onCommentRequest',
   'color-error': 'onColorError',

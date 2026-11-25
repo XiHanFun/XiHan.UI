@@ -155,7 +155,7 @@ block-folding 按缩进找出语法块，块头行首给一颗折叠钮；折叠
 | `highlightWhileStreaming` | `boolean` |  | 块尚未闭合时也着色，默认 false。 默认关闭是因为未闭合代码的词法本身不稳定：引号、括号随时会配对， 每到一个 token 整块变一次色，比不着色更差。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<CodeViewTranslations>` |  |  |
-| `onClampToggle` | `(details: CodeViewClampToggleDetails) => void` |  | 折叠态切换的意图回调；clamped 是纯受控的，是否落定由宿主决定。 |
+| `onClampedChange` | `(details: CodeViewClampedChangeDetails) => void` |  | 折叠态切换的意图回调；clamped 是纯受控的，是否落定由宿主决定。 |
 
 ### 事件
 
@@ -163,7 +163,7 @@ block-folding 按缩进找出语法块，块头行首给一颗折叠钮；折叠
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `clamp-toggle` | `CustomEvent` | 折叠态切换的意图；detail 为 `{ clamped: boolean }` |
+| `clamped-change` | `CustomEvent` | 折叠态切换的意图；detail 为 `{ clamped: boolean }` |
 | `folded-change` | `CustomEvent` | 语法块的折叠集合变化；detail 为 `{ folded: number[] }` |
 
 ### 插槽
