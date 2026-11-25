@@ -24,7 +24,7 @@ export const XhKbd = defineComponent({
     register: { type: Boolean, default: undefined },
     target: { type: [String, Function] as PropType<KbdTarget> },
     preventDefault: { type: Boolean, default: undefined },
-    enabled: { type: Boolean, default: undefined },
+    disabled: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<Partial<KbdTranslations>> },
   },
   emits: {
@@ -56,8 +56,8 @@ export const XhKbd = defineComponent({
       get preventDefault() {
         return props.preventDefault
       },
-      get enabled() {
-        return props.enabled
+      get disabled() {
+        return props.disabled
       },
       get translations() {
         return props.translations

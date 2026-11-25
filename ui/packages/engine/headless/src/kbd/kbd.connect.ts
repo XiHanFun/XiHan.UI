@@ -31,7 +31,7 @@ export function connectKbd<T extends PropTypes>(props: KbdProps, normalize: Norm
   const label = translations.hotkey(names)
   if (names.some(name => name.trim() === '') || label.trim() === '')
     throw new TypeError('[xh] Kbd 的逐键名称与整组可读名称不能为空')
-  const enabled = register && (props.enabled ?? true)
+  const enabled = register && !props.disabled
   const preventDefault = props.preventDefault ?? true
   const target = props.target ?? 'document'
   if (target !== 'document' && typeof target !== 'function')

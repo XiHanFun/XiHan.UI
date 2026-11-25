@@ -24,7 +24,7 @@ const ARRAY_CONVERTER = { fromAttribute: (v: string | null) => (v == null ? unde
  * @attr {'default'|'light'} variant - 外观，默认 default
  * @attr {boolean} register - 是否注册快捷键监听，默认 false
  * @attr {boolean} prevent-default - 命中后是否阻止默认动作，默认 true
- * @attr {boolean} enabled - 已注册监听是否生效，默认 true
+ * @attr {boolean} disabled - 暂停已注册的监听，默认 false
  * @fires hotkey - 组合被按下；detail 为 `{ keys: string[], event: KeyboardEvent }`
  * @csspart root - 原生 kbd 表面与整组可读名称
  * @csspart key - 一个可见键名
@@ -38,7 +38,7 @@ export class XhKbdElement extends XhElement {
     register: { converter: BOOLEAN_CONVERTER },
     target: { attribute: false },
     preventDefault: { converter: BOOLEAN_CONVERTER, attribute: 'prevent-default' },
-    enabled: { converter: BOOLEAN_CONVERTER },
+    disabled: { converter: BOOLEAN_CONVERTER },
     translations: { attribute: false },
   }
 
@@ -48,7 +48,7 @@ export class XhKbdElement extends XhElement {
   declare register?: boolean
   declare target?: KbdTarget
   declare preventDefault?: boolean
-  declare enabled?: boolean
+  declare disabled?: boolean
   declare translations?: Partial<KbdTranslations>
 
   #detected: KbdPlatform = 'auto'
@@ -66,7 +66,7 @@ export class XhKbdElement extends XhElement {
       register: this.register,
       target: this.target,
       preventDefault: this.preventDefault,
-      enabled: this.enabled,
+      disabled: this.disabled,
       translations: this.translations,
       onHotkey: this.#notify,
     } satisfies KbdProps), wcNormalize)

@@ -23,12 +23,12 @@ export interface XhKbdProps extends Omit<ComponentPropsWithRef<'kbd'>, 'children
   register?: boolean
   target?: KbdTarget
   preventDefault?: boolean
-  enabled?: boolean
+  disabled?: boolean
   translations?: Partial<KbdTranslations>
   onHotkey?: KbdProps['onHotkey']
 }
 
-export function XhKbd({ keys, platform, variant, register, target, preventDefault, enabled, translations, onHotkey, ...rest }: XhKbdProps): ReactNode {
+export function XhKbd({ keys, platform, variant, register, target, preventDefault, disabled, translations, onHotkey, ...rest }: XhKbdProps): ReactNode {
   const resolvedPlatform = useKbdPlatform(platform)
   const api = connectKbd(withXhConfig('kbd', {
     keys,
@@ -37,7 +37,7 @@ export function XhKbd({ keys, platform, variant, register, target, preventDefaul
     register,
     target,
     preventDefault,
-    enabled,
+    disabled,
     translations,
     onHotkey,
   }) as KbdProps, reactNormalize)

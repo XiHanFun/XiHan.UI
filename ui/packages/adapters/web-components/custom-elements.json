@@ -41407,12 +41407,12 @@
             },
             {
               "kind": "field",
-              "name": "enabled",
+              "name": "disabled",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "enabled"
+              "attribute": "disabled"
             },
             {
               "kind": "field",
@@ -41534,9 +41534,9 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "已注册监听是否生效，默认 true",
-              "name": "enabled",
-              "fieldName": "enabled"
+              "description": "暂停已注册的监听，默认 false",
+              "name": "disabled",
+              "fieldName": "disabled"
             }
           ],
           "superclass": {

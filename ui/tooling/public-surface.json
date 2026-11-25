@@ -14571,7 +14571,7 @@
       "wrap"
     ],
     "kbd": [
-      "enabled",
+      "disabled",
       "keys",
       "onHotkey",
       "platform",
@@ -23388,7 +23388,7 @@
     },
     "xh-kbd": {
       "attributes": [
-        "enabled",
+        "disabled",
         "keys",
         "platform",
         "prevent-default",

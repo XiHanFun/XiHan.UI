@@ -88,14 +88,14 @@ describe('kbd 快捷键注册', () => {
     expect(event.defaultPrevented).toBe(true)
   })
 
-  it('preventDefault 与 enabled 分别控制默认动作和整条监听', () => {
+  it('preventDefault 与 disabled 分别控制默认动作和整条监听', () => {
     const allowed = registered({ keys: ['Mod', 'S'], platform: 'other', preventDefault: false })
     const event = press('s', { ctrlKey: true })
     allowed.current.handleKeyDown(event)
     expect(allowed.hits).toHaveLength(1)
     expect(event.defaultPrevented).toBe(false)
 
-    const disabled = registered({ keys: ['Mod', 'S'], platform: 'other', enabled: false })
+    const disabled = registered({ keys: ['Mod', 'S'], platform: 'other', disabled: true })
     disabled.current.handleKeyDown(press('s', { ctrlKey: true }))
     expect(disabled.hits).toHaveLength(0)
     expect(disabled.current.getRootProps()).toMatchObject({ 'data-disabled': '' })

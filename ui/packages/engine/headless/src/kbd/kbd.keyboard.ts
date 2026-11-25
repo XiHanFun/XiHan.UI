@@ -14,7 +14,7 @@ export const kbdKeyboard: KeyboardTable = {
     {
       id: 'kbd.keydown.trigger',
       keys: ['keys 指定的组合'],
-      when: 'register 开启、enabled 未关，且不在输入法组合期',
+      when: 'register 开启、没有 disabled，且不在输入法组合期',
       does: '触发 onHotkey；preventDefault 开启（默认）时同时拦下浏览器默认动作',
     },
     {

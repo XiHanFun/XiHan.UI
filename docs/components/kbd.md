@@ -60,7 +60,7 @@ default 使用中性底，light 保持透明
 - 单键和组合键都只渲染一个原生 `kbd` 表面。
 - 组合键名之间保留 4px 间隙，不显示加号。
 - 平台键名由 Headless 统一格式化。
-- 默认不监听；`register` 开启后支持全局或局部 `target`、动态 `enabled` 与 `preventDefault`。
+- 默认不监听；`register` 开启后支持全局或局部 `target`、动态 `disabled` 与 `preventDefault`。
 - 命中时修饰键逐个全等比。字母与数字比按出来的字（Mac 上 ⌥ 改写了字时回退到物理键位）；符号键没写 Shift 时只比按出来的字，Shift 按没按下都算，美式键盘上的 `+` 不必写成 `Shift` 加 `=`；符号键写了 Shift 时按美式键盘上的物理键位比，`["Mod", "Shift", "]"]` 按出来是 `}` 也命中。
 - 固定使用 24px 高度；`default` 使用中性底，`light` 保持透明。
 
@@ -95,7 +95,7 @@ default 使用中性底，light 保持透明
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `enabled` | `boolean` |  | 已注册的监听是否生效，默认 true。 |
+| `disabled` | `boolean` |  | 暂停已注册的监听，默认 false；开着时键帽照常显示。 |
 | `keys` | `string[]` | 是 | 单键或组合键，例如 ['Escape']、['Mod', 'K']。 |
 | `onHotkey` | `(details: KbdTriggerDetails) => void` |  | 已注册组合被按下时触发。 |
 | `platform` | `KbdPlatform` |  | 平台键名；auto 在适配器探测前按非 Mac 输出。 |
@@ -122,7 +122,7 @@ default 使用中性底，light 保持透明
 | `segments` | `readonly HotkeySegment[]` |  |
 | `platform` | `KbdResolvedPlatform` |  |
 | `register` | `boolean` |  |
-| `enabled` | `boolean` |  |
+| `enabled` | `boolean` | 监听此刻是否生效：开了 register 且没写 disabled。 |
 | `target` | `KbdTarget` |  |
 | `resolveTarget` | `(documentTarget: EventTarget \| null) => EventTarget \| null` |  |
 | `matches` | `(event: KeyboardEvent) => boolean` |  |
@@ -138,7 +138,7 @@ default 使用中性底，light 保持透明
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
-| `keys 指定的组合` | register 开启、enabled 未关，且不在输入法组合期 | 触发 onHotkey；preventDefault 开启（默认）时同时拦下浏览器默认动作 |
+| `keys 指定的组合` | register 开启、没有 disabled，且不在输入法组合期 | 触发 onHotkey；preventDefault 开启（默认）时同时拦下浏览器默认动作 |
 | `keys 指定的组合` | 组合里没有 Ctrl / Meta / Alt，且按键落在输入区里 | 不触发也不拦截，输入优先 |
 
 ### ARIA

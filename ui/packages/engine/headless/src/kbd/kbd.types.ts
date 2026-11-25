@@ -29,8 +29,8 @@ export interface KbdProps {
   target?: KbdTarget
   /** 命中时是否阻止浏览器默认动作，默认 true。 */
   preventDefault?: boolean
-  /** 已注册的监听是否生效，默认 true。 */
-  enabled?: boolean
+  /** 暂停已注册的监听，默认 false；开着时键帽照常显示。 */
+  disabled?: boolean
   /** 逐键名称和整组读屏文案。 */
   translations?: Partial<KbdTranslations>
   /** 已注册组合被按下时触发。 */
@@ -45,6 +45,7 @@ export interface KbdApi<T extends PropTypes = PropTypes> {
   segments: readonly HotkeySegment[]
   platform: KbdResolvedPlatform
   register: boolean
+  /** 监听此刻是否生效：开了 register 且没写 disabled。 */
   enabled: boolean
   target: KbdTarget
   resolveTarget: (documentTarget: EventTarget | null) => EventTarget | null
