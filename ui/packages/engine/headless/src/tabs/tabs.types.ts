@@ -12,7 +12,7 @@ import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
 import type { LiquidIndicator } from '../shared/indicator'
 
 /** 视觉变体。line 是默认档，segment 用于需要浮起选中面的主导航。 */
-export type TabsVariant = 'line' | 'card' | 'segment'
+export type TabsVariant = 'line' | 'card' | 'segmented'
 
 export interface TabsValueChangeDetails {
   value: string | null

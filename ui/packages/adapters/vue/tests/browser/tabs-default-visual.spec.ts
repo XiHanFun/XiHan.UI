@@ -31,7 +31,7 @@ function resolveColor(token: string, scope: HTMLElement): string {
   return value
 }
 
-function mount(variant?: 'card' | 'line' | 'segment'): { list: HTMLElement, active: HTMLElement, inactive: HTMLElement, indicator: HTMLElement } {
+function mount(variant?: 'card' | 'line' | 'segmented'): { list: HTMLElement, active: HTMLElement, inactive: HTMLElement, indicator: HTMLElement } {
   host = document.createElement('div')
   // line 档（含不写变体）的页签由连接层投影 Collection Item 的 nav 语境，选中项另投 data-current；
   // card / segment 不归族，只带 activation 族的 data-state
@@ -116,7 +116,7 @@ describe('tabs 默认视觉', () => {
   })
 
   it('segment 使用浅色标签带承载浮起的选中面：放了 indicator 部件时面长在部件上跟着滑，选中标签自己透空', () => {
-    const segment = mount('segment')
+    const segment = mount('segmented')
     raise()
     const segmentPaint = {
       listBackground: paint(segment.list, 'background-color'),
@@ -191,7 +191,7 @@ describe('tabs 默认视觉', () => {
   })
 
   it('segment 的白色抬起面三件：surface-raised 底 + border-default 描边 + raised 影，放了部件长在部件上、没放长在选中标签上；标签带带透明占位边', () => {
-    const segment = mount('segment')
+    const segment = mount('segmented')
     raise()
     const slider = getComputedStyle(segment.indicator)
     expect(slider.backgroundColor).toBe(resolveColor('--xh-bg-surface-raised', segment.list))
@@ -236,7 +236,7 @@ describe('tabs 默认视觉', () => {
     expect(getComputedStyle(card.inactive).scale).toBe('none')
     host!.remove()
 
-    const segment = mount('segment')
+    const segment = mount('segmented')
     freezeMotion()
     await userEvent.hover(segment.inactive)
     expect(getComputedStyle(segment.inactive).backgroundColor).toBe(resolveColor('--xh-bg-subtle-hover', segment.list))

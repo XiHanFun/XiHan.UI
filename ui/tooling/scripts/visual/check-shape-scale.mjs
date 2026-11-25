@@ -180,7 +180,7 @@ const IDENTITY = {
   'tabs:indicator': 'pill',
   // segment 档的部件是嵌在轨道里的整块抬起面（与 RadioGroup segmented 滑块同身份的盒），不是一维对象；
   // 轨道 surface 圆角内衬 2px，取 inset（§6.3 嵌套圆角）
-  'tabs:indicator[data-variant=\'segment\']': 'inset',
+  'tabs:indicator[data-variant=\'segmented\']': 'inset',
   // line 档没放 indicator 部件时选中标签自画的静态线：与部件同规格的一维对象
   'tabs:trigger::after': 'pill',
   'anchor:indicator': 'pill',

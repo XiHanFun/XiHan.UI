@@ -161,7 +161,7 @@ describe('切换后静态线跟着当前页走', () => {
 })
 
 describe('card / segment 档不画静态线', () => {
-  it.each(['card', 'segment'] as const)('%s 档的选中标签 ::after 为空', async (variant) => {
+  it.each(['card', 'segmented'] as const)('%s 档的选中标签 ::after 为空', async (variant) => {
     host = document.createElement('div')
     document.body.append(host)
     app = createApp({

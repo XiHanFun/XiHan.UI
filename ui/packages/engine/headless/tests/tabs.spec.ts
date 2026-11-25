@@ -116,7 +116,7 @@ describe('标签页 · 选中值', () => {
 describe('标签页 · 视觉轴', () => {
   it('variant 不写时 root 落 line，写了如实投影', () => {
     expect((makeTabs().api().getRootProps() as Dict)['data-variant']).toBe('line')
-    expect((makeTabs({ variant: 'segment' }).api().getRootProps() as Dict)['data-variant']).toBe('segment')
+    expect((makeTabs({ variant: 'segmented' }).api().getRootProps() as Dict)['data-variant']).toBe('segmented')
   })
 })
 
@@ -289,7 +289,7 @@ describe('标签页 · Collection Item 导航当前', () => {
     expect((api.getTriggerProps({ value: 'overview' }) as Dict)['data-xh-collection-size']).toBe('md')
   })
 
-  it.each(['card', 'segment'] as const)('%s 档不归族：三个家族角色都不投影，data-current 照发', (variant) => {
+  it.each(['card', 'segmented'] as const)('%s 档不归族：三个家族角色都不投影，data-current 照发', (variant) => {
     const api = makeTabs({ defaultValue: 'overview', variant }).api()
     const selected = api.getTriggerProps({ value: 'overview' }) as Dict
     expect(selected['data-xh-collection-item']).toBeUndefined()

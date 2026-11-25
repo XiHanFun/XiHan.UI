@@ -10,7 +10,7 @@ import {
 </script>
 
 <template>
-  <XhTabsRoot default-value="overview" variant="segment" style="inline-size: 360px; max-inline-size: 100%">
+  <XhTabsRoot default-value="overview" variant="segmented" style="inline-size: 360px; max-inline-size: 100%">
     <XhTabsList aria-label="数据视图">
       <XhTabsTrigger value="overview">概览</XhTabsTrigger>
       <XhTabsTrigger value="analytics">分析</XhTabsTrigger>

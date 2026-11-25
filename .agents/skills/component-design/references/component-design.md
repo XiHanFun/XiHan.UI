@@ -132,11 +132,11 @@ Vue、React、Web Components 只负责：
 
 | 部件 | 家族 | 备注 |
 | --- | --- | --- |
-| Tabs segment 的轨道 | Surface（淡底面） | 形状 surface；见 §6.3 |
+| Tabs segmented 的轨道 | Surface（淡底面） | 形状 surface；见 §6.3 |
 | RadioGroup segmented 形态的轨道 | 字段外壳同款的静息面 | 轨道就是 root：`--xh-bg-field` + 1px `--xh-border-control` + control 形状 + `--xh-space-0_5` 内衬（加描边段离外沿 3px）；见 §6.3 |
-| Tabs segment 的滑块 indicator | raised 部件 | 白色抬起面 + border-default；见 §7.3 |
+| Tabs segmented 的滑块 indicator | raised 部件 | 白色抬起面 + border-default；见 §7.3 |
 | RadioGroup segmented 形态的滑块 thumb | 选中面 | 平面的实心主色 `--xh-bg-segment-selected`（与 `--xh-bg-brand` 同值，字反白），无边无影；见 §7.3。滑块另立 `thumb` 部件，不占行首单选圆圈的 `indicator` |
-| RadioGroup segmented 形态的段 | 行级（只换面） | 不投影 Action Control 配方（与 Tabs segment 同）：面与字写在段上，轨道底与字段外壳同为白底，按白底承载阶梯 100 → 200，段与滑块取 inset 形状（§6.3 嵌套圆角）；选中段由滑块标出、字取 `--xh-fg-segment-selected` + medium、不叠按下面；段间 1px `--xh-border-default` 分隔线（长为段高一半减 2px），与选中段、悬停段相邻的收起；分隔线画在后一段的起始缘上，折行后下一行首段的起始缘同样会画出一道——样式层拿不到段落在第几行，这一道不收，轨道应尽量一行排下（段数与文字长度受控，排不下改竖排或 Select）；不画行首圆圈，组标题视觉隐藏只作可及名 |
+| RadioGroup segmented 形态的段 | 行级（只换面） | 不投影 Action Control 配方（与 Tabs segmented 同）：面与字写在段上，轨道底与字段外壳同为白底，按白底承载阶梯 100 → 200，段与滑块取 inset 形状（§6.3 嵌套圆角）；选中段由滑块标出、字取 `--xh-fg-segment-selected` + medium、不叠按下面；段间 1px `--xh-border-default` 分隔线（长为段高一半减 2px），与选中段、悬停段相邻的收起；分隔线画在后一段的起始缘上，折行后下一行首段的起始缘同样会画出一道——样式层拿不到段落在第几行，这一道不收，轨道应尽量一行排下（段数与文字长度受控，排不下改竖排或 Select）；不画行首圆圈，组标题视觉隐藏只作可及名 |
 | Toggle、ToggleGroup item、Toolbar `aria-pressed` 项 | Action Control（无滑块开关） | 按下 / 选中 = 实心品牌 + 反白，与格状当前同一组令牌；见 §7.3 |
 | Toolbar 「更多」钮（overflow-trigger） | Action Control `icon` profile、ghost、与条目同档 | 不写内容时画横排三点；菜单开着时与悬停同档的中性面；见 §6.6 |
 | Tabs 「更多」钮（overflow-trigger） | Action Control `icon` profile、ghost、与两端翻页钮同档 | root 的孩子、排在 list 之后（不进 tablist），自占一个 Tab 位、不是方向键走位的一站；盒取标签同高的正方形（竖排横贯列宽），不写内容时画横排三点；菜单开着时与悬停同档的中性面；见 §6.6 |
@@ -196,7 +196,7 @@ Vue、React、Web Components 只负责：
 缺省形态的两类刻意例外：
 
 - 缺省 `ghost`：Accordion、Descriptions、List、PageHeader、Toolbar、Tree。它们是排版骨架，通常嵌在 Card、Panel 或页面分区里，自带一圈描边会与宿主面叠成两道边；需要独立成面时由作者显式写 `outline` / `subtle`。Headless 仍须显式给出 `ghost` 缺省，不允许「不传」成为第四种形态。
-- 结构形态轴：Tabs 的 `line | card | segment`（缺省 `line`）、RadioGroup / CheckboxGroup 的 `list | card`（缺省 `list`：一列「标记 + 文案」的行；`card`：一组可点的选择卡片，见 §4.1），RadioGroup 另有 `segmented`（一条字段外壳同款的轨道里首尾相接的段，选中段由滑动的 `thumb` 标出；缺省横排，`block` 撑满行宽；原 Segmented 组件并入于此，见 §4.1、§7.3）、Steps 的 `number | dot`（缺省 `number`：盛内容的序号圆点；`dot`：不盛内容的小圆点，步数多或横向空间紧时用）。它们换的是条目的结构，不是有框 / 无框，不走 ControlVariant。
+- 结构形态轴：Tabs 的 `line | card | segmented`（缺省 `line`）、RadioGroup / CheckboxGroup 的 `list | card`（缺省 `list`：一列「标记 + 文案」的行；`card`：一组可点的选择卡片，见 §4.1），RadioGroup 另有 `segmented`（一条字段外壳同款的轨道里首尾相接的段，选中段由滑动的 `thumb` 标出；缺省横排，`block` 撑满行宽；原 Segmented 组件并入于此，见 §4.1、§7.3）、Steps 的 `number | dot`（缺省 `number`：盛内容的序号圆点；`dot`：不盛内容的小圆点，步数多或横向空间紧时用）。它们换的是条目的结构，不是有框 / 无框，不走 ControlVariant。
 - 不设 `variant` 轴：Alert（语义由 `tone` 承担，面固定为语气淡底面：语气淡边 `--xh-_tone-border`（语气 40% 混承载面）+ 语气 12% 淡底，标题与正文取正文色，彩色只落在边、底与图标上）、CodeView / DiffView / Log（代码类面固定为描边面，行号槽与高亮依赖这层底）、Collapsible（只有触发条与内容，没有自己的壳）、Citation（随文引用，形态固定）。新增此类组件同样登记在这里，不用私有轴补形态。
 - 预设轴 `preset`：只给 Notification（`card | toast`，缺省 `card`）。它打包一组缺省值：落位、上限、间距、停留、页面转入后台时是否暂停与是否叠摞仍可逐项覆盖，卡片排版与关闭钮档位随预设走（卡片是标题加正文的两列网格、叉 sm 钉在右上角；轻提示是一行、叉 xs 排在行尾）。它不是视觉轴，不表达语气或状态，缺省值由 Headless 定。新增此类组件同样登记在这里。
 - 放置 `banner`：只给 Alert（布尔，缺省 false）。它说的是提示贴在哪儿（贴着页面或容器顶边铺满整行的通栏，还是内容里的一块面），不是面的形态，也不打包缺省值：面、语气、实时区语义与关闭都不变，只把贴边的几条边与圆角交还给页面（§6.3、§8.3）。不走 `variant`：Alert 不设 variant 轴，通栏也不是描边 / 淡底 / 无壳之外的第四种面；不做成 `preset`：它不改任何行为缺省值。新增此类组件同样登记在这里。
@@ -214,7 +214,7 @@ canvas → solid（描边面）/ subtle（淡底面）→ raised → floating / 
 - 页面背景使用 canvas；页面级的底（布局内容区）取 `--xh-bg-page`（亮色 neutral 100 的冷灰），白卡放在灰底上，层级差交给描边与底色差，subtle 阶梯不动。
 - 静态内容面缺省使用 solid：`--xh-border-default` 描边 + `--xh-bg-surface` + 无影（§8.3）。
 - 淡底面使用 subtle：`--xh-bg-subtle` + 透明边位 + 无影；淡底与描边互斥、淡底与阴影互斥。
-- raised 只给 Card 与「可抬起 / 可拖起」的部件（Tabs segment 滑块、Switch thumb、Button soft），逐部件登记；raised 面必须带 `--xh-border-default` 描边，影只是加成——`--xh-elevation-raised` 缺省取阴影三档的 sm（见下）；亮色 raised 背景不分档。
+- raised 只给 Card 与「可抬起 / 可拖起」的部件（Tabs segmented 滑块、Switch thumb、Button soft），逐部件登记；raised 面必须带 `--xh-border-default` 描边，影只是加成——`--xh-elevation-raised` 缺省取阴影三档的 sm（见下）；亮色 raised 背景不分档。
 - 锚定瞬态浮层按内容判定：短列表 / 菜单 / tooltip 用 frosted（名字沿用，取值是实体弹出层，§8.1）；含网格或多列的锚定面板用 floating（§8.4）。
 - Dialog、Drawer、Command、Notification、Tour 等模态与强反馈面统一 sheet（`--xh-material-elevated-*`）。
 - 阴影只有三档，按面的类型取，组件不自选：raised 取 sm（`--xh-shadow-sm`，Card 与可抬起部件），floating 与 frosted 取 md（`--xh-shadow-md`，锚定浮层），sheet 取 lg（`--xh-shadow-lg`，模态与强反馈面）。暗色另有一套同样三档的深色投影。
@@ -310,9 +310,9 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 | 角色 | 圆角 | 给谁 |
 | --- | ---: | --- |
-| inset | 4px（xs） | 嵌在 control、surface、overlay 内的小块：checkbox 系方框、集合行（浮层里的选项与菜单项、页内 Listbox / Tree 的行）、嵌在轨道里的段与滑块（Tabs segment 的 trigger 与滑块、RadioGroup segmented 形态的段与滑块）、字段里的已选标签、字段内 field-inset 钮、table 行选择框、select-all 方框、色块 item、骨架屏文本条；数据标记：柱的远端（基线端直角）、矩形树图 / 冰柱格、桑基节点、图例的柱色标（均夹到短边一半） |
+| inset | 4px（xs） | 嵌在 control、surface、overlay 内的小块：checkbox 系方框、集合行（浮层里的选项与菜单项、页内 Listbox / Tree 的行）、嵌在轨道里的段与滑块（Tabs segmented 的 trigger 与滑块、RadioGroup segmented 形态的段与滑块）、字段里的已选标签、字段内 field-inset 钮、table 行选择框、select-all 方框、色块 item、骨架屏文本条；数据标记：柱的远端（基线端直角）、矩形树图 / 冰柱格、桑基节点、图例的柱色标（均夹到短边一半） |
 | control | 8px（md） | 一切在 chrome 内或随文的按钮与字段：Button、Input、Select Trigger、Toggle、分页按钮、close trigger、kbd、tooltip、rating item、tabs / steps trigger；随文方签 Tag 与状态方签 ToolCall status、Approval result、QuestionFlow result；Alert 提示条；RadioGroup segmented 形态的轨道；日期与时间面板的快捷项（24 高的淡底小钮） |
-| surface | 8px（md） | Card、Panel、列表容器、Tabs segment 的轨道、选择卡片（RadioGroup / CheckboxGroup card 档条目） |
+| surface | 8px（md） | Card、Panel、列表容器、Tabs segmented 的轨道、选择卡片（RadioGroup / CheckboxGroup card 档条目） |
 | overlay | 8px（md） | Popover、Menu、Select / Combobox 等候选面板、Tour 气泡（材质是 sheet，但贴着锚点，圆角留在浮层档）、Tooltip 以外的锚定浮层与无锚弹层（Tooltip 通常只有一行字、高度接近控件，取 control）。令牌层引用 surface：使用者只改承载面圆角时浮层跟着走，面与浮层不各圆各的 |
 | sheet | 10px（lg） | 模态与强反馈面：Dialog、Command（带遮罩、宽度与 Dialog 同一组令牌）、Notification 卡片预设、Drawer 朝向页面的两个角（贴边的两个角不取圆角；Notification 轻提示预设是一行短消息，取 control）。比浮层再圆一档，读得出「这是一张独立的面」 |
 | circle | 50% | 宽高相等的圆形对象：avatar、加了底框的 icon、radio / question-flow 单选指示器及内点、switch / slider / color thumb、steps / timeline indicator、spinner 与全部加载环、色块选中徽标、skeleton circle、Citation 来源列表的序号；以及悬浮于内容之上的单图标动作（FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer 翻页与关闭，走 Action Control `floating` profile）；字段里的清空钮（§8.3）；图表的数据点与端点、关系图节点；日历日视图的 24px 日期格、日期面板的翻页钮与「今天」圆点（月 / 季 / 年格不是一维对象，仍取 control） |
@@ -584,7 +584,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | Layout | 页头高 `--xh-app-header-h`（3.75rem）；侧栏 13.75rem，收起 4rem；侧栏限高 100vh；头与侧栏同是白底，缺省各画一条 `--xh-border-subtle` 内部分隔 |
 | SideNav | 宽 13.75rem，收起 4rem；行高 `nav.row-h` 随 size |
 | Tabs line | trigger 高取导航行高 `nav.row-h` 随 size（32 / 40 / 44，紧凑 28 / 36 / 40）；标签之间不留缝，横内衬 12 / 16 / 20，相邻两段文字隔两倍内衬 |
-| Tabs card / segment、NavigationMenu | trigger 高 `control-h` 随 size |
+| Tabs card / segmented、NavigationMenu | trigger 高 `control-h` 随 size |
 | Breadcrumb、Anchor | 链接上限 12rem，超出截断 |
 | Splitter、Resizable | Splitter 拖拽条 4px；Resizable 边柄 8px、角柄 16px |
 
@@ -629,7 +629,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 页内持久集合的选中 | Table row、Transfer、GridList、SideNav 当前项、选择卡片（RadioGroup / CheckboxGroup card 档条目） | `--xh-bg-brand-subtle` 行面 + `--xh-fg-on-brand-subtle`；Table row / Transfer / GridList 另有行首勾选框（勾由勾选标记配方画），方框是非颜色通道，行面是扫读通道，两者都留；选择卡片行首照常是圆圈 / 方框，描边不换、写了 `data-tone` 时面换语气淡底。配方 `markers.page.glyph` 为 trailing：page 语境若再接对号部件，对号同样落在行尾。SideNav 当前项是行面与字色，另把字重提到 `--xh-font-weight-semibold`、行取 surface 圆角，不画起始侧指示条（配方 `markers.page.current: none`） | selected + hover = 20%、selected + pressed = 28% | Highlight / HighlightText |
 | 导航当前页 | Tabs line、Anchor、NavigationMenu、Breadcrumb | `nav` 语境：透明面 + 2px 指示条 + 字色 `--xh-fg-brand` + `--xh-font-weight-medium`；指示条由组件自己的滑动 indicator 部件承担（Tabs / Anchor / NavigationMenu，机器量几何、皮肤画在 list 上）；list 里没放该部件时，当前项在自己的 `::after` 上自画一条同规格的静态线（厚度 / 颜色 / 圆角读各自 `--xh-<c>-indicator-*` 同一组槽，不做动画，rtl 随逻辑属性镜像，放了部件即收起）：Tabs 横向贴底、纵向贴行向末端（与部件同侧）；Anchor 竖排贴行向起始缘、横排贴底边（链接为省略号收着 overflow，线画在链接盒内、主轴两端各退 `--xh-space-1` 避开圆角，部件则骑在 list 的轨道上）；NavigationMenu 的 `indicator` 部件表达的是「哪张面板开着」而非当前页，指向当前页面的链接始终自画静态线、不随部件收起（横排 list 里的直达链接贴底边，竖排的直达链接与面板里的链接贴行向起始缘，两端同样退 `--xh-space-1`）；Breadcrumb 当前页为不可点位置，投影 `data-xh-collection-terminal`：`--xh-fg-default` + medium、cursor default、无 hover / pressed | current + hover = 100、current + pressed = 200（terminal 不叠加） | ButtonText |
 | 格状当前 | Steps indicator、Calendar 选中格 | 实心 `--xh-bg-brand` + `--xh-fg-on-brand`，不加粗 | pressed = `--xh-bg-brand-active` | Highlight / HighlightText |
-| 开关型（有滑块） | Tabs segment | 轨道 `--xh-bg-subtle`（surface 形状）内的白色抬起滑块（`indicator` 部件）：`--xh-bg-surface-raised` + `--xh-border-default` 描边 + `--xh-elevation-raised`，字 `--xh-fg-default` | — | ButtonText 边 |
+| 开关型（有滑块） | Tabs segmented | 轨道 `--xh-bg-subtle`（surface 形状）内的白色抬起滑块（`indicator` 部件）：`--xh-bg-surface-raised` + `--xh-border-default` 描边 + `--xh-elevation-raised`，字 `--xh-fg-default` | — | ButtonText 边 |
 | 分段选中 | RadioGroup segmented 形态 | 字段外壳同款轨道（`--xh-bg-field` + `--xh-border-control`，control 形状）内的实心主色滑块（`thumb` 部件；作者不放滑块时选中段只靠反白字 + medium 标出）：`--xh-bg-segment-selected`（与 `--xh-bg-brand` 同值，实心按钮同一块面），无边无影；字 `--xh-fg-segment-selected`（与 `--xh-fg-on-brand` 同值）+ medium | 选中 + hover = `--xh-bg-segment-selected-hover`（与 `--xh-bg-brand-hover` 同值）；禁用选中 = `-disabled`（主色往承载面兑一半）+ `--xh-fg-segment-selected-disabled`（仍是反白）；不叠按下面；键盘焦点落在选中段上时环内侧衬底色间隔线。写了语气：滑块取语气的实心面、字取面上前景，悬停走语气层的明暗一档，禁用选中把面兑淡一半、字照旧 | ButtonText 边 |
 | 分页当前页 | Pagination item | 品牌描边（`--xh-bg-brand`）+ `--xh-bg-brand-subtle` + `--xh-fg-on-brand-subtle`，不加粗（字重一变页码就变宽） | hover 20% → pressed 28%，边不变 | Highlight / HighlightText |
 | 开关型（无滑块） | Toggle、ToggleGroup item、Toolbar `aria-pressed` 项 | 实心 `--xh-bg-brand` + `--xh-fg-on-brand`（与格状当前同一组令牌；形态只决定未按下 / 未选中的壳，ToggleGroup 的 `subtle` 变体才退回品牌淡底；Toolbar 没有语气轴，恒取品牌） | hover `--xh-bg-brand-hover` → pressed `--xh-bg-brand-active`；键盘焦点环内侧衬底色间隔线 | Highlight / HighlightText |
@@ -825,7 +825,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 | 材质 | 用途 | 强制表达 |
 | --- | --- | --- |
 | solid | 静态内容面缺省（Surface 家族根面、outline 档容器、Collection 容器面） | `--xh-material-solid-border`（= border-default）描边 + `--xh-material-solid-bg`（= surface）+ `box-shadow: none`；内部分隔用 `--xh-material-solid-separator`（= border-subtle） |
-| subtle | 淡底面（Tabs segment 轨道、Kbd、`subtle` 档容器、Card subtle） | `--xh-bg-subtle` + `--xh-stroke-thin solid transparent` 占位边 + 无影 |
+| subtle | 淡底面（Tabs segmented 轨道、Kbd、`subtle` 档容器、Card subtle） | `--xh-bg-subtle` + `--xh-stroke-thin solid transparent` 占位边 + 无影 |
 | soft | 次级操作（Button soft、Tag 等已登记消费者） | 柔和淡底，不加无意义阴影；不用于字段与内容面 |
 | raised | Card 与可抬起 / 可拖起部件，逐部件登记 | solid 描边 + solid 底 + `--xh-elevation-raised`；描边必须在，影只是加成；只有可交互时允许 hover 抬升 |
 | floating | 含网格或多列的锚定面板（NavigationMenu content、Date / Time / DateRange / TimeRange picker content、Cascader content） | solid 底 + `--xh-border-default` + `--xh-elevation-floating`，不透景；面内分隔取 `--xh-material-solid-separator` |

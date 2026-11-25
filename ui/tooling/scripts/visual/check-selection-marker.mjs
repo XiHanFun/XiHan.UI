@@ -9,7 +9,7 @@
 // 导航当前页（Tabs line / Anchor / NavigationMenu）= 指示条 + --xh-fg-brand + medium，
 //   Breadcrumb 当前页是不可点位置，保留 --xh-fg-default + medium；两者都是 Collection Item 的 nav 语境；
 // 格状当前（Pagination item / Steps indicator / Calendar 选中格）= 实心 --xh-bg-brand + --xh-fg-on-brand，不加粗；
-// 有滑块开关（Tabs segment 的 indicator）= --xh-bg-surface-raised + --xh-border-default + --xh-elevation-raised；
+// 有滑块开关（Tabs segmented 的 indicator）= --xh-bg-surface-raised + --xh-border-default + --xh-elevation-raised；
 //   RadioGroup segmented 的 thumb 另算分段选中：--xh-bg-segment-selected（实心主色），无影；
 // 无滑块开关（Toggle / ToggleGroup item / Toolbar aria-pressed 项）= 实心 --xh-bg-brand + --xh-fg-on-brand，与格状当前同一组令牌；
 // 展开路径 / 打开中不是选中：与所在家族 hover 同档的中性面，不用品牌色、不加粗。
@@ -66,13 +66,13 @@ const SEMANTIC = {
   'grid-list:row': [{ kind: 'page', state: '[data-state=\'checked\']' }],
   'side-nav:link': [{ kind: 'page', state: '[data-current]' }],
   // 导航当前页：指示条 + 品牌深字 + medium；Breadcrumb 当前页不可点，保留默认字色。
-  // tabs 的 segment 档是有滑块开关：没放 indicator 部件时白色抬起面长在选中标签自己身上，放了则搬到部件上滑动；
+  // tabs 的 segmented 档是有滑块开关：没放 indicator 部件时白色抬起面长在选中标签自己身上，放了则搬到部件上滑动；
   // 滑块三件（surface-raised 底 + border-default 描边 + raised 影）两处都按 slider 类核 segment 根下的规则
   'tabs:trigger': [
     { kind: 'nav', state: '[data-state=\'active\']' },
-    { kind: 'slider', state: '[data-state=\'active\']', within: '[data-variant=\'segment\']' },
+    { kind: 'slider', state: '[data-state=\'active\']', within: '[data-variant=\'segmented\']' },
   ],
-  'tabs:indicator': [{ kind: 'slider', state: '[data-variant=\'segment\']' }],
+  'tabs:indicator': [{ kind: 'slider', state: '[data-variant=\'segmented\']' }],
   'anchor:link': [{ kind: 'nav', state: '[data-current]' }],
   'navigation-menu:link': [{ kind: 'nav', state: '[data-current]' }],
   'breadcrumb:link': [{ kind: 'nav-terminal', state: '[data-current]' }],
@@ -82,7 +82,7 @@ const SEMANTIC = {
   'calendar-picker:cell-trigger': [{ kind: 'grid', state: '[data-selected]' }],
   'calendar-range-picker:cell-trigger': [{ kind: 'grid', state: '[data-selected]' }],
   // 分段选中滑块：RadioGroup segmented 形态的 thumb 是选中段的实心主色面（--xh-bg-segment-selected），平面一块无影；
-  // 与 Tabs segment 的白色抬起滑块分开登记
+  // 与 Tabs segmented 的白色抬起滑块分开登记
   'radio-group:thumb': [{ kind: 'segment' }],
   // 无滑块开关：Toggle、ToggleGroup item 与 Toolbar 按下项的按下 / 选中都是实心主色（与格状当前同一组令牌）
   'toggle:root': [{ kind: 'grid', state: '[data-state=\'on\']' }],

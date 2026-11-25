@@ -117,7 +117,7 @@ describe('tabs 的指示条几何', () => {
     { value: 'billing', label: '账单' },
   ]
 
-  async function mountTabs(options: { scale?: number, variant?: 'line' | 'segment', orientation?: 'horizontal' | 'vertical' } = {}): Promise<void> {
+  async function mountTabs(options: { scale?: number, variant?: 'line' | 'segmented', orientation?: 'horizontal' | 'vertical' } = {}): Promise<void> {
     const host = document.createElement('div')
     host.style.inlineSize = '480px'
     if (options.scale)
@@ -154,7 +154,7 @@ describe('tabs 的指示条几何', () => {
 
   it('segment 档：整页 RTL 而没传 dir，滑块与选中标签重合', async () => {
     document.documentElement.dir = 'rtl'
-    await mountTabs({ variant: 'segment' })
+    await mountTabs({ variant: 'segmented' })
     const indicator = tabPart('indicator')
     const trigger = tabPart('trigger', 'members')
     expect(indicator.left).toBeCloseTo(trigger.left, 0)

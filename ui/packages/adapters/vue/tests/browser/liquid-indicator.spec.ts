@@ -103,7 +103,7 @@ describe('液态档的双沿指示器', () => {
     host.setAttribute('data-material', 'liquid')
     document.body.append(host)
     app = createApp({
-      render: () => h(XhTabsRoot, { defaultValue: 'a', variant: 'segment', style: 'inline-size: 480px' }, () => [
+      render: () => h(XhTabsRoot, { defaultValue: 'a', variant: 'segmented', style: 'inline-size: 480px' }, () => [
         h(XhTabsList, { 'aria-label': '视图' }, () => [
           h(XhTabsTrigger, { value: 'a' }, () => '概览'),
           h(XhTabsTrigger, { value: 'b' }, () => '分析'),

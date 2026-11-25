@@ -71,7 +71,7 @@ function gap(list: HTMLElement, orientation: Orientation): number {
   return Number.parseFloat(orientation === 'horizontal' ? style.columnGap : style.rowGap) || 0
 }
 
-describe.each(['line', 'card', 'segment'] as const)('tabs 关闭钮落位（%s）', (variant) => {
+describe.each(['line', 'card', 'segmented'] as const)('tabs 关闭钮落位（%s）', (variant) => {
   it('横排：钮收在标签面的行尾，块向居中、行尾留白与块向留白相等，不压文字', async () => {
     const m = await mount({ variant })
     for (let i = 0; i < VALUES.length; i++) {
@@ -138,7 +138,7 @@ describe('tabs 关闭钮落位（其他方向）', () => {
   })
 
   it('钮压在标签面之上：点到的是钮，发 tab-close 而不切换选中', async () => {
-    const m = await mount({ variant: 'segment' })
+    const m = await mount({ variant: 'segmented' })
     const close = m.closes[1]!.getBoundingClientRect()
     const hit = document.elementFromPoint(close.left + close.width / 2, close.top + close.height / 2)
     expect(hit).toBe(m.closes[1])

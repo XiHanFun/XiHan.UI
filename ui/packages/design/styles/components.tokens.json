@@ -77470,11 +77470,11 @@
         "default",
         "drop",
         "not([data-drop])",
-        "not([data-variant='segment'])",
+        "not([data-variant='segmented'])",
         "orientation=horizontal",
         "orientation=vertical",
         "variant=line",
-        "variant=segment"
+        "variant=segmented"
       ],
       "defaultToken": [
         "--xh-stroke-thick"
@@ -77514,7 +77514,7 @@
       ],
       "state": [
         "default",
-        "variant=segment"
+        "variant=segmented"
       ],
       "defaultToken": [
         "--xh-border-default",
@@ -77737,10 +77737,10 @@
         "background-color"
       ],
       "state": [
-        "is([data-variant='card'], [data-variant='segment'])",
+        "is([data-variant='card'], [data-variant='segmented'])",
         "variant=card",
         "variant=line",
-        "variant=segment",
+        "variant=segmented",
         "xh-collection-context=nav"
       ],
       "defaultToken": [
@@ -77765,12 +77765,12 @@
         "current",
         "disabled",
         "error",
-        "is([data-variant='card'], [data-variant='segment'])",
+        "is([data-variant='card'], [data-variant='segmented'])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "state=active",
         "variant=card",
         "variant=line",
-        "variant=segment",
+        "variant=segmented",
         "xh-collection-context=nav"
       ],
       "defaultToken": [
@@ -77797,13 +77797,13 @@
         "disabled",
         "error",
         "hover",
-        "is([data-variant='card'], [data-variant='segment'])",
+        "is([data-variant='card'], [data-variant='segmented'])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "not([data-disabled])",
         "state=active",
         "variant=card",
         "variant=line",
-        "variant=segment",
+        "variant=segmented",
         "xh-collection-context=nav"
       ],
       "defaultToken": [
@@ -77828,12 +77828,12 @@
         "disabled",
         "error",
         "hover",
-        "is([data-variant='card'], [data-variant='segment'])",
+        "is([data-variant='card'], [data-variant='segmented'])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "not([data-disabled])",
         "variant=card",
         "variant=line",
-        "variant=segment",
+        "variant=segmented",
         "xh-collection-context=nav"
       ],
       "defaultToken": [
@@ -77858,7 +77858,7 @@
         "disabled",
         "error",
         "is(:active, [data-pressed])",
-        "is([data-variant='card'], [data-variant='segment'])",
+        "is([data-variant='card'], [data-variant='segmented'])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "not([data-disabled])",
         "not([data-state='active'])",
@@ -77866,7 +77866,7 @@
         "state=active",
         "variant=card",
         "variant=line",
-        "variant=segment",
+        "variant=segmented",
         "xh-collection-context=nav"
       ],
       "defaultToken": [
@@ -77907,10 +77907,10 @@
         "border-color"
       ],
       "state": [
-        "is([data-variant='card'], [data-variant='segment'])",
+        "is([data-variant='card'], [data-variant='segmented'])",
         "state=active",
         "variant=card",
-        "variant=segment"
+        "variant=segmented"
       ],
       "defaultToken": [
         "--xh-_tabs-trigger-border-active",
@@ -77930,10 +77930,10 @@
         "color"
       ],
       "state": [
-        "is([data-variant='card'], [data-variant='segment'])",
+        "is([data-variant='card'], [data-variant='segmented'])",
         "variant=card",
         "variant=line",
-        "variant=segment",
+        "variant=segmented",
         "xh-collection-context=nav"
       ],
       "defaultToken": [
@@ -77960,13 +77960,13 @@
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "is([data-variant='card'], [data-variant='segment'])",
+        "is([data-variant='card'], [data-variant='segmented'])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "pressed",
         "state=active",
         "variant=card",
         "variant=line",
-        "variant=segment",
+        "variant=segmented",
         "xh-collection-context=nav"
       ],
       "defaultToken": [
@@ -78054,10 +78054,10 @@
         "font-weight"
       ],
       "state": [
-        "is([data-variant='card'], [data-variant='segment'])",
+        "is([data-variant='card'], [data-variant='segmented'])",
         "variant=card",
         "variant=line",
-        "variant=segment",
+        "variant=segmented",
         "xh-collection-context=nav"
       ],
       "defaultToken": [
@@ -78081,12 +78081,12 @@
         "current",
         "disabled",
         "error",
-        "is([data-variant='card'], [data-variant='segment'])",
+        "is([data-variant='card'], [data-variant='segmented'])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
         "state=active",
         "variant=card",
         "variant=line",
-        "variant=segment",
+        "variant=segmented",
         "xh-collection-context=nav"
       ],
       "defaultToken": [
@@ -78175,7 +78175,7 @@
       ],
       "state": [
         "default",
-        "variant=segment"
+        "variant=segmented"
       ],
       "defaultToken": [
         "--xh-_tabs-trigger-radius",
@@ -78196,10 +78196,10 @@
         "box-shadow"
       ],
       "state": [
-        "is([data-variant='card'], [data-variant='segment'])",
+        "is([data-variant='card'], [data-variant='segmented'])",
         "state=active",
         "variant=card",
-        "variant=segment"
+        "variant=segmented"
       ],
       "defaultToken": [
         "--xh-_tabs-trigger-shadow-active",

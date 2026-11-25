@@ -10,7 +10,7 @@ import {
 
 export default function Demo(): ReactNode {
   return (
-    <XhTabsRoot defaultValue="overview" variant="segment" style={{ inlineSize: "360px", maxInlineSize: "100%" }}>
+    <XhTabsRoot defaultValue="overview" variant="segmented" style={{ inlineSize: "360px", maxInlineSize: "100%" }}>
       <XhTabsList aria-label="数据视图">
         <XhTabsTrigger value="overview">概览</XhTabsTrigger>
         <XhTabsTrigger value="analytics">分析</XhTabsTrigger>

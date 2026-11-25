@@ -86,17 +86,17 @@
   }
 
   /* card / segment 的标签是控件：高度与横内衬回到控件尺，三档逐档对齐 */
-  [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segment']) {
+  [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segmented']) {
     --xh-_tabs-trigger-h: var(--xh-control-h-md);
     --xh-_tabs-trigger-px: var(--xh-control-px-md);
   }
 
-  [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segment'])[data-size='sm'] {
+  [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segmented'])[data-size='sm'] {
     --xh-_tabs-trigger-h: var(--xh-control-h-sm);
     --xh-_tabs-trigger-px: var(--xh-control-px-sm);
   }
 
-  [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segment'])[data-size='lg'] {
+  [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segmented'])[data-size='lg'] {
     --xh-_tabs-trigger-h: var(--xh-control-h-lg);
     --xh-_tabs-trigger-px: var(--xh-control-px-lg);
   }
@@ -137,7 +137,7 @@
   /* 分段式（有滑块开关）：淡底轨道承载一块白色抬起的选中面，选中文字保持默认字色。
      未选中标签坐在淡底轨道里，悬停 200 → 按下 300；选中面自己不再叠悬停 / 按下态。
      选中面的三件（surface-raised 底、border-default 描边、raised 影）写在下面标签自己的规则里 */
-  [data-scope='tabs'][data-part='root'][data-variant='segment'] {
+  [data-scope='tabs'][data-part='root'][data-variant='segmented'] {
     --xh-_tabs-list-gap: var(--xh-space-0_5);
     --xh-_tabs-list-bg: var(--xh-bg-subtle);
     /* 轨道内衬 2px：段与滑块嵌在轨道里，取 inset，不大于轨道 surface 圆角减去内衬（§6.3） */
@@ -205,7 +205,7 @@
   /* segment 档的标签带是一块淡底面：--xh-bg-subtle 底 + 一圈透明占位边 + 无影（三选一）。
      它同时是标签的淡底承载面，向内下发 hover 200 → pressed 300 的承载阶梯；
      只写在标签带上不写在 root 上：内容面板里的按钮坐在画布上，不该跟着抬一档 */
-  [data-scope='tabs'][data-part='root'][data-variant='segment'] [data-scope='tabs'][data-part='list'] {
+  [data-scope='tabs'][data-part='root'][data-variant='segmented'] [data-scope='tabs'][data-part='list'] {
     --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
     --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
 
@@ -257,7 +257,7 @@
   }
 
   /* card / segment 档不归族：面、字色、字重、光标与过渡写在标签自己身上 */
-  [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segment'])
+  [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segmented'])
     [data-scope='tabs'][data-part='trigger'] {
     background: var(--xh-tabs-trigger-bg, transparent);
     color: var(--xh-tabs-trigger-fg, var(--xh-fg-muted));
@@ -300,7 +300,7 @@
   }
 
   /* segment 档是一条轨道里的格子（与 RadioGroup 的 segmented 形态同构）：格子按可用宽度等分 */
-  [data-scope='tabs'][data-part='root'][data-orientation='horizontal'][data-variant='segment']
+  [data-scope='tabs'][data-part='root'][data-orientation='horizontal'][data-variant='segmented']
     [data-scope='tabs'][data-part='trigger'] {
     flex: 1 1 0;
   }
@@ -308,14 +308,14 @@
   /* 禁用项带的是 aria-disabled 而非原生 disabled，:hover 照样命中；
      不挡掉的话置灰的那一页悬停仍会换底，看着还能点。
      悬停面按形态分档：card 100、segment 200（见各形态块上的私有槽）；line 档由家族给 */
-  [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segment'])
+  [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segmented'])
     [data-scope='tabs'][data-part='trigger']:not([data-disabled]):hover {
     background: var(--xh-tabs-trigger-bg-hover, var(--xh-_tabs-trigger-bg-hover));
   }
 
   /* 按下去要有回应：card / segment 档的未选中标签换到按下面（card 200、segment 300），几何不动。
      选中标签不叠按下面：card 的卡片面与 segment 的抬起面本身就是选中身份（有滑块开关无叠加态） */
-  [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segment'])
+  [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segmented'])
     [data-scope='tabs'][data-part='trigger']:not([data-disabled]):not([data-state='active']):is(:active, [data-pressed]) {
     background: var(--xh-tabs-trigger-bg-pressed, var(--xh-_tabs-trigger-bg-pressed));
     transition-duration: var(--xh-motion-duration-press);
@@ -324,7 +324,7 @@
 
   /* card / segment 档的选中标签：字色收回默认（--xh-_tabs-accent-text 在两档都落 fg-default），
      由卡片面 / 抬起面表达当前；line 档的当前页由家族按 data-current 给 */
-  [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segment'])
+  [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segmented'])
     [data-scope='tabs'][data-part='trigger'][data-state='active'] {
     border-color: var(--xh-tabs-trigger-border-active, var(--xh-_tabs-trigger-border-active));
     background: var(--xh-tabs-trigger-bg-active, var(--xh-_tabs-trigger-bg-active));
@@ -336,7 +336,7 @@
   /* segment 档的选中标签就是那块白色抬起的滑块面（有滑块开关）：surface-raised 底 +
      border-default 描边 + raised 影三件写在标签自己身上。标签带里放了 indicator 部件时，
      这块面搬到部件上跟着滑（见下面的 indicator 规则），标签自己透空、只留字 */
-  [data-scope='tabs'][data-part='root'][data-variant='segment']
+  [data-scope='tabs'][data-part='root'][data-variant='segmented']
     [data-scope='tabs'][data-part='trigger'][data-state='active'] {
     border-color: var(--xh-tabs-trigger-border-active, var(--xh-_tone-border, var(--xh-border-default)));
     background: var(--xh-tabs-trigger-bg-active, var(--xh-_tone-subtle, var(--xh-bg-surface-raised)));
@@ -345,11 +345,11 @@
 
   /* segment 档的标签压在抬起面之上：面是绝对定位的部件，写在标签之后也不许盖住字。
      层号只在标签带的层叠上下文里比大小（list 上有 isolation: isolate） */
-  [data-scope='tabs'][data-part='root'][data-variant='segment'] [data-scope='tabs'][data-part='trigger'] {
+  [data-scope='tabs'][data-part='root'][data-variant='segmented'] [data-scope='tabs'][data-part='trigger'] {
     z-index: 1;
   }
 
-  [data-scope='tabs'][data-part='root'][data-variant='segment']
+  [data-scope='tabs'][data-part='root'][data-variant='segmented']
     [data-scope='tabs'][data-part='list']:has([data-scope='tabs'][data-part='indicator']:not([hidden]))
     [data-scope='tabs'][data-part='trigger'][data-state='active'] {
     border-color: transparent;
@@ -359,13 +359,13 @@
 
   /* 选中项被悬停：常态 :hover 那条带着禁用守卫，特指度高过上面那条选中档，
      不单列一条的话指针一压到选中项上，形态档的选中底就被轻档吃掉 */
-  [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segment'])
+  [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segmented'])
     [data-scope='tabs'][data-part='trigger']:not([data-disabled])[data-state='active']:hover {
     background: var(--xh-tabs-trigger-bg-active-hover, var(--xh-_tabs-trigger-bg-active-hover));
   }
 
   /* line 档的禁用字色由家族按 aria-disabled 给 */
-  [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segment'])
+  [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segmented'])
     [data-scope='tabs'][data-part='trigger'][data-disabled] {
     color: var(--xh-fg-disabled);
   }
@@ -553,7 +553,7 @@
      surface-raised 底 + border-default 描边 + raised 影三件与 RadioGroup segmented 形态的滑块同一套；
      描边吃进盒里（border-box），面与标签仍是同一块矩形。标签压在它上面，点击一律交给标签。
      用连续档而不是进场那条：滑块是被推过去的，起步就该有速度；四个几何量同时走，标签宽不等时才不会先变形再挪位 */
-  [data-scope='tabs'][data-part='indicator'][data-variant='segment'] {
+  [data-scope='tabs'][data-part='indicator'][data-variant='segmented'] {
     inset-block-end: auto;
     inset-inline-end: auto;
     inset-inline-start: 0;
@@ -573,7 +573,7 @@
       block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
-  [data-scope='tabs'][data-part='indicator'][data-variant='segment']:dir(rtl) {
+  [data-scope='tabs'][data-part='indicator'][data-variant='segmented']:dir(rtl) {
     transform: translate(calc(-1 * var(--xh-_tabs-indicator-x)), var(--xh-_tabs-indicator-y));
   }
 
@@ -617,7 +617,7 @@
   }
 
   /* 竖排 line 档：滑条从基线挪到结束缘那条轨道上，主轴换成块向，取 -y / -h 两支 */
-  [data-scope='tabs'][data-part='indicator'][data-orientation='vertical']:not([data-variant='segment']) {
+  [data-scope='tabs'][data-part='indicator'][data-orientation='vertical']:not([data-variant='segmented']) {
     inset-block-end: auto;
     inset-inline-start: auto;
     inset-inline-end: 0;
@@ -954,7 +954,7 @@
 
     /* 按下：常态靠底色深一档表出，这一档里底色被统一换掉；按住那一下用系统高亮反色画回来。
        line 档的按下反色由家族的 forced-colors 段给 */
-    [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segment'])
+    [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segmented'])
       [data-scope='tabs'][data-part='trigger']:not([data-disabled]):not([data-state='active']):is(:active, [data-pressed]) {
       background: Highlight;
       color: HighlightText;
