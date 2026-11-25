@@ -28,6 +28,7 @@ const ALLOWED = new Map([
   ['progress.css:--xh-progress-size=10rem', '环形进度大档直径，与菜单最小宽同值是巧合'],
   ['progress.css:--xh-progress-size=7.5rem', '环形进度缺省档直径，与级联列最小宽同值是巧合'],
   ['slider.css:--xh-slider-vertical-length=10rem', '纵向滑杆默认长度，与菜单最小宽同值是巧合'],
+  ['splitter.css:--xh-splitter-disabled-opacity=0.6', '压的是宿主正文不是控件图形，地板比禁用档高；与拖动档同值是巧合'],
 ])
 
 /** 只认尺寸类字面量：数字带 px / rem / em / ms / s / %，或无单位数。 */

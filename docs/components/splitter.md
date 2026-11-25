@@ -241,7 +241,7 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-splitter-disabled-opacity` | `root` | `opacity` | `disabled` | `--xh-state-disabled-opacity` | splitter 的 root 部件 opacity 覆盖槽。 |
+| `--xh-splitter-disabled-opacity` | `root` | `opacity` | `disabled` | `0.6` | splitter 的 root 部件 opacity 覆盖槽。 |
 | `--xh-splitter-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | splitter 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-splitter-trigger-bg` | `resize-trigger` | `background` | `default` | `--xh-border-default` | splitter 的 resize-trigger 部件 background 覆盖槽。 |
 | `--xh-splitter-trigger-bg-disabled` | `resize-trigger` | `background` | `disabled` | `--xh-border-subtle` | splitter 的 resize-trigger 部件 background 覆盖槽。 |

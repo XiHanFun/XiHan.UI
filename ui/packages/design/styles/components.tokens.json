@@ -72827,7 +72827,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-state-disabled-opacity"
+        "0.6"
       ],
       "visibility": "public",
       "description": "splitter 的 root 部件 opacity 覆盖槽。"

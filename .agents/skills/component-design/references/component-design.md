@@ -612,7 +612,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 6. 状态色表达任务结果，不表达空间层级。
 7. danger 动作与 error 状态分开定义，不共用业务语义。
 8. hover、active、selected 从当前语义面派生，不切换到无关颜色；open / in-path 与所在家族的 hover 同档。
-9. disabled 不能只降低 opacity，必须同时调整前景或背景并关闭交互；透明度只取状态令牌：拖起的那一项 `--xh-state-dragging-opacity`，整块压暗的禁用（Splitter）与停下来的不定态（Progress 减弱动效档）`--xh-state-disabled-opacity`，组件不写透明度散值；字段 disabled = `--xh-border-default` + `--xh-bg-subtle` + `--xh-fg-disabled`，readOnly 只换 `--xh-bg-subtle` 不动描边。
+9. disabled 不能只降低 opacity，必须同时调整前景或背景并关闭交互；透明度只取状态令牌：拖起的那一项 `--xh-state-dragging-opacity`，停下来的不定态（Progress 减弱动效档）`--xh-state-disabled-opacity`，组件不写透明度散值；登记的例外是 Splitter 禁用时的整块压暗：压的是宿主塞进面板的正文，按禁用档压完黑字白底只剩 3.94:1，地板留在 0.6，经 `--xh-splitter-disabled-opacity` 可调；字段 disabled = `--xh-border-default` + `--xh-bg-subtle` + `--xh-fg-disabled`，readOnly 只换 `--xh-bg-subtle` 不动描边。
 10. 错误、选择、加载和警告不能只靠颜色，必须有图标、形状、文案或结构通道。
 11. 暗色不是简单反相；overlay 必须能从 canvas 和 surface 中辨认。
 12. 所有背景 / 前景组合必须通过对比度门禁；令牌提交附亮 / 暗 × 淡底 / 前景 / 指示条对比度表。语气色画成非文字图形（色条、指示条、进度填充、转圈的弧、面的语气描边）时同样要对承载面 3:1：取按主题兜过底的 `--xh-_tone-soft` / `--xh-_tone-border-control`，不取裸主色 `--xh-_tone`（浅色档的 warning 主色只有 2.70:1）；兑了底色的 `--xh-_tone-border`（40%）只给 Alert 这类语气淡底面的装饰外边。Tag 的描边档与 Icon 的描边框同是「语气淡底 + 语气描边的小盒」，同取控件描边档。

@@ -1,6 +1,6 @@
 // 拖起与禁用的透明度只取状态令牌：拖起 --xh-state-dragging-opacity，禁用与「停下来的不定态」--xh-state-disabled-opacity。
-// 组件不写自己的透明度散值：Sortable 此前拖起取 0.9、Splitter 禁用取 0.6、Progress 不定态的静态替代取 0.5，
-// 同一种状态在不同组件里浓淡不一。
+// 组件不写自己的透明度散值：Sortable 此前拖起取 0.9、Progress 不定态的静态替代取 0.5，同一种状态在不同组件里浓淡不一。
+// 登记的例外是 Splitter 禁用：它压的是宿主塞进面板的正文，按禁用档压完黑字白底只剩 3.94:1，地板留在 0.6。
 import { afterEach, describe, expect, it } from 'vitest'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -29,9 +29,11 @@ describe('拖起与禁用的透明度', () => {
     expect(getComputedStyle(item).opacity).toBe(token('--xh-state-dragging-opacity'))
   })
 
-  it('splitter：禁用的整块取禁用透明度', () => {
+  it('splitter：禁用的整块压暗地板高于禁用档，面板正文仍读得出', () => {
     const root = mount('<div data-scope="splitter" class="xh-scope-splitter" data-part="root" data-disabled></div>', '[data-part="root"]')
-    expect(getComputedStyle(root).opacity).toBe(token('--xh-state-disabled-opacity'))
+    const opacity = Number(getComputedStyle(root).opacity)
+    expect(opacity).toBe(0.6)
+    expect(opacity).toBeGreaterThan(Number(token('--xh-state-disabled-opacity')))
   })
 
   it('progress：减弱动效下不定态停成一条静态条，取禁用透明度', () => {
