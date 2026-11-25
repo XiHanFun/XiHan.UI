@@ -6,7 +6,7 @@
 // 提供 scroll area 相关实现。
 
 import type { Direction, IdGenerator, Orientation, Service, Size } from '@xihan-ui/core'
-import type { ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollbarProps, ScrollAreaScrollDetails, ScrollAreaVariant, ScrollbarSchema, ScrollbarRevealMode } from '@xihan-ui/headless'
+import type { ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollbarProps, ScrollAreaScrollDetails, ScrollAreaVariant, ScrollbarRevealMode, ScrollbarSchema } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectScrollArea, scrollAreaAnatomy, scrollAreaMeta, scrollAreaScrollbarProps, scrollbarAnatomy, scrollbarMachine } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'

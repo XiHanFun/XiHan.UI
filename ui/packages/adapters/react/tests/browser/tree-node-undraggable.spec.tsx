@@ -1,6 +1,6 @@
 // 逐个节点不可拖动：收件箱写了 draggable: false。真实鼠标按住它拖到回收站上，不起拖、不报搬家；
 // 把回收站拖到收件箱那一行的中段，照样放进它里面——它自己拖不动，照样是落点。
-import type { TreeNodeMoveDetails, TreeNode } from '@xihan-ui/headless'
+import type { TreeNode, TreeNodeMoveDetails } from '@xihan-ui/headless'
 import type { Root } from 'react-dom/client'
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'

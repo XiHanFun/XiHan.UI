@@ -71,7 +71,7 @@ describe('rating clearable', () => {
   })
 
   it('clearable=false：再点当前档位不清', async () => {
-    await mountRating({ 'defaultValue': 3, 'clearable': false })
+    await mountRating({ defaultValue: 3, clearable: false })
     star(3).click()
     await tick()
     expect(checkedValue()).toBe('3')

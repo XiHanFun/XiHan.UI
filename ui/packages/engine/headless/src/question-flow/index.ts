@@ -26,10 +26,10 @@ export type {
   QuestionFlowRefs,
   QuestionFlowSchema,
   QuestionFlowSelectionLimits,
+  QuestionFlowSelectMode,
   QuestionFlowSkipDetails,
   QuestionFlowStatus,
   QuestionFlowSubmitDetails,
   QuestionFlowTranslations,
-  QuestionFlowSelectMode,
   QuestionFlowViewport,
 } from './question-flow.types'

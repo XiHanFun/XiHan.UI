@@ -7,7 +7,7 @@
 
 import type { Direction, Orientation, Params, Transition } from '@xihan-ui/core'
 import type { ScrollAxisMetrics } from '../shared/scroll-geometry'
-import type { ScrollbarLayerBox, ScrollbarSchema, ScrollbarRevealMode } from './scrollbar.types'
+import type { ScrollbarLayerBox, ScrollbarRevealMode, ScrollbarSchema } from './scrollbar.types'
 import { DIAGNOSTIC_CODES, reportDiagnostic, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { watchCoarsePointer } from '../shared/coarse-pointer'

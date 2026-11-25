@@ -6,7 +6,7 @@
 // 定义 scroll area 类型契约。
 
 import type { Direction, Orientation, PropTypes, Service, Size } from '@xihan-ui/core'
-import type { ScrollbarSchema, ScrollbarScrollDetails, ScrollbarRevealMode } from '../scrollbar/scrollbar.types'
+import type { ScrollbarRevealMode, ScrollbarSchema, ScrollbarScrollDetails } from '../scrollbar/scrollbar.types'
 
 /** 归本组件管理的轴。被关闭的轴滚动条恒不显示，视口在该方向也不滚动。 */
 export type ScrollAreaOrientation = Orientation | 'both'

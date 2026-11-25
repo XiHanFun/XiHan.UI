@@ -24,8 +24,8 @@ export type {
   ScrollbarLayerBox,
   ScrollbarPoint,
   ScrollbarRefs,
+  ScrollbarRevealMode,
   ScrollbarSchema,
   ScrollbarScrollDetails,
   ScrollbarTranslations,
-  ScrollbarRevealMode,
 } from './scrollbar.types'

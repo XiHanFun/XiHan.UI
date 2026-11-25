@@ -50,7 +50,7 @@ const SUFFIX_RULES = [
   [/-read-only(-|$)/, '只读写 -readonly'],
 ]
 for (const name of expectedNames) {
-  if (/-active(-|$)/.test(name))
+  if (/-active(?:-|$)/.test(name))
     problems.push(`${name} 用了退役的状态后缀 -active：按下写 -pressed，展开路径写 -open，当前项写 -current，选中写 -selected`)
   for (const [re, hint] of SUFFIX_RULES) {
     if (re.test(name))

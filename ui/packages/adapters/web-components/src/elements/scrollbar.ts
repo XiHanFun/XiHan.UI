@@ -6,7 +6,7 @@
 // 提供 scrollbar 相关实现。
 
 import type { Direction, Orientation, Service, Size } from '@xihan-ui/core'
-import type { ScrollbarAnchor, ScrollbarSchema, ScrollbarRevealMode } from '@xihan-ui/headless'
+import type { ScrollbarAnchor, ScrollbarRevealMode, ScrollbarSchema } from '@xihan-ui/headless'
 import { connectScrollbar, scrollbarAnatomy, scrollbarMachine, scrollbarMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'

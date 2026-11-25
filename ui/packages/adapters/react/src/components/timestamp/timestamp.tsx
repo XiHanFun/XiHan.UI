@@ -5,7 +5,7 @@
 
 // 提供 timestamp 相关实现。
 
-import type { TimestampTranslations, TimestampDisplay, TimestampValue } from '@xihan-ui/headless'
+import type { TimestampDisplay, TimestampTranslations, TimestampValue } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { connectTimestamp, timestampMachine } from '@xihan-ui/headless'
 import { withXhConfig } from '../../config/config'

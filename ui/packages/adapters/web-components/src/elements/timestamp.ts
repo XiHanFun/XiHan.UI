@@ -5,7 +5,7 @@
 
 // 提供 timestamp 相关实现。
 
-import type { TimestampSchema, TimestampTranslations, TimestampDisplay, TimestampValue } from '@xihan-ui/headless'
+import type { TimestampDisplay, TimestampSchema, TimestampTranslations, TimestampValue } from '@xihan-ui/headless'
 import { connectTimestamp, timestampAnatomy, timestampMachine, timestampMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

@@ -6,7 +6,7 @@
 // 提供 scrollbar 相关实现。
 
 import type { Direction, Orientation, Size } from '@xihan-ui/core'
-import type { ScrollbarAnchor, ScrollbarApi, ScrollbarSchema, ScrollbarRevealMode } from '@xihan-ui/headless'
+import type { ScrollbarAnchor, ScrollbarApi, ScrollbarRevealMode, ScrollbarSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import type { ScrollbarSource, ScrollbarTarget } from './use-scrollbar'
