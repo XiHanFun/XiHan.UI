@@ -8,7 +8,7 @@ const items = ref(Array.from({ length: 10 }, (_, i) => `第 ${i + 1} 条`));
 const loading = ref(false);
 const done = ref(false);
 
-function onLoad(): void {
+function onLoadMore(): void {
   loading.value = true;
   window.setTimeout(() => {
     const base = items.value.length;
@@ -35,7 +35,7 @@ function onLoad(): void {
       :target="scrollEl"
       :loading="loading"
       :disabled="done"
-      @load="onLoad"
+      @load-more="onLoadMore"
     >
       <div v-for="item in items" :key="item" style="padding: 8px 12px">{{ item }}</div>
 

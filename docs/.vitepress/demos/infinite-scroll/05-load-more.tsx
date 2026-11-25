@@ -15,7 +15,7 @@ export default function Demo(): ReactNode {
   const [loading, setLoading] = useState(false);
 
   // 取下一页；这里用定时器代替真实请求
-  function onLoad(): void {
+  function onLoadMore(): void {
     setLoading(true);
     window.setTimeout(() => {
       setItems(list => [
@@ -37,7 +37,7 @@ export default function Demo(): ReactNode {
         borderRadius: "var(--xh-shape-surface)",
       }}
     >
-      <XhInfiniteScrollRoot target={scrollEl} loading={loading} onLoad={onLoad}>
+      <XhInfiniteScrollRoot target={scrollEl} loading={loading} onLoadMore={onLoadMore}>
         {items.map(item => (
           <div key={item} style={{ padding: "8px 12px" }}>{item}</div>
         ))}

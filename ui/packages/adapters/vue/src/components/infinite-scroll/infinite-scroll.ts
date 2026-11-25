@@ -30,13 +30,13 @@ export const XhInfiniteScrollRoot = defineComponent({
     target: { type: Object as PropType<HTMLElement | null> },
   },
   emits: {
-    load: () => true,
+    'load-more': () => true,
   },
   slots: Object as SlotsType<{
     default?: (props: InfiniteScrollRootSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
-    const notify: InfiniteScrollProps['onLoad'] = () => emit('load')
+    const notify: InfiniteScrollProps['onLoadMore'] = () => emit('load-more')
     // 传响应式 props 对象本身而非快照，供机器每次读时重新展开
     const ctx = useInfiniteScroll(props as InfiniteScrollProps, notify, () => props.target ?? null)
     provideInfiniteScroll(ctx)

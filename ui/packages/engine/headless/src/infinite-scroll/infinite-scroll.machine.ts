@@ -53,9 +53,9 @@ export const infiniteScrollMachine = createMachine({
       effects: ['observeSentinel'],
       on: {
         // 只报意图，不自己切到 loading：取不取、什么时候取完，宿主说了算
-        'SENTINEL.ENTER': { actions: ['invokeOnLoad'] },
+        'SENTINEL.ENTER': { actions: ['invokeOnLoadMore'] },
         // 按钮与哨兵是同一条通路的两个入口，取数中与关掉两段同样不响应
-        'LOAD': { actions: ['invokeOnLoad'] },
+        'LOAD': { actions: ['invokeOnLoadMore'] },
       },
     },
     // 这两段都不挂观察器，哨兵进出可视区一律不响应。
@@ -71,7 +71,7 @@ export const infiniteScrollMachine = createMachine({
     },
     actions: {
       syncMode: ({ send }) => send({ type: 'MODE.SYNC' }),
-      invokeOnLoad: ({ prop }) => prop('onLoad')?.(),
+      invokeOnLoadMore: ({ prop }) => prop('onLoadMore')?.(),
       startPress: ({ context }) => context.set('pressed', true),
       endPress: ({ context }) => context.set('pressed', false),
       releasePress: ({ context }) => context.set('pressed', false),

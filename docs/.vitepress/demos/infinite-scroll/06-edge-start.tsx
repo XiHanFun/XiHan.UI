@@ -17,7 +17,7 @@ export default function Demo(): ReactNode {
   }, [scrollEl]);
 
   // 取更早的一页；这里用定时器代替真实请求。loading 要如实写：组件靠它知道什么时候守住视口
-  const onLoad = (): void => {
+  const onLoadMore = (): void => {
     setLoading(true);
     window.setTimeout(() => {
       const start = oldest.current - 8;
@@ -39,7 +39,7 @@ export default function Demo(): ReactNode {
         borderRadius: 8,
       }}
     >
-      <XhInfiniteScrollRoot edge="start" target={scrollEl} loading={loading} disabled={done} onLoad={onLoad}>
+      <XhInfiniteScrollRoot edge="start" target={scrollEl} loading={loading} disabled={done} onLoadMore={onLoadMore}>
         {/* 哨兵摆在第一条之前 */}
         <XhInfiniteScrollSentinel />
         <p style={{ margin: 0, padding: "8px 12px", color: "var(--xh-fg-muted)" }}>

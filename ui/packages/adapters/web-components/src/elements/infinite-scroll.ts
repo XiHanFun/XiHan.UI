@@ -30,7 +30,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {boolean} disabled - 关闭，不再观察也不再触发
  * @attr {'end'|'start'} edge - 取数的那一头：end（默认）在末尾往后取，start 在开头往前取、取数期间保住视口
  * @attr {boolean} loading - 正在取数，期间不观察、不重复触发；取完由宿主写回 false
- * @fires load - 应取下一页
+ * @fires load-more - 应取下一页
  * @csspart root - 列表外壳，承载 data-loading / data-disabled 与 aria-busy
  * @csspart sentinel - 哨兵，放在列表末尾；对读屏隐藏
  * @csspart load-more-trigger - 取下一页的按钮，与哨兵同一路径；文案由作者写在按钮中
@@ -55,7 +55,7 @@ export class XhInfiniteScrollElement extends XhElement {
   declare target?: HTMLElement | null
 
   private readonly notify = (): void => {
-    this.dispatchEvent(new CustomEvent('load', { bubbles: true, composed: true }))
+    this.dispatchEvent(new CustomEvent('load-more', { bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<InfiniteScrollSchema>(
@@ -71,7 +71,7 @@ export class XhInfiniteScrollElement extends XhElement {
       disabled: this.disabled,
       loading: this.loading,
       edge: this.edge,
-      onLoad: this.notify,
+      onLoadMore: this.notify,
     }
   }
 

@@ -23,11 +23,11 @@ export interface InfiniteScrollContext {
 /** 观察在状态机的效应中运行，两处 DOM 取值口经 refs 交入；getTargetEl 返回滚动容器，null 即整页滚动。 */
 export function useInfiniteScroll(
   props: InfiniteScrollSchema['props'],
-  onLoad?: InfiniteScrollSchema['props']['onLoad'],
+  onLoadMore?: InfiniteScrollSchema['props']['onLoadMore'],
   getTargetEl: () => HTMLElement | null = () => null,
 ): InfiniteScrollContext {
   const sentinelRef = ref<HTMLElement | null>(null)
-  const service = useMachine(infiniteScrollMachine, () => ({ ...props, onLoad }))
+  const service = useMachine(infiniteScrollMachine, () => ({ ...props, onLoadMore }))
 
   service.refs.set('getSentinelEl', () => sentinelRef.value)
   service.refs.set('getTargetEl', getTargetEl)

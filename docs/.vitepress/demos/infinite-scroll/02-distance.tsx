@@ -22,7 +22,7 @@ export default function Demo(): ReactNode {
   const [loading, setLoading] = useState(false);
   const [rounds, setRounds] = useState(0);
 
-  function onLoad(): void {
+  function onLoadMore(): void {
     setLoading(true);
     window.setTimeout(() => {
       setItems(list => [
@@ -68,7 +68,7 @@ export default function Demo(): ReactNode {
             target={scrollEl}
             distance={distance[0]}
             loading={loading}
-            onLoad={onLoad}
+            onLoadMore={onLoadMore}
           >
             {items.map(item => (
               <div key={item} style={{ padding: "8px 12px" }}>{item}</div>

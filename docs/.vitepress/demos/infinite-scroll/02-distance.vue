@@ -19,7 +19,7 @@ const items = ref(Array.from({ length: 12 }, (_, i) => `第 ${i + 1} 条`));
 const loading = ref(false);
 const rounds = ref(0);
 
-function onLoad(): void {
+function onLoadMore(): void {
   loading.value = true;
   window.setTimeout(() => {
     const base = items.value.length;
@@ -57,7 +57,7 @@ function onLoad(): void {
         :target="scrollEl"
         :distance="distance[0]"
         :loading="loading"
-        @load="onLoad"
+        @load-more="onLoadMore"
       >
         <div v-for="item in items" :key="item" style="padding: 8px 12px">{{ item }}</div>
         <XhInfiniteScrollSentinel />

@@ -64,7 +64,7 @@
   }
 
   // 取下一页；这里用定时器代替真实请求
-  host.addEventListener("load", () => {
+  host.addEventListener("load-more", () => {
     host.loading = true;
     hint.hidden = false;
     setTimeout(() => {

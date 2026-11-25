@@ -40137,7 +40137,7 @@
           "events": [
             {
               "description": "应取下一页",
-              "name": "load"
+              "name": "load-more"
             }
           ],
           "attributes": [

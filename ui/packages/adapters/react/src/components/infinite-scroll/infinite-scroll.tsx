@@ -19,8 +19,8 @@ type InfiniteScrollProps = InfiniteScrollSchema['props']
 /** 函数式 children 的载荷：取数所处的阶段，以及正在取数与已关闭两个状态。 */
 export type InfiniteScrollRootSlotProps = Pick<InfiniteScrollApi, 'phase' | 'loading' | 'disabled'>
 
-/** 根上自有的取值；onLoad 在这里表示应取下一页，与原生的同名事件含义不同，由本组件接管。 */
-type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'onLoad'>
+/** 根上自有的取值；取下一页的通知叫 onLoadMore，不占原生 onLoad：根里图片冒泡上来的 load 照常归宿主。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children'>
 
 export interface XhInfiniteScrollRootProps extends RootElementProps {
   /** 提前量（px）：哨兵距可视区还有该距离时即视为进入，默认 0。 */
@@ -34,7 +34,7 @@ export interface XhInfiniteScrollRootProps extends RootElementProps {
   /** 裁剪出可视区的滚动容器，默认即整页滚动；distance 的提前量扩展的正是这块区域。 */
   target?: HTMLElement | null
   /** 应取下一页。 */
-  onLoad?: InfiniteScrollProps['onLoad']
+  onLoadMore?: InfiniteScrollProps['onLoadMore']
   children?: SlotChildren<InfiniteScrollRootSlotProps>
 }
 
@@ -45,12 +45,12 @@ export function XhInfiniteScrollRoot({
   loading,
   edge,
   target,
-  onLoad,
+  onLoadMore,
   children,
   ...rest
 }: XhInfiniteScrollRootProps): ReactNode {
   const getTarget = useCallback(() => target ?? null, [target])
-  const ctx = useInfiniteScroll({ distance, disabled, loading, edge, onLoad } as InfiniteScrollProps, getTarget)
+  const ctx = useInfiniteScroll({ distance, disabled, loading, edge, onLoadMore } as InfiniteScrollProps, getTarget)
   const api = ctx.api
   return (
     <InfiniteScrollProvider value={ctx}>
@@ -61,7 +61,7 @@ export function XhInfiniteScrollRoot({
   )
 }
 
-XhInfiniteScrollRoot.xhEvents = ['load'] as const
+XhInfiniteScrollRoot.xhEvents = ['load-more'] as const
 
 export interface XhInfiniteScrollLoadMoreTriggerProps extends ComponentPropsWithRef<'button'> {}
 /**

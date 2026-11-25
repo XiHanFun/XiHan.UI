@@ -16,7 +16,7 @@ onMounted(() => {
 });
 
 // 取更早的一页；这里用定时器代替真实请求。loading 要如实写：组件靠它知道什么时候守住视口
-function onLoad(): void {
+function onLoadMore(): void {
   loading.value = true;
   window.setTimeout(() => {
     const older = Array.from({ length: 8 }, (_, i) => `消息 ${oldest - 8 + i}`);
@@ -44,7 +44,7 @@ function onLoad(): void {
       :target="scrollEl"
       :loading="loading"
       :disabled="done"
-      @load="onLoad"
+      @load-more="onLoadMore"
     >
       <!-- 哨兵摆在第一条之前 -->
       <XhInfiniteScrollSentinel />

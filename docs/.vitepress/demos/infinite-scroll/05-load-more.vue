@@ -12,7 +12,7 @@ const items = ref(Array.from({ length: 10 }, (_, i) => `第 ${i + 1} 条`));
 const loading = ref(false);
 
 // 取下一页；这里用定时器代替真实请求
-function onLoad(): void {
+function onLoadMore(): void {
   loading.value = true;
   window.setTimeout(() => {
     const base = items.value.length;
@@ -33,7 +33,7 @@ function onLoad(): void {
       border-radius: var(--xh-shape-surface);
     "
   >
-    <XhInfiniteScrollRoot :target="scrollEl" :loading="loading" @load="onLoad">
+    <XhInfiniteScrollRoot :target="scrollEl" :loading="loading" @load-more="onLoadMore">
       <div v-for="item in items" :key="item" style="padding: 8px 12px">{{ item }}</div>
       <XhInfiniteScrollSentinel />
       <!-- 文案写在按钮里：组件不代填名字，读屏念的与眼睛看的是同一句 -->

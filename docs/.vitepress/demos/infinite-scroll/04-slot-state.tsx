@@ -11,7 +11,7 @@ export default function Demo(): ReactNode {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
-  function onLoad(): void {
+  function onLoadMore(): void {
     setLoading(true);
     window.setTimeout(() => {
       setItems((list) => {
@@ -41,7 +41,7 @@ export default function Demo(): ReactNode {
         target={scrollEl}
         loading={loading}
         disabled={done}
-        onLoad={onLoad}
+        onLoadMore={onLoadMore}
       >
         {({ phase, loading: busy, disabled }) => (
           <>

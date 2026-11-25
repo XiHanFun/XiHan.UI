@@ -8,7 +8,7 @@ const items = ref(Array.from({ length: 12 }, (_, i) => `第 ${i + 1} 条`));
 const loading = ref(false);
 
 // 取下一页；这里用定时器代替真实请求
-function onLoad(): void {
+function onLoadMore(): void {
   loading.value = true;
   window.setTimeout(() => {
     const base = items.value.length;
@@ -30,7 +30,7 @@ function onLoad(): void {
     "
   >
     <!-- target 指向真正在滚的那层；不给就以窗口视口为准 -->
-    <XhInfiniteScrollRoot :target="scrollEl" :loading="loading" @load="onLoad">
+    <XhInfiniteScrollRoot :target="scrollEl" :loading="loading" @load-more="onLoadMore">
       <div v-for="item in items" :key="item" style="padding: 8px 12px">{{ item }}</div>
       <p v-if="loading" style="margin: 0; padding: 8px 12px; color: var(--xh-fg-muted)">
         正在取下一页…

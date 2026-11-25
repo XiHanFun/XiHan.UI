@@ -50,7 +50,7 @@
   shell.scrollTop = shell.scrollHeight;
 
   // 取更早的一页；这里用定时器代替真实请求。loading 要如实写：组件靠它知道什么时候守住视口
-  host.addEventListener("load", () => {
+  host.addEventListener("load-more", () => {
     host.loading = true;
     hint.textContent = "正在取更早的消息…";
     window.setTimeout(() => {

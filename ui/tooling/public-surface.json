@@ -14539,7 +14539,7 @@
       "distance",
       "edge",
       "loading",
-      "onLoad"
+      "onLoadMore"
     ],
     "input-group": [
       "size",
@@ -23350,7 +23350,7 @@
         "loading"
       ],
       "events": [
-        "load"
+        "load-more"
       ]
     },
     "xh-input-group": {

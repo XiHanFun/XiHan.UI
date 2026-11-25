@@ -34,7 +34,7 @@ export interface InfiniteScrollSchema extends MachineSchema {
     /** 正在取数：期间不观察、不重复触发。取完由宿主写回 false。 */
     loading?: boolean
     /** 应取下一页。 */
-    onLoad?: () => void
+    onLoadMore?: () => void
     /**
      * 取数的那一头，缺省 end。start 时哨兵摆在列表开头，新的一页插在已有内容前面：
      * 取数期间（loading 为 true 起、写回 false 之后再守两帧）组件保持可视区离内容底部的距离不变，
@@ -66,7 +66,7 @@ export interface InfiniteScrollSchema extends MachineSchema {
     | { type: 'PRESS.END' }
   tag: never
   guard: 'isPaused' | 'isLoading' | 'canPress'
-  action: 'syncMode' | 'invokeOnLoad' | 'startPress' | 'endPress' | 'releasePress'
+  action: 'syncMode' | 'invokeOnLoadMore' | 'startPress' | 'endPress' | 'releasePress'
   effect: 'observeSentinel' | 'keepScrollPosition'
 }
 

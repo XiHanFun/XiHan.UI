@@ -74,7 +74,7 @@
     readout.textContent = `第 ${page} / ${maxPage} 页 · 共 ${list.childElementCount} 条`;
   }
 
-  host.addEventListener("load", () => {
+  host.addEventListener("load-more", () => {
     host.loading = true;
     loadingHint.hidden = false;
     setTimeout(() => {
