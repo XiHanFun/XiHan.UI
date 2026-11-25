@@ -59,7 +59,7 @@
 - `submitMode` 设置回车、失焦或显式按钮提交。
 - `activationMode` 设置单击、双击或按钮激活。
 - 支持提交、取消、受控值和受控编辑状态。
-- `autoResize` 让输入框随内容调整宽度。
+- `autoSize` 让输入框随内容调整宽度。
 - 标题在上；预览文字或输入框与右侧动作组共用一个字段盒，不把动作按钮挂在编辑框外。预览态只显示编辑按钮，编辑态只显示确认与取消按钮；两态的盒都取 root 的形态（缺省 `outline`），与别的字段同一副外壳，一眼看得出这是个能改的字段。要读起来像一段文字（悬停才浮出描边），显式写 `variant="ghost"`。
 - 三颗动作的视觉盒按字段内钮尺寸表随档（sm 取 `--xh-control-action-size`、md 取 `--xh-control-h-sm`、lg 取 `--xh-control-h-md`），字形取次要前景；确认与取消之间隔 `--xh-space-1`，紧凑 sm 档两钮中心距仍不低于 24px；与内容段之间不画分隔线。
 - 三个动作使用图标呈现：编辑、确认、取消；图标按钮必须提供可访问名称。
@@ -112,7 +112,7 @@
 | `submitMode` | `EditableSubmitMode` |  | 编辑态的收尾方式，默认 both。 |
 | `activationMode` | `EditableActivationMode` |  | 预览区的激活方式，默认 click。 |
 | `selectOnFocus` | `boolean` |  | 进入编辑态时全选已有内容，默认开启。关闭则光标停在原处。 |
-| `autoResize` | `boolean` |  | 输入框宽度跟随内容：连接层把字符数写为原生 size 属性。 |
+| `autoSize` | `boolean` |  | 输入框宽度跟随内容：连接层把字符数写为原生 size 属性。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定 control 的聚焦描边与焦点环颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定 control、预览区、输入框与三个动作按钮的几何档位。 |
@@ -264,7 +264,7 @@
 | `preview` | `data-placeholder` | ''（条件成立时才出现） |
 | `preview` | `data-readonly` | ''（条件成立时才出现） |
 | `preview` | `data-state` | 'edit' \| 'preview' |
-| `input` | `data-auto-resize` | ''（条件成立时才出现） |
+| `input` | `data-auto-size` | ''（条件成立时才出现） |
 | `input` | `data-disabled` | ''（条件成立时才出现） |
 | `input` | `data-invalid` | ''（条件成立时才出现） |
 | `input` | `data-readonly` | ''（条件成立时才出现） |

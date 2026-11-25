@@ -441,12 +441,12 @@ describe('connectEditable 结构与标注', () => {
     expect((makeService().api().getInputProps() as Dict)['aria-invalid']).toBe('false')
   })
 
-  it('autoResize 才产出 size，且跟着值走；不开时连接层不碰宽度', () => {
-    const on = makeService({ defaultValue: '阿旺', autoResize: true }).api()
+  it('autoSize 才产出 size，且跟着值走；不开时连接层不碰宽度', () => {
+    const on = makeService({ defaultValue: '阿旺', autoSize: true }).api()
     expect((on.getInputProps() as Dict).size).toBe(2)
     const off = makeService({ defaultValue: '阿旺' }).api()
     expect((off.getInputProps() as Dict).size).toBeUndefined()
-    expect((off.getInputProps() as Dict)['data-auto-resize']).toBeUndefined()
+    expect((off.getInputProps() as Dict)['data-auto-size']).toBeUndefined()
   })
 
   it('maxLength 同时落成原生属性', () => {

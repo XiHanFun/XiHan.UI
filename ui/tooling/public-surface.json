@@ -14076,7 +14076,7 @@
     "editable": [
       "activationMode",
       "ariaLabel",
-      "autoResize",
+      "autoSize",
       "defaultEdit",
       "defaultValue",
       "disabled",
@@ -15944,7 +15944,7 @@
     "data-at-min-horizontal",
     "data-at-min-vertical",
     "data-auto-fill",
-    "data-auto-resize",
+    "data-auto-size",
     "data-autoplay",
     "data-axis",
     "data-banded",
@@ -22870,7 +22870,7 @@
     "xh-editable": {
       "attributes": [
         "activation-mode",
-        "auto-resize",
+        "auto-size",
         "default-edit",
         "default-value",
         "disabled",

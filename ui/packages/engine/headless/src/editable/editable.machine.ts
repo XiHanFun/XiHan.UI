@@ -46,7 +46,7 @@ export function clampEditableValue(value: string, maxLength: number | undefined)
 }
 
 /**
- * autoResize 时输入框的原生 size（能显示几个字符宽）。
+ * autoSize 时输入框的原生 size（能显示几个字符宽）。
  *
  * 只由值与占位算出，不读 DOM；值为空时按占位长度撑开。
  */

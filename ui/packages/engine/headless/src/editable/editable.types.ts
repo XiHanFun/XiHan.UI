@@ -102,7 +102,7 @@ export interface EditableSchema extends MachineSchema {
     /** 进入编辑态时全选已有内容，默认开启。关闭则光标停在原处。 */
     selectOnFocus?: boolean
     /** 输入框宽度跟随内容：连接层把字符数写为原生 size 属性。 */
-    autoResize?: boolean
+    autoSize?: boolean
     /** 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定 control 的聚焦描边与焦点环颜色。 */

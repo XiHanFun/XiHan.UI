@@ -52,7 +52,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {'blur'|'enter'|'both'|'none'} submit-mode - 编辑态的收尾方式，默认 both
  * @attr {'click'|'dblclick'|'focus'|'none'} activation-mode - 预览区进入编辑态的方式，默认 click
  * @attr {boolean} select-on-focus - 进入编辑态时全选，默认开启；写 select-on-focus="false" 关闭
- * @attr {boolean} auto-resize - 输入框宽度跟随内容（落为原生 size）
+ * @attr {boolean} auto-size - 输入框宽度跟随内容（落为原生 size）
  * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -87,7 +87,7 @@ export class XhEditableElement extends XhElement {
     submitMode: { converter: STRING_CONVERTER, attribute: 'submit-mode' },
     activationMode: { converter: STRING_CONVERTER, attribute: 'activation-mode' },
     selectOnFocus: { converter: BOOLEAN_CONVERTER, attribute: 'select-on-focus' },
-    autoResize: { converter: BOOLEAN_CONVERTER, attribute: 'auto-resize' },
+    autoSize: { converter: BOOLEAN_CONVERTER, attribute: 'auto-size' },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
@@ -106,7 +106,7 @@ export class XhEditableElement extends XhElement {
   declare submitMode?: EditableSubmitMode
   declare activationMode?: EditableActivationMode
   declare selectOnFocus?: boolean
-  declare autoResize?: boolean
+  declare autoSize?: boolean
   declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
@@ -160,7 +160,7 @@ export class XhEditableElement extends XhElement {
       submitMode: this.submitMode,
       activationMode: this.activationMode,
       selectOnFocus: this.selectOnFocus,
-      autoResize: this.autoResize ?? false,
+      autoSize: this.autoSize ?? false,
       variant: this.variant,
       tone: this.tone,
       size: this.size,

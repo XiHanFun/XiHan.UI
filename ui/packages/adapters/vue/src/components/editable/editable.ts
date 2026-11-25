@@ -41,7 +41,7 @@ export const XhEditableRoot = defineComponent({
     submitMode: { type: String as PropType<EditableSubmitMode> },
     activationMode: { type: String as PropType<EditableActivationMode> },
     selectOnFocus: { type: Boolean, default: undefined },
-    autoResize: Boolean,
+    autoSize: Boolean,
     variant: { type: String as PropType<ControlVariant> },
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },

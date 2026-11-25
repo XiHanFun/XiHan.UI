@@ -158,7 +158,7 @@
   }
 
   /* 宽度跟着内容走时交给原生 size 说了算，别再用 100% 把它撑满 */
-  [data-scope='editable'][data-part='input'][data-auto-resize] {
+  [data-scope='editable'][data-part='input'][data-auto-size] {
     flex: 0 1 auto;
     inline-size: auto;
   }

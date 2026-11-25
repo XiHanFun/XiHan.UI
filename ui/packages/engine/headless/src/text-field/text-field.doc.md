@@ -22,7 +22,7 @@
 - 自动高度跟随输入、程序化写值与运行期配置变化重新测量。量高结果写进 `block-size`，`max-block-size` 由自动高度接管为 `none`，`overflow-y` 按是否顶到上限切换。关闭 `autoSize`、换回单行、替换输入节点或卸载组件时，归还启用前的这三项内联声明及其 priority；只移除作者原本没有写的声明。
 - 自动高度把一个隐藏 textarea 临时挂到输入框所属 Document，以复制后的排版与宽度计算值取得真实内容高度和单行高度，换算 `minRows` / `maxRows`；`line-height: normal` 不按字号推测。`content-box` 与 `border-box` 分别按自己的声明盒计算内距和边框。测量要求 textarea 已连接到带 Window 的 Document，且当前只接受 `writing-mode: horizontal-tb`；其他书写模式会明确失败，不把物理纵向滚动尺寸误当逻辑块尺寸。没有排版的环境（jsdom 一类单测环境）里计算样式取不到写入方向、盒模型或行高，或量出的高度为 0，这时安静跳过，不抛错也不改高度；行数配置非法照旧明确失败。
 - `prefix` / `suffix` 在框内放置货币符、单位或图标，两段对读屏隐藏。
-- 默认皮肤把控件接入 Field Chrome：Headless 在真实视觉盒、输入、装饰段上分别投影 `data-xh-field-chrome`、`data-xh-field-input`、`data-xh-field-affix`，单行与 textarea 由 `data-xh-field-layout` 区分。旧 `data-multiline` / `data-auto-resize` 视觉钩子已删除，自定义皮肤应读取新的家族角色，不提供双写兼容。
+- 默认皮肤把控件接入 Field Chrome：Headless 在真实视觉盒、输入、装饰段上分别投影 `data-xh-field-chrome`、`data-xh-field-input`、`data-xh-field-affix`，单行与 textarea 由 `data-xh-field-layout` 区分。旧 `data-multiline` / `data-auto-size` 视觉钩子已删除，自定义皮肤应读取新的家族角色，不提供双写兼容。
 - 多行且不自动高度时，纵向拖拽由视觉盒承担，拖拽角落在外框的角上，textarea 撑满盒高、自己不出拖拽角；盒内的行内衬与盒尾的清空按钮、后缀不再把拖拽角挤进框里。自动高度时不出拖拽角。
 - 默认即 `outline`：`--xh-bg-field` 底、`--xh-border-control` 描边、control 圆角、无阴影，不写 `variant` 时 root 与 control 都落 `data-variant="outline"`；`subtle` 为中性填充、`ghost` 为透明底，两者在悬停与聚焦时浮出描边，聚焦描边一律 `--xh-border-control-focus`。
 - 清空按钮复用 Action Control 的 `field-inset` profile 和 `has-value` 显示策略；粗指针命中区、pressed / focus / forced-colors 均由家族配方提供，适配器不另行计算尺寸或可见性。

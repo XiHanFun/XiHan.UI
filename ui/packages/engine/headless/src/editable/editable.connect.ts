@@ -37,7 +37,7 @@ export function connectEditable<T extends PropTypes>(
   const displayValue = empty ? (placeholder ?? '') : value
   const submitMode = prop('submitMode') ?? EDITABLE_DEFAULT_SUBMIT_MODE
   const activationMode: EditableActivationMode = prop('activationMode') ?? EDITABLE_DEFAULT_ACTIVATION_MODE
-  const autoResize = !!prop('autoResize')
+  const autoSize = !!prop('autoSize')
   const maxLength = prop('maxLength')
   const stateAttr = editing ? 'edit' : 'preview'
   // 形态默认落 outline：不写时 root 如实投影，皮肤不再依赖缺省档
@@ -181,7 +181,7 @@ export function connectEditable<T extends PropTypes>(
       // 原生 maxlength 挡键盘输入这一路，机器侧截断挡绕过键盘的那一路，两道并存
       'maxlength': maxLength,
       // connect 在 render 期求值、不得读 DOM，宽度只能用由值算出的原生 size
-      'size': autoResize ? editableInputSize(value, placeholder) : undefined,
+      'size': autoSize ? editableInputSize(value, placeholder) : undefined,
       'disabled': disabled || undefined,
       'readonly': readOnly || undefined,
       // label 部件若不是 <label> 元素，for 会失效，靠这条兜住可访问名
@@ -195,7 +195,7 @@ export function connectEditable<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
-      'data-auto-resize': dataAttr(autoResize),
+      'data-auto-size': dataAttr(autoSize),
       // 用 hidden 收起而非卸载：常挂着才留得住输入法状态与作者挂在节点上的东西
       'hidden': !editing || undefined,
       'onInput': (event: Event) => {

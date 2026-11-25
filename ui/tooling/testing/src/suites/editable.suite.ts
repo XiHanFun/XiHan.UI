@@ -552,10 +552,10 @@ export const editableSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'autoResize：宽度跟着内容走，落成原生 size',
+      name: 'autoSize：宽度跟着内容走，落成原生 size',
       spec: { apg: HTML_SPEC },
-      props: { defaultValue: '阿旺', autoResize: true },
-      initial: { parts: { input: { 'data-auto-resize': '' } } },
+      props: { defaultValue: '阿旺', autoSize: true },
+      initial: { parts: { input: { 'data-auto-size': '' } } },
       steps: [
         { kind: 'click', part: 'preview' },
         {

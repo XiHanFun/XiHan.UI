@@ -25822,12 +25822,12 @@
             },
             {
               "kind": "field",
-              "name": "autoResize",
+              "name": "autoSize",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "auto-resize"
+              "attribute": "auto-size"
             },
             {
               "kind": "field",
@@ -26099,8 +26099,8 @@
                 "text": "boolean | undefined"
               },
               "description": "输入框宽度跟随内容（落为原生 size）",
-              "name": "auto-resize",
-              "fieldName": "autoResize"
+              "name": "auto-size",
+              "fieldName": "autoSize"
             },
             {
               "type": {

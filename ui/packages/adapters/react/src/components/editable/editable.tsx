@@ -43,7 +43,7 @@ export interface XhEditableRootProps extends Omit<ComponentPropsWithRef<'div'>, 
   submitMode?: EditableSubmitMode
   activationMode?: EditableActivationMode
   selectOnFocus?: boolean
-  autoResize?: boolean
+  autoSize?: boolean
   variant?: ControlVariant
   tone?: Tone
   size?: Size
@@ -69,7 +69,7 @@ export function XhEditableRoot({
   submitMode,
   activationMode,
   selectOnFocus,
-  autoResize,
+  autoSize,
   variant,
   tone,
   size,
@@ -95,7 +95,7 @@ export function XhEditableRoot({
     submitMode,
     activationMode,
     selectOnFocus,
-    autoResize,
+    autoSize,
     variant,
     tone,
     size,
