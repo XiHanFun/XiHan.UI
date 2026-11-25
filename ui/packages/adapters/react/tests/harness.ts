@@ -26,6 +26,7 @@ const PUBLIC_EVENTS = {
   'column-preference-change': 'onColumnPreferenceChange',
   'download-complete': 'onDownloadComplete',
   'download-error': 'onDownloadError',
+  'exit-complete': 'onExitComplete',
   'answers-change': 'onAnswersChange',
   'expanded-value-change': 'onExpandedValueChange',
   'index-change': 'onIndexChange',

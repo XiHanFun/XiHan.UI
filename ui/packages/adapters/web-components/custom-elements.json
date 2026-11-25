@@ -54721,6 +54721,186 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/presence.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-presence>`：Light-DOM 行为宿主，无状态机，让 root 里的内容按 present 进场与退场。\n退场动画播完才藏起 root、撤下内容，之后派发 exit-complete；元素不生成任何结构。\n\nLight DOM 下元素不能真的销毁作者写的节点，「挂上」与「卸掉」落在 root 的子节点上，与 Collapsible 的 content 同一套：\n内容写在 root 里的一个 `<template>` 中时，解析时不实例化，该挂上时克隆一份放进 root，卸掉时连同克隆一起拿掉，\n再挂上时重新克隆（里面的状态随之清空）；没写模板时内容节点原样摘进一个游离片段暂存，该挂上时放回（节点还是那几个，\n输入的内容跟着回来）。root 本身始终留在原处，不在场时带 hidden 与内联 `display: none`。",
+          "name": "XhPresenceElement",
+          "cssParts": [
+            {
+              "description": "进出场的那一块，内容写在它里面；承载 data-state（open / closed）、data-instant 与 hidden",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: presenceAnatomy, meta: presenceMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "present",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "present"
+            },
+            {
+              "kind": "field",
+              "name": "lazyMount",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "lazy-mount"
+            },
+            {
+              "kind": "field",
+              "name": "unmountOnExit",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "unmount-on-exit"
+            },
+            {
+              "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "lazyContent",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new LazyContent()",
+              "description": "root 里内容的挂卸落点。"
+            },
+            {
+              "kind": "field",
+              "name": "initialPresent",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "privacy": "private",
+              "description": "第一次接线时的在场与否；之后 present 一变即算变过。"
+            },
+            {
+              "kind": "field",
+              "name": "moved",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false",
+              "description": "present 变过没有：交给 connect 判首帧就在场的那一段直接呈现。"
+            },
+            {
+              "kind": "field",
+              "name": "mountedOnce",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false",
+              "description": "在场过一次：lazyMount 只拦第一次在场之前那一段。"
+            },
+            {
+              "kind": "field",
+              "name": "exitPending",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false",
+              "description": "退场已播完、还没派发 exit-complete：等这一轮把内容撤下之后再发。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "exit-complete",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "退场动画播完、内容撤下之后派发，没有 detail；初始就不在场时不派发"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "是否在场，缺省 false；变 false 时等退场动画播完才藏起 root、撤下内容",
+              "name": "present",
+              "fieldName": "present"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "第一次在场之前不挂内容，缺省为真；与 unmount-on-exit=\"false\" 同写 lazy-mount=\"false\" 时内容从一开始就挂着，不在场时随 root 一起藏起",
+              "name": "lazy-mount",
+              "fieldName": "lazyMount"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "退场播完后卸掉内容，缺省为真；写 unmount-on-exit=\"false\" 时内容留着、root 只带 hidden",
+              "name": "unmount-on-exit",
+              "fieldName": "unmountOnExit"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-presence",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-presence-enter-animation"
+            },
+            {
+              "name": "--xh-presence-exit-animation"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhPresenceElement",
+          "declaration": {
+            "name": "XhPresenceElement",
+            "module": "src/elements/presence.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/progress.ts",
       "declarations": [
         {

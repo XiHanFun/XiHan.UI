@@ -1,0 +1,32 @@
+<!-- 基础用法 | present 决定内容在不在：变为真时淡入，变为假时淡出，退场播完才撤下 -->
+<!-- 自定义元素的内容写在 root 里的 <template> 中：解析时不实例化，第一次在场才克隆出来，退场播完即丢弃 -->
+<div style="inline-size: 100%; display: grid; gap: var(--xh-space-3)">
+  <xh-button id="presence-basic-toggle" size="sm">
+    <button data-xh-part="root" style="justify-self: start">显示提示</button>
+  </xh-button>
+  <xh-presence id="presence-basic">
+    <div data-xh-part="root">
+      <template>
+        <xh-alert tone="success">
+          <div data-xh-part="root">
+            <div data-xh-part="content">
+              <div data-xh-part="title">设置已保存</div>
+              <div data-xh-part="description">新的通知偏好会在下次登录时生效。</div>
+            </div>
+          </div>
+        </xh-alert>
+      </template>
+    </div>
+  </xh-presence>
+</div>
+
+<script type="module">
+  // 按钮只改两处：present 与按钮上那行字
+  const presence = document.getElementById("presence-basic");
+  const toggle = document.getElementById("presence-basic-toggle");
+  const label = toggle.querySelector('[data-xh-part="root"]');
+  toggle.addEventListener("click", () => {
+    presence.present = !presence.present;
+    label.textContent = presence.present ? "收起提示" : "显示提示";
+  });
+</script>

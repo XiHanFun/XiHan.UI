@@ -247,6 +247,7 @@
   "popover": [
     "size"
   ],
+  "presence": [],
   "progress": [
     "variant",
     "size"

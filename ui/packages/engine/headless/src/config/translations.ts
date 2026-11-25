@@ -103,6 +103,7 @@ import type { PieChartTranslations } from '../pie-chart/pie-chart.types'
 import type { PinInputTranslations } from '../pin-input/pin-input.types'
 import type { PopconfirmTranslations } from '../popconfirm/popconfirm.types'
 import type { PopoverTranslations } from '../popover/popover.types'
+import type { PresenceTranslations } from '../presence/presence.types'
 import type { ProgressTranslations } from '../progress/progress.types'
 import type { PromptInputTranslations } from '../prompt-input/prompt-input.types'
 import type { QuestionFlowTranslations } from '../question-flow/question-flow.types'
@@ -251,6 +252,7 @@ export interface XhTranslationOverrides {
   'pin-input'?: Partial<PinInputTranslations>
   'popconfirm'?: Partial<PopconfirmTranslations>
   'popover'?: Partial<PopoverTranslations>
+  'presence'?: Partial<PresenceTranslations>
   'progress'?: Partial<ProgressTranslations>
   'prompt-input'?: Partial<PromptInputTranslations>
   'question-flow'?: Partial<QuestionFlowTranslations>

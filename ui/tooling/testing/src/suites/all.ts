@@ -96,6 +96,7 @@ import { pieChartSuite } from './pie-chart.suite'
 import { pinInputSuite } from './pin-input.suite'
 import { popconfirmSuite } from './popconfirm.suite'
 import { popoverSuite } from './popover.suite'
+import { presenceSuite } from './presence.suite'
 import { progressSuite } from './progress.suite'
 import { promptInputSuite } from './prompt-input.suite'
 import { questionFlowSuite } from './question-flow.suite'
@@ -295,5 +296,6 @@ export const allSuites: readonly ConformanceSuite[] = [
   filterBuilderSuite,
   aspectRatioSuite,
   containerSuite,
+  presenceSuite,
   visuallyHiddenSuite,
 ]

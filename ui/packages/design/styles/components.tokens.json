@@ -61435,6 +61435,45 @@
       "description": "popover 的 title 部件 font-weight 覆盖槽。"
     },
     {
+      "name": "--xh-presence-enter-animation",
+      "component": "presence",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "animation"
+      ],
+      "state": [
+        "instant",
+        "not([data-instant], [hidden])",
+        "state=open"
+      ],
+      "defaultToken": [
+        "--xh-motion-duration-enter"
+      ],
+      "visibility": "public",
+      "description": "presence 的 root 部件 animation 覆盖槽。"
+    },
+    {
+      "name": "--xh-presence-exit-animation",
+      "component": "presence",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "animation"
+      ],
+      "state": [
+        "not([hidden])",
+        "state=closed"
+      ],
+      "defaultToken": [
+        "--xh-motion-duration-exit"
+      ],
+      "visibility": "public",
+      "description": "presence 的 root 部件 animation 覆盖槽。"
+    },
+    {
       "name": "--xh-progress-buffer",
       "component": "progress",
       "part": [

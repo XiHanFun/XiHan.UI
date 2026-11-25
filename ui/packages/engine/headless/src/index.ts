@@ -204,6 +204,8 @@ export { connectPopconfirm, POPCONFIRM_DEFAULT_PLACEMENT, popconfirmAnatomy, pop
 export type { PopconfirmActionErrorChannel, PopconfirmApi, PopconfirmConfirmErrorDetails, PopconfirmIntents, PopconfirmNotifiers, PopconfirmOverlayProps, PopconfirmPendingChannel, PopconfirmProps, PopconfirmTranslations } from './popconfirm'
 export { connectPopover, POPOVER_DEFAULT_PLACEMENT, popoverAnatomy, popoverKeyboard, popoverMachine, popoverMeta } from './popover'
 export type { PopoverApi, PopoverOpenChangeDetails, PopoverPressedPart, PopoverRefs, PopoverSchema, PopoverTranslations } from './popover'
+export { connectPresence, presenceAnatomy, presenceKeyboard, presenceMeta } from './presence'
+export type { PresenceApi, PresenceProps, PresenceTranslations } from './presence'
 export { connectProgress, PROGRESS_VIEW, progressAnatomy, progressKeyboard, progressMeta, progressRing } from './progress'
 export type { ProgressApi, ProgressBand, ProgressGapPosition, ProgressIndicator, ProgressProps, ProgressRing, ProgressScaleOptions, ProgressSemantics, ProgressThreshold, ProgressTick, ProgressTranslations, ProgressVariant } from './progress'
 export { connectPromptInput, promptInputAnatomy, promptInputKeyboard, promptInputMachine, promptInputMeta } from './prompt-input'

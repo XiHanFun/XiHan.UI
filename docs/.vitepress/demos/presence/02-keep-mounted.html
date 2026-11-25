@@ -1,0 +1,48 @@
+<!-- 退场后保留内容 | unmountOnExit 缺省为真，退场播完即卸载，再出现时里面的输入已清空；设为 false 时只藏起 root，输入原样保留 -->
+<!-- 自定义元素的内容写在 root 里的 <template> 中：卸载时连同克隆一起丢弃，再在场时重新克隆，输入随之清空 -->
+<div style="inline-size: 100%; display: grid; gap: var(--xh-space-3)">
+  <xh-button id="presence-keep-toggle" size="sm">
+    <button data-xh-part="root" style="justify-self: start">收起两块</button>
+  </xh-button>
+  <xh-presence data-presence-keep present>
+    <div data-xh-part="root">
+      <template>
+        <xh-text-field placeholder="输入后收起再显示，内容已清空">
+          <div data-xh-part="root">
+            <label data-xh-part="label">退场后卸载</label>
+            <div data-xh-part="control">
+              <input data-xh-part="input" />
+            </div>
+          </div>
+        </xh-text-field>
+      </template>
+    </div>
+  </xh-presence>
+  <xh-presence data-presence-keep present unmount-on-exit="false">
+    <div data-xh-part="root">
+      <template>
+        <xh-text-field placeholder="输入后收起再显示，内容还在">
+          <div data-xh-part="root">
+            <label data-xh-part="label">退场后保留</label>
+            <div data-xh-part="control">
+              <input data-xh-part="input" />
+            </div>
+          </div>
+        </xh-text-field>
+      </template>
+    </div>
+  </xh-presence>
+</div>
+
+<script type="module">
+  // 一颗按钮同时切换两块的 present
+  const toggle = document.getElementById("presence-keep-toggle");
+  const label = toggle.querySelector('[data-xh-part="root"]');
+  const blocks = document.querySelectorAll("[data-presence-keep]");
+  let shown = true;
+  toggle.addEventListener("click", () => {
+    shown = !shown;
+    for (const block of blocks) block.present = shown;
+    label.textContent = shown ? "收起两块" : "显示两块";
+  });
+</script>

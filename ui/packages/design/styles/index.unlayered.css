@@ -40520,6 +40520,57 @@
   }
 }
 
+/* styles/presence.css */
+/* 定义 presence 样式。 */
+
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立；full bundle 递归去重。 */
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+.xh-scope-presence {
+  --xh-presence-skin: 1;
+}
+
+/* Web Components 的宿主不占一层盒子：root 直接参与外层排布，与 Vue / React 直接渲染 root 一致。
+   否则宿主是一个行内盒，放进网格或弹性容器时排进去的是宿主而不是 root。
+   零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-presence:not([hidden])) {
+  display: contents;
+}
+
+/* 根不排版、不画面：里面是什么由作者决定，这份皮肤只给进出场。
+   缺省一套淡入淡出，只动不透明度、不位移：Presence 不知道内容从哪来、往哪去，方向交给作者。
+   两个覆盖槽各收一整条 animation 简写：写 none 即关掉这一头，写自己的关键帧即换掉；
+   退场那条要带 forwards（或 both），否则播完、落 hidden 之前会弹回不透明的一帧。
+   减弱动效下 enter / exit 两支时长仍是短淡变（令牌层给），只淡不移，不必另写；
+   作者换成带位移的关键帧时，位移取 --xh-motion-distance-* 即随减弱动效归零。 */
+
+/* 进场：首帧就在场的（data-instant）直接呈现，之后每一次出现都淡入。
+   退场中途改回在场时，退场闸门把此刻的不透明度写进 --xh-_enter-from-opacity，淡入从那里接着走 */
+.xh-scope-presence[data-part='root'][data-state='open']:not([data-instant], [hidden]) {
+  animation: var(--xh-presence-enter-animation, xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter));
+}
+
+/* 退场：淡出播完才由退场闸门落 hidden、撤下内容；这一段里不挡下面内容的指针 */
+.xh-scope-presence[data-part='root'][data-state='closed']:not([hidden]) {
+  pointer-events: none;
+  animation: var(--xh-presence-exit-animation, xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards);
+}
+
+/* 打印：纸上没有进出场，在场的内容照原样印出 */
+@media print {
+  .xh-scope-presence[data-part='root'] {
+    animation: none;
+  }
+}
+
+/* 强制色档不需要补救：这份皮肤只动不透明度，不靠颜色、底色或投影表达任何状态 */
+
+/* 皮肤没声明 display，作者给根声明了 display 也会盖掉 UA 的 [hidden]{display:none}，这条兜住不在场时的收起。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+.xh-scope-presence[data-part='root'][hidden] {
+  display: none;
+}
+
 /* styles/progress.css */
 /* 定义 progress 样式。 */
 

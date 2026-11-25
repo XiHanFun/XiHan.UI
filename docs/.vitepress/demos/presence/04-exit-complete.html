@@ -1,0 +1,36 @@
+<!-- 退场完成 | exit-complete 在退场动画播完、内容撤下之后才发，「退场中」与「已撤下」由它分开；退场途中改回在场不发 -->
+<div style="inline-size: 100%; display: grid; gap: var(--xh-space-3)">
+  <xh-button id="presence-exit-toggle" size="sm">
+    <button data-xh-part="root" style="justify-self: start">收起</button>
+  </xh-button>
+  <xh-presence id="presence-exit" present>
+    <div data-xh-part="root">
+      <template>
+        <xh-alert>
+          <div data-xh-part="root">
+            <div data-xh-part="content">
+              <div data-xh-part="title">这条提示撤下之后才算处理完</div>
+            </div>
+          </div>
+        </xh-alert>
+      </template>
+    </div>
+  </xh-presence>
+</div>
+<span id="presence-exit-output" data-demo-output>状态：在场</span>
+
+<script type="module">
+  // 切换时先记「在场 / 退场中」，退场播完由 exit-complete 改成「已撤下」
+  const presence = document.getElementById("presence-exit");
+  const toggle = document.getElementById("presence-exit-toggle");
+  const label = toggle.querySelector('[data-xh-part="root"]');
+  const output = document.getElementById("presence-exit-output");
+  toggle.addEventListener("click", () => {
+    presence.present = !presence.present;
+    label.textContent = presence.present ? "收起" : "显示";
+    output.textContent = presence.present ? "状态：在场" : "状态：退场中";
+  });
+  presence.addEventListener("exit-complete", () => {
+    output.textContent = "状态：已撤下";
+  });
+</script>

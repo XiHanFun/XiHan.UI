@@ -152,6 +152,7 @@
       "./pointer.css",
       "./popconfirm.css",
       "./popover.css",
+      "./presence.css",
       "./progress.css",
       "./prompt-input.css",
       "./question-flow.css",
@@ -2283,6 +2284,8 @@
       "XhPopoverTriggerProps",
       "XhPortal",
       "XhPortalProps",
+      "XhPresence",
+      "XhPresenceProps",
       "XhProgress",
       "XhProgressProps",
       "XhPromptInputControl",
@@ -5511,6 +5514,8 @@
       "XhPopoverTitleProps",
       "XhPopoverTrigger",
       "XhPopoverTriggerProps",
+      "XhPresence",
+      "XhPresenceProps",
       "XhProgress",
       "XhProgressProps",
       "XhPromptInputControl",
@@ -6888,6 +6893,7 @@
       "XhPinInputElement",
       "XhPopconfirmElement",
       "XhPopoverElement",
+      "XhPresenceElement",
       "XhProgressElement",
       "XhPromptInputElement",
       "XhQuestionFlowElement",
@@ -9379,6 +9385,9 @@
       "PopoverRefs",
       "PopoverSchema",
       "PopoverTranslations",
+      "PresenceApi",
+      "PresenceProps",
+      "PresenceTranslations",
       "PressEvent",
       "PressService",
       "ProgressApi",
@@ -10411,6 +10420,7 @@
       "connectPinInput",
       "connectPopconfirm",
       "connectPopover",
+      "connectPresence",
       "connectProgress",
       "connectPromptInput",
       "connectQuestionFlow",
@@ -10982,6 +10992,9 @@
       "popoverKeyboard",
       "popoverMachine",
       "popoverMeta",
+      "presenceAnatomy",
+      "presenceKeyboard",
+      "presenceMeta",
       "pressHandlers",
       "progressAnatomy",
       "progressKeyboard",
@@ -13984,6 +13997,9 @@
       "title",
       "trigger"
     ],
+    "presence": [
+      "root"
+    ],
     "progress": [
       "buffer",
       "canvas",
@@ -16253,6 +16269,12 @@
       "placement",
       "size",
       "translations"
+    ],
+    "presence": [
+      "lazyMount",
+      "onExitComplete",
+      "present",
+      "unmountOnExit"
     ],
     "progress": [
       "buffer",
@@ -21474,6 +21496,8 @@
     "--xh-popover-title-fg",
     "--xh-popover-title-font-size",
     "--xh-popover-title-font-weight",
+    "--xh-presence-enter-animation",
+    "--xh-presence-exit-animation",
     "--xh-progress-buffer",
     "--xh-progress-buffer-radius",
     "--xh-progress-indeterminate-duration",
@@ -25156,6 +25180,16 @@
       ],
       "events": [
         "open-change"
+      ]
+    },
+    "xh-presence": {
+      "attributes": [
+        "lazy-mount",
+        "present",
+        "unmount-on-exit"
+      ],
+      "events": [
+        "exit-complete"
       ]
     },
     "xh-progress": {

@@ -86,6 +86,7 @@ import {
   pinInputSuite,
   popconfirmSuite,
   popoverSuite,
+  presenceSuite,
   promptInputSuite,
   questionFlowSuite,
   radarChartSuite,
@@ -279,6 +280,7 @@ const SUITES: readonly ConformanceSuite[] = [
   filterBuilderSuite,
   aspectRatioSuite,
   containerSuite,
+  presenceSuite,
   visuallyHiddenSuite,
 ]
 

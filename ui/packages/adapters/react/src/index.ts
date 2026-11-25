@@ -2210,6 +2210,8 @@ export type {
 } from './components/popover/popover'
 export { usePopover } from './components/popover/use-popover'
 export type { PopoverContext } from './components/popover/use-popover'
+export { XhPresence } from './components/presence/presence'
+export type { XhPresenceProps } from './components/presence/presence'
 export { XhProgress } from './components/progress/progress'
 export type { XhProgressProps } from './components/progress/progress'
 export { usePromptInputContext } from './components/prompt-input/context'

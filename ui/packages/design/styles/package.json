@@ -156,6 +156,7 @@
     "./pointer.css": "./dist/css/pointer.css",
     "./popconfirm.css": "./dist/css/popconfirm.css",
     "./popover.css": "./dist/css/popover.css",
+    "./presence.css": "./dist/css/presence.css",
     "./progress.css": "./dist/css/progress.css",
     "./prompt-input.css": "./dist/css/prompt-input.css",
     "./question-flow.css": "./dist/css/question-flow.css",

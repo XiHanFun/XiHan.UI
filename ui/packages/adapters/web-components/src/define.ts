@@ -105,6 +105,7 @@ import { XhPieChartElement } from './elements/pie-chart'
 import { XhPinInputElement } from './elements/pin-input'
 import { XhPopconfirmElement } from './elements/popconfirm'
 import { XhPopoverElement } from './elements/popover'
+import { XhPresenceElement } from './elements/presence'
 import { XhProgressElement } from './elements/progress'
 import { XhPromptInputElement } from './elements/prompt-input'
 import { XhQuestionFlowElement } from './elements/question-flow'
@@ -214,6 +215,7 @@ const XH_ELEMENTS = {
   'xh-password-input': XhPasswordInputElement,
   'xh-pie-chart': XhPieChartElement,
   'xh-popconfirm': XhPopconfirmElement,
+  'xh-presence': XhPresenceElement,
   'xh-question-flow': XhQuestionFlowElement,
   'xh-radar-chart': XhRadarChartElement,
   'xh-reasoning': XhReasoningElement,
@@ -463,6 +465,7 @@ export {
   XhPinInputElement,
   XhPopconfirmElement,
   XhPopoverElement,
+  XhPresenceElement,
   XhProgressElement,
   XhPromptInputElement,
   XhQuestionFlowElement,
