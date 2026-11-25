@@ -13090,10 +13090,10 @@
       "description": "citation 的 preview 部件 box-shadow 覆盖槽。"
     },
     {
-      "name": "--xh-citation-dismiss-trigger-radius",
+      "name": "--xh-citation-close-trigger-radius",
       "component": "citation",
       "part": [
-        "dismiss-trigger"
+        "close-trigger"
       ],
       "property": [
         "border-radius"
@@ -13105,7 +13105,7 @@
         "--xh-shape-control"
       ],
       "visibility": "public",
-      "description": "citation 的 dismiss-trigger 部件 border-radius 覆盖槽。"
+      "description": "citation 的 close-trigger 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-citation-fg",
@@ -44175,7 +44175,6 @@
         "condition-delete-trigger",
         "control",
         "decrement-trigger",
-        "dismiss-trigger",
         "edit-trigger",
         "ellipsis-trigger",
         "expand-trigger",
@@ -44272,7 +44271,7 @@
         "--xh-glyph-size-xl"
       ],
       "visibility": "public",
-      "description": "icon 的 autoplay-trigger、branch-error、branch-indicator、branch-loading、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-header、comment-trigger、condition-delete-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、group-delete-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、item-preview、last-trigger、line-content、line-fold-trigger、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、overflow-trigger、path、path-item、prev-trigger、prev-year-trigger、reset-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、status、submit-trigger、to-source-trigger、to-target-trigger、toolbar、trend、trigger、trigger-indicator、truncation、viewport、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。"
+      "description": "icon 的 autoplay-trigger、branch-error、branch-indicator、branch-loading、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-header、comment-trigger、condition-delete-trigger、control、decrement-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、group-delete-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、item-preview、last-trigger、line-content、line-fold-trigger、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、overflow-trigger、path、path-item、prev-trigger、prev-year-trigger、reset-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、status、submit-trigger、to-source-trigger、to-target-trigger、toolbar、trend、trigger、trigger-indicator、truncation、viewport、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-icon-stroke",

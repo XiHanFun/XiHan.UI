@@ -19,7 +19,7 @@ export const citationAnatomy = createAnatomy('citation', [
   'preview-meta',
   'quote',
   'preview-link',
-  'dismiss-trigger',
+  'close-trigger',
   'prev-trigger',
   'next-trigger',
   'preview-index',

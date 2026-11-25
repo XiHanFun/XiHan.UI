@@ -248,6 +248,7 @@
     ],
     "close-trigger": [
       "alert",
+      "citation",
       "dialog",
       "drawer",
       "floating-panel",
@@ -475,9 +476,6 @@
       "steps",
       "timeline",
       "tour"
-    ],
-    "dismiss-trigger": [
-      "citation"
     ],
     "display": [
       "timer"

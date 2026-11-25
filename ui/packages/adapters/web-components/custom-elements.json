@@ -10641,7 +10641,7 @@
               "name": "--xh-citation-card-shadow"
             },
             {
-              "name": "--xh-citation-dismiss-trigger-radius"
+              "name": "--xh-citation-close-trigger-radius"
             },
             {
               "name": "--xh-citation-fg"

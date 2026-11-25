@@ -93,7 +93,7 @@ const COVERED: readonly string[] = [
   'checkbox-group:indicator::before',
   'checkbox-group:select-all-trigger::after',
   'checkbox:indicator::before',
-  'citation:dismiss-trigger::before',
+  'citation:close-trigger::before',
   'citation:next-trigger::before',
   'citation:prev-trigger::before',
   'code-view:line-fold-trigger::before',

@@ -243,7 +243,7 @@ export class XhCitationElement extends XhPortalHostElement {
     previewPart('preview-meta', item => api.getPreviewMetaProps(item))
     previewPart('quote', item => api.getQuoteProps(item))
     previewPart('preview-link', item => api.getPreviewLinkProps(item))
-    previewPart('dismiss-trigger', item => api.getDismissTriggerProps(item))
+    previewPart('close-trigger', item => api.getCloseTriggerProps(item))
     previewPart('prev-trigger', item => api.getPrevTriggerProps(item))
     previewPart('next-trigger', item => api.getNextTriggerProps(item))
     previewPart('preview-index', item => api.getPreviewIndexProps(item))

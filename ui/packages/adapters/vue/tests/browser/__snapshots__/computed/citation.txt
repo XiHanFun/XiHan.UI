@@ -1,6 +1,6 @@
 # citation
 
-[dismiss-trigger]
+[close-trigger]
 padding-top: 0px
 padding-right: 0px
 padding-bottom: 0px

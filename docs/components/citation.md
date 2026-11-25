@@ -20,7 +20,7 @@ SourcePart 直接驱动行内引用、来源预览和来源列表
 
 加粗的是必需部件。
 
-`data-scope="citation"`：**`root`** · `text` · `trigger` · `positioner` · **`preview`** · `preview-header` · **`preview-title`** · `preview-meta` · `quote` · `preview-link` · `dismiss-trigger` · `prev-trigger` · `next-trigger` · `preview-index` · **`list`** · **`source`** · **`source-link`** · `source-index` · `source-title` · `source-meta`
+`data-scope="citation"`：**`root`** · `text` · `trigger` · `positioner` · **`preview`** · `preview-header` · **`preview-title`** · `preview-meta` · `quote` · `preview-link` · `close-trigger` · `prev-trigger` · `next-trigger` · `preview-index` · **`list`** · **`source`** · **`source-link`** · `source-index` · `source-title` · `source-meta`
 
 ## 示例
 
@@ -195,7 +195,7 @@ preview-mode="hover" 把预览放进 positioner，锚定在引用编号旁：指
 | `getPreviewLinkProps` | `(props: CitationPreviewProps) => T['element']` |  |
 | `sourceMetaText` | `(source: CitationSource \| undefined) => string` | 来源的副文字：网页来源写域名，文档来源写媒体类型，没有媒体类型时取 translations.document。 |
 | `previewLinkText` | `(props: CitationPreviewProps) => string` | 预览链接上写的字：网页来源取 previewLinkSource，文档来源取 previewLinkDocument。 |
-| `getDismissTriggerProps` | `(props: CitationPreviewProps) => T['button']` |  |
+| `getCloseTriggerProps` | `(props: CitationPreviewProps) => T['button']` |  |
 | `getPrevTriggerProps` | `(props: CitationPreviewProps) => T['button']` | 一处多源时换到上一个来源；只有一个来源时带 hidden。 |
 | `getNextTriggerProps` | `(props: CitationPreviewProps) => T['button']` | 一处多源时换到下一个来源；只有一个来源时带 hidden。 |
 | `getPreviewIndexProps` | `(props: CitationPreviewProps) => T['element']` | 一处多源时的位置，如「2 / 3」；只有一个来源时带 hidden。 |
@@ -238,7 +238,7 @@ preview-mode="hover" 把预览放进 positioner，锚定在引用编号旁：指
 | `preview` | `aria-labelledby` | context.get('activeTriggerId') \| undefined |
 | `preview` | `role` | 'region' |
 | `preview-link` | `aria-labelledby` | `preview-link` 部件的 id `preview-title` 部件的 id |
-| `dismiss-trigger` | `aria-label` | labels.closePreview |
+| `close-trigger` | `aria-label` | labels.closePreview |
 | `preview-index` | `aria-hidden` | 'true' |
 | `list` | `aria-label` | labels.sources |
 | `list` | `role` | 'list' |
@@ -287,11 +287,11 @@ preview-mode="hover" 把预览放进 positioner，锚定在引用编号旁：指
 | `preview-link` | `data-xh-action-profile` | 'text' \| undefined |
 | `preview-link` | `data-xh-action-size` | 'sm' \| undefined |
 | `preview-link` | `data-xh-action-variant` | 'ghost' \| undefined |
-| `dismiss-trigger` | `data-xh-action-control` | '' |
-| `dismiss-trigger` | `data-xh-action-display` | 'always' |
-| `dismiss-trigger` | `data-xh-action-profile` | 'icon' |
-| `dismiss-trigger` | `data-xh-action-size` | 'xs' |
-| `dismiss-trigger` | `data-xh-action-variant` | 'ghost' |
+| `close-trigger` | `data-xh-action-control` | '' |
+| `close-trigger` | `data-xh-action-display` | 'always' |
+| `close-trigger` | `data-xh-action-profile` | 'icon' |
+| `close-trigger` | `data-xh-action-size` | 'xs' |
+| `close-trigger` | `data-xh-action-variant` | 'ghost' |
 | `list` | `data-disabled` | ''（条件成立时才出现） |
 | `source` | `data-disabled` | ''（条件成立时才出现） |
 | `source` | `data-state` | 'active' \| 'inactive' |
@@ -320,7 +320,7 @@ preview-mode="hover" 把预览放进 positioner，锚定在引用编号旁：指
 | `--xh-citation-card-quote-lines` | `preview`<br>`quote` | `-webkit-line-clamp` | `not([hidden])`<br>`preview-mode=hover` | `6` | citation 的 preview、quote 部件 -webkit-line-clamp 覆盖槽。 |
 | `--xh-citation-card-radius` | `preview` | `border-radius` | `preview-mode=hover` | `--xh-shape-overlay` | citation 的 preview 部件 border-radius 覆盖槽。 |
 | `--xh-citation-card-shadow` | `preview` | `box-shadow` | `not([data-xh-action-control])`<br>`preview-mode=hover`<br>`xh-material=frosted` | `--xh-_material-shadow` | citation 的 preview 部件 box-shadow 覆盖槽。 |
-| `--xh-citation-dismiss-trigger-radius` | `dismiss-trigger` | `border-radius` | `default` | `--xh-shape-control` | citation 的 dismiss-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-citation-close-trigger-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | citation 的 close-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-citation-fg` | `root` | `color` | `default` | `--xh-fg-default` | citation 的 root 部件 color 覆盖槽。 |
 | `--xh-citation-font-size` | `positioner`<br>`root` | `font-size` | `default`<br>`preview-mode=hover` | `--xh-_citation-font-size` | citation 的 positioner、root 部件 font-size 覆盖槽。 |
 | `--xh-citation-gap` | `preview`<br>`root` | `gap`<br>`margin-block-start` | `@keyframes xh-citation-preview-collapse`<br>`@keyframes xh-citation-preview-expand`<br>`default`<br>`not([data-xh-material])`<br>`xh-material` | `--xh-_citation-gap` | citation 的 preview、root 部件 gap、margin-block-start 覆盖槽。 |

@@ -254,7 +254,7 @@ function DefaultPreview({ item }: { item: CitationPreviewProps }): ReactNode {
         <button {...api.getPrevTriggerProps(item)} />
         <span {...api.getPreviewIndexProps(item)}>{at ? `${at.index} / ${at.total}` : ''}</span>
         <button {...api.getNextTriggerProps(item)} />
-        <button {...api.getDismissTriggerProps(item)} />
+        <button {...api.getCloseTriggerProps(item)} />
       </header>
       <blockquote {...api.getQuoteProps(item)}>{quote}</blockquote>
       {current.type === 'source-url'

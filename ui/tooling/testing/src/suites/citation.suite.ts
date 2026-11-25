@@ -37,7 +37,7 @@ function preview(sourceId: string): FixtureNode {
           { part: 'prev-trigger', tag: 'button' },
           { part: 'preview-index', tag: 'span' },
           { part: 'next-trigger', tag: 'button' },
-          { part: 'dismiss-trigger', tag: 'button' },
+          { part: 'close-trigger', tag: 'button' },
         ],
       },
       { part: 'quote', tag: 'blockquote', text: 'Quoted sentence.', only: ['wc'] },

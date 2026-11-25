@@ -644,7 +644,7 @@ export type ComponentTokenName
     | '--xh-citation-card-quote-lines'
     | '--xh-citation-card-radius'
     | '--xh-citation-card-shadow'
-    | '--xh-citation-dismiss-trigger-radius'
+    | '--xh-citation-close-trigger-radius'
     | '--xh-citation-fg'
     | '--xh-citation-font-size'
     | '--xh-citation-gap'

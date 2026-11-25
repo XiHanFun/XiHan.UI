@@ -230,7 +230,7 @@ function renderPreview(api: ReturnType<typeof useCitationContext>['api']['value'
       h('button', api.getPrevTriggerProps(item)),
       h('span', api.getPreviewIndexProps(item), at ? `${at.index} / ${at.total}` : ''),
       h('button', api.getNextTriggerProps(item)),
-      h('button', api.getDismissTriggerProps(item)),
+      h('button', api.getCloseTriggerProps(item)),
     ]),
     h('blockquote', api.getQuoteProps(item), quote),
     h(linkTag, api.getPreviewLinkProps(item), api.previewLinkText(item)),

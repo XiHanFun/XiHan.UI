@@ -374,8 +374,8 @@ export function connectCitation<T extends PropTypes>(
         },
       })
     },
-    getDismissTriggerProps: _item => normalize.button({
-      ...parts['dismiss-trigger'].attrs,
+    getCloseTriggerProps: _item => normalize.button({
+      ...parts['close-trigger'].attrs,
       'type': 'button',
       'aria-label': labels.closePreview,
       'data-xh-action-control': '',
