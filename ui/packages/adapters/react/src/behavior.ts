@@ -13,6 +13,7 @@
 // 它们要按顺序接四五个东西，接错的表现是「点子菜单父层跟着关」这种不报错的怪症，
 // 那种场景请直接用库里现成的浮层组件。
 import type {
+  Breakpoint,
   HoverIntentOptions as CoreHoverIntentOptions,
   RuntimeConfig,
   ScrollMetrics,
@@ -27,6 +28,7 @@ import {
   createScrollTracker,
   createStickToBottom,
   createTypeahead,
+  observeBreakpoint,
   trackHoverIntent,
 } from '@xihan-ui/core'
 import { useEffect, useRef, useState } from 'react'
@@ -189,6 +191,20 @@ export function useStickToBottom(options: StickToBottomOptions): StickToBottom {
     scrollToBottom: behavior => handle.current?.scrollToBottom(behavior),
     retarget: () => handle.current?.retarget(),
   }
+}
+
+/**
+ * 当前视口所在的断点档（base / sm / md / lg / xl）。宽度取断点令牌 `--xh-breakpoint-*`，
+ * 与皮肤的断点同一份；首次渲染（含服务端渲染）是 'base'，提交后在绘制前读一次实际宽度，跨档时重渲染。
+ */
+export function useBreakpoint(): Breakpoint {
+  const [current, setCurrent] = useState<Breakpoint>('base')
+  useIsomorphicLayoutEffect(() => {
+    const observer = observeBreakpoint({ onChange: setCurrent })
+    setCurrent(observer.current)
+    return () => observer.dispose()
+  }, [])
+  return current
 }
 
 /** 连续输入字母跳转到匹配项的缓冲，超时自动清空。 */

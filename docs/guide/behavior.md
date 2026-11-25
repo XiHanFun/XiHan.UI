@@ -434,6 +434,39 @@ stick.retarget(); // 节点更换后解绑重绑
 
 会话线程组件使用的就是它。
 
+## 当前断点
+
+脚本里要按视口宽度换结构时（窄屏把表格换成卡片列表、宽屏多放一栏），读当前所在的断点档，不自己写一份宽度：
+
+```ts
+import { observeBreakpoint } from "@xihan-ui/core";
+
+const observer = observeBreakpoint({ onChange: next => render(next) });
+render(observer.current); // 'base' | 'sm' | 'md' | 'lg' | 'xl'
+
+// 不再需要时
+observer.dispose();
+```
+
+宽度取文档根上的[断点令牌](/design/layout#断点) `--xh-breakpoint-*`，与皮肤的断点同一份，改令牌两边一起变。每档按 `min-width` 建一条媒体查询，落在两档之间时取较窄那档，比 sm 还窄是 `base`。建立时不调 `onChange`，初值读 `current`；只在跨档时通知，同一档里拖动窗口不通知。没引入令牌（读到空值）时直接报错，不猜一个缺省宽度。
+
+Vue 与 React 的包装在各自的 behavior 子入口，返回当前档：
+
+```ts
+import { useBreakpoint } from "@xihan-ui/vue/behavior";
+
+const breakpoint = useBreakpoint(); // Ref<'base' | 'sm' | 'md' | 'lg' | 'xl'>
+const compact = computed(() => breakpoint.value === "base" || breakpoint.value === "sm");
+```
+
+```tsx
+import { useBreakpoint } from "@xihan-ui/react/behavior";
+
+const breakpoint = useBreakpoint(); // 'base' | 'sm' | 'md' | 'lg' | 'xl'
+```
+
+挂载之前（含服务端渲染）两端都是 `base`：Vue 在 mounted 后、React 在布局提交期（绘制前）读一次实际宽度，卸载时释放。Web Components 与原生脚本直接用 `observeBreakpoint`。只为改样子不要用它：能用皮肤的媒体查询或 flex-wrap 写的，留在 CSS 里。
+
 ## 光标矩形
 
 浮层要贴着输入框里的光标弹出时（如表达式补全），把光标矩形当作虚拟锚点：

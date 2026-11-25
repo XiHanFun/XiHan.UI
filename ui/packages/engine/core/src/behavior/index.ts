@@ -7,6 +7,8 @@
 
 export { expandIn, GHOST_ATTR, glideBy, glideFrom, INSTANT_ATTR, markGhost, STAGGER_CAP, STAGGER_INDEX_PROPERTY, trackAppearance, trackArrivals, trackDisclosureMotion, trackListMotion, trackReorder, tweenBlockSize, tweenBoxSize } from './arrival'
 export type { DisclosureMotion, TrackAppearanceOptions, TrackArrivalsOptions, TrackDisclosureMotionOptions, TrackListMotionOptions, TrackReorderOptions } from './arrival'
+export { BREAKPOINT_TIERS, observeBreakpoint } from './breakpoint'
+export type { Breakpoint, BreakpointObserver, BreakpointObserverOptions, BreakpointTier } from './breakpoint'
 export { caretClientRect } from './caret/caret-rect'
 export { cascadeState, cascadeToggle, collapseChecked } from './collection/cascade'
 export type { CascadeNodeLike, CascadeState, CascadeStrategy } from './collection/cascade'

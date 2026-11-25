@@ -143,10 +143,10 @@ getter 的求值带一份记忆，钥匙有两把：渲染轮次与机器版本�
 
 ## 行为原语
 
-`@xihan-ui/react/behavior` 是单独的子入口，提供行为原语的 React 包装：滚动锁、悬停意图、滚动观察、贴底、连续输入检索五项：
+`@xihan-ui/react/behavior` 是单独的子入口，提供行为原语的 React 包装：滚动锁、悬停意图、滚动观察、贴底、连续输入检索与当前断点六项：
 
 ```tsx
-import { useHoverIntent, useScrollLock, useScrollTracker, useStickToBottom, useTypeahead } from "@xihan-ui/react/behavior";
+import { useBreakpoint, useHoverIntent, useScrollLock, useScrollTracker, useStickToBottom, useTypeahead } from "@xihan-ui/react/behavior";
 ```
 
 自建浮层时才需要。不使用的应用不需要把它计入主入口的体积。

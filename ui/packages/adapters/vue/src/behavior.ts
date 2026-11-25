@@ -13,6 +13,8 @@
 // 它们要按顺序接四五个东西，接错的表现是「点子菜单父层跟着关」这种不报错的怪症，
 // 那种场景请直接用库里现成的浮层组件。
 import type {
+  Breakpoint,
+  BreakpointObserver,
   HoverIntentOptions as CoreHoverIntentOptions,
   RuntimeConfig,
   ScrollMetrics,
@@ -28,9 +30,10 @@ import {
   createScrollTracker,
   createStickToBottom,
   createTypeahead,
+  observeBreakpoint,
   trackHoverIntent,
 } from '@xihan-ui/core'
-import { onMounted, onScopeDispose, ref, toValue, watch } from 'vue'
+import { onMounted, onScopeDispose, ref, shallowRef, toValue, watch } from 'vue'
 
 /**
  * 按需加解滚动锁。锁是引用计数的，多处同时加锁不会互相干扰。
@@ -163,6 +166,26 @@ export function useStickToBottom(options: StickToBottomOptions): StickToBottom {
   watch([() => options.scrollEl(), () => options.contentEl()], () => handle.retarget())
   onScopeDispose(() => handle.dispose())
   return { state, scrollToBottom: handle.scrollToBottom, retarget: handle.retarget }
+}
+
+/**
+ * 当前视口所在的断点档（base / sm / md / lg / xl）。宽度取断点令牌 `--xh-breakpoint-*`，
+ * 与皮肤的断点同一份；挂载之前（含服务端渲染）是 'base'，挂载后读一次实际宽度，跨档时更新。
+ */
+export function useBreakpoint(): Readonly<Ref<Breakpoint>> {
+  const current = shallowRef<Breakpoint>('base')
+  let observer: BreakpointObserver | null = null
+  onMounted(() => {
+    observer = observeBreakpoint({ onChange: (next) => {
+      current.value = next
+    } })
+    current.value = observer.current
+  })
+  onScopeDispose(() => {
+    observer?.dispose()
+    observer = null
+  })
+  return current
 }
 
 /** 连续输入字母跳转到匹配项的缓冲，超时自动清空。 */
