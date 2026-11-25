@@ -38,7 +38,7 @@ export interface NotificationServiceController<TCreate extends NotificationServi
   update: (id: string, options: TUpdate) => void
   dismiss: (id: string) => void
   dismissAll: () => void
-  /** 队列因 max/priority 挤条后，用实际存活 id 回收孤立动作。 */
+  /** 队列因 maxVisible/priority 挤条后，用实际存活 id 回收孤立动作。 */
   syncItems: (ids: Iterable<string>) => void
   /** 单条真实退场完成：清动作表，并按宿主队列形态决定是否补删记录。 */
   unmounted: (id: string) => void

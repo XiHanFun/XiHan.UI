@@ -1,7 +1,7 @@
 import type { ConformanceSuite } from '../conformance/types'
 import { NOTIFICATION_PRESETS, notificationAnatomy, notificationKeyboard } from '@xihan-ui/headless'
 
-const NOTIFICATION_MAX = NOTIFICATION_PRESETS.card.max
+const NOTIFICATION_MAX = NOTIFICATION_PRESETS.card.maxVisible
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/alert/'
 
@@ -98,10 +98,10 @@ export const notificationSuite: ConformanceSuite = {
       },
     },
     {
-      name: 'max：每个位置只留窗口内的几条，其余不再渲染',
+      name: 'maxVisible：每个位置只留窗口内的几条，其余不再渲染',
       spec: { apg: APG },
       props: {
-        max: 2,
+        maxVisible: 2,
         defaultItems: [
           { id: 'a', placement: 'bottom-end' },
           { id: 'b', placement: 'bottom-end' },
@@ -117,7 +117,7 @@ export const notificationSuite: ConformanceSuite = {
       },
     },
     {
-      name: '不给 max：卡片每个位置默认只留 5 条，多出来的不再渲染',
+      name: '不给 maxVisible：卡片每个位置默认只留 5 条，多出来的不再渲染',
       spec: { apg: APG },
       props: {
         defaultItems: Array.from({ length: NOTIFICATION_MAX + 2 }, (_, i) => ({ id: `n${i}`, placement: 'bottom-end' as const })),
@@ -130,10 +130,10 @@ export const notificationSuite: ConformanceSuite = {
       },
     },
     {
-      name: 'max 给 Infinity 即不限：多少条都留',
+      name: 'maxVisible 给 Infinity 即不限：多少条都留',
       spec: { apg: APG },
       props: {
-        max: Number.POSITIVE_INFINITY,
+        maxVisible: Number.POSITIVE_INFINITY,
         defaultItems: Array.from({ length: NOTIFICATION_MAX + 2 }, (_, i) => ({ id: `n${i}`, placement: 'bottom-end' as const })),
       },
       initial: {

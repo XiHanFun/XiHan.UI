@@ -61,8 +61,8 @@ describe('通知服务的轻提示预设', () => {
     expect(titleTexts(cards())).toEqual(['二'])
   })
 
-  it('超过 max 的挤掉最旧的', async () => {
-    const toast = createNotificationService({ preset: 'toast', max: 2 })
+  it('超过 maxVisible 的挤掉最旧的', async () => {
+    const toast = createNotificationService({ preset: 'toast', maxVisible: 2 })
     dispose.push(() => toast.dispose())
     toast.info('一')
     toast.info('二')

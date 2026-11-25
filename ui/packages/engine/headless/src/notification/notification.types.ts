@@ -44,7 +44,7 @@ export type NotificationPreset = 'card' | 'toast'
 export interface NotificationPresetDefaults {
   placement: NotificationPlacement
   /** 每个位置最多同时保留几条。 */
-  max: number
+  maxVisible: number
   /** 同一摞内的间距（px）。 */
   gap: number
   /** 单条未写 duration 时的停留毫秒。 */
@@ -131,7 +131,7 @@ export interface NotificationSchema extends MachineSchema {
     /** 默认落位：card 为 bottom-end，toast 为 bottom。 */
     placement?: NotificationPlacement
     /** 每个位置最多同时保留几条。最新的那一条一定留下，超出时在其余条目里先移除低优先级、同级中移除最旧的。card 为 5、toast 为 3；提供 Infinity 即不限。 */
-    max?: number
+    maxVisible?: number
     /** 重复的处理方式，默认 'id'。 */
     dedupe?: NotificationDedupe
     /** 同一组内的间距（px）：card 为 16、toast 为 12。 */
@@ -186,7 +186,7 @@ export interface NotificationApi<T extends PropTypes = PropTypes> {
   preset: NotificationPreset
   /** 是否叠成一摞，已补齐缺省。 */
   stacked: boolean
-  /** max 之内、按加入先后排列的可见条目，已补齐默认值。 */
+  /** maxVisible 之内、按加入先后排列的可见条目，已补齐默认值。 */
   visibleNotifications: ResolvedNotification[]
   /** 当前有条目的位置，按九宫格固定顺序。作者据此决定渲染哪几个 group。 */
   placements: NotificationPlacement[]

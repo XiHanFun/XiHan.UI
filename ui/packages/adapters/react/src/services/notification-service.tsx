@@ -47,7 +47,7 @@ export interface NotificationServiceOptions {
   /** 默认落位：card 为 bottom-end，toast 为 bottom；单条可用 options.placement 覆盖。 */
   placement?: NotificationPlacement
   /** 每个位置最多同时保留几条，超出时先移除低优先级的、同级中移除最旧的：card 为 5、toast 为 3；传 Infinity 即不限。 */
-  max?: number
+  maxVisible?: number
   /** 重复的判定方式，默认 'id'；传 'content' 则同一内容合并为一条并计数。 */
   dedupe?: NotificationDedupe
   /** 同一堆叠内的间距（px）：card 为 16、toast 为 12。 */

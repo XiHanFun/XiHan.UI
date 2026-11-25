@@ -1,4 +1,4 @@
-<!-- 上限与清空 | max 限制每个位置同时显示几条，最新的那一条一定留下，超出时移除其余里最旧的；dismissAll 直接清空队列，被移出的卡片由替身在原处淡出 -->
+<!-- 上限与清空 | maxVisible 限制每个位置同时显示几条，最新的那一条一定留下，超出时移除其余里最旧的；dismissAll 直接清空队列，被移出的卡片由替身在原处淡出 -->
 <script setup lang="ts">
 import {
   XhButton,
@@ -25,7 +25,7 @@ function nextTitle(): string {
 <template>
   <XhNotificationRoot
     v-slot="{ create, dismiss, dismissAll, count }"
-    :max="3"
+    :max-visible="3"
     :gap="12"
     :duration="20000"
   >

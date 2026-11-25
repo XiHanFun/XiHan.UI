@@ -23,7 +23,7 @@ const NOTIFICATION_TOAST_MAX = 3
 export const NOTIFICATION_PRESETS: Readonly<Record<NotificationPreset, Readonly<NotificationPresetDefaults>>> = Object.freeze({
   card: Object.freeze({
     placement: 'bottom-end',
-    max: NOTIFICATION_CARD_MAX,
+    maxVisible: NOTIFICATION_CARD_MAX,
     gap: 16,
     duration: NOTIFICATION_CARD_DURATION,
     stacked: false,
@@ -31,7 +31,7 @@ export const NOTIFICATION_PRESETS: Readonly<Record<NotificationPreset, Readonly<
   }),
   toast: Object.freeze({
     placement: 'bottom',
-    max: NOTIFICATION_TOAST_MAX,
+    maxVisible: NOTIFICATION_TOAST_MAX,
     gap: 12,
     duration: NOTIFICATION_TOAST_DURATION,
     stacked: true,

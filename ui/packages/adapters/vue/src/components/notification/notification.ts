@@ -49,7 +49,7 @@ export const XhNotificationRoot = defineComponent({
     defaultItems: { type: Array as PropType<NotificationRecord[]> },
     preset: { type: String as PropType<NotificationPreset> },
     placement: { type: String as PropType<NotificationPlacement> },
-    max: { type: Number },
+    maxVisible: { type: Number },
     dedupe: { type: String as PropType<NotificationDedupe> },
     gap: { type: Number },
     duration: { type: Number },

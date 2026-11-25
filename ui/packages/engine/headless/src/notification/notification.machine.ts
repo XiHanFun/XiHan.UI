@@ -62,20 +62,20 @@ export function notificationMergeTarget(
 }
 
 /**
- * 按 max 挤掉每个位置上多出来的条目，保持原有先后次序。
+ * 按 maxVisible 挤掉每个位置上多出来的条目，保持原有先后次序。
  * create 之后落一次，队列才不会无界地长；connect 读的时候再落一次，受控队列同样只显示窗口内的。
  *
  * 每个位置最新的那一条不进挤的名单：它是刚才那个操作的反馈，满员时先挤别人，不能一进来就被挤掉
  * （满屏警告时再点一下「保存成功」，成功那条不该凭空消失）。其余的挤的次序是「先低优先级、同优先级里先最旧」：
  * 一条报错不该被随后的五条提示顶掉；只留一格时最新一条照样留下，旧的报错让位。
- * 不给 max 用卡片预设的上限；Infinity 即不限，<=0 与 NaN 一并按不限处理。
+ * 不给 maxVisible 用卡片预设的上限；Infinity 即不限，<=0 与 NaN 一并按不限处理。
  */
 export function visibleNotifications(
   list: readonly NotificationRecord[],
-  max: number | undefined,
+  maxVisible: number | undefined,
   fallback: NotificationPlacement,
 ): NotificationRecord[] {
-  const limit = max ?? NOTIFICATION_PRESETS.card.max
+  const limit = maxVisible ?? NOTIFICATION_PRESETS.card.maxVisible
   if (!Number.isFinite(limit) || limit <= 0)
     return [...list]
 
@@ -214,7 +214,7 @@ export const notificationMachine = createMachine({
         }
         const preset = notificationPresetOf(prop('preset'))
         const fallback = prop('placement') ?? preset.placement
-        context.set('items', visibleNotifications([...list, e.item], prop('max') ?? preset.max, fallback))
+        context.set('items', visibleNotifications([...list, e.item], prop('maxVisible') ?? preset.maxVisible, fallback))
       },
       updateItem: ({ context, event }) => {
         const e = event.current()

@@ -57,7 +57,7 @@ describe('轻提示的队列口径', () => {
   })
 
   it('一条报错不会被随后的提示挤掉', async () => {
-    const toast = createNotificationService({ preset: 'toast', max: 2 })
+    const toast = createNotificationService({ preset: 'toast', maxVisible: 2 })
     toast.danger('同步失败', { duration: 0 })
     toast.info('第一条', { duration: 0 })
     toast.info('第二条', { duration: 0 })
@@ -154,8 +154,8 @@ describe('通知的可见条数上限', () => {
     notify.dispose()
   })
 
-  it('max 给 Infinity 即不限', async () => {
-    const notify = createNotificationService({ max: Number.POSITIVE_INFINITY })
+  it('maxVisible 给 Infinity 即不限', async () => {
+    const notify = createNotificationService({ maxVisible: Number.POSITIVE_INFINITY })
     for (let i = 1; i <= 7; i++)
       notify.info(`第 ${i} 条`, { duration: 0 })
     await tick()

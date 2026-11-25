@@ -6,7 +6,7 @@ import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it } from 'vitest'
 import { connectNotification, NOTIFICATION_PRESETS, notificationMachine, notificationPresetOf, notificationPriorityOf, visibleNotifications } from '../src/notification'
 
-const NOTIFICATION_MAX = NOTIFICATION_PRESETS.card.max
+const NOTIFICATION_MAX = NOTIFICATION_PRESETS.card.maxVisible
 
 type Props = NotificationSchema['props']
 
@@ -86,7 +86,7 @@ describe('挤条按优先级', () => {
 })
 
 describe('上限的缺省', () => {
-  it('不给 max：卡片预设每个位置默认只留 5 条，多出来的从队列里挤掉', () => {
+  it('不给 maxVisible：卡片预设每个位置默认只留 5 条，多出来的从队列里挤掉', () => {
     expect(NOTIFICATION_MAX).toBe(5)
     const q = makeQueue()
     for (let i = 1; i <= NOTIFICATION_MAX + 2; i++)
@@ -108,7 +108,7 @@ describe('上限的缺省', () => {
     q.stop()
   })
 
-  it('受控队列不给 max 同样只显示默认窗口内的', () => {
+  it('受控队列不给 maxVisible 同样只显示默认窗口内的', () => {
     const items = Array.from({ length: NOTIFICATION_MAX + 3 }, (_, i) => ({ id: `n${i}` }))
     const q = makeQueue({ items })
     expect(q.items().length).toBe(NOTIFICATION_MAX + 3)
@@ -116,8 +116,8 @@ describe('上限的缺省', () => {
     q.stop()
   })
 
-  it('max 给 Infinity 即不限', () => {
-    const q = makeQueue({ max: Number.POSITIVE_INFINITY })
+  it('maxVisible 给 Infinity 即不限', () => {
+    const q = makeQueue({ maxVisible: Number.POSITIVE_INFINITY })
     for (let i = 1; i <= 7; i++)
       q.api().create({ title: `第 ${i} 条` })
     expect(q.items().length).toBe(7)
@@ -126,7 +126,7 @@ describe('上限的缺省', () => {
   })
 
   it('非受控队列里被挤掉的那条直接丢弃，腾出位子也不回来', () => {
-    const q = makeQueue({ max: 2 })
+    const q = makeQueue({ maxVisible: 2 })
     const a = q.api().create({ title: 'a' })
     q.api().create({ title: 'b' })
     q.api().create({ title: 'c' })
@@ -141,7 +141,7 @@ describe('上限的缺省', () => {
   })
 
   it('受控队列只是不显示窗口外的：宿主那份 items 原样', () => {
-    const q = makeQueue({ max: 2, items: [{ id: 'a' }, { id: 'b' }, { id: 'c' }] })
+    const q = makeQueue({ maxVisible: 2, items: [{ id: 'a' }, { id: 'b' }, { id: 'c' }] })
     expect(q.items().length).toBe(3)
     expect(q.api().visibleNotifications.map(item => item.id)).toEqual(['b', 'c'])
     expect(q.api().count).toBe(2)
@@ -232,7 +232,7 @@ describe('预设', () => {
   })
 
   it('每一项都能单独改写：写了就以 prop 为准，预设只管没写的那几项', () => {
-    const q = makeQueue({ preset: 'toast', placement: 'top', max: 5, gap: 20, duration: 900, stacked: false, pauseOnPageIdle: false })
+    const q = makeQueue({ preset: 'toast', placement: 'top', maxVisible: 5, gap: 20, duration: 900, stacked: false, pauseOnPageIdle: false })
     const group = q.api().getGroupProps() as Record<string, unknown>
     expect(group['data-placement']).toBe('top')
     expect(group['data-stacked']).toBeUndefined()

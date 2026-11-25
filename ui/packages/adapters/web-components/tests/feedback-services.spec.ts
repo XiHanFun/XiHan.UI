@@ -61,8 +61,8 @@ describe('createNotificationService 的轻提示预设', () => {
     toast.dispose()
   })
 
-  it('max：超出上限挤掉最旧的那条', async () => {
-    const toast = createNotificationService({ preset: 'toast', max: 2 })
+  it('maxVisible：超出上限挤掉最旧的那条', async () => {
+    const toast = createNotificationService({ preset: 'toast', maxVisible: 2 })
     toast.info('第一条')
     toast.info('第二条')
     toast.info('第三条')

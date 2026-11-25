@@ -43,7 +43,7 @@ export function connectNotification<T extends PropTypes>(
   const defaults = notificationPresetOf(preset)
   const fallback = prop('placement') ?? defaults.placement
   const gap = prop('gap') ?? defaults.gap
-  const max = prop('max') ?? defaults.max
+  const maxVisible = prop('maxVisible') ?? defaults.maxVisible
   const stacked = prop('stacked') ?? defaults.stacked
   const pauseOnPageIdle = prop('pauseOnPageIdle') ?? defaults.pauseOnPageIdle
   const expanded = context.get('expanded')
@@ -67,7 +67,7 @@ export function connectNotification<T extends PropTypes>(
     }
   }
 
-  const list = visibleNotifications(context.get('items'), max, fallback).map(resolve)
+  const list = visibleNotifications(context.get('items'), maxVisible, fallback).map(resolve)
   const byPlacement = (placement: NotificationPlacement): ResolvedNotification[] =>
     list.filter(item => item.placement === placement)
 

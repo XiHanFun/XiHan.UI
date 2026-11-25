@@ -51,7 +51,7 @@ export interface XhNotificationRootProps extends RootElementProps {
   defaultItems?: NotificationRecord[]
   preset?: NotificationPreset
   placement?: NotificationPlacement
-  max?: number
+  maxVisible?: number
   dedupe?: NotificationDedupe
   gap?: number
   duration?: number
@@ -67,7 +67,7 @@ export function XhNotificationRoot({
   defaultItems,
   preset,
   placement,
-  max,
+  maxVisible,
   dedupe,
   gap,
   duration,
@@ -83,7 +83,7 @@ export function XhNotificationRoot({
     defaultItems,
     preset,
     placement,
-    max,
+    maxVisible,
     dedupe,
     gap,
     duration,

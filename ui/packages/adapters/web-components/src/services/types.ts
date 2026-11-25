@@ -52,7 +52,7 @@ export interface NotificationServiceOptions extends ServiceHostOptions {
   /** 默认落位：card 为 bottom-end，toast 为 bottom；单条可用 options.placement 覆盖。 */
   placement?: NotificationPlacement
   /** 每个位置最多同时留几条，超出先挤低优先级的、同级里挤最旧的：card 为 5、toast 为 3；给 Infinity 即不限。 */
-  max?: number
+  maxVisible?: number
   /** 重复怎么算，默认 'id'；给 'content' 则同一句话合并成一条并计数。 */
   dedupe?: NotificationDedupe
   /** 同一堆叠内的间距（px）：card 为 16、toast 为 12。 */

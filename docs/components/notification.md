@@ -38,7 +38,7 @@ placement 决定该堆叠贴视口的哪个角，更换的只是 group 上的 da
 
 ### 上限与清空
 
-max 限制每个位置同时显示几条，最新的那一条一定留下，超出时移除其余里最旧的；dismissAll 直接清空队列，被移出的卡片由替身在原处淡出
+maxVisible 限制每个位置同时显示几条，最新的那一条一定留下，超出时移除其余里最旧的；dismissAll 直接清空队列，被移出的卡片由替身在原处淡出
 
 <XhDemo src="notification/04-max" />
 
@@ -97,7 +97,7 @@ item-action-trigger 按下时先发 action 事件，再使该条进入退场；�
 - `preset` 决定一组缺省值：卡片落右下、每个位置最多 5 条、逐条排开、停留 5000ms；轻提示落底部居中、最多 3 条、叠成一摞、停留 4000ms，页面转入后台时暂停计时。每一项都可以用同名 prop 单独改写。
 - 九宫格落位，`placement` 决定整摞的位置，也可以逐条指定。
 - 正文（`item-description`）有上限：缺省是中档滚动面高（`--xh-viewport-h-md`，16rem），长文在正文里竖滚、滚到头不带动页面，标题与操作钮留在卡片上；`--xh-notification-description-max-h` 可以改这条上限。整摞是不吃指针、不裁切的视口定位面，撑出视口的部分既看不到也滚不到，所以卡片不随正文无限长高。
-- `max` 限制每个位置同时显示的条数。每个位置最新的那一条一定留下（刚才那个操作的反馈不会一进来就被挤掉），超出时在其余条目里先挤出低优先级，同级中挤出最旧的；设为 `Infinity` 即不限制。
+- `maxVisible` 限制每个位置同时显示的条数。每个位置最新的那一条一定留下（刚才那个操作的反馈不会一进来就被挤掉），超出时在其余条目里先挤出低优先级，同级中挤出最旧的；设为 `Infinity` 即不限制。
 - 同一个 id 再次发出即就地改写，位置不变，用于“处理中 → 已完成”；`loading` 期间换为加载环且不自动消失。
 - 每条自带计时与暂停：指针停在卡片上或焦点进入时暂停计时。`duration` 为 0 时常驻不消失。
 - `stacked` 把同一位置的几条叠成一摞：最新一条在最前，后层按层深收拢；鼠标或焦点进入后按真实高度展开，整摞计时一并按住，`Escape` 收起。
@@ -144,7 +144,7 @@ item-action-trigger 按下时先发 action 事件，再使该条进入退场；�
 | `defaultItems` | `NotificationRecord[]` |  |  |
 | `preset` | `NotificationPreset` |  | 形态预设，默认 card。决定下面几项未写时的缺省值，以及卡片排版与关闭钮档位。 |
 | `placement` | `NotificationPlacement` |  | 默认落位：card 为 bottom-end，toast 为 bottom。 |
-| `max` | `number` |  | 每个位置最多同时保留几条。最新的那一条一定留下，超出时在其余条目里先移除低优先级、同级中移除最旧的。card 为 5、toast 为 3；提供 Infinity 即不限。 |
+| `maxVisible` | `number` |  | 每个位置最多同时保留几条。最新的那一条一定留下，超出时在其余条目里先移除低优先级、同级中移除最旧的。card 为 5、toast 为 3；提供 Infinity 即不限。 |
 | `dedupe` | `NotificationDedupe` |  | 重复的处理方式，默认 'id'。 |
 | `gap` | `number` |  | 同一组内的间距（px）：card 为 16、toast 为 12。 |
 | `duration` | `number` |  | 单条未写 duration 时的默认停留毫秒：card 为 5000、toast 为 4000。 |
@@ -236,7 +236,7 @@ item-action-trigger 按下时先发 action 事件，再使该条进入退场；�
 | --- | --- | --- |
 | `preset` | `NotificationPreset` | 形态预设，已补齐缺省。 |
 | `stacked` | `boolean` | 是否叠成一摞，已补齐缺省。 |
-| `visibleNotifications` | `ResolvedNotification[]` | max 之内、按加入先后排列的可见条目，已补齐默认值。 |
+| `visibleNotifications` | `ResolvedNotification[]` | maxVisible 之内、按加入先后排列的可见条目，已补齐默认值。 |
 | `placements` | `NotificationPlacement[]` | 当前有条目的位置，按九宫格固定顺序。作者据此决定渲染哪几个 group。 |
 | `count` | `number` |  |
 | `getItemsByPlacement` | `(placement: NotificationPlacement) => ResolvedNotification[]` |  |

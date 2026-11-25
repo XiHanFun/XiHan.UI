@@ -49,7 +49,7 @@ export function createNotificationService(options: NotificationServiceOptions = 
 
   queue.preset = queueProps.preset
   queue.placement = queueProps.placement
-  queue.max = queueProps.max
+  queue.maxVisible = queueProps.maxVisible
   queue.dedupe = queueProps.dedupe
   queue.gap = queueProps.gap
   queue.duration = queueProps.duration

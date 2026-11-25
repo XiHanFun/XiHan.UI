@@ -48597,12 +48597,12 @@
             },
             {
               "kind": "field",
-              "name": "max",
+              "name": "maxVisible",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
-              "attribute": "max"
+              "attribute": "max-visible"
             },
             {
               "kind": "field",
@@ -48766,7 +48766,7 @@
               "type": {
                 "text": "ResolvedNotification[]"
               },
-              "description": "max 之内、按加入先后排列的可见条目，已补齐默认值，可直接展开给 `<xh-notification-item>`。",
+              "description": "maxVisible 之内、按加入先后排列的可见条目，已补齐默认值，可直接展开给 `<xh-notification-item>`。",
               "readonly": true
             },
             {
@@ -48852,8 +48852,8 @@
                 "text": "number | undefined"
               },
               "description": "每个位置最多同时保留几条，超出时先移除低优先级、同级中移除最旧的；card 为 5、toast 为 3，提供 Infinity 即不限",
-              "name": "max",
-              "fieldName": "max"
+              "name": "max-visible",
+              "fieldName": "maxVisible"
             },
             {
               "type": {

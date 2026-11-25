@@ -1,4 +1,4 @@
-// 上限与清空 | max 限制每个位置同时显示几条，最新的那一条一定留下，超出时移除其余里最旧的；dismissAll 直接清空队列，被移出的卡片由替身在原处淡出
+// 上限与清空 | maxVisible 限制每个位置同时显示几条，最新的那一条一定留下，超出时移除其余里最旧的；dismissAll 直接清空队列，被移出的卡片由替身在原处淡出
 import type { ReactNode } from "react";
 import {
   XhButton,
@@ -24,7 +24,7 @@ export default function Demo(): ReactNode {
   }
 
   return (
-    <XhNotificationRoot max={3} gap={12} duration={20000}>
+    <XhNotificationRoot maxVisible={3} gap={12} duration={20000}>
       {({ create, dismiss, dismissAll, count }) => (
         <>
           <XhButton

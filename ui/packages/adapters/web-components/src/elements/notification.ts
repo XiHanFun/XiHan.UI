@@ -39,7 +39,7 @@ import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 空串也当缺席：max="" 经 Number() 会变成 0，那会被当成不限而不是缺省
+// 空串也当缺席：maxVisible="" 经 Number() 会变成 0，那会被当成不限而不是缺省
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
@@ -64,7 +64,7 @@ function groupPlacement(el: HTMLElement): NotificationPlacement | undefined {
  * @customElement xh-notification
  * @attr {'card'|'toast'} preset - 形态预设，默认 card；toast 是轻提示。决定下面几项没写时的缺省值与卡片排版
  * @attr {'top-start'|'top'|'top-end'|'middle-start'|'middle'|'middle-end'|'bottom-start'|'bottom'|'bottom-end'} placement - 默认落位：card 为 bottom-end，toast 为 bottom
- * @attr {number} max - 每个位置最多同时保留几条，超出时先移除低优先级、同级中移除最旧的；card 为 5、toast 为 3，提供 Infinity 即不限
+ * @attr {number} max-visible - 每个位置最多同时保留几条，超出时先移除低优先级、同级中移除最旧的；card 为 5、toast 为 3，提供 Infinity 即不限
  * @attr {'id'|'content'} dedupe - 重复的处理方式，默认 id；content 则同一内容合并为一条并计数
  * @attr {number} gap - 同一组内的间距（px）：card 为 16、toast 为 12
  * @attr {number} duration - 单条未写 duration 时的默认停留毫秒：card 为 5000、toast 为 4000
@@ -85,7 +85,7 @@ export class XhNotificationElement extends XhElement {
     defaultItems: { attribute: false },
     preset: { converter: STRING_CONVERTER },
     placement: { converter: STRING_CONVERTER },
-    max: { converter: NUMBER_CONVERTER },
+    maxVisible: { converter: NUMBER_CONVERTER, attribute: 'max-visible' },
     dedupe: { converter: STRING_CONVERTER },
     gap: { converter: NUMBER_CONVERTER },
     duration: { converter: NUMBER_CONVERTER },
@@ -98,7 +98,7 @@ export class XhNotificationElement extends XhElement {
   declare defaultItems?: NotificationRecord[]
   declare preset?: NotificationPreset
   declare placement?: NotificationPlacement
-  declare max?: number
+  declare maxVisible?: number
   declare dedupe?: NotificationDedupe
   declare gap?: number
   declare duration?: number
@@ -121,7 +121,7 @@ export class XhNotificationElement extends XhElement {
       defaultItems: this.defaultItems,
       preset: this.preset,
       placement: this.placement,
-      max: this.max,
+      maxVisible: this.maxVisible,
       dedupe: this.dedupe,
       gap: this.gap,
       duration: this.duration,
@@ -164,7 +164,7 @@ export class XhNotificationElement extends XhElement {
     this.commands().dismissAll()
   }
 
-  /** max 之内、按加入先后排列的可见条目，已补齐默认值，可直接展开给 `<xh-notification-item>`。 */
+  /** maxVisible 之内、按加入先后排列的可见条目，已补齐默认值，可直接展开给 `<xh-notification-item>`。 */
   get visibleNotifications(): ResolvedNotification[] {
     return this.commands().visibleNotifications
   }

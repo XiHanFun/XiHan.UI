@@ -1,5 +1,5 @@
 // 轻提示预设的那一摞：缺省上限、叠放、展开与收起。
-// 真渲一台服务连发 20 条，DOM 里只挂 3 条，三条全落在视口内；对照 max: Infinity（不限）的同一批，
+// 真渲一台服务连发 20 条，DOM 里只挂 3 条，三条全落在视口内；对照 maxVisible: Infinity（不限）的同一批，
 // 20 条全挂上——缺省那个 3 就是把摞留在视口里的那道闸。
 //
 // 摞是 fixed 定位面，量的是它相对视口的几何，只有真实浏览器算得出来；
@@ -83,8 +83,8 @@ describe('轻提示预设的缺省上限', () => {
     expect(tops).toEqual([...tops].sort((a, b) => a - b))
   })
 
-  it('对照 max: Infinity 即不限：20 条都在折叠堆叠中', async () => {
-    const doc = await burst({ max: Number.POSITIVE_INFINITY })
+  it('对照 maxVisible: Infinity 即不限：20 条都在折叠堆叠中', async () => {
+    const doc = await burst({ maxVisible: Number.POSITIVE_INFINITY })
     const list = items(doc)
 
     expect(list).toHaveLength(BURST)

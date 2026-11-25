@@ -76,7 +76,7 @@ describe('feedback service controller', () => {
     expect(action).toHaveBeenCalledTimes(1)
   })
 
-  it('队列按 max/priority 挤条后回收孤立动作', () => {
+  it('队列按 maxVisible/priority 挤条后回收孤立动作', () => {
     const { queue } = makeQueue()
     const firstAction = vi.fn()
     const secondAction = vi.fn()
