@@ -151,6 +151,7 @@ import type { TreeTranslations } from '../tree/tree.types'
 import type { TruncateTranslations } from '../truncate/truncate.types'
 import type { TypographyTranslations } from '../typography/typography.types'
 import type { VirtualizerTranslations } from '../virtualizer/virtualizer.types'
+import type { VisuallyHiddenTranslations } from '../visually-hidden/visually-hidden.types'
 import type { WatermarkTranslations } from '../watermark/watermark.types'
 
 /** 按组件收纳的文案覆盖；date-field 与 date-picker 同一份文案。 */
@@ -299,5 +300,6 @@ export interface XhTranslationOverrides {
   'truncate'?: Partial<TruncateTranslations>
   'typography'?: Partial<TypographyTranslations>
   'virtualizer'?: Partial<VirtualizerTranslations>
+  'visually-hidden'?: Partial<VisuallyHiddenTranslations>
   'watermark'?: Partial<WatermarkTranslations>
 }

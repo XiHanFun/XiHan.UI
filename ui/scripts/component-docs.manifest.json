@@ -22,20 +22,16 @@
           "name": "下载触发器"
         },
         {
-          "id": "truncate",
-          "name": "文本截断"
-        },
-        {
           "id": "float-button",
           "name": "浮动按钮"
         },
         {
-          "id": "kbd",
-          "name": "键盘按键"
-        },
-        {
           "id": "icon",
           "name": "图标"
+        },
+        {
+          "id": "kbd",
+          "name": "键盘按键"
         },
         {
           "id": "scrollbar",
@@ -50,8 +46,16 @@
           "name": "切换按钮组"
         },
         {
+          "id": "truncate",
+          "name": "文本截断"
+        },
+        {
           "id": "typography",
           "name": "排印"
+        },
+        {
+          "id": "visually-hidden",
+          "name": "视觉隐藏"
         },
         {
           "id": "watermark",

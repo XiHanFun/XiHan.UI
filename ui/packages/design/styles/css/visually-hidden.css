@@ -3,9 +3,15 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-/* 定义 visually hidden 样式。 */
+/* 定义 visually hidden 样式：工具类 .xh-visually-hidden 与组件 visually-hidden 的根是同一组声明。 */
 
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='visually-hidden'] {
+    --xh-visually-hidden-skin: 1;
+  }
+
+  /* 视觉隐藏的真源：屏幕上看不见、读屏照读，仍在布局与表单里（原生校验提示要一个可定位的框，所以不用 display: none） */
   .xh-visually-hidden {
     position: absolute;
     inline-size: 1px;
@@ -16,5 +22,30 @@
     clip-path: inset(50%);
     white-space: nowrap;
     border: 0;
+  }
+
+  [data-scope='visually-hidden'][data-part='root'] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* 可聚焦的那档：焦点进来时撤掉隐藏、回到正常排版，焦点离开再藏回去（给「跳到正文」这类跳转链接用）。
+     只撤藏法、不另铺面：显出来的样子与聚焦环都归里面那个可聚焦元素自己。
+     white-space 是继承属性，撤掉 nowrap 后跟回外层，不硬写 normal */
+  [data-scope='visually-hidden'][data-part='root'][data-focusable]:focus-within {
+    position: static;
+    inline-size: auto;
+    block-size: auto;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
+    white-space: inherit;
   }
 }

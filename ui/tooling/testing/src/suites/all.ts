@@ -144,6 +144,7 @@ import { treeSuite } from './tree.suite'
 import { truncateSuite } from './truncate.suite'
 import { typographySuite } from './typography.suite'
 import { virtualizerSuite } from './virtualizer.suite'
+import { visuallyHiddenSuite } from './visually-hidden.suite'
 import { watermarkSuite } from './watermark.suite'
 
 /** 全部一致性套件；新增组件在此登记一次。少登记一个，parity 覆盖门禁会红。 */
@@ -294,4 +295,5 @@ export const allSuites: readonly ConformanceSuite[] = [
   filterBuilderSuite,
   aspectRatioSuite,
   containerSuite,
+  visuallyHiddenSuite,
 ]

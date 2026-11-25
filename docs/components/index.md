@@ -10,14 +10,15 @@
 <XhComponentCard src="button-group" name="ButtonGroup" label="按钮组" href="/components/button-group" />
 <XhComponentCard src="clipboard" name="Clipboard" label="剪贴板" href="/components/clipboard" />
 <XhComponentCard src="download-trigger" name="DownloadTrigger" label="下载触发器" href="/components/download-trigger" />
-<XhComponentCard src="truncate" name="Truncate" label="文本截断" href="/components/truncate" />
 <XhComponentCard src="float-button" name="FloatButton" label="浮动按钮" href="/components/float-button" />
-<XhComponentCard src="kbd" name="Kbd" label="键盘按键" href="/components/kbd" />
 <XhComponentCard src="icon" name="Icon" label="图标" href="/components/icon" />
+<XhComponentCard src="kbd" name="Kbd" label="键盘按键" href="/components/kbd" />
 <XhComponentCard src="scrollbar" name="Scrollbar" label="滚动条" href="/components/scrollbar" />
 <XhComponentCard src="toggle" name="Toggle" label="切换按钮" href="/components/toggle" />
 <XhComponentCard src="toggle-group" name="ToggleGroup" label="切换按钮组" href="/components/toggle-group" />
+<XhComponentCard src="truncate" name="Truncate" label="文本截断" href="/components/truncate" />
 <XhComponentCard src="typography" name="Typography" label="排印" href="/components/typography" />
+<XhComponentCard src="visually-hidden" name="VisuallyHidden" label="视觉隐藏" href="/components/visually-hidden" />
 <XhComponentCard src="watermark" name="Watermark" label="水印" href="/components/watermark" />
 
 </div>

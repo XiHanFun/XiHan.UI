@@ -1,0 +1,22 @@
+<!-- 跳转链接 | 打开 focusable：平时藏着，按 Tab 进来时显出，按下直达正文 -->
+<xh-visually-hidden focusable>
+  <span data-xh-part="root">
+    <xh-button as="a">
+      <a data-xh-part="root" href="#visually-hidden-skip-main">跳到正文</a>
+    </xh-button>
+  </span>
+</xh-visually-hidden>
+<xh-typography>
+  <div data-xh-part="root">
+    <p data-xh-part="paragraph">
+      <a data-xh-part="link" href="#/">首页</a>
+      ·
+      <a data-xh-part="link" href="#/">组件</a>
+      ·
+      <a data-xh-part="link" href="#/">设计令牌</a>
+    </p>
+    <p data-xh-part="paragraph" id="visually-hidden-skip-main">
+      正文从这里开始。用键盘浏览时，跳转链接让人不必逐个按过导航里的每一项。
+    </p>
+  </div>
+</xh-typography>

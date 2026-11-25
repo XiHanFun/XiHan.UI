@@ -83879,6 +83879,79 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/visually-hidden.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-visually-hidden>`：Light-DOM 行为宿主，无状态机，把 connectVisuallyHidden 产出接到 root。\n\n作者写一个行内容器作为 root，要藏的内容写在里面，元素不改动其中的节点：\n屏幕上看不见、读屏照读，仍留在布局与表单里。藏法全在皮肤里，与工具类 `.xh-visually-hidden` 同一组声明。\n\n打上 `focusable` 后，root 里的链接或按钮获得焦点时整段显出来、回到正常排版，焦点离开再藏回去；\n显出来的样子与聚焦环都归里面那个可聚焦元素。",
+          "name": "XhVisuallyHiddenElement",
+          "cssParts": [
+            {
+              "description": "藏起来的行内容器，承载 data-focusable",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: visuallyHiddenAnatomy, meta: visuallyHiddenMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "focusable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "focusable"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "获得焦点时显出来，给「跳到正文」这类跳转链接用；缺省一直藏着",
+              "name": "focusable",
+              "fieldName": "focusable"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-visually-hidden",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhVisuallyHiddenElement",
+          "declaration": {
+            "name": "XhVisuallyHiddenElement",
+            "module": "src/elements/visually-hidden.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/watermark.ts",
       "declarations": [
         {

@@ -153,6 +153,7 @@ import { XhTreeSelectElement } from './elements/tree-select'
 import { XhTruncateElement } from './elements/truncate'
 import { XhTypographyElement } from './elements/typography'
 import { XhVirtualizerElement } from './elements/virtualizer'
+import { XhVisuallyHiddenElement } from './elements/visually-hidden'
 import { XhWatermarkElement } from './elements/watermark'
 import { defineElement } from './runtime/registry'
 
@@ -308,6 +309,7 @@ const XH_ELEMENTS = {
   'xh-truncate': XhTruncateElement,
   'xh-typography': XhTypographyElement,
   'xh-virtualizer': XhVirtualizerElement,
+  'xh-visually-hidden': XhVisuallyHiddenElement,
   'xh-watermark': XhWatermarkElement,
 } as const
 
@@ -510,5 +512,6 @@ export {
   XhTruncateElement,
   XhTypographyElement,
   XhVirtualizerElement,
+  XhVisuallyHiddenElement,
   XhWatermarkElement,
 }

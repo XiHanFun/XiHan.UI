@@ -3343,6 +3343,8 @@ export type {
   XhVirtualizerRootProps,
   XhVirtualizerViewportProps,
 } from './components/virtualizer/virtualizer'
+export { XhVisuallyHidden } from './components/visually-hidden/visually-hidden'
+export type { XhVisuallyHiddenProps } from './components/visually-hidden/visually-hidden'
 export { useWatermarkContext } from './components/watermark/context'
 export type { WatermarkContext } from './components/watermark/context'
 export { XhWatermarkContent, XhWatermarkRoot } from './components/watermark/watermark'

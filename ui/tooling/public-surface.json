@@ -3139,6 +3139,8 @@
       "XhVirtualizerViewport",
       "XhVirtualizerViewportProps",
       "XhVisualEnvironmentConfig",
+      "XhVisuallyHidden",
+      "XhVisuallyHiddenProps",
       "XhWatermarkContent",
       "XhWatermarkContentProps",
       "XhWatermarkRoot",
@@ -6365,6 +6367,8 @@
       "XhVirtualizerViewport",
       "XhVirtualizerViewportProps",
       "XhVisualEnvironmentConfig",
+      "XhVisuallyHidden",
+      "XhVisuallyHiddenProps",
       "XhWatermarkContent",
       "XhWatermarkContentProps",
       "XhWatermarkRoot",
@@ -6936,6 +6940,7 @@
       "XhTypographyElement",
       "XhVirtualizerElement",
       "XhVisualEnvironmentConfig",
+      "XhVisuallyHiddenElement",
       "XhWatermarkElement",
       "createAuthoredElement",
       "createColumnStore",
@@ -10044,6 +10049,9 @@
       "VirtualizerSnapshot",
       "VirtualizerTranslations",
       "VirtualizerWindow",
+      "VisuallyHiddenApi",
+      "VisuallyHiddenProps",
+      "VisuallyHiddenTranslations",
       "WatermarkApi",
       "WatermarkImageSize",
       "WatermarkPattern",
@@ -10452,6 +10460,7 @@
       "connectTruncate",
       "connectTypography",
       "connectVirtualizer",
+      "connectVisuallyHidden",
       "connectWatermark",
       "containerAnatomy",
       "containerKeyboard",
@@ -11387,6 +11396,9 @@
       "virtualizerTotalSize",
       "visibleCountOf",
       "visibleNotifications",
+      "visuallyHiddenAnatomy",
+      "visuallyHiddenKeyboard",
+      "visuallyHiddenMeta",
       "watermarkAnatomy",
       "watermarkKeyboard",
       "watermarkMachine",
@@ -14546,6 +14558,9 @@
       "root",
       "viewport"
     ],
+    "visually-hidden": [
+      "root"
+    ],
     "watermark": [
       "content",
       "root"
@@ -17188,6 +17203,9 @@
       "stickyIndices",
       "viewportTabIndex"
     ],
+    "visually-hidden": [
+      "focusable"
+    ],
     "watermark": [
       "fontFamily",
       "fontSize",
@@ -17289,6 +17307,7 @@
     "data-fixed",
     "data-flip",
     "data-focus",
+    "data-focusable",
     "data-foldable",
     "data-folded",
     "data-follow-cursor",
@@ -26135,6 +26154,12 @@
       "events": [
         "range-change"
       ]
+    },
+    "xh-visually-hidden": {
+      "attributes": [
+        "focusable"
+      ],
+      "events": []
     },
     "xh-watermark": {
       "attributes": [
