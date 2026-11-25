@@ -27,8 +27,8 @@
     "upgrade": "pnpm upgrade",
     "reinstall": "pnpm run clean:modules && pnpm install --frozen-lockfile",
     "rebuild": "pnpm run clean && pnpm run build",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint": "eslint . --concurrency 4",
+    "lint:fix": "eslint . --concurrency 4 --fix"
   },
   "dependencies": {
     "@xihan-ui/animations": "link:../ui/packages/features/animations",
