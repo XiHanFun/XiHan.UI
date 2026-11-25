@@ -35,7 +35,7 @@ describe('fieldArray 接入 FormPath', () => {
         onValuesChange={onValuesChange}
       >
         {() => (
-          <XhFieldArrayRoot name={users} movable>
+          <XhFieldArrayRoot name={users} reorderable>
             {({ items }) => items.map(item => (
               <XhFieldArrayItem key={item.key} index={item.index}>
                 <XhFieldArrayMoveUpTrigger>上移</XhFieldArrayMoveUpTrigger>

@@ -36,7 +36,7 @@ describe('fieldArray 不给 children：照标准结构铺，逐行内容由渲�
     const el = mount(
       <XhFieldArrayRoot
         defaultValue={['甲', '乙']}
-        movable
+        reorderable
         renderItemContent={item => <input defaultValue={String(item.value)} data-row={item.key} />}
       />,
     )

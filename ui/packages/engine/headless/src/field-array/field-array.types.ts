@@ -82,7 +82,7 @@ export interface FieldArrayItem {
   canRemove: boolean
   canMoveUp: boolean
   canMoveDown: boolean
-  /** 这一行能用拖动把手拖动换序：开了 movable、没禁用没只读。 */
+  /** 这一行能用拖动把手拖动换序：开了 reorderable、没禁用没只读。 */
   canDrag: boolean
 }
 
@@ -123,7 +123,7 @@ export interface FieldArraySchema extends MachineSchema {
      * 是否显示换序把手。关闭（默认）时上移、下移与拖动三个把手一律收起。
      * 拖动把手只接指针（键盘与读屏用上移、下移），由适配器接上 sortable 的机器（见 fieldArrayDragProps）。
      */
-    movable?: boolean
+    reorderable?: boolean
     /**
      * 表格排布下行尾把手钉在末端侧（缺省 true）：表格区横向滚动时把手留在原处，其余格子从下面滑过。
      * 关掉时把手随行一起滚动，滚到末端才露出来；钉住的两侧占掉滚动区大半、中间的格子怎么滚都看不全时关掉它。
@@ -236,7 +236,7 @@ export interface FieldArrayApi<T extends PropTypes = PropTypes> {
   disabled: boolean
   readOnly: boolean
   invalid: boolean
-  movable: boolean
+  reorderable: boolean
   /** 表格排布下行尾把手钉在末端侧，见 stickyActions。 */
   stickyActions: boolean
   /** 正有一行被拖动把手拖着（接了拖动时才可能为真）。 */

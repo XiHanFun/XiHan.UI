@@ -29,7 +29,7 @@ describe('fieldArray 接入 FormPath', () => {
     ])
     form.addEventListener('values-change', event => onValuesChange((event as CustomEvent).detail))
     array.name = users
-    array.movable = true
+    array.reorderable = true
     array.innerHTML = `
       <div data-xh-part="root">
         <div data-xh-part="item" index="0"><button data-xh-part="move-up-trigger">上移</button></div>
@@ -53,7 +53,7 @@ describe('fieldArray 命令式方法', () => {
   it('insert 插在指定位置、move 一步挪到任意位置，都经 value-change 报出', async () => {
     const array = document.createElement('xh-field-array') as XhFieldArrayElement
     const onValueChange = vi.fn()
-    array.movable = true
+    array.reorderable = true
     array.defaultValue = ['甲', '丙']
     array.createItem = () => '空'
     array.addEventListener('value-change', event => onValueChange((event as CustomEvent).detail))

@@ -33,7 +33,7 @@ describe('fieldArray 接入 FormPath', () => {
         ]),
         onValuesChange,
       }, {
-        default: () => h(XhFieldArrayRoot, { name: users, movable: true }, {
+        default: () => h(XhFieldArrayRoot, { name: users, reorderable: true }, {
           default: ({ items }: { items: Array<{ key: string, index: number }> }) => items.map(item => h(XhFieldArrayItem, { key: item.key, index: item.index }, {
             default: () => h(XhFieldArrayMoveUpTrigger, () => '上移'),
           })),

@@ -50,7 +50,7 @@ export interface XhFieldArrayRootProps extends Omit<ComponentPropsWithRef<'div'>
   max?: number
   /** 新增一行时构造一个空项；未提供时插入一个 null。 */
   createItem?: () => unknown
-  movable?: boolean
+  reorderable?: boolean
   /** 表格排布下行尾把手钉在末端侧，缺省 true；关掉时把手随行一起横向滚动。 */
   stickyActions?: boolean
   disabled?: boolean
@@ -78,7 +78,7 @@ export function XhFieldArrayRoot({
   min,
   max,
   createItem,
-  movable,
+  reorderable,
   stickyActions,
   disabled,
   readOnly,
@@ -101,7 +101,7 @@ export function XhFieldArrayRoot({
     min,
     max,
     createItem,
-    movable,
+    reorderable,
     stickyActions,
     disabled,
     readOnly,

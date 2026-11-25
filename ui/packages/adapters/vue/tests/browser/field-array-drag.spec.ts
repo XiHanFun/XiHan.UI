@@ -44,7 +44,7 @@ async function mount(): Promise<{ value: () => unknown[], mutations: Mutation[] 
   const mutations: Mutation[] = []
   app = createApp(defineComponent({
     setup: () => () => h(XhFieldArrayRoot, {
-      'movable': true,
+      'reorderable': true,
       'value': value.value,
       'onValue-change': (details: { value: unknown[], mutation?: Mutation }) => {
         if (details.mutation)
@@ -92,7 +92,7 @@ async function drag(handle: HTMLElement, target: { x: number, y: number }): Prom
 }
 
 describe('vue 字段数组的拖动把手', () => {
-  it('标准结构开了 movable 就铺拖动把手：不占 Tab 位、对读屏隐藏', async () => {
+  it('标准结构开了 reorderable 就铺拖动把手：不占 Tab 位、对读屏隐藏', async () => {
     await mount()
     const handle = grip(rows()[0]!)
     expect([handle.hidden, handle.getAttribute('tabindex'), handle.getAttribute('aria-hidden')]).toEqual([false, '-1', 'true'])

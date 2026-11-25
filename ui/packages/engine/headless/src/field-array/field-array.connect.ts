@@ -49,7 +49,7 @@ export function connectFieldArray<T extends PropTypes>(
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
   const name = prop('name')
-  const movable = !!prop('movable')
+  const reorderable = !!prop('reorderable')
   const stickyActions = prop('stickyActions') !== false
   const min = rowBound(prop('min'))
   const max = rowBound(prop('max'))
@@ -83,9 +83,9 @@ export function connectFieldArray<T extends PropTypes>(
   // 作者声明的下标可能指到列表外（行数刚变、声明还没跟上），一律按"这一行不在"处理
   const inRange = (index: number): boolean => Number.isInteger(index) && index >= 0 && index < count
   const canRemove = (index: number): boolean => editable && !atMin && inRange(index)
-  const canMoveUp = (index: number): boolean => editable && movable && inRange(index) && index > 0
-  const canMoveDown = (index: number): boolean => editable && movable && inRange(index) && index + 1 < count
-  const canDrag = (index: number): boolean => editable && movable && inRange(index)
+  const canMoveUp = (index: number): boolean => editable && reorderable && inRange(index) && index > 0
+  const canMoveDown = (index: number): boolean => editable && reorderable && inRange(index) && index + 1 < count
+  const canDrag = (index: number): boolean => editable && reorderable && inRange(index)
   // 行内把手按行序号记按压：行换位后号跟着行走，按 index 记会在换序那一下认错把手
   const rowKey = (index: number): string => keys[index] ?? fallbackKey(index)
 
@@ -160,7 +160,7 @@ export function connectFieldArray<T extends PropTypes>(
       // 把手里通常只有一个箭头，不给名字读屏念不出这是在挪第几行
       'aria-label': text(item.index + 1, count),
       // 不换序时整对把手收起：留一对永远按不动的按钮只会占位
-      'hidden': movable ? undefined : true,
+      'hidden': reorderable ? undefined : true,
       // 一律 aria-disabled 不用原生 disabled：原生 disabled 不派 click，禁用守卫就走不到
       'aria-disabled': enabled ? 'false' : 'true',
       'data-disabled': dataAttr(!enabled),
@@ -185,7 +185,7 @@ export function connectFieldArray<T extends PropTypes>(
     disabled,
     readOnly,
     invalid,
-    movable,
+    reorderable,
     stickyActions,
     dragging: !!sortable?.dragging,
     layout,
@@ -211,7 +211,7 @@ export function connectFieldArray<T extends PropTypes>(
       'data-empty': dataAttr(empty),
       'data-at-min': dataAttr(atMin),
       'data-at-max': dataAttr(atMax),
-      'data-movable': dataAttr(movable),
+      'data-reorderable': dataAttr(reorderable),
       // 正有一行被拖着：皮肤据此关掉选中、让其余各行的让位走过渡
       'data-dragging': dataAttr(!!sortable?.dragging),
       'data-layout': layout,
@@ -379,7 +379,7 @@ export function connectFieldArray<T extends PropTypes>(
         'type': 'button',
         'tabindex': -1,
         'aria-hidden': true,
-        'hidden': movable ? undefined : true,
+        'hidden': reorderable ? undefined : true,
         'data-disabled': dataAttr(!enabled || !grip),
         ...(grip
           ? {

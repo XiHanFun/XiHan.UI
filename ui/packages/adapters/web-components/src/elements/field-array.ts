@@ -38,7 +38,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * 元素运行 field-array 状态机并把 connect 产出接上。
  *
  * 值是宿主自己的数据数组，元素只负责增删与换序这套动作，行中放置的控件由作者写进 item-content。
- * 不写部件（或只写 root）时元素按标准结构生成：列表排布下每行是行号、作者内容与把手（开了 movable 时有拖动、上移与下移，
+ * 不写部件（或只写 root）时元素按标准结构生成：列表排布下每行是行号、作者内容与把手（开了 reorderable 时有拖动、上移与下移，
  * 再是删除），表格排布下是表格本体里的表头与各行、行里每列一格；最后是新增把手（文字取 translations.addTrigger）。
  * 每行的作者内容写在宿主的直接子节点上：列表排布 `slot="item-content:<行 key>"`，表格排布 `slot="item-cell:<行 key>:<列 id>"`，
  * 元素把它挪进对应的格子；行 key 从只读的 `items` 上读，换序时内容跟着行走。没给内容的行就空着，不报缺部件。
@@ -54,7 +54,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @customElement xh-field-array
  * @attr {number} min - 最少行数；到达后删除把手不可按下
  * @attr {number} max - 最多行数；到达后新增把手不可按下
- * @attr {boolean} movable - 是否显示换序把手；关闭时拖动、上移与下移三个把手一律收起
+ * @attr {boolean} reorderable - 是否显示换序把手；关闭时拖动、上移与下移三个把手一律收起
  * @attr {boolean} sticky-actions - 表格排布下行尾把手钉在末端侧，默认 true；写 sticky-actions="false" 关闭，把手随行一起横向滚动
  * @attr {boolean} disabled - 禁用：新增、删除、换序三路都不可按下
  * @attr {boolean} read-only - 只读：行数不可修改，行内的控件由作者自行设置只读
@@ -62,7 +62,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {'list'|'table'} layout - 排布：list（缺省）一行一条纵向堆叠；table 是 role=table 的表格，表头与各行共用一套列宽
  * @attr {string} name - 整份数组的表单字段名；嵌套 Form 时自动使用同一条 FormPath 真源
  * @fires value-change - 数据数组变化；detail 为 `{ value: unknown[], mutation? }`，本组的增、删、移与整份写值带上 mutation（insert / remove / move / replace）
- * @csspart root - 整份列表的容器，承载 data-disabled / data-empty / data-at-min / data-at-max / data-movable / data-layout；两种排布下都不带角色
+ * @csspart root - 整份列表的容器，承载 data-disabled / data-empty / data-at-min / data-at-max / data-reorderable / data-layout；两种排布下都不带角色
  * @csspart table - 表格排布的表格本体（role=table），表头与各行放在它里面，add-trigger 仍是 root 的最后一个子节点；
  *   放进字段时字段的标签与说明接到它上面，不在字段里时宿主上的 aria-label 转给它。列表排布下不带角色
  * @csspart header - 表格排布的表头行（role=row，第 1 行）；列表排布下收起
@@ -101,7 +101,7 @@ export class XhFieldArrayElement extends XhElement {
     min: { converter: NUMBER_CONVERTER },
     max: { converter: NUMBER_CONVERTER },
     createItem: { attribute: false },
-    movable: { converter: BOOLEAN_CONVERTER },
+    reorderable: { converter: BOOLEAN_CONVERTER },
     stickyActions: { converter: BOOLEAN_CONVERTER, attribute: 'sticky-actions' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
@@ -118,7 +118,7 @@ export class XhFieldArrayElement extends XhElement {
   declare min?: number
   declare max?: number
   declare createItem?: () => unknown
-  declare movable?: boolean
+  declare reorderable?: boolean
   declare stickyActions?: boolean
   declare disabled?: boolean
   declare readOnly?: boolean
@@ -167,7 +167,7 @@ export class XhFieldArrayElement extends XhElement {
       min: this.min,
       max: this.max,
       createItem: this.createItem,
-      movable: this.movable ?? false,
+      reorderable: this.reorderable ?? false,
       stickyActions: this.stickyActions,
       disabled: control.disabled,
       readOnly: control.readOnly,
@@ -215,7 +215,7 @@ export class XhFieldArrayElement extends XhElement {
     this.commands().remove(index)
   }
 
-  /** 把第 from 行挪到第 to 行的位置；要求开启 movable。 */
+  /** 把第 from 行挪到第 to 行的位置；要求开启 reorderable。 */
   move(from: number, to: number): void {
     this.commands().move(from, to)
   }
@@ -289,17 +289,17 @@ export class XhFieldArrayElement extends XhElement {
         this.spreader.spread(trigger, api.getItemDeleteTriggerProps(item))
       for (const trigger of this.partsIn(el, 'item-drag-trigger')) {
         this.spreader.spread(trigger, api.getItemDragTriggerProps(item))
-        this.setPartHidden(trigger, !api.movable)
+        this.setPartHidden(trigger, !api.reorderable)
       }
       // 不换序时把这对把手收起。只写 hidden 属性是不够的：作者层给这个 part 声明的任何一条
       // display 都会盖过 UA 的 [hidden]{display:none}，只有内联 style.display 压得住
       for (const trigger of this.partsIn(el, 'move-up-trigger')) {
         this.spreader.spread(trigger, api.getMoveUpTriggerProps(item))
-        this.setPartHidden(trigger, !api.movable)
+        this.setPartHidden(trigger, !api.reorderable)
       }
       for (const trigger of this.partsIn(el, 'move-down-trigger')) {
         this.spreader.spread(trigger, api.getMoveDownTriggerProps(item))
-        this.setPartHidden(trigger, !api.movable)
+        this.setPartHidden(trigger, !api.reorderable)
       }
     })
   }

@@ -26,7 +26,7 @@ function mountArray(): void {
   host.style.inlineSize = '360px'
   document.body.append(host)
   app = createApp({
-    render: () => h(XhFieldArrayRoot, { defaultValue: ['甲', '乙', '丙'], movable: true }, () => [
+    render: () => h(XhFieldArrayRoot, { defaultValue: ['甲', '乙', '丙'], reorderable: true }, () => [
       ...[0, 1, 2].map(index => h(XhFieldArrayItem, { index }, () => [
         h(XhFieldArrayItemContent, null, () => [h('input')]),
         h(XhFieldArrayItemAction, null, () => [

@@ -34,7 +34,7 @@ export default function Demo(): ReactNode {
     <XhFieldArrayRoot
       value={headers}
       onValueChange={details => setHeaders(details.value as Header[])}
-      movable
+      reorderable
       createItem={() => ({ name: "", value: "" })}
       style={{ inlineSize: "100%", maxInlineSize: "480px" }}
     >

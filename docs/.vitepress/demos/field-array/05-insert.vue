@@ -25,7 +25,7 @@ function setAt(index: number, next: string) {
   <XhFieldArrayRoot
     v-slot="{ items, insert, move }"
     v-model:value="steps"
-    movable
+    reorderable
     :create-item="() => ''"
     style="inline-size: 100%; max-inline-size: 480px"
   >

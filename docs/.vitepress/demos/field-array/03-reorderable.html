@@ -1,11 +1,11 @@
 <!-- 排序 | 按住把手拖动，或上移、下移字段 -->
-<xh-field-array id="field-array-movable" movable>
+<xh-field-array id="field-array-reorderable" reorderable>
   <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 420px">
     <button data-xh-part="add-trigger">+ 添加一步</button>
   </div>
 </xh-field-array>
 
-<template id="field-array-movable-row">
+<template id="field-array-reorderable-row">
   <div data-xh-part="item">
     <div data-xh-part="item-content">
       <span style="inline-size: 1.5rem"></span>
@@ -27,10 +27,10 @@
 </template>
 
 <script type="module">
-  const host = document.getElementById("field-array-movable");
+  const host = document.getElementById("field-array-reorderable");
   const root = host.querySelector('[data-xh-part="root"]');
   const addTrigger = host.querySelector('[data-xh-part="add-trigger"]');
-  const template = document.getElementById("field-array-movable-row");
+  const template = document.getElementById("field-array-reorderable-row");
 
   let steps = ["拉取代码", "安装依赖", "跑构建", "发布"];
 

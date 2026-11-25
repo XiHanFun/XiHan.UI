@@ -150,7 +150,7 @@ const FIELD_ARRAY_ROW_SELECTOR = '[data-scope="field-array"][data-part="item"]'
 
 /**
  * 拖动换序用的 sortable 机器的 props：项是各行，标识取行 key，顺序就是行序；不换序、禁用或只读时拖不动。
- * 放下即按 from / to 换位，与上移、下移同一条路径（同受 movable 与禁用约束），各行滑进新位置由 sortable 负责。
+ * 放下即按 from / to 换位，与上移、下移同一条路径（同受 reorderable 与禁用约束），各行滑进新位置由 sortable 负责。
  * 拖动把手只接指针，sortable 的读屏播报用不上，不必给文案。
  */
 export function fieldArrayDragProps(service: Pick<Service<FieldArraySchema>, 'context' | 'refs' | 'prop' | 'send'>): Partial<SortableSchema['props']> {
@@ -160,7 +160,7 @@ export function fieldArrayDragProps(service: Pick<Service<FieldArraySchema>, 'co
   return {
     ids: keys,
     orientation: 'vertical',
-    disabled: !service.prop('movable') || !!service.prop('disabled') || !!service.prop('readOnly'),
+    disabled: !service.prop('reorderable') || !!service.prop('disabled') || !!service.prop('readOnly'),
     onSort: ({ from, to }) => service.send({ type: 'ITEM.MOVE', from, to, drag: true }),
   }
 }
@@ -246,7 +246,7 @@ export const fieldArrayMachine = createMachine({
     guards: {
       canAdd: params => !params.prop('disabled') && !params.prop('readOnly') && !atRowMax(fieldArrayValue(params).length, rowBound(params.prop('max'))),
       canRemove: params => !params.prop('disabled') && !params.prop('readOnly') && !atRowMin(fieldArrayValue(params).length, rowBound(params.prop('min'))),
-      canMove: params => !params.prop('disabled') && !params.prop('readOnly') && !!params.prop('movable'),
+      canMove: params => !params.prop('disabled') && !params.prop('readOnly') && !!params.prop('reorderable'),
       // 整体禁用 / 只读一律不进；到上下限、首末行这类逐个把手的「按不动」由 connect 随事件带来
       canPress: ({ prop, event }) => {
         const e = event.current()

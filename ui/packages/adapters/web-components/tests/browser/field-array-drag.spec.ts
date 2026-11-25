@@ -37,7 +37,7 @@ interface Mutation {
 
 /** 受控的字段数组：值变了写回，作者内容按行 key 补上（一行一段文字）。 */
 async function mount(layout: 'list' | 'table'): Promise<{ el: XhFieldArrayElement, mutations: Mutation[] }> {
-  document.body.innerHTML = `<div style="inline-size: 420px; padding: 16px"><xh-field-array movable layout="${layout}"></xh-field-array></div>`
+  document.body.innerHTML = `<div style="inline-size: 420px; padding: 16px"><xh-field-array reorderable layout="${layout}"></xh-field-array></div>`
   const el = document.querySelector<XhFieldArrayElement>('xh-field-array')!
   if (layout === 'table')
     el.columns = [{ id: 'name', label: '名称' }]
@@ -107,11 +107,11 @@ async function drag(handle: HTMLElement, target: { x: number, y: number }): Prom
 }
 
 describe('web components 字段数组的拖动把手', () => {
-  it('开了 movable 才有拖动把手；它不占 Tab 位、对读屏隐藏', async () => {
+  it('开了 reorderable 才有拖动把手；它不占 Tab 位、对读屏隐藏', async () => {
     const { el } = await mount('list')
     const handle = grip(rows(el)[0]!)
     expect([handle.hidden, handle.getAttribute('tabindex'), handle.getAttribute('aria-hidden'), handle.tagName]).toEqual([false, '-1', 'true', 'BUTTON'])
-    el.movable = false
+    el.reorderable = false
     await el.updateComplete
     expect(rows(el).every(row => grip(row) === null || grip(row).hidden || getComputedStyle(grip(row)).display === 'none')).toBe(true)
   })

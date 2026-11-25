@@ -158,7 +158,7 @@ const HOOKS = {
   'field-array:data-at-min': '到下限时删除钮置 aria-disabled，观感挂在那一位上（field-array.css:124）',
   'field-array:data-first': '第一条在形上与别的条目没有差别',
   'field-array:data-last': '最后一条在形上与别的条目没有差别',
-  'field-array:data-movable': '这份列表能不能排序。手柄本身收不收由 hidden 承载',
+  'field-array:data-reorderable': '这份列表能不能排序。手柄本身收不收由 hidden 承载',
   'file-upload:data-remote': '这条是不是已在服务端的旧文件，作者拿它决定要不要重传',
   'highlight:data-case-sensitive': '匹配时区不区分大小写，是查找入参不是外观',
   'loading-bar:data-indeterminate': '不知进度时涓流本身就是表达，不另给一档外观',

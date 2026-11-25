@@ -138,7 +138,7 @@ describe('行号：跟着增删换序走，不跟着行数据走', () => {
   })
 
   it('换序：号跟着这一行走', () => {
-    const service = makeService({ defaultValue: ['甲', '乙', '丙'], movable: true })
+    const service = makeService({ defaultValue: ['甲', '乙', '丙'], reorderable: true })
     const before = keys(service)
 
     api(service).moveUp(1)
@@ -193,18 +193,18 @@ describe('闸门：上下限与禁用', () => {
     expect(onValueChange).not.toHaveBeenCalled()
   })
 
-  it('没开 movable 就换不了序', () => {
+  it('没开 reorderable 就换不了序', () => {
     const service = makeService({ defaultValue: ['甲', '乙'] })
     api(service).moveDown(0)
     expect(api(service).value).toEqual(['甲', '乙'])
 
-    const movable = makeService({ defaultValue: ['甲', '乙'], movable: true })
-    api(movable).moveDown(0)
-    expect(api(movable).value).toEqual(['乙', '甲'])
+    const reorderable = makeService({ defaultValue: ['甲', '乙'], reorderable: true })
+    api(reorderable).moveDown(0)
+    expect(api(reorderable).value).toEqual(['乙', '甲'])
   })
 
   it('disabled 时三路都推不动，整份替换仍走得通', () => {
-    const service = makeService({ defaultValue: ['甲', '乙'], movable: true, disabled: true })
+    const service = makeService({ defaultValue: ['甲', '乙'], reorderable: true, disabled: true })
     api(service).add()
     api(service).remove(0)
     api(service).moveDown(0)
@@ -258,7 +258,7 @@ describe('焦点：把手离场或换位之后接得住', () => {
   })
 
   it('换序：焦点落到新位置上同方向的那个把手', async () => {
-    const service = makeService({ defaultValue: ['甲', '乙', '丙'], movable: true })
+    const service = makeService({ defaultValue: ['甲', '乙', '丙'], reorderable: true })
     const els = mountTriggers(service, 3)
     els.moveUp[2]!.focus()
 
@@ -355,7 +355,7 @@ describe('接入 FormPath：行号变更只在 Headless 真源迁移', () => {
         [lastEmail, { required: true }],
       ]),
     })
-    const rows = makeService({ name: users, movable: true })
+    const rows = makeService({ name: users, reorderable: true })
     rows.refs.set('form', form)
 
     form.send({ type: 'ERROR.SET', name: removedEmail, message: '将被删除' })
@@ -397,7 +397,7 @@ describe('接入 FormPath：行号变更只在 Headless 真源迁移', () => {
         { required: true, validator: () => new Promise<string | undefined>((resolve) => { resolveValidator = resolve }) },
       ]]),
     })
-    const rows = makeService({ name: users, movable: true })
+    const rows = makeService({ name: users, reorderable: true })
     rows.refs.set('form', form)
 
     form.send({ type: 'FIELD.SET', name: original, value: 'changed@example.com' })
@@ -433,7 +433,7 @@ describe('把手投影 Action Control 家族属性', () => {
   }
 
   it('三颗行内把手是只有字形的离散动作钮：icon ghost 档、xs 正方盒、常显', () => {
-    const service = makeService({ defaultValue: ['甲', '乙'], movable: true })
+    const service = makeService({ defaultValue: ['甲', '乙'], reorderable: true })
     const [row] = api(service).items
     const a = api(service)
     for (const props of [a.getItemDeleteTriggerProps(row!), a.getMoveUpTriggerProps(row!), a.getMoveDownTriggerProps(row!)]) {
@@ -502,7 +502,7 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () =
   })
 
   it('行内把手按行序号只亮那一颗；另一颗把手的 keyup 松不开正按着的这个', () => {
-    const service = makeService({ defaultValue: ['甲', '乙'], movable: true })
+    const service = makeService({ defaultValue: ['甲', '乙'], reorderable: true })
     del(service, 1).onKeyDown!(keyEvent('Enter'))
     expect(pressed(del(service, 1))).toBe(true)
     expect(pressed(del(service, 0))).toBe(false)
@@ -532,7 +532,7 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () =
   })
 
   it('按住途中这一行被挪走（Enter 在 keydown 即换序）：机器当场松开，号跟着行走、新位置上的把手也不带按压面', () => {
-    const service = makeService({ defaultValue: ['甲', '乙', '丙'], movable: true })
+    const service = makeService({ defaultValue: ['甲', '乙', '丙'], reorderable: true })
     down(service, 0).onKeyDown!(keyEvent('Enter'))
     expect(pressed(down(service, 0))).toBe(true)
     api(service).moveDown(0)
@@ -557,13 +557,13 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () =
 
   it('不进：整体禁用 / 只读；到上限的新增把手、到下限的删除把手、首行上移与末行下移都是 aria-disabled', () => {
     for (const props of [{ disabled: true }, { readOnly: true }]) {
-      const service = makeService({ defaultValue: ['甲', '乙'], movable: true, ...props })
+      const service = makeService({ defaultValue: ['甲', '乙'], reorderable: true, ...props })
       add(service).onKeyDown!(keyEvent(' '))
       del(service, 0).onPointerDown!(touch)
       up(service, 1).onKeyDown!(keyEvent('Enter'))
       expect(service.context.get('pressed')).toBeFalsy()
     }
-    const edge = makeService({ defaultValue: ['甲', '乙'], movable: true, min: 2, max: 2 })
+    const edge = makeService({ defaultValue: ['甲', '乙'], reorderable: true, min: 2, max: 2 })
     expect(add(edge)['aria-disabled']).toBe('true')
     add(edge).onKeyDown!(keyEvent(' '))
     expect(pressed(add(edge))).toBe(false)
@@ -649,7 +649,7 @@ describe('在指定位置插入', () => {
   })
 
   it('move 可以一步挪到任意位置，号跟着行走', () => {
-    const service = makeService({ defaultValue: ['甲', '乙', '丙', '丁'], movable: true })
+    const service = makeService({ defaultValue: ['甲', '乙', '丙', '丁'], reorderable: true })
     const before = keys(service)
     api(service).move(3, 0)
     expect(api(service).value).toEqual(['丁', '甲', '乙', '丙'])
@@ -683,7 +683,7 @@ describe('在指定位置插入', () => {
 describe('value-change 带上行变更', () => {
   it('非受控、不在表单里：增、删、移与整份写值各带对应的 mutation', () => {
     const onValueChange = vi.fn()
-    const service = makeService({ defaultValue: ['甲', '乙'], movable: true, onValueChange, createItem: () => '新' })
+    const service = makeService({ defaultValue: ['甲', '乙'], reorderable: true, onValueChange, createItem: () => '新' })
     api(service).add()
     api(service).remove(0)
     api(service).moveDown(0)
@@ -856,7 +856,7 @@ describe('表格排布：角色、行号与列轨道', () => {
 describe('value-change 处理函数里读到的行号', () => {
   it('增、删、移的通知派发时 items 已是随后落定的号：作者能当场按行 key 补上或删掉这一行的内容', async () => {
     const seen: string[][] = []
-    const props: Props = { defaultValue: ['甲', '乙'], movable: true, createItem: () => '新' }
+    const props: Props = { defaultValue: ['甲', '乙'], reorderable: true, createItem: () => '新' }
     const service = makeService(props)
     props.onValueChange = () => seen.push(keys(service))
     api(service).add()
@@ -888,8 +888,8 @@ describe('fieldArrayStructure', () => {
     expect(parts((row.children![2] as StructureNode).children!)).toEqual(['item-delete-trigger'])
   })
 
-  it('开了 movable 时把手是拖动、上移、下移、删除', () => {
-    const nodes = fieldArrayStructure(api(makeService({ defaultValue: ['甲'], movable: true }))) as StructureNode[]
+  it('开了 reorderable 时把手是拖动、上移、下移、删除', () => {
+    const nodes = fieldArrayStructure(api(makeService({ defaultValue: ['甲'], reorderable: true }))) as StructureNode[]
     expect(parts((nodes[0]!.children![2] as StructureNode).children!)).toEqual(['item-drag-trigger', 'move-up-trigger', 'move-down-trigger', 'item-delete-trigger'])
   })
 
@@ -917,7 +917,7 @@ describe('拖动把手', () => {
   }
 
   it('只接指针：不占 Tab 位、对读屏隐藏；不换序时收起；没接拖动时只是一颗按不动的空把手', () => {
-    const plain = api(makeService({ defaultValue: ['甲', '乙'], movable: true }))
+    const plain = api(makeService({ defaultValue: ['甲', '乙'], reorderable: true }))
     expect(plain.getItemDragTriggerProps({ index: 0 })).toMatchObject({
       'data-scope': 'field-array',
       'data-part': 'item-drag-trigger',
@@ -932,16 +932,16 @@ describe('拖动把手', () => {
   })
 
   it('sortable 的项是各行：标识取行 key，不换序、禁用或只读时拖不动', () => {
-    const { service } = withDrag({ defaultValue: ['甲', '乙', '丙'], movable: true })
+    const { service } = withDrag({ defaultValue: ['甲', '乙', '丙'], reorderable: true })
     expect(fieldArrayDragProps(service)).toMatchObject({ ids: keys(service), orientation: 'vertical', disabled: false })
     expect(fieldArrayDragProps(makeService({ defaultValue: ['甲'] })).disabled).toBe(true)
-    expect(fieldArrayDragProps(makeService({ defaultValue: ['甲'], movable: true, readOnly: true })).disabled).toBe(true)
-    expect(fieldArrayDragProps(makeService({ defaultValue: ['甲'], movable: true, disabled: true })).disabled).toBe(true)
+    expect(fieldArrayDragProps(makeService({ defaultValue: ['甲'], reorderable: true, readOnly: true })).disabled).toBe(true)
+    expect(fieldArrayDragProps(makeService({ defaultValue: ['甲'], reorderable: true, disabled: true })).disabled).toBe(true)
   })
 
   it('接了拖动：行带上 sortable 认的项标识，把手接上指针；放下按 move 换位，号跟着行走', () => {
     const changes: unknown[] = []
-    const { service, drag } = withDrag({ defaultValue: ['甲', '乙', '丙'], movable: true, onValueChange: details => changes.push(details) })
+    const { service, drag } = withDrag({ defaultValue: ['甲', '乙', '丙'], reorderable: true, onValueChange: details => changes.push(details) })
     const a = connectFieldArray(service, normalizeProps, drag)
     const before = keys(service)
     expect(a.getItemProps({ index: 1 })['data-value']).toBe(before[1])

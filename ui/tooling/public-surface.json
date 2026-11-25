@@ -14154,10 +14154,10 @@
       "layout",
       "max",
       "min",
-      "movable",
       "name",
       "onValueChange",
       "readOnly",
+      "reorderable",
       "stickyActions",
       "translations",
       "value"
@@ -16086,7 +16086,6 @@
     "data-min-col",
     "data-mode",
     "data-modules",
-    "data-movable",
     "data-moving",
     "data-multiline",
     "data-native",
@@ -16133,6 +16132,7 @@
     "data-register",
     "data-relative",
     "data-remote",
+    "data-reorderable",
     "data-required",
     "data-resizing",
     "data-reveal-mode",
@@ -22938,9 +22938,9 @@
         "layout",
         "max",
         "min",
-        "movable",
         "name",
         "read-only",
+        "reorderable",
         "sticky-actions"
       ],
       "events": [

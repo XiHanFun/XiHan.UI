@@ -99,7 +99,7 @@ export const fieldArraySuite: ConformanceSuite = {
             'data-empty': null,
             'data-at-min': null,
             'data-at-max': null,
-            'data-movable': null,
+            'data-reorderable': null,
           },
           'item[0]': { 'data-index': '0', 'data-first': '', 'data-last': null },
           'item[2]': { 'data-index': '2', 'data-first': null, 'data-last': '' },
@@ -173,12 +173,12 @@ export const fieldArraySuite: ConformanceSuite = {
       },
     },
     {
-      name: 'movable：换序把手露面；首行上不去、末行下不来',
+      name: 'reorderable：换序把手露面；首行上不去、末行下不来',
       spec: { apg: APG },
-      props: { defaultValue: ['甲', '乙', '丙'], movable: true },
+      props: { defaultValue: ['甲', '乙', '丙'], reorderable: true },
       initial: {
         parts: {
-          'root': { 'data-movable': '' },
+          'root': { 'data-reorderable': '' },
           'move-up-trigger[0]': {
             'hidden': null,
             'aria-disabled': 'true',
@@ -192,9 +192,9 @@ export const fieldArraySuite: ConformanceSuite = {
       },
     },
     {
-      name: 'movable：拖动把手只接指针，不占 Tab 位、对读屏隐藏；行带上拖动换序认的项标识（行 key）；不换序时收起',
+      name: 'reorderable：拖动把手只接指针，不占 Tab 位、对读屏隐藏；行带上拖动换序认的项标识（行 key）；不换序时收起',
       spec: { apg: APG },
-      props: { defaultValue: ['甲', '乙', '丙'], movable: true },
+      props: { defaultValue: ['甲', '乙', '丙'], reorderable: true },
       fixture: base => ({
         ...base,
         children: [
@@ -340,7 +340,7 @@ export const fieldArraySuite: ConformanceSuite = {
     {
       name: '上移一行：两项对调，焦点跟着这一行挪到新位置上的同一个把手',
       spec: { apg: APG },
-      props: { defaultValue: ['甲', '乙', '丙'], movable: true },
+      props: { defaultValue: ['甲', '乙', '丙'], reorderable: true },
       steps: [
         {
           kind: 'click',
@@ -357,7 +357,7 @@ export const fieldArraySuite: ConformanceSuite = {
     {
       name: '下移一行：与上移对称，焦点落到下移把手的新位置',
       spec: { apg: APG },
-      props: { defaultValue: ['甲', '乙', '丙'], movable: true },
+      props: { defaultValue: ['甲', '乙', '丙'], reorderable: true },
       steps: [
         {
           kind: 'click',
@@ -397,7 +397,7 @@ export const fieldArraySuite: ConformanceSuite = {
     {
       name: 'disabled：三类把手全部按不动，点了不发事件',
       spec: { apg: APG },
-      props: { defaultValue: ['甲', '乙', '丙'], movable: true, disabled: true },
+      props: { defaultValue: ['甲', '乙', '丙'], reorderable: true, disabled: true },
       initial: {
         parts: {
           'root': { 'data-disabled': '' },
@@ -417,7 +417,7 @@ export const fieldArraySuite: ConformanceSuite = {
       name: 'Space / Enter 按住与触屏按下：四类把手投影 data-pressed，抬起、失焦或指针取消撤下；按住本身不加行、不删行、不换序',
       spec: { adr: 'press-channel' },
       covers: ['field-array.kbd.press'],
-      props: { defaultValue: ['甲', '乙', '丙'], movable: true },
+      props: { defaultValue: ['甲', '乙', '丙'], reorderable: true },
       steps: [
         heldPress('field-array', 'add-trigger'),
         heldPress('field-array', 'item-delete-trigger', { selector: handle('item-delete-trigger', 1) }),
@@ -443,7 +443,7 @@ export const fieldArraySuite: ConformanceSuite = {
     {
       name: '按不动的把手不进入按压面：到上限的新增、到下限的删除、首行上移与末行下移都是 aria-disabled',
       spec: { adr: 'press-channel' },
-      props: { defaultValue: ['甲', '乙', '丙'], movable: true, min: 3, max: 3 },
+      props: { defaultValue: ['甲', '乙', '丙'], reorderable: true, min: 3, max: 3 },
       steps: [
         heldPressIgnored('field-array', 'add-trigger', '到 max 的新增把手 aria-disabled，不接受按压'),
         heldPressIgnored('field-array', 'item-delete-trigger', '到 min 的删除把手 aria-disabled，不接受按压', { selector: handle('item-delete-trigger', 0) }),
@@ -454,7 +454,7 @@ export const fieldArraySuite: ConformanceSuite = {
     {
       name: 'disabled / readOnly：四类把手全部 aria-disabled，按住不进入按压面',
       spec: { adr: 'press-channel' },
-      props: { defaultValue: ['甲', '乙', '丙'], movable: true, disabled: true },
+      props: { defaultValue: ['甲', '乙', '丙'], reorderable: true, disabled: true },
       steps: [
         heldPressIgnored('field-array', 'add-trigger', '禁用时新增把手 aria-disabled，不接受按压'),
         heldPressIgnored('field-array', 'item-delete-trigger', '禁用时删除把手 aria-disabled，不接受按压', { selector: handle('item-delete-trigger', 1) }),
@@ -465,7 +465,7 @@ export const fieldArraySuite: ConformanceSuite = {
     {
       name: 'readOnly：行数改不动，四类把手同样不进入按压面',
       spec: { adr: 'press-channel' },
-      props: { defaultValue: ['甲', '乙', '丙'], movable: true, readOnly: true },
+      props: { defaultValue: ['甲', '乙', '丙'], reorderable: true, readOnly: true },
       steps: [
         heldPressIgnored('field-array', 'add-trigger', '只读时新增把手 aria-disabled，不接受按压'),
         heldPressIgnored('field-array', 'item-delete-trigger', '只读时删除把手 aria-disabled，不接受按压', { selector: handle('item-delete-trigger', 1) }),
@@ -478,7 +478,7 @@ export const fieldArraySuite: ConformanceSuite = {
       spec: { apg: APG },
       props: {
         defaultValue: ['甲', '乙', '丙'],
-        movable: true,
+        reorderable: true,
         translations: {
           deleteItem: (index: number, count: number) => `删除第 ${index} 行，共 ${count} 行`,
           moveUpTrigger: (index: number) => `把第 ${index} 行往上挪`,
@@ -573,7 +573,7 @@ export const fieldArraySuite: ConformanceSuite = {
       name: '作者不写结构（列表排布）：三端都照 fieldArrayStructure 铺出每行的行号、内容格与把手，最后是新增钮；点删除钮摘掉那一行',
       spec: { apg: APG },
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
-      props: { defaultValue: ['甲', '乙'], movable: true },
+      props: { defaultValue: ['甲', '乙'], reorderable: true },
       initial: {
         order: [
           'root',

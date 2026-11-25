@@ -36,7 +36,7 @@ function patch(index: number, key: keyof Header, next: string) {
   <XhFieldArrayRoot
     v-slot="{ items }"
     v-model:value="headers"
-    movable
+    reorderable
     :create-item="() => ({ name: '', value: '' })"
     style="inline-size: 100%; max-inline-size: 480px"
   >

@@ -27,7 +27,7 @@ export default function Demo(): ReactNode {
     <XhFieldArrayRoot
       value={steps}
       onValueChange={details => setSteps(details.value as string[])}
-      movable
+      reorderable
       createItem={() => ""}
       style={{ inlineSize: "100%", maxInlineSize: "420px" }}
     >

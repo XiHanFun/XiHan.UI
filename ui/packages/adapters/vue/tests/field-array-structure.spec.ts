@@ -34,7 +34,7 @@ function parts(host: Element, name: string): HTMLElement[] {
 describe('fieldArray 不写默认插槽：照标准结构铺，逐行内容由插槽给', () => {
   it('列表排布：item-content 插槽拿到这一行，内容落在这一行的内容格里；换序后跟着行走', async () => {
     const seen: FieldArrayItem[] = []
-    const host = mount(() => h(XhFieldArrayRoot, { defaultValue: ['甲', '乙'], movable: true }, {
+    const host = mount(() => h(XhFieldArrayRoot, { defaultValue: ['甲', '乙'], reorderable: true }, {
       'item-content': ({ item }: FieldArrayItemContentSlotProps) => {
         seen.push(item)
         return [h('input', { 'value': String(item.value), 'data-row': item.key })]

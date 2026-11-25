@@ -12,7 +12,7 @@ interface FieldArrayHost extends HTMLElement {
   updateComplete: Promise<unknown>
   defaultValue?: unknown[]
   createItem?: () => unknown
-  movable?: boolean
+  reorderable?: boolean
   layout?: 'list' | 'table'
   columns?: FieldArrayColumn[]
   readonly items: FieldArrayItem[]
@@ -100,7 +100,7 @@ describe('xh-field-array 生成结构', () => {
   })
 
   it('按 items 上的行 key 写 slot：内容挪进那一行，换序时跟着行走', async () => {
-    const el = mount({ defaultValue: ['a', 'b'], movable: true })
+    const el = mount({ defaultValue: ['a', 'b'], reorderable: true })
     await settle(el)
     const [first, second] = el.items
     const a = contentFor(el, `item-content:${first!.key}`, 'a')
