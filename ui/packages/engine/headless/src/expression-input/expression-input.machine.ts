@@ -6,10 +6,12 @@
 // 提供 expression input 相关实现。
 
 import type { ExpressionInputIssue, PositionResult, PropFn } from '@xihan-ui/core'
+import type { CloseEventLike } from '../shared/close-reason'
 import type { ExpressionInputItem, ExpressionInputSchema, ExpressionInputTranslations, ExpressionInputWord } from './expression-input.types'
 import { caretClientRect, resetDeclaredValue, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { DEFAULT_FUNCTION_TABLE } from '@xihan-ui/expression'
 import { EXPRESSION_INPUT_EN_US } from '../locale/en-US'
+import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { resolveTranslations } from '../shared/translations'
@@ -160,7 +162,8 @@ export const expressionInputMachine = createMachine({
       },
 
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
+      // 收起带上原因：ESCAPE 与 ITEM.SELECT 各自认得出，CLOSE 看 src；随正文算出来的收起不带 src，记 programmatic
+      invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current() as CloseEventLike) }),
 
       // 禁用或只读时值一动不动：原生属性已经挡住了打字，这条兜住程序化派进来的输入事件
       setValue: ({ context, prop, event }) => {
@@ -379,7 +382,7 @@ export const expressionInputMachine = createMachine({
             // 焦点跑到层外与输入框自己的 blur 是同一件事，只认后者
             if (reason === 'focus-outside')
               return
-            send({ type: 'CLOSE' })
+            send({ type: 'CLOSE', src: 'interact-outside' })
           },
         }),
       }),

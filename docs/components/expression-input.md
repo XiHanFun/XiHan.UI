@@ -71,6 +71,7 @@
 - 补全来源两处：宿主的 `completions`（静态列表按前缀过滤；函数形式由宿主按查询自己给出），以及 `functions` 函数表（缺省全部内置函数，传空表即不补函数）。函数条目显示签名，如 `IF(条件, 真值[, 假值])`、`SUM(值…)`，下一行是一句话说明。
 - 接受补全时只替换光标处的名字：函数插入 `NAME()` 且光标落在括号里，变量插入名字；`insert(text)` 在选区处插入一段文本，供宿主的「插入字段」按钮使用。
 - 单行时输入框是 `role=combobox`；`multiline` 时是 textarea，保持 textbox 角色、不写 `aria-expanded`，补全浮层锚在光标处。
+- 收起时 `onOpenChange` 带上关闭原因 `reason`：Escape 报 `esc`；点在补全列表外、焦点离开输入框报 `interact-outside`；Tab 与 Shift+Tab 报 `tab`；没有高亮的补全时按 Enter 报 `close-trigger`；Enter 或 Tab 接受补全报 `selection`。补全随正文与光标自动收起（光标挪出名字、没有匹配、开始输入法组合、改写正文）不是一次关闭手势，与 `close()` 一样报 `programmatic`。展开时不带。
 - 输入法组合期间不取词、不检查，落定后再按新值处理。
 - 结构由标准结构函数一份给出：Web Components 只写 root 或什么都不写，Vue / React 不写默认插槽时，三端铺出同一棵树；写了 `label` 才铺标题，放进[表单字段](./field)时名字、说明与校验状态由字段接到输入框上。
 - 字段外框与输入框走 Field Chrome 家族，与文本字段同一档高度、内衬与形态三轴；补全列表走浮层面与集合条目家族。
@@ -147,7 +148,7 @@
 | `value-change` | `ExpressionInputValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
 | `issues-change` | `ExpressionInputIssuesChangeDetails` | 检查结果变了；detail 为 `{ issues }` |
 | `completion-select` | `ExpressionInputCompletionSelectDetails` | 接受了一条补全；detail 为 `{ completion }` |
-| `open-change` | `ExpressionInputOpenChangeDetails` | 补全开合；detail 为 `{ open: boolean }` |
+| `open-change` | `ExpressionInputOpenChangeDetails` | 补全开合；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因 |
 
 ### 插槽
 

@@ -205,7 +205,7 @@ export function connectExpressionInput<T extends PropTypes>(
           // 焦点还在组件内部（点了补全之类）不算离场
           if (root && contains(root, event.relatedTarget as Node | null))
             return
-          send({ type: 'CLOSE' })
+          send({ type: 'CLOSE', src: 'interact-outside' })
           send({ type: 'CHECK.RUN' })
         },
         'onKeyDown': (event: KeyboardEvent) => {
@@ -237,7 +237,12 @@ export function connectExpressionInput<T extends PropTypes>(
               send({ type: 'ITEM.SELECT', key: highlighted })
               return
             }
-            send({ type: 'CLOSE' })
+            send({ type: 'CLOSE', src: event.key === 'Tab' ? 'tab' : 'close-trigger' })
+            return
+          }
+          // Shift+Tab 不接受补全：焦点照常往回走，列表让开；与 Tab 同记 tab，不留给随后的失焦记成层外交互
+          if (event.key === 'Tab') {
+            send({ type: 'CLOSE', src: 'tab' })
             return
           }
           if (event.key === 'Escape') {

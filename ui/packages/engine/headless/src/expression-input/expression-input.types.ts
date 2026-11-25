@@ -15,6 +15,7 @@ import type {
   ExpressionInputIssue,
   Layer,
   MachineSchema,
+  OverlayCloseReason,
   Placement,
   PositionEnginePort,
   PositionResult,
@@ -153,6 +154,13 @@ export interface ExpressionInputCompletionSelectDetails {
 
 export interface ExpressionInputOpenChangeDetails {
   open: boolean
+  /**
+   * 本次关闭的原因；展开时不带。
+   * Escape 报 esc；点在补全列表外、焦点离开输入框报 interact-outside；Tab 与 Shift+Tab 报 tab；
+   * 没有高亮的补全时按 Enter 报 close-trigger；Enter 或 Tab 接受补全报 selection。补全随正文与光标自动收起
+   * （光标挪出名字、没有匹配、开始输入法组合、改写正文）不是一次关闭手势，与代码调用（close()）一样报 programmatic。
+   */
+  reason?: OverlayCloseReason
 }
 
 // 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；缺省时副作用一律短路。
@@ -265,7 +273,8 @@ export interface ExpressionInputSchema extends MachineSchema {
     | { type: 'OPEN' }
     /** 打开着时名字变了（机器内部发出）：重新落高亮。 */
     | { type: 'WORD.CHANGED' }
-    | { type: 'CLOSE' }
+    /** src 记收起的手势：层外按下与失焦、Tab、没有高亮补全时的 Enter；随正文自动收起与代码调用不带。 */
+    | { type: 'CLOSE', src?: 'interact-outside' | 'tab' | 'close-trigger' }
     /** 消解层收到 Escape。 */
     | { type: 'ESCAPE' }
     | { type: 'ITEM.HIGHLIGHT', key: string }

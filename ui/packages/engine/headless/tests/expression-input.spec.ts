@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import type { ExpressionCompletion, ExpressionInputIssue } from '@xihan-ui/core'
 import type { ExpressionInputIssueView, ExpressionInputSchema, ExpressionInputTranslations } from '../src/expression-input/index'
-import { createService, normalizeProps } from '@xihan-ui/core'
+import { createRuntimeConfig, createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { createExpressionCheck, createExpressionEngine, createFunctionTable, DEFAULT_FUNCTION_TABLE } from '@xihan-ui/expression'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -339,5 +339,83 @@ describe('expression-input connect：角色', () => {
     type(api(), 'app')
     const item = api().items[0]!
     expect((api().getInputProps() as Dict)['aria-activedescendant']).toBe((api().getItemProps({ item }) as Dict).id)
+  })
+})
+
+describe('expressionInputMachine 关闭原因', () => {
+  // 收起意图带上这一次是怎么关的：只有用户的关闭手势有原因，随正文算出来的收起记 programmatic
+  const reasons = (fn: ReturnType<typeof vi.fn>) =>
+    fn.mock.calls.map(c => c[0] as { open: boolean, reason?: string }).filter(d => !d.open).map(d => d.reason)
+  const keydown = (api: ReturnType<typeof connectExpressionInput>, event: unknown) =>
+    ((api.getInputProps() as Dict).onKeyDown as (e: unknown) => void)(event)
+  const blur = (api: ReturnType<typeof connectExpressionInput>) =>
+    ((api.getInputProps() as Dict).onBlur as (e: unknown) => void)({ currentTarget: document.createElement('input'), relatedTarget: null })
+
+  afterEach(() => {
+    document.body.innerHTML = ''
+  })
+
+  it('失焦报 interact-outside，Tab 与 Shift+Tab 报 tab，没有高亮的补全时 Enter 报 close-trigger', () => {
+    const onOpenChange = vi.fn()
+    const { api, service } = makeService({ completions: VARIABLES, onOpenChange })
+    type(api(), 'am')
+    expect(api().open).toBe(true)
+    blur(api())
+    type(api(), 'ap')
+    keydown(api(), keyEvent('Tab', { shiftKey: true }))
+    expect(api().open).toBe(false)
+    // 没有匹配也主动打开：列表是空的，没有高亮
+    type(api(), 'zz')
+    service.send({ type: 'OPEN.FORCE' })
+    expect(api().open).toBe(true)
+    expect(api().highlightedKey).toBeNull()
+    keydown(api(), keyEvent('Enter'))
+    service.send({ type: 'OPEN.FORCE' })
+    keydown(api(), keyEvent('Tab'))
+    expect(api().open).toBe(false)
+    expect(reasons(onOpenChange)).toEqual(['interact-outside', 'tab', 'close-trigger', 'tab'])
+  })
+
+  it('接受补全报 selection；打了空格与 close() 报 programmatic，展开不带原因', () => {
+    const onOpenChange = vi.fn()
+    const { api } = makeService({ completions: VARIABLES, onOpenChange })
+    type(api(), 'am')
+    keydown(api(), keyEvent('Enter'))
+    expect(api().value).toBe('amount')
+    type(api(), 'amount + ap')
+    type(api(), 'amount + ap ')
+    type(api(), 'amount + ap')
+    api().close()
+    expect(api().open).toBe(false)
+    expect(reasons(onOpenChange)).toEqual(['selection', 'programmatic', 'programmatic'])
+    expect(onOpenChange.mock.calls.map(c => c[0]).filter(d => d.open).every(d => d.reason === undefined)).toBe(true)
+  })
+
+  it('消解层：点在列表外报 interact-outside，Escape 报 esc', async () => {
+    const onOpenChange = vi.fn()
+    const { api, service } = makeService({ completions: VARIABLES, onOpenChange })
+    const input = document.createElement('input')
+    const content = document.createElement('div')
+    document.body.append(input, content)
+    const config = createRuntimeConfig()
+    service.refs.set('config', config)
+    service.refs.set('registerLayer', () => config.layerRegistry.register({
+      kind: 'popover',
+      node: () => content,
+      branches: () => [input],
+      isModal: () => false,
+      surfaces: () => [],
+    }))
+    const settle = () => new Promise(resolve => setTimeout(resolve, 0))
+
+    type(api(), 'am')
+    await settle()
+    document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
+    expect(api().open).toBe(false)
+    type(api(), 'ap')
+    await settle()
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+    expect(api().open).toBe(false)
+    expect(reasons(onOpenChange)).toEqual(['interact-outside', 'esc'])
   })
 })

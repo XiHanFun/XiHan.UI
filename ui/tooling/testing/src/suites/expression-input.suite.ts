@@ -142,7 +142,7 @@ export const expressionInputSuite: ConformanceSuite = {
             events: [
               { type: 'value-change', detail: { value: 'amount' } },
               { type: 'completion-select', detail: { completion: { key: 'variable:amount', kind: 'variable', label: 'amount', detail: 'number', description: null, insert: 'amount', caretOffset: 6 } } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },
@@ -185,7 +185,7 @@ export const expressionInputSuite: ConformanceSuite = {
           key: 'Escape',
           expect: {
             parts: { input: { 'data-state': 'closed', 'aria-expanded': 'false' }, content: { hidden: '' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'esc' } }],
           },
         },
         { kind: 'raw', why: '值只落 DOM property，快照只采属性', run: ({ doc }) => assertValue(doc, 'a') },
@@ -232,7 +232,7 @@ export const expressionInputSuite: ConformanceSuite = {
           run: ({ doc, flush }) => moveCaret(doc, 1, flush),
           expect: {
             parts: { content: { hidden: '' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'programmatic' } }],
           },
         },
         {

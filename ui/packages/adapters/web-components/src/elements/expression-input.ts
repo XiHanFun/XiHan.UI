@@ -80,7 +80,7 @@ function notConnected(method: string): Error {
  * @fires value-change - 值变化；detail 为 `{ value: string }`
  * @fires issues-change - 检查结果变了；detail 为 `{ issues }`
  * @fires completion-select - 接受了一条补全；detail 为 `{ completion }`
- * @fires open-change - 补全开合；detail 为 `{ open: boolean }`
+ * @fires open-change - 补全开合；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因
  * @csspart root - 组件根容器（承载 data-state、data-invalid 与三个视觉轴）
  * @csspart label - 标题；`for` 恒指向输入框
  * @csspart control - 字段视觉盒：描边与底色画在它上面
