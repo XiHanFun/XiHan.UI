@@ -51,7 +51,7 @@ const NUMBER_CONVERTER = {
  * @attr {'ltr'|'rtl'} dir - 文字方向，只在显式提供时才写到 root 上
  * @attr {boolean} disabled - 只关闭卡片，trigger 本身仍可点击、可聚焦
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
+ * @fires open-change - open 状态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因
  * @csspart root - 承载 data-state / data-disabled / dir 的容器
  * @csspart trigger - 悬停 / 聚焦的锚点（aria-expanded / aria-controls 所在），同时是定位锚点
  * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式

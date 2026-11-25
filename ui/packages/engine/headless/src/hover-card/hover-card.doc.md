@@ -17,6 +17,7 @@
 
 - `openDelay` 与 `closeDelay` 成对：进入需要停留、离开有宽限，指针斜向移到卡片上不会误收。
 - 开合状态可受控。
+- 收起时 `onOpenChange` 带上关闭原因 `reason`：指针移开、等过 `closeDelay` 报 `hover`；焦点离开触发器与卡片、点在卡片外报 `interact-outside`；Escape 报 `esc`；`setOpen(false)` 报 `programmatic`。展开时不带。
 - 内容与 Popover 共用 frosted 面：实体底、1px 描边与一层浮层投影，内衬、标题与说明的排版同 Popover。箭头只复用底色与边界；减少透明、高对比与强制色偏好由材质令牌统一响应。`--xh-hover-card-backdrop` 可给面加背景滤镜；打印时整块预览收起。
 
 ## 组合

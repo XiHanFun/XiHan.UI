@@ -5,12 +5,18 @@
 
 // 定义 hover card 类型契约。
 
-import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size } from '@xihan-ui/core'
+import type { Cleanup, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { TitleDescriptionParts } from '../shared/title-description'
 
 export interface HoverCardOpenChangeDetails {
   open: boolean
+  /**
+   * 本次关闭的原因；展开时不带。
+   * 指针移开、等过 closeDelay 报 hover；焦点离开 trigger 与卡片、点在卡片外报 interact-outside；
+   * Escape 报 esc；代码调用（setOpen(false)）报 programmatic。
+   */
+  reason?: OverlayCloseReason
 }
 
 /** 适配器在挂载前填入的 DOM 环境、定位引擎与元素 getter，未提供时相关副作用短路。 */

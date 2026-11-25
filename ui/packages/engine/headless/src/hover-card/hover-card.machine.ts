@@ -159,7 +159,11 @@ export const hoverCardMachine = createMachine({
       isFocusHeld: ({ context }) => context.get('focusHeld'),
     },
     actions: {
-      ...controlledOpenActions<HoverCardSchema>(),
+      // 悬停型浮层的两个专有出口：指针移开等到点算 hover，焦点离开与消解层的层外聚焦同属层外交互
+      ...controlledOpenActions<HoverCardSchema>({
+        reason: true,
+        extra: event => event.type === 'after.closeDelay' ? 'hover' : event.type === 'BLUR' ? 'interact-outside' : undefined,
+      }),
       clearOpenedAtMount,
       markFocusHeld: ({ context }) => context.set('focusHeld', true),
       clearFocusHeld: ({ context }) => context.set('focusHeld', false),

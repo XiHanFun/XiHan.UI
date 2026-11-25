@@ -366,7 +366,7 @@ describe('hoverCard 收起的其它出口', () => {
     c.trigger.focus()
     press(c.trigger, 'Escape')
     expect(c.state()).toBe('closed')
-    expect(seen).toEqual([{ open: true }, { open: false }])
+    expect(seen).toEqual([{ open: true }, { open: false, reason: 'esc' }])
   })
 
   it('escape 打在 content 内部的可聚焦节点上同样收起（事件冒泡到 content）', () => {
@@ -414,6 +414,26 @@ describe('hoverCard 收起的其它出口', () => {
 
     document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
     expect(c.state()).toBe('closed')
+  })
+
+  it('关闭原因：层外按下报 interact-outside，setOpen(false) 报 programmatic', async () => {
+    const seen: HoverCardOpenChangeDetails[] = []
+    const c = makeCard({ openDelay: 10, onOpenChange: d => seen.push(d) })
+    wireLayer(c)
+    pointer(c.trigger, 'pointerenter')
+    vi.advanceTimersByTime(10)
+    await vi.advanceTimersByTimeAsync(1)
+    document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
+    expect(c.state()).toBe('closed')
+
+    c.api().setOpen(true)
+    c.api().setOpen(false)
+    expect(seen).toEqual([
+      { open: true },
+      { open: false, reason: 'interact-outside' },
+      { open: true },
+      { open: false, reason: 'programmatic' },
+    ])
   })
 
   it('escape 之外的键不收起', () => {
@@ -469,7 +489,7 @@ describe('hoverCard 受控 open', () => {
 
     vi.advanceTimersByTime(100)
     expect(c.state()).toBe('visible.open')
-    expect(seen).toEqual([{ open: false }])
+    expect(seen).toEqual([{ open: false, reason: 'hover' }])
 
     c.setProps({ open: false })
     expect(c.state()).toBe('closed')
@@ -485,13 +505,13 @@ describe('hoverCard 受控 open', () => {
     // 焦点离开：受控下只发意图、状态不动，标记必须跟着复位
     c.trigger.blur()
     expect(c.state()).toBe('visible.open')
-    expect(seen).toEqual([{ open: false }])
+    expect(seen).toEqual([{ open: false, reason: 'interact-outside' }])
 
     pointer(c.trigger, 'pointerenter')
     pointer(c.trigger, 'pointerleave')
     expect(c.state()).toBe('visible.closing')
     vi.advanceTimersByTime(50)
-    expect(seen).toEqual([{ open: false }, { open: false }])
+    expect(seen).toEqual([{ open: false, reason: 'interact-outside' }, { open: false, reason: 'hover' }])
   })
 
   it('open 变回 undefined 是转非受控，不强制收起', () => {
