@@ -7,8 +7,10 @@
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { SpinnerApi, SpinnerProps, SpinnerSchema } from './spinner.types'
+import { dataAttr } from '@xihan-ui/core'
 import { SPINNER_EN_US } from '../locale/en-US'
 import { spinnerAnatomy } from './spinner.anatomy'
+import { isSpinnerLoading } from './spinner.machine'
 
 const parts = spinnerAnatomy.build()
 
@@ -44,10 +46,13 @@ export function connectSpinner<T extends PropTypes>(
   }
   const label = resolveLabel(props)
   const variant = props.variant ?? 'arc'
+  const loading = isSpinnerLoading(prop('loading'))
   const visible = state.get() === 'visible'
+  const fullscreen = !!prop('fullscreen')
 
   return {
     label,
+    loading,
     visible,
 
     getRootProps: () => normalize.element({
@@ -62,14 +67,36 @@ export function connectSpinner<T extends PropTypes>(
       'data-size': props.size,
       'data-variant': variant,
       'data-tone': props.tone,
-      // 转圈与配文的排布显式写出，默认并排
-      'data-orientation': props.orientation ?? 'horizontal',
+      // 转圈与配文的排布显式写出：单独使用缺省并排，遮罩形态缺省竖排（整块区域的等待）
+      'data-orientation': props.orientation ?? (prop('overlay') ? 'vertical' : 'horizontal'),
       // 露面前的等待是派生的显隐：皮肤藏起整块但保留位置，布局在露面那一刻不跳
       'data-state': visible ? 'visible' : 'hidden',
     }),
 
     getLabelProps: () => normalize.element({
       ...parts.label.attrs,
+    }),
+
+    getContainerProps: () => normalize.element({
+      ...parts.container.attrs,
+      'data-state': visible ? 'visible' : 'hidden',
+      'data-fullscreen': dataAttr(fullscreen),
+    }),
+
+    getContentProps: () => normalize.element({
+      ...parts.content.attrs,
+      // 忙碌是语义：在等就报，与遮罩露没露面无关
+      'aria-busy': loading ? 'true' : undefined,
+      // 遮罩露面后才挡住交互；delay 期间请求可能马上回来，内容照常可用，挡了反倒像卡了一下
+      'inert': visible || undefined,
+      'data-state': visible ? 'visible' : 'hidden',
+    }),
+
+    getMaskProps: () => normalize.element({
+      ...parts.mask.attrs,
+      // 与 root 的等待同一套显隐：皮肤按它淡入淡出，不卸节点，退场不用另等动画
+      'data-state': visible ? 'visible' : 'hidden',
+      'data-fullscreen': dataAttr(fullscreen),
     }),
   }
 }

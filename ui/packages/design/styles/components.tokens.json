@@ -72670,6 +72670,61 @@
       "description": "spinner 的 label 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-spinner-layer",
+      "component": "spinner",
+      "part": [
+        "mask"
+      ],
+      "property": [
+        "z-index"
+      ],
+      "state": [
+        "fullscreen"
+      ],
+      "defaultToken": [
+        "--xh-_layer"
+      ],
+      "visibility": "public",
+      "description": "spinner 的 mask 部件 z-index 覆盖槽。"
+    },
+    {
+      "name": "--xh-spinner-mask-bg",
+      "component": "spinner",
+      "part": [
+        "mask"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface"
+      ],
+      "visibility": "public",
+      "description": "spinner 的 mask 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-spinner-mask-p",
+      "component": "spinner",
+      "part": [
+        "mask"
+      ],
+      "property": [
+        "padding"
+      ],
+      "state": [
+        "default",
+        "fullscreen"
+      ],
+      "defaultToken": [
+        "--xh-space-4"
+      ],
+      "visibility": "public",
+      "description": "spinner 的 mask 部件 padding 覆盖槽。"
+    },
+    {
       "name": "--xh-spinner-radius",
       "component": "spinner",
       "part": [

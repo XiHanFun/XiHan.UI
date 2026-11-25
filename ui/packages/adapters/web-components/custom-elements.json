@@ -65663,7 +65663,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-spinner>`：加载指示器宿主，把活区语义与可及名接到角色节点上；状态机只管露面前的等待。\n转圈图形由皮肤绘制在 root 的伪元素上，元素不生成任何结构。",
+          "description": "`<xh-spinner>`：加载指示器宿主，把活区语义与可及名接到角色节点上；状态机只管露面前的等待。\n转圈图形由皮肤绘制在 root 的伪元素上，元素不生成任何结构。遮罩形态由作者写出 container 包住 content 与 mask、\nroot 放在 mask 里，再打上 overlay。",
           "name": "XhSpinnerElement",
           "cssParts": [
             {
@@ -65673,6 +65673,18 @@
             {
               "description": "可见文案节点，可省略",
               "name": "label"
+            },
+            {
+              "description": "遮罩形态的外框，包住 content 与 mask",
+              "name": "container"
+            },
+            {
+              "description": "被包住的内容：等待时报 aria-busy，遮罩露面后不可交互",
+              "name": "content"
+            },
+            {
+              "description": "盖在内容上的遮罩，root 放在它里面居中",
+              "name": "mask"
             }
           ],
           "members": [
@@ -65741,6 +65753,33 @@
             },
             {
               "kind": "field",
+              "name": "loading",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loading"
+            },
+            {
+              "kind": "field",
+              "name": "overlay",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "overlay"
+            },
+            {
+              "kind": "field",
+              "name": "fullscreen",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "fullscreen"
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
@@ -65752,7 +65791,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<SpinnerSchema>(this, spinnerMachine, () => this.configured('spinner', { label: this.label, size: this.size, variant: this.variant, tone: this.tone, orientation: this.orientation, delay: this.delay, translations: this.translations, }))"
+              "default": "new MachineController<SpinnerSchema>(this, spinnerMachine, () => this.configured('spinner', { label: this.label, size: this.size, variant: this.variant, tone: this.tone, orientation: this.orientation, delay: this.delay, loading: this.loading, overlay: this.overlay, fullscreen: this.fullscreen, translations: this.translations, }))"
             },
             {
               "kind": "method",
@@ -65813,6 +65852,30 @@
               "description": "连接后等多少毫秒才露面，默认 0；加载在这之前结束、元素被移除时它从头到尾不出现",
               "name": "delay",
               "fieldName": "delay"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "是否在等待，缺省为真；写 loading=\"false\" 时转圈藏起，遮罩形态下撤掉遮罩",
+              "name": "loading",
+              "fieldName": "loading"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "遮罩形态：转圈缺省竖排，配合 container / content / mask 部件包住一块内容",
+              "name": "overlay",
+              "fieldName": "overlay"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "遮罩形态下盖住整个视口",
+              "name": "fullscreen",
+              "fieldName": "fullscreen"
             }
           ],
           "superclass": {
@@ -65839,6 +65902,15 @@
             },
             {
               "name": "--xh-spinner-label-size"
+            },
+            {
+              "name": "--xh-spinner-layer"
+            },
+            {
+              "name": "--xh-spinner-mask-bg"
+            },
+            {
+              "name": "--xh-spinner-mask-p"
             },
             {
               "name": "--xh-spinner-radius"

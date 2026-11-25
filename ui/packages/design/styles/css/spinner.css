@@ -176,6 +176,62 @@
     line-height: var(--xh-leading-none);
   }
 
+  /* 遮罩形态：外框是遮罩的定位参照，内容与遮罩叠在同一块里 */
+  [data-scope='spinner'][data-part='container'] {
+    position: relative;
+  }
+
+  /* 内容自成层叠上下文：它里面再高的 z-index 也压不过后面的遮罩 */
+  [data-scope='spinner'][data-part='content'] {
+    isolation: isolate;
+  }
+
+  /* 遮罩取承载面兑中档透明度：内容隐约可见、读得出「这块在等」，转圈居中压在上面 */
+  [data-scope='spinner'][data-part='mask'] {
+    display: flex;
+    position: absolute;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    padding: var(--xh-spinner-mask-p, var(--xh-space-4));
+    border-radius: inherit;
+    background: var(
+      --xh-spinner-mask-bg,
+      color-mix(in oklab, var(--xh-bg-surface) calc(var(--xh-alpha-medium) * 100%), transparent)
+    );
+    transition:
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      visibility 0s linear;
+  }
+
+  /* 撤下时先淡出、播完才藏：visibility 晚一个换色时长才落 */
+  [data-scope='spinner'][data-part='mask'][data-state='hidden'] {
+    visibility: hidden;
+    opacity: 0;
+    transition:
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-exit),
+      visibility 0s linear var(--xh-motion-duration-micro);
+  }
+
+  /* 全屏：遮罩钉在视口上，与模态层同一层级；贴着视口边，内衬让开刘海与圆角屏的安全区 */
+  [data-scope='spinner'][data-part='mask'][data-fullscreen] {
+    position: fixed;
+    z-index: var(--xh-spinner-layer, var(--xh-_layer, var(--xh-layer-modal)));
+    padding:
+      max(var(--xh-spinner-mask-p, var(--xh-space-4)), env(safe-area-inset-top))
+      max(var(--xh-spinner-mask-p, var(--xh-space-4)), env(safe-area-inset-right))
+      max(var(--xh-spinner-mask-p, var(--xh-space-4)), env(safe-area-inset-bottom))
+      max(var(--xh-spinner-mask-p, var(--xh-space-4)), env(safe-area-inset-left));
+    border-radius: 0;
+  }
+
+  @media print {
+    /* 打印的是内容本身，等待的遮罩不印 */
+    [data-scope='spinner'][data-part='mask'] {
+      display: none;
+    }
+  }
+
   /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"这里还没好"；
      "在等什么"由 role=status 上的名字与可见文案继续承担。
      两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
@@ -204,7 +260,8 @@
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
-  [data-scope='spinner'][data-part='root'][hidden] {
+  [data-scope='spinner'][data-part='root'][hidden],
+  [data-scope='spinner'][data-part='mask'][hidden] {
     display: none;
   }
 

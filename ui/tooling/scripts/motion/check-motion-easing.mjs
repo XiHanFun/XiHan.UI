@@ -48,6 +48,7 @@ const NO_CURVE = {
   'notification:animation-timing-function': '减弱动效下倒计时按秒分段走，段数由连接层随时长交出',
   'scroll-area:transition': 'visibility 走 0s 阶跃，linear 只是补齐这一项的曲线位',
   'scrollbar:transition': 'visibility 走 0s 阶跃，linear 只是补齐这一项的曲线位',
+  'spinner:transition': '遮罩的 visibility 走 0s 阶跃（撤下时晚一个换色时长才落），linear 只是补齐这一项的曲线位',
 }
 
 /** 按顶层逗号拆成一项项动画或过渡：一条声明可以列几支动画，steps(1, end) 括号里的逗号不拆。 */

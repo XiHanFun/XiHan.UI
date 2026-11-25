@@ -7,4 +7,4 @@
 
 import { createAnatomy } from '@xihan-ui/core'
 
-export const spinnerAnatomy = createAnatomy('spinner', ['root', 'label'])
+export const spinnerAnatomy = createAnatomy('spinner', ['root', 'label', 'container', 'content', 'mask'])

@@ -29,8 +29,9 @@ function root(props: SpinnerProps = {}): Dict {
 }
 
 describe('spinner 解剖', () => {
-  it('两个部件：活区容器与可选的可见文案节点，只有 root 是必需的', () => {
+  it('活区容器与可见文案节点，外加遮罩形态的外框、内容与遮罩；只有 root 是必需的', () => {
     expect(spinnerAnatomy.build().root.attrs).toEqual({ 'data-scope': 'spinner', 'data-part': 'root', 'class': 'xh-scope-spinner' })
+    expect(Object.keys(spinnerAnatomy.build())).toEqual(['root', 'label', 'container', 'content', 'mask'])
     expect(spinnerMeta.requiredParts).toEqual(['root'])
   })
 })
@@ -145,5 +146,90 @@ describe('spinner 露面前的等待', () => {
     expect(t.api().visible).toBe(true)
     vi.advanceTimersByTime(1000)
     expect(t.api().visible).toBe(true)
+  })
+})
+
+describe('spinner 的 loading', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('缺省在等；显式 false 时不在等，转圈藏起、位置照留', () => {
+    expect(api().loading).toBe(true)
+    const idle = api({ loading: false })
+    expect(idle.loading).toBe(false)
+    expect(idle.visible).toBe(false)
+    expect(idle.getRootProps()).toMatchObject({ 'data-state': 'hidden', 'role': 'status' })
+  })
+
+  it('由 false 变回 true 时重新计 delay：请求在 delay 之前回来就从头到尾不出现', () => {
+    vi.useFakeTimers()
+    const t = make({ loading: false, delay: 300 })
+    t.setProps({ loading: true })
+    expect(t.api().visible).toBe(false)
+    vi.advanceTimersByTime(200)
+    t.setProps({ loading: false })
+    vi.advanceTimersByTime(500)
+    expect(t.api().visible).toBe(false)
+    expect(vi.getTimerCount()).toBe(0)
+    t.setProps({ loading: true })
+    vi.advanceTimersByTime(300)
+    expect(t.api().visible).toBe(true)
+  })
+
+  it('没有 delay 时变回 true 即刻露面；露面后变成 false 即刻撤下', () => {
+    const t = make({ loading: false })
+    t.setProps({ loading: true })
+    expect(t.api().visible).toBe(true)
+    t.setProps({ loading: false })
+    expect(t.api().visible).toBe(false)
+  })
+})
+
+describe('connectSpinner 遮罩形态', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('外框、内容与遮罩各自带部件身份', () => {
+    const a = api()
+    expect(a.getContainerProps()).toMatchObject({ 'data-scope': 'spinner', 'data-part': 'container' })
+    expect(a.getContentProps()).toMatchObject({ 'data-scope': 'spinner', 'data-part': 'content' })
+    expect(a.getMaskProps()).toMatchObject({ 'data-scope': 'spinner', 'data-part': 'mask' })
+  })
+
+  it('露面时内容报忙且不可交互，遮罩投影 visible', () => {
+    const a = api()
+    expect(a.getContentProps()).toMatchObject({ 'aria-busy': 'true', 'inert': true, 'data-state': 'visible' })
+    expect(a.getMaskProps()).toMatchObject({ 'data-state': 'visible' })
+    expect(a.getContainerProps()).toMatchObject({ 'data-state': 'visible' })
+  })
+
+  it('delay 期间内容只报忙、照常可交互，遮罩还藏着', () => {
+    vi.useFakeTimers()
+    const t = make({ delay: 300 })
+    const content = t.api().getContentProps() as Dict
+    expect(content['aria-busy']).toBe('true')
+    expect(content.inert).toBeUndefined()
+    expect(t.api().getMaskProps()).toMatchObject({ 'data-state': 'hidden' })
+  })
+
+  it('loading 为 false：内容不报忙、可交互，遮罩藏起', () => {
+    const a = api({ loading: false })
+    const content = a.getContentProps() as Dict
+    expect(content['aria-busy']).toBeUndefined()
+    expect(content.inert).toBeUndefined()
+    expect(a.getMaskProps()).toMatchObject({ 'data-state': 'hidden' })
+  })
+
+  it('遮罩形态下转圈缺省竖排，显式写了 orientation 照写的来', () => {
+    expect(root({ overlay: true })['data-orientation']).toBe('vertical')
+    expect(root({ overlay: true, orientation: 'horizontal' })['data-orientation']).toBe('horizontal')
+  })
+
+  it('fullscreen 投影在外框与遮罩上，缺省不写', () => {
+    expect((api().getMaskProps() as Dict)['data-fullscreen']).toBeUndefined()
+    expect(api({ fullscreen: true }).getMaskProps()).toMatchObject({ 'data-fullscreen': '' })
+    expect(api({ fullscreen: true }).getContainerProps()).toMatchObject({ 'data-fullscreen': '' })
   })
 })

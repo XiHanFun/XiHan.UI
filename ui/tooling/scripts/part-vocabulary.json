@@ -341,6 +341,9 @@
       "cartesian-chart",
       "timeline"
     ],
+    "container": [
+      "spinner"
+    ],
     "content": [
       "accordion",
       "affix",
@@ -376,6 +379,7 @@
       "scroll-area",
       "select",
       "separator",
+      "spinner",
       "steps",
       "tabs",
       "time-picker",
@@ -1268,6 +1272,9 @@
     "mark": [
       "highlight",
       "json-viewer"
+    ],
+    "mask": [
+      "spinner"
     ],
     "media": [
       "empty-state",
@@ -2257,6 +2264,7 @@
     "column": true,
     "condition": true,
     "connector": true,
+    "container": true,
     "content": true,
     "control": true,
     "conversion": true,
@@ -2277,7 +2285,6 @@
     "extra": true,
     "fallback": true,
     "field": true,
-    "file-name": true,
     "fill": true,
     "footer": true,
     "gap": true,
@@ -2312,6 +2319,7 @@
     "logic": true,
     "logo": true,
     "mark": true,
+    "mask": true,
     "media": true,
     "median": true,
     "meta": true,
