@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 
 import type { CitationSchema } from '../src/citation'
-import { createService, normalizeProps } from '@xihan-ui/core'
+import { createRuntimeConfig, createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { citationMachine, connectCitation } from '../src/citation'
@@ -368,5 +368,83 @@ describe('citation 来源副文字与预览链接字走语言包', () => {
     expect(api().sourceMetaText(plain)).toBe('文档')
     expect(api().previewLinkText({ sourceId: 'web' })).toBe('打开来源')
     expect(api().previewLinkText({ sourceId: 'doc' })).toBe('打开文档')
+  })
+})
+
+describe('citation 关闭原因', () => {
+  type Dict = Record<string, unknown>
+  const mouse = { pointerType: 'mouse' } as PointerEvent
+  // 收起意图带上这一次是怎么关的：开合通知改由落值那一步发，原因取自发起它的事件
+  const reasons = (fn: ReturnType<typeof vi.fn>) =>
+    fn.mock.calls.map(c => c[0] as { open: boolean, reason?: string }).filter(d => !d.open).map(d => d.reason)
+  const click = (props: unknown, event: unknown = {}) => ((props as Dict).onClick as (e: unknown) => void)(event)
+
+  afterEach(() => {
+    vi.useRealTimers()
+    document.body.innerHTML = ''
+  })
+
+  it('再点同一处引用与关闭钮报 close-trigger，根上的 Escape 报 esc，setOpen(false) 报 programmatic', () => {
+    const onOpenChange = vi.fn()
+    const { api } = setup({ sources, onOpenChange })
+    const cite = () => api().getTriggerProps({ sourceId: 'web', citationId: 'first', anchorIndex: 0 })
+    click(cite())
+    click(cite())
+    click(cite())
+    click(api().getCloseTriggerProps({ sourceId: 'web' }), { currentTarget: document.createElement('button') })
+    click(cite())
+    ;((api().getRootProps() as Dict).onKeyDown as (e: unknown) => void)({
+      key: 'Escape',
+      preventDefault: () => {},
+      currentTarget: document.createElement('div'),
+      target: document.createElement('div'),
+    })
+    api().setOpen(true)
+    api().setOpen(false)
+    expect(reasons(onOpenChange)).toEqual(['close-trigger', 'close-trigger', 'esc', 'programmatic'])
+    expect(onOpenChange.mock.calls.map(c => c[0]).filter(d => d.open)).toEqual([{ open: true }, { open: true }, { open: true }, { open: true }])
+  })
+
+  it('hover 档：指针离开等到点报 hover，焦点离开引用与卡片报 interact-outside', () => {
+    vi.useFakeTimers()
+    const onOpenChange = vi.fn()
+    const { api } = setup({ sources, previewMode: 'hover', openDelay: 0, onOpenChange })
+    const cite = () => api().getTriggerProps({ sourceId: 'web', citationId: 'web' }) as Dict
+    ;(cite().onPointerEnter as (e: PointerEvent) => void)(mouse)
+    vi.advanceTimersByTime(0)
+    ;(cite().onPointerLeave as (e: PointerEvent) => void)(mouse)
+    vi.advanceTimersByTime(300)
+    expect(api().open).toBe(false)
+    ;(cite().onFocus as () => void)()
+    ;(cite().onBlur as (e: FocusEvent) => void)({ relatedTarget: null } as unknown as FocusEvent)
+    expect(api().open).toBe(false)
+    expect(reasons(onOpenChange)).toEqual(['hover', 'interact-outside'])
+  })
+
+  it('hover 档的消解层：点在卡片外报 interact-outside，Escape 报 esc', async () => {
+    const onOpenChange = vi.fn()
+    const { api, service } = setup({ sources, previewMode: 'hover', onOpenChange })
+    const card = document.createElement('div')
+    document.body.append(card)
+    const config = createRuntimeConfig()
+    service.refs.set('config', config)
+    service.refs.set('registerLayer', () => config.layerRegistry.register({
+      kind: 'popover',
+      node: () => card,
+      branches: () => [],
+      isModal: () => false,
+      surfaces: () => [],
+    }))
+    const settle = () => new Promise(resolve => setTimeout(resolve, 0))
+
+    api().setOpen(true)
+    await settle()
+    document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
+    expect(api().open).toBe(false)
+    api().setOpen(true)
+    await settle()
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+    expect(api().open).toBe(false)
+    expect(reasons(onOpenChange)).toEqual(['interact-outside', 'esc'])
   })
 })

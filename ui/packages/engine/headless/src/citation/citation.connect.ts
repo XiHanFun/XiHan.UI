@@ -225,7 +225,7 @@ export function connectCitation<T extends PropTypes>(
         event.preventDefault()
         const root = event.currentTarget as HTMLElement
         const target = event.target as HTMLElement
-        send({ type: 'OPEN.SET', open: false })
+        send({ type: 'OPEN.SET', open: false, src: 'esc' })
         if (target.closest(parts.preview.selector))
           restoreFocus(root)
       },
@@ -384,7 +384,7 @@ export function connectCitation<T extends PropTypes>(
       'data-xh-action-size': 'xs',
       'data-xh-action-display': 'always',
       'onClick': (event: MouseEvent) => {
-        send({ type: 'OPEN.SET', open: false })
+        send({ type: 'OPEN.SET', open: false, src: 'close-trigger' })
         const root = (event.currentTarget as HTMLElement).closest<HTMLElement>(parts.root.selector)
         if (root)
           restoreFocus(root)

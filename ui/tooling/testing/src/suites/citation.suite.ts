@@ -142,6 +142,21 @@ export const citationSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '再点同一处引用收起预览，报 close-trigger：是用户亲手收的，不是代码调的',
+      spec: { apg: DISCLOSURE },
+      steps: [
+        { kind: 'click', part: 'trigger[0]', expect: { events: [{ type: 'open-change', detail: { open: true } }] } },
+        {
+          kind: 'click',
+          part: 'trigger[0]',
+          expect: {
+            parts: { 'trigger[0]': { 'aria-expanded': 'false' } },
+            events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }],
+          },
+        },
+      ],
+    },
+    {
       name: '来源列表方向键循环导航，Home / End 到端点',
       spec: { apg: LISTBOX },
       covers: ['citation.kbd.next', 'citation.kbd.prev', 'citation.kbd.first', 'citation.kbd.last'],
@@ -231,7 +246,7 @@ export const citationSuite: ConformanceSuite = {
           kind: 'blur',
           expect: {
             parts: { 'trigger[0]': { 'aria-expanded': 'false' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'interact-outside' } }],
           },
         },
       ],

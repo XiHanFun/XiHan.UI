@@ -5,11 +5,13 @@
 
 // 提供 citation 相关实现。
 
-import type { PositionResult, Scope } from '@xihan-ui/core'
+import type { OverlayCloseReason, Params, PositionResult, Scope } from '@xihan-ui/core'
+import type { CloseEventLike, CloseReasonExtra } from '../shared/close-reason'
 import type { CitationSchema, CitationTriggerTarget } from './citation.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
+import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
-import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
+import { dismissCloseSrc, trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
 import { citationAnatomy } from './citation.anatomy'
 
 const { createMachine } = setup<CitationSchema>()
@@ -45,6 +47,21 @@ function contentBlockSize(scope: Scope, node: HTMLElement): number | null {
   return node.scrollHeight - Number.parseFloat(style.paddingTop) - Number.parseFloat(style.paddingBottom)
 }
 
+/** hover 档的专有出口：指针离开等到点算 hover，焦点离开引用与卡片与消解层的层外聚焦同属层外交互。 */
+const hoverCloseReason: CloseReasonExtra = event =>
+  event.type === 'after.closeDelay' ? 'hover' : event.type === 'HOVER.BLUR' ? 'interact-outside' : undefined
+
+/**
+ * 开合落值并通知宿主：与受控 cell 的 onChange 同一判据——值真变了才发，受控时只发意图、状态等宿主写回。
+ * 通知挪到这里而不挂在 cell 上，是因为收起要带上原因，而原因只在发起这一次开合的事件上。
+ */
+function commitOpen({ context, prop }: Pick<Params<CitationSchema>, 'context' | 'prop'>, open: boolean, reason?: OverlayCloseReason): void {
+  if (context.get('open') === open)
+    return
+  context.set('open', open)
+  prop('onOpenChange')?.(open ? { open } : { open, reason: reason ?? 'programmatic' })
+}
+
 /** 接替窗口归一：没给取缺省，非有限数与负数按不接替处理。 */
 function resolveSkipDelay(ms: number | undefined): number {
   const value = ms ?? SKIP_DELAY
@@ -59,10 +76,10 @@ export const citationMachine = createMachine({
       defaultValue: prop('defaultActiveSourceId') ?? prop('sources')?.[0]?.sourceId ?? null,
       onChange: sourceId => prop('onActiveSourceChange')?.({ sourceId }),
     })),
+    // 开合通知不挂在 cell 上，由 commitOpen 发：收起要带原因
     open: cell<boolean>(() => ({
       value: prop('open'),
       defaultValue: prop('defaultOpen') ?? false,
-      onChange: open => prop('onOpenChange')?.({ open }),
     })),
     focusedSourceId: cell<string | null>(() => ({ defaultValue: null })),
     activeAnchorIndex: cell<number | null>(() => ({ defaultValue: null })),
@@ -229,7 +246,7 @@ export const citationMachine = createMachine({
         if (current.type === 'PREVIEW.LEFT' && context.get('leavingSourceId') === current.sourceId)
           context.set('leavingSourceId', null)
       },
-      activateCitation: ({ context, event }) => {
+      activateCitation: ({ context, prop, event }) => {
         const current = event.current()
         if (current.type !== 'CITATION.ACTIVATE')
           return
@@ -244,12 +261,12 @@ export const citationMachine = createMachine({
         context.set('activeAnchorIndex', anchorIndex)
         context.set('activeTriggerId', triggerId)
         const open = current.toggle && same ? !context.get('open') : true
-        context.set('open', open)
+        commitOpen({ context, prop }, open, 'close-trigger')
         if (!open)
           context.set('closedAt', Date.now())
       },
       /** 当场打开某处引用：hover 档的聚焦、接替与等到点都走这里。 */
-      openTarget: ({ context, event }) => {
+      openTarget: ({ context, prop, event }) => {
         const current = event.current()
         if (current.type !== 'TRIGGER.ENTER' && current.type !== 'TRIGGER.FOCUS')
           return
@@ -259,7 +276,7 @@ export const citationMachine = createMachine({
         context.set('activeGroup', sourceIds.length > 1 ? sourceIds : null)
         context.set('activeAnchorIndex', anchorIndex)
         context.set('activeTriggerId', triggerId)
-        context.set('open', true)
+        commitOpen({ context, prop }, true)
       },
       setPending: ({ context, event }) => {
         const current = event.current()
@@ -267,7 +284,7 @@ export const citationMachine = createMachine({
           context.set('pendingTarget', current.target)
       },
       clearPending: ({ context }) => context.set('pendingTarget', null),
-      openPending: ({ context }) => {
+      openPending: ({ context, prop }) => {
         const target = context.get('pendingTarget')
         context.set('pendingTarget', null)
         if (target == null)
@@ -276,12 +293,12 @@ export const citationMachine = createMachine({
         context.set('activeGroup', target.sourceIds.length > 1 ? target.sourceIds : null)
         context.set('activeAnchorIndex', target.anchorIndex)
         context.set('activeTriggerId', target.triggerId)
-        context.set('open', true)
+        commitOpen({ context, prop }, true)
       },
-      closeHover: ({ context }) => {
+      closeHover: ({ context, prop, event }) => {
         if (!context.get('open'))
           return
-        context.set('open', false)
+        commitOpen({ context, prop }, false, closeReasonOf(event.current() as CloseEventLike, hoverCloseReason))
         context.set('closedAt', Date.now())
       },
       markFocusHeld: ({ context }) => context.set('focusHeld', true),
@@ -304,7 +321,7 @@ export const citationMachine = createMachine({
         context.set('activeSourceId', group[next]!)
         context.set('activeAnchorIndex', null)
       },
-      activateSource: ({ context, event }) => {
+      activateSource: ({ context, prop, event }) => {
         const current = event.current()
         if (current.type !== 'SOURCE.ACTIVATE')
           return
@@ -312,7 +329,7 @@ export const citationMachine = createMachine({
         context.set('activeGroup', null)
         context.set('activeAnchorIndex', null)
         context.set('activeTriggerId', null)
-        context.set('open', true)
+        commitOpen({ context, prop }, true)
       },
       invokeSourceOpen: ({ prop, event }) => {
         const current = event.current()
@@ -333,13 +350,13 @@ export const citationMachine = createMachine({
           context.set('focusedSourceId', current.sourceId)
       },
       clearFocus: ({ context }) => context.set('focusedSourceId', null),
-      setOpen: ({ context, event }) => {
+      setOpen: ({ context, prop, event }) => {
         const current = event.current()
         if (current.type !== 'OPEN.SET')
           return
         if (!current.open && context.get('open'))
           context.set('closedAt', Date.now())
-        context.set('open', current.open)
+        commitOpen({ context, prop }, current.open, closeReasonOf(current))
       },
     },
     effects: {
@@ -410,7 +427,7 @@ export const citationMachine = createMachine({
           registerLayer: refs.get('registerLayer'),
           flush,
           active: () => prop('previewMode') === 'hover' && context.get('open'),
-          onDismiss: () => send({ type: 'DISMISS' }),
+          onDismiss: reason => send({ type: 'DISMISS', src: dismissCloseSrc(reason) }),
         }),
       }),
     },

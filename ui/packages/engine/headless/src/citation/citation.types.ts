@@ -5,7 +5,7 @@
 
 // 定义 citation 类型契约。
 
-import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size } from '@xihan-ui/core'
+import type { Cleanup, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size } from '@xihan-ui/core'
 
 /** 与 @xihan-ui/chat-stream 的 CitationAnchor 结构兼容，不让 Headless 反向依赖 feature 包。 */
 export interface CitationSourceAnchor {
@@ -41,6 +41,13 @@ export interface CitationActiveSourceChangeDetails {
 
 export interface CitationOpenChangeDetails {
   open: boolean
+  /**
+   * 本次关闭的原因；展开时不带。
+   * Escape 报 esc；再点一次同一处引用、按预览上的关闭钮报 close-trigger；
+   * hover 档里指针离开、等过 closeDelay 报 hover，焦点离开引用与卡片、点在卡片外报 interact-outside；
+   * 代码调用（setOpen(false)）报 programmatic。
+   */
+  reason?: OverlayCloseReason
 }
 
 export interface CitationSourceOpenDetails {
@@ -185,12 +192,13 @@ export interface CitationSchema extends MachineSchema {
     /** 一处多源时在预览里换到上一个 / 下一个来源。 */
     | { type: 'GROUP.STEP', delta: 1 | -1 }
     /** hover 档：消解层回报 Escape 或层外按下。 */
-    | { type: 'DISMISS' }
+    | { type: 'DISMISS', src?: 'esc' | 'interact-outside' }
     | { type: 'SOURCE.ACTIVATE', sourceId: string }
     | { type: 'SOURCE.OPEN', sourceId: string, anchorIndex: number | null }
     | { type: 'SOURCE.FOCUS', sourceId: string }
     | { type: 'LIST.BLUR' }
-    | { type: 'OPEN.SET', open: boolean }
+    /** src 记收起的手势：根上的 Escape、预览上的关闭钮；代码调的 setOpen 不带。 */
+    | { type: 'OPEN.SET', open: boolean, src?: 'esc' | 'close-trigger' }
     /** 量下某份预览的内容区高度。 */
     | { type: 'PREVIEW.MEASURED', sourceId: string, blockSize: number }
     /** 收起的那一份退场播完。 */

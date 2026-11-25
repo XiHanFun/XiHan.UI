@@ -54,7 +54,7 @@ const NUMBER_CONVERTER = {
  * @attr {string} placement - hover 档：卡片相对引用编号的朝向，默认 bottom
  * @attr {number} offset - hover 档：卡片与引用编号的间距（px）
  * @fires active-source-change - 当前来源变化
- * @fires open-change - 预览展开态变化
+ * @fires open-change - 预览展开态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因
  * @fires source-open - 用户请求打开原始来源
  * @csspart root - 组件根
  * @csspart text - 含行内引用的正文

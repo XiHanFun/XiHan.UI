@@ -22,6 +22,7 @@
 - 一处引用引了几个来源时写 `sourceIds`（Web Components 在 `value` 里写成空白分隔的几个 id），预览里的 `prev-trigger` / `next-trigger` 在这几个来源之间轮换，`preview-index` 显示「2 / 3」；只有一个来源时三者收起。hover 档轮换时卡片就地换内容，不再播一次出现。
 - URL 来源保留原生链接导航；文档来源通过 `source-open` 把 `SourcePart` 与当前 anchor 交回宿主。
 - `activeSourceId` 与 `open` 可分别受控，受控时只有宿主写回才改变可见状态。
+- 预览收起时 `onOpenChange` 带上关闭原因 `reason`：Escape 报 `esc`；再点一次同一处引用、按预览上的关闭钮报 `close-trigger`；hover 档里指针离开、等过 `closeDelay` 报 `hover`，焦点离开引用与卡片、点在卡片外报 `interact-outside`；`setOpen(false)` 报 `programmatic`。展开时不带。
 - 正文里的引用常随[流式正文](./markdown-stream)到达：把流式正文放进 `text` 部件，在它的 `citation` 插槽里渲 trigger。首帧一个引用都没有是真实首帧，`text` 与 `trigger` 都不是必需部件。
 
 ## 最佳实践
