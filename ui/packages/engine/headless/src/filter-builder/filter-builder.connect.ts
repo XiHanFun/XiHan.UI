@@ -471,7 +471,7 @@ export function connectFilterBuilder<T extends PropTypes>(
         ariaLabel: t.match,
         collection: (['and', 'or'] as const).map(logic => ({ value: logic, label: t.logic(logic) })),
         value: group?.group.logic ?? 'and',
-        disallowEmpty: true,
+        allowEmpty: false,
         onValueChange: (details) => {
           const logic = Array.isArray(details.value) ? details.value[0] : details.value
           if (logic === 'and' || logic === 'or')
@@ -517,7 +517,7 @@ export function connectFilterBuilder<T extends PropTypes>(
         ariaLabel: view ? t.source(view.number) : undefined,
         collection: (['value', 'parameter'] as const).map(source => ({ value: source, label: t.sourceOption(source) })),
         value: view?.source ?? 'value',
-        disallowEmpty: true,
+        allowEmpty: false,
         onValueChange: (details) => {
           const source = Array.isArray(details.value) ? details.value[0] : details.value
           if (source === 'value' || source === 'parameter')

@@ -92,7 +92,7 @@ split 设为 false，段与段之间不画分隔线
 - 支持水平、垂直、全宽和三种尺寸。
 - 默认在相邻条目之间显示分隔线，可通过 `split=false` 关闭。
 - 使用 roving tabindex 管理组内键盘导航。
-- `disallowEmpty` 可阻止清空最后一个选中项。
+- `allowEmpty` 设为 false 可阻止清空最后一个选中项。
 - `collection` 可统一提供标签和禁用状态。
 - 不写结构时按标准结构铺出整组（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`）：每一条一个按钮，末尾一份表单影子，给了 `name` 才参与提交。Web Components 里某一条的内容可以写在宿主的直接子节点上接管：`slot="item:<值>"`。
 - 值可以是任意类型：`value`、`defaultValue` 与 `collection` 里交进来数字、对象都行，`onValueChange`、`v-model`、插槽与 `renderItem` 拿到的是原值；Vue 与 React 按 `value` 或 `collection` 推断值的类型、按 `multiple` 推断形状——写了 `multiple` 时值是数组，没写时是一个值或 `null`，单选却绑数组、`valueKey` 写错字段编译即报错。数字转成字符串当键，对象值给 `valueKey`（字段名或取值函数），同一个选项每次都是新对象（接口刚取回来）也认得出来，不给按对象身份认；键也是条目的 `data-value`与随表单提交的值。Vue 的 `h()` 推断不了泛型，那里按宽松的类型检查；Web Components 经 property 交值，写 `querySelector<XhToggleGroupElement<number>>("xh-toggle-group")` 收窄。
@@ -106,7 +106,7 @@ split 设为 false，段与段之间不画分隔线
 
 - 每组使用二到五个简短选项。
 - 同组条目应保持相近宽度。
-- 必须保留一个选中项时启用 `disallowEmpty`。
+- 必须保留一个选中项时把 `allowEmpty` 设为 false。
 
 ### 反模式
 
@@ -139,7 +139,7 @@ split 设为 false，段与段之间不画分隔线
 | `readOnly` | `boolean` |  | 只读：条目仍可聚焦、方向键照常走，点击与 Space / Enter 不改选中，也不进按压面。 |
 | `invalid` | `boolean` |  | 校验失败标注：单选组写 aria-invalid；多选是 role=group，只写 data-invalid。 |
 | `required` | `boolean` |  | 必填：单选组写 aria-required，表单影子写原生 required；多选只写 data-required 与原生 required。 |
-| `disallowEmpty` | `boolean` |  | 不允许清空值：单选模式下点击当前选中项不再取消它，多选模式下不可移除最后一个。 默认 false（可以点击为无选中）。 |
+| `allowEmpty` | `boolean` |  | 允许清空值，默认 true（可以点击为无选中）。写 false 时单选模式下点击当前选中项不再取消它， 多选模式下不可移除最后一个。 |
 | `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，决定段的底色与描边使用方式。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |

@@ -129,8 +129,8 @@ export const toggleGroupMachine = createMachine({
         if (e.type !== 'VALUE.SET')
           return
         const next = normalizeToggleGroupValue(e.value, !!prop('multiple')) ?? []
-        // 公开 API 不得造出界面造不出的值：disallowEmpty 下清空同样不认
-        if (!next.length && prop('disallowEmpty'))
+        // 公开 API 不得造出界面造不出的值：allowEmpty 为 false 时清空同样不认
+        if (!next.length && prop('allowEmpty') === false)
           return
         context.set('value', next)
       },
@@ -143,8 +143,8 @@ export const toggleGroupMachine = createMachine({
           ? current.filter(v => v !== e.value)
           // 单选选中一项即挤掉其余，集合恒为长度 1
           : (prop('multiple') ? [...current, e.value] : [e.value])
-        // disallowEmpty：最后一个选中项点不掉，值恒非空
-        if (!next.length && prop('disallowEmpty'))
+        // allowEmpty 为 false：最后一个选中项点不掉，值恒非空
+        if (!next.length && prop('allowEmpty') === false)
           return
         context.set('value', next)
       },

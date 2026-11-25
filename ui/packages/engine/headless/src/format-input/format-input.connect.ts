@@ -157,7 +157,7 @@ export function connectFormatInput<T extends PropTypes>(
       size,
       collection: kindItems.map(item => ({ value: item.value, label: item.label })),
       value: kindValue,
-      disallowEmpty: true,
+      allowEmpty: false,
       onValueChange: (details) => {
         const next = kindOf(Array.isArray(details.value) ? details.value[0] : details.value)
         if (next !== undefined)
@@ -181,7 +181,7 @@ export function connectFormatInput<T extends PropTypes>(
       size,
       collection: FORMAT_INPUT_DECIMALS_MODES.map(mode => ({ value: mode, label: t.decimalsModeOption(mode) })),
       value: draft.decimalsMode,
-      disallowEmpty: true,
+      allowEmpty: false,
       onValueChange: (details) => {
         const mode = Array.isArray(details.value) ? details.value[0] : details.value
         if ((FORMAT_INPUT_DECIMALS_MODES as readonly (string | null | undefined)[]).includes(mode))

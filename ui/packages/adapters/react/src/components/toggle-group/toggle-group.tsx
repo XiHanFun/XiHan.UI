@@ -42,7 +42,7 @@ export interface XhToggleGroupRootProps<V = string, M extends boolean = false> e
   /** 必填：表单影子写原生 required。 */
   required?: boolean
   /** 不允许把值清空：单选点击当前项不取消，多选无法移除最后一个。 */
-  disallowEmpty?: boolean
+  allowEmpty?: boolean
   variant?: ActionVariant
   tone?: Tone
   size?: Size
@@ -71,7 +71,7 @@ export function XhToggleGroupRoot<V = string, M extends boolean = false>({
   readOnly,
   invalid,
   required,
-  disallowEmpty,
+  allowEmpty,
   variant,
   tone,
   size,
@@ -98,7 +98,7 @@ export function XhToggleGroupRoot<V = string, M extends boolean = false>({
     readOnly,
     invalid,
     required,
-    disallowEmpty,
+    allowEmpty,
     variant,
     tone,
     size,

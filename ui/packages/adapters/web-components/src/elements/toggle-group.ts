@@ -44,7 +44,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {boolean} read-only - 只读：条目仍可聚焦、方向键照常走，不能改选中
  * @attr {boolean} invalid - 校验失败标注：单选组写 aria-invalid，多选只写 data-invalid
  * @attr {boolean} required - 必填：单选组写 aria-required，表单影子写原生 required
- * @attr {boolean} disallow-empty - 不允许清空值（最后一个选中项不可移除）
+ * @attr {boolean} allow-empty - 允许清空值，默认 true；写 allow-empty="false" 时最后一个选中项不可移除
  * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体，决定段的底色与描边使用方式
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -87,7 +87,7 @@ export class XhToggleGroupElement<V = string> extends XhElement {
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
     required: { converter: BOOLEAN_CONVERTER },
-    disallowEmpty: { converter: BOOLEAN_CONVERTER, attribute: 'disallow-empty' },
+    allowEmpty: { converter: BOOLEAN_CONVERTER, attribute: 'allow-empty' },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
@@ -110,7 +110,7 @@ export class XhToggleGroupElement<V = string> extends XhElement {
   declare readOnly?: boolean
   declare invalid?: boolean
   declare required?: boolean
-  declare disallowEmpty?: boolean
+  declare allowEmpty?: boolean
   declare variant?: ActionVariant
   declare tone?: Tone
   declare size?: Size
@@ -155,13 +155,13 @@ export class XhToggleGroupElement<V = string> extends XhElement {
       ariaLabel: this.hostAriaLabel(),
       ...valueTyped,
       // 布尔一律原样透传：属性不在即 undefined，把缺省交回 connect
-      // （multiple / disabled / disallowEmpty 默认关，loop / rovingFocus 默认开）
+      // （multiple / disabled 默认关，allowEmpty / loop / rovingFocus 默认开）
       multiple: this.multiple,
       disabled: control.disabled,
       readOnly: control.readOnly,
       invalid: control.invalid,
       required: control.required,
-      disallowEmpty: this.disallowEmpty,
+      allowEmpty: this.allowEmpty,
       variant: this.variant,
       tone: this.tone,
       size: this.size,

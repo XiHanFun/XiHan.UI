@@ -12,5 +12,5 @@ const options = [
 </script>
 
 <template>
-  <XhToggleGroupRoot v-model:value="value" :collection="options" disallow-empty />
+  <XhToggleGroupRoot v-model:value="value" :collection="options" :allow-empty="false" />
 </template>

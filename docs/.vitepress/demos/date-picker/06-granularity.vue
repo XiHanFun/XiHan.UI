@@ -88,7 +88,7 @@ function changeGranularity(details: { value: string | string[] | null }) {
     <XhDatePickerPositioner>
       <XhDatePickerContent>
         <div style="display: flex; padding-block-end: var(--xh-space-2)">
-          <XhToggleGroupRoot :value="granularity" disallow-empty size="sm" @value-change="changeGranularity">
+          <XhToggleGroupRoot :value="granularity" :allow-empty="false" size="sm" @value-change="changeGranularity">
             <XhToggleGroupItem v-for="item in granularities" :key="item.value" :value="item.value">
               {{ item.label }}
             </XhToggleGroupItem>

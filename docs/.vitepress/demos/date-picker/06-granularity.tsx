@@ -88,7 +88,7 @@ export default function Demo(): ReactNode {
               <div style={{ display: "flex", paddingBlockEnd: "var(--xh-space-2)" }}>
                 <XhToggleGroupRoot
                   value={granularity}
-                  disallowEmpty
+                  allowEmpty={false}
                   size="sm"
                   onValueChange={({ value: next }) => typeof next === "string" && setGranularity(next as CalendarGranularity)}
                 >

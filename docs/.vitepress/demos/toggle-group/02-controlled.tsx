@@ -15,7 +15,7 @@ export default function Demo(): ReactNode {
     <XhToggleGroupRoot
       value={value}
       collection={options}
-      disallowEmpty
+      allowEmpty={false}
       onValueChange={details => setValue(details.value as string | null)}
     />
   );

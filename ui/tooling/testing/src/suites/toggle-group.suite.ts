@@ -153,9 +153,9 @@ export const toggleGroupSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'disallowEmpty：最后一个选中项点不掉，也不发回调',
+      name: 'allowEmpty 为 false：最后一个选中项点不掉，也不发回调',
       spec: { apg: APG },
-      props: { defaultValue: 'left', disallowEmpty: true },
+      props: { defaultValue: 'left', allowEmpty: false },
       steps: [
         {
           kind: 'click',

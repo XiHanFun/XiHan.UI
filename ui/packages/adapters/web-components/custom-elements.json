@@ -76015,12 +76015,12 @@
             },
             {
               "kind": "field",
-              "name": "disallowEmpty",
+              "name": "allowEmpty",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "disallow-empty"
+              "attribute": "allow-empty"
             },
             {
               "kind": "field",
@@ -76295,9 +76295,9 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "不允许清空值（最后一个选中项不可移除）",
-              "name": "disallow-empty",
-              "fieldName": "disallowEmpty"
+              "description": "允许清空值，默认 true；写 allow-empty=\"false\" 时最后一个选中项不可移除",
+              "name": "allow-empty",
+              "fieldName": "allowEmpty"
             },
             {
               "type": {

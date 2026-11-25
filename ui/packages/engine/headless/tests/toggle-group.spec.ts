@@ -125,8 +125,8 @@ describe('toggleGroupMachine 选中集合', () => {
     expect(changes).toEqual([{ value: ['a'] }, { value: ['a', 'b'] }, { value: ['b'] }])
   })
 
-  it('disallowEmpty：最后一个选中项点不掉，也不发回调', () => {
-    const { service, changes } = makeService({ defaultValue: 'a', disallowEmpty: true })
+  it('allowEmpty 为 false：最后一个选中项点不掉，也不发回调', () => {
+    const { service, changes } = makeService({ defaultValue: 'a', allowEmpty: false })
     service.send({ type: 'ITEM.TOGGLE', value: 'a' })
     expect(service.context.get('value')).toEqual(['a'])
     expect(changes).toEqual([])
@@ -135,22 +135,22 @@ describe('toggleGroupMachine 选中集合', () => {
     expect(service.context.get('value')).toEqual(['b'])
   })
 
-  it('disallowEmpty 在多选下同样只拦最后一个', () => {
-    const { service } = makeService({ multiple: true, disallowEmpty: true, defaultValue: ['a', 'b'] })
+  it('allowEmpty 为 false 在多选下同样只拦最后一个', () => {
+    const { service } = makeService({ multiple: true, allowEmpty: false, defaultValue: ['a', 'b'] })
     service.send({ type: 'ITEM.TOGGLE', value: 'a' })
     expect(service.context.get('value')).toEqual(['b'])
     service.send({ type: 'ITEM.TOGGLE', value: 'b' })
     expect(service.context.get('value')).toEqual(['b'])
   })
 
-  it('公开 API 走同一套归一：单选截断、null 清空、disallowEmpty 下拦清空', () => {
+  it('公开 API 走同一套归一：单选截断、null 清空、allowEmpty 为 false 时拦清空', () => {
     const single = makeService({ defaultValue: 'a' })
     single.service.send({ type: 'VALUE.SET', value: ['x', 'y'] })
     expect(single.service.context.get('value')).toEqual(['x'])
     single.service.send({ type: 'VALUE.SET', value: null })
     expect(single.service.context.get('value')).toEqual([])
 
-    const guarded = makeService({ defaultValue: 'a', disallowEmpty: true })
+    const guarded = makeService({ defaultValue: 'a', allowEmpty: false })
     guarded.service.send({ type: 'VALUE.SET', value: null })
     expect(guarded.service.context.get('value')).toEqual(['a'])
   })

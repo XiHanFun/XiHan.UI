@@ -15678,12 +15678,12 @@
       "variant"
     ],
     "toggle-group": [
+      "allowEmpty",
       "ariaLabel",
       "collection",
       "defaultValue",
       "dir",
       "disabled",
-      "disallowEmpty",
       "fullWidth",
       "invalid",
       "loop",
@@ -24585,10 +24585,10 @@
     },
     "xh-toggle-group": {
       "attributes": [
+        "allow-empty",
         "default-value",
         "dir",
         "disabled",
-        "disallow-empty",
         "full-width",
         "invalid",
         "loop",

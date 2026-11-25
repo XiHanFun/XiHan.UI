@@ -93,10 +93,10 @@ export interface ToggleGroupSchema<V = string> extends MachineSchema {
     /** 必填：单选组写 aria-required，表单影子写原生 required；多选只写 data-required 与原生 required。 */
     required?: boolean
     /**
-     * 不允许清空值：单选模式下点击当前选中项不再取消它，多选模式下不可移除最后一个。
-     * 默认 false（可以点击为无选中）。
+     * 允许清空值，默认 true（可以点击为无选中）。写 false 时单选模式下点击当前选中项不再取消它，
+     * 多选模式下不可移除最后一个。
      */
-    disallowEmpty?: boolean
+    allowEmpty?: boolean
     /** 变体：solid / subtle / outline / ghost，决定段的底色与描边使用方式。 */
     variant?: ActionVariant
     /** 颜色：brand / neutral / success / warning / danger / info。 */

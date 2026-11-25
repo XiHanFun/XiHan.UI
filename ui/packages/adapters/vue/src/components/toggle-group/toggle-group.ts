@@ -51,7 +51,7 @@ const XhToggleGroupRootImpl = defineComponent({
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
-    disallowEmpty: { type: Boolean, default: undefined },
+    allowEmpty: { type: Boolean, default: undefined },
     variant: { type: String as PropType<ActionVariant> },
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
