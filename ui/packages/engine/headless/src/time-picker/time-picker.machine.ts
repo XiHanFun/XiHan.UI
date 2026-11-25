@@ -289,7 +289,7 @@ export const timePickerMachine = createMachine({
       },
     },
     actions: {
-      ...controlledOpenActions<TimePickerSchema>(),
+      ...controlledOpenActions<TimePickerSchema>({ reason: true }),
       followColumnSelection: (params) => {
         if (params.state.matches('open'))
           followColumnSelection(columnScrollTarget(params))

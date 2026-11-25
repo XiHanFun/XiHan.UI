@@ -105,7 +105,7 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上
  * @fires value-change - 选中的时刻变化；detail 为 `{ value: string[] }`，单选至多一项
  * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
- * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
+ * @fires open-change - open 状态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因
  * @csspart root - 组件根容器（承载 data-state / data-disabled / data-readonly / data-invalid / data-empty）
  * @csspart label - 标题；点击它把焦点送到第一段
  * @csspart control - role=group 的输入行，同时是浮层的定位锚点

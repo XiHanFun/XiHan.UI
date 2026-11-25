@@ -126,6 +126,7 @@ multiple 时各列拼出的是草稿，按「添加」收进值、浮层不收�
 - 浮层走弹层那一套进出场：按实际弹出方向短移、淡入放大，退场缩小淡出；减弱动效和增强对比度沿用主题设置。
 - 空值时显示时钟入口；有值且渲染了清空按钮时，指针落在盒上（或焦点在盒内）由清空按钮原位接替时钟图标，触屏上有值即接替；焦点正在时钟钮上时它不让位。
 - 聚焦边界与当前段位使用短过渡，不以瞬时跳色表达焦点。
+- 浮层收起时 `onOpenChange` 带上关闭原因 `reason`：Escape 报 `esc`，点在浮层外或焦点移出浮层报 `interact-outside`；再点一次时钟钮或输入行、在段位上按 Enter 报 `close-trigger`；点快捷选项随之收起报 `selection`（在列里挑时分秒不收起）；`setOpen(false)` 报 `programmatic`。展开时不带。
 
 ### 组合
 
@@ -212,7 +213,7 @@ multiple 时各列拼出的是草稿，按「添加」收进值、浮层不收�
 | --- | --- | --- |
 | `value-change` | `TimePickerValueChangeDetails` | 选中的时刻变化；detail 为 `{ value: string[] }`，单选至多一项 |
 | `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
-| `open-change` | `TimePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `open-change` | `TimePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因 |
 
 ### 插槽
 

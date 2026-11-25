@@ -439,7 +439,7 @@ export function connectTimePicker<T extends PropTypes>(
         // 再点一下收起：点开与收起对称，不然浮层展开后指针那条路就没有出口了
         // （段位敲出来的值不触发"选完即收"，触发钮又是可选部件）
         if (open) {
-          send({ type: 'CLOSE' })
+          send({ type: 'CLOSE', src: 'close-trigger' })
           return
         }
         // src=control：这一下的用意是编辑段位，焦点得留在段上，不搬进浮层。
@@ -550,7 +550,7 @@ export function connectTimePicker<T extends PropTypes>(
           // 于是得给一个"我填完了"的手势。触发钮是可选部件,不能指望人去点那个箭头
           if (open && !event.altKey && event.key === 'Enter') {
             event.preventDefault()
-            send({ type: 'CLOSE' })
+            send({ type: 'CLOSE', src: 'close-trigger' })
             return
           }
           if (event.ctrlKey || event.metaKey || event.altKey)

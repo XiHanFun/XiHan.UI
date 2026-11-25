@@ -5,7 +5,7 @@
 
 // 定义 time picker 类型契约。
 
-import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { ResolvedTimeStep, TimeColumn, TimeColumnUnit, TimeStep, TimeUnavailablePredicate } from '../shared/time-constraint'
 import type { TimeDayPeriod, TimeDraft, TimeGranularity, TimeHourCycle, TimeSegmentType } from '../time-field/time-field.types'
@@ -57,6 +57,12 @@ export interface TimePickerRefs {
 
 export interface TimePickerOpenChangeDetails {
   open: boolean
+  /**
+   * 本次关闭的原因；展开时不带。
+   * Escape 报 esc，点在浮层外或焦点移出浮层报 interact-outside；再点一次时钟钮或输入行、
+   * 在段位上按 Enter 报 close-trigger；点快捷选项随之收起报 selection；代码调用报 programmatic。
+   */
+  reason?: OverlayCloseReason
 }
 
 export interface TimePickerValueChangeDetails {
@@ -274,7 +280,7 @@ export interface TimePickerSchema extends MachineSchema {
     // src 记下这次是从哪儿展开的：点输入行那一路不把焦点搬进浮层（用户点段位是为了打字）
     | { type: 'OPEN', focus?: TimePickerFocusIntent, src?: 'trigger' | 'control' }
     | { type: 'TOGGLE', focus?: TimePickerFocusIntent, src?: 'trigger' | 'control' }
-    | { type: 'CLOSE', src?: 'esc' | 'tab' | 'interact-outside' }
+    | { type: 'CLOSE', src?: 'esc' | 'tab' | 'interact-outside' | 'close-trigger' }
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
