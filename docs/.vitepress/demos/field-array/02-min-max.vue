@@ -24,8 +24,8 @@ function setAt(index: number, next: string) {
   <XhFieldArrayRoot
     v-slot="{ items }"
     v-model:value="options"
-    :min="2"
-    :max="4"
+    :min-items="2"
+    :max-items="4"
     :create-item="() => ''"
     style="inline-size: 100%; max-inline-size: 420px"
   >

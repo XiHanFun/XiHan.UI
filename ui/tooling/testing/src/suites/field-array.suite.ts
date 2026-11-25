@@ -257,9 +257,9 @@ export const fieldArraySuite: ConformanceSuite = {
       ],
     },
     {
-      name: '到 max：新增把手转 aria-disabled 而不是原生 disabled，再点不发事件',
+      name: '到 maxItems：新增把手转 aria-disabled 而不是原生 disabled，再点不发事件',
       spec: { apg: APG },
-      props: { defaultValue: ['甲', '乙', '丙'], max: 3 },
+      props: { defaultValue: ['甲', '乙', '丙'], maxItems: 3 },
       initial: {
         parts: {
           'root': { 'data-at-max': '' },
@@ -281,9 +281,9 @@ export const fieldArraySuite: ConformanceSuite = {
       ],
     },
     {
-      name: '到 min：删除把手转 aria-disabled 而不是原生 disabled，再点不发事件',
+      name: '到 minItems：删除把手转 aria-disabled 而不是原生 disabled，再点不发事件',
       spec: { apg: APG },
-      props: { defaultValue: ['甲', '乙', '丙'], min: 3 },
+      props: { defaultValue: ['甲', '乙', '丙'], minItems: 3 },
       initial: {
         parts: {
           'root': { 'data-at-min': '' },
@@ -443,10 +443,10 @@ export const fieldArraySuite: ConformanceSuite = {
     {
       name: '按不动的把手不进入按压面：到上限的新增、到下限的删除、首行上移与末行下移都是 aria-disabled',
       spec: { adr: 'press-channel' },
-      props: { defaultValue: ['甲', '乙', '丙'], reorderable: true, min: 3, max: 3 },
+      props: { defaultValue: ['甲', '乙', '丙'], reorderable: true, minItems: 3, maxItems: 3 },
       steps: [
-        heldPressIgnored('field-array', 'add-trigger', '到 max 的新增把手 aria-disabled，不接受按压'),
-        heldPressIgnored('field-array', 'item-delete-trigger', '到 min 的删除把手 aria-disabled，不接受按压', { selector: handle('item-delete-trigger', 0) }),
+        heldPressIgnored('field-array', 'add-trigger', '到 maxItems 的新增把手 aria-disabled，不接受按压'),
+        heldPressIgnored('field-array', 'item-delete-trigger', '到 minItems 的删除把手 aria-disabled，不接受按压', { selector: handle('item-delete-trigger', 0) }),
         heldPressIgnored('field-array', 'move-up-trigger', '首行的上移把手 aria-disabled，不接受按压', { selector: handle('move-up-trigger', 0) }),
         heldPressIgnored('field-array', 'move-down-trigger', '末行的下移把手 aria-disabled，不接受按压', { selector: handle('move-down-trigger', 2) }),
       ],

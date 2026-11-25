@@ -24,8 +24,8 @@ export default function Demo(): ReactNode {
     <XhFieldArrayRoot
       value={options}
       onValueChange={details => setOptions(details.value as string[])}
-      min={2}
-      max={4}
+      minItems={2}
+      maxItems={4}
       createItem={() => ""}
       style={{ inlineSize: "100%", maxInlineSize: "420px" }}
     >

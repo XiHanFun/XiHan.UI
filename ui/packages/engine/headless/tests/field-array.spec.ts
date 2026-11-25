@@ -100,7 +100,7 @@ describe('纯函数：行数与位置', () => {
     expect(rowBound(undefined)).toBeUndefined()
   })
 
-  it('min 缺省为 0，空列表因此也算到底；max 缺省不限', () => {
+  it('minItems 缺省为 0，空列表因此也算到底；maxItems 缺省不限', () => {
     expect(atRowMin(0, undefined)).toBe(true)
     expect(atRowMin(1, undefined)).toBe(false)
     expect(atRowMin(2, 2)).toBe(true)
@@ -179,9 +179,9 @@ describe('行号：跟着增删换序走，不跟着行数据走', () => {
 })
 
 describe('闸门：上下限与禁用', () => {
-  it('到 max 加不动，到 min 删不动，回调一次都不发', () => {
+  it('到 maxItems 加不动，到 minItems 删不动，回调一次都不发', () => {
     const onValueChange = vi.fn()
-    const service = makeService({ defaultValue: ['甲', '乙'], min: 2, max: 2, onValueChange })
+    const service = makeService({ defaultValue: ['甲', '乙'], minItems: 2, maxItems: 2, onValueChange })
 
     expect(api(service).atMin).toBe(true)
     expect(api(service).atMax).toBe(true)
@@ -453,7 +453,7 @@ describe('把手投影 Action Control 家族属性', () => {
   })
 
   it('按不动的把手同时打 aria-disabled 与 data-disabled：前者给读屏，后者给家族收反馈', () => {
-    const service = makeService({ defaultValue: ['甲'], min: 1, max: 1 })
+    const service = makeService({ defaultValue: ['甲'], minItems: 1, maxItems: 1 })
     const a = api(service)
     const [row] = a.items
     const remove = a.getItemDeleteTriggerProps(row!) as Record<string, unknown>
@@ -563,7 +563,7 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () =
       up(service, 1).onKeyDown!(keyEvent('Enter'))
       expect(service.context.get('pressed')).toBeFalsy()
     }
-    const edge = makeService({ defaultValue: ['甲', '乙'], reorderable: true, min: 2, max: 2 })
+    const edge = makeService({ defaultValue: ['甲', '乙'], reorderable: true, minItems: 2, maxItems: 2 })
     expect(add(edge)['aria-disabled']).toBe('true')
     add(edge).onKeyDown!(keyEvent(' '))
     expect(pressed(add(edge))).toBe(false)
@@ -621,9 +621,9 @@ describe('在指定位置插入', () => {
     expect(api(service).value).toEqual(['空', '甲', '乙', '丙'])
   })
 
-  it('insert 受 max 与禁用约束，越界的下标夹到两端', () => {
+  it('insert 受 maxItems 与禁用约束，越界的下标夹到两端', () => {
     const onValueChange = vi.fn()
-    const full = makeService({ defaultValue: ['甲'], max: 1, onValueChange })
+    const full = makeService({ defaultValue: ['甲'], maxItems: 1, onValueChange })
     api(full).insert(0, '乙')
     expect(api(full).value).toEqual(['甲'])
     expect(onValueChange).not.toHaveBeenCalled()

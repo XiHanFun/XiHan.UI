@@ -52,8 +52,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * 数据数组、造行工厂与读屏文案都无法表达为属性，三者只作为 property 暴露。
  *
  * @customElement xh-field-array
- * @attr {number} min - 最少行数；到达后删除把手不可按下
- * @attr {number} max - 最多行数；到达后新增把手不可按下
+ * @attr {number} min-items - 最少行数；到达后删除把手不可按下
+ * @attr {number} max-items - 最多行数；到达后新增把手不可按下
  * @attr {boolean} reorderable - 是否显示换序把手；关闭时拖动、上移与下移三个把手一律收起
  * @attr {boolean} sticky-actions - 表格排布下行尾把手钉在末端侧，默认 true；写 sticky-actions="false" 关闭，把手随行一起横向滚动
  * @attr {boolean} disabled - 禁用：新增、删除、换序三路都不可按下
@@ -98,8 +98,8 @@ export class XhFieldArrayElement extends XhElement {
     // 宿主的行数据是任意值，属性表达不了，只走 property
     value: { attribute: false },
     defaultValue: { attribute: false },
-    min: { converter: NUMBER_CONVERTER },
-    max: { converter: NUMBER_CONVERTER },
+    minItems: { converter: NUMBER_CONVERTER, attribute: 'min-items' },
+    maxItems: { converter: NUMBER_CONVERTER, attribute: 'max-items' },
     createItem: { attribute: false },
     reorderable: { converter: BOOLEAN_CONVERTER },
     stickyActions: { converter: BOOLEAN_CONVERTER, attribute: 'sticky-actions' },
@@ -115,8 +115,8 @@ export class XhFieldArrayElement extends XhElement {
 
   declare value?: unknown[]
   declare defaultValue?: unknown[]
-  declare min?: number
-  declare max?: number
+  declare minItems?: number
+  declare maxItems?: number
   declare createItem?: () => unknown
   declare reorderable?: boolean
   declare stickyActions?: boolean
@@ -164,8 +164,8 @@ export class XhFieldArrayElement extends XhElement {
       ariaLabel: this.hostAriaLabel(),
       value: this.value,
       defaultValue: this.defaultValue,
-      min: this.min,
-      max: this.max,
+      minItems: this.minItems,
+      maxItems: this.maxItems,
       createItem: this.createItem,
       reorderable: this.reorderable ?? false,
       stickyActions: this.stickyActions,
@@ -195,22 +195,22 @@ export class XhFieldArrayElement extends XhElement {
     return connectFieldArray(this.ctrl.service, wcNormalize)
   }
 
-  /** 整份替换，不受 min / max 约束。 */
+  /** 整份替换，不受 minItems / maxItems 约束。 */
   setValue(next: unknown[]): void {
     this.commands().setValue(next)
   }
 
-  /** 在末尾追加一行，数据由 createItem 造；受 max 约束。 */
+  /** 在末尾追加一行，数据由 createItem 造；受 maxItems 约束。 */
   add(): void {
     this.commands().add()
   }
 
-  /** 在 index 处插入一行（夹到 0 到行数之间），后面的行往后挪；给了 item 就用它作这一行的数据，缺省由 createItem 造。受 max 约束。 */
+  /** 在 index 处插入一行（夹到 0 到行数之间），后面的行往后挪；给了 item 就用它作这一行的数据，缺省由 createItem 造。受 maxItems 约束。 */
   insert(index: number, item?: unknown): void {
     this.commands().insert(index, item)
   }
 
-  /** 删掉第 index 行；受 min 约束。不叫 remove：那是 Element 自己把元素移出文档的方法。 */
+  /** 删掉第 index 行；受 minItems 约束。不叫 remove：那是 Element 自己把元素移出文档的方法。 */
   removeItem(index: number): void {
     this.commands().remove(index)
   }

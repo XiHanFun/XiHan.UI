@@ -116,9 +116,9 @@ const CASES: readonly Case[] = [
   {
     name: 'field-array',
     render: () => (
-      <XhFieldArrayRoot className="mine" style={PROBE} defaultValue={[1, 2]} min={1} />
+      <XhFieldArrayRoot className="mine" style={PROBE} defaultValue={[1, 2]} minItems={1} />
     ),
-    leaks: ['defaultvalue', 'min'],
+    leaks: ['defaultvalue', 'minitems'],
   },
   {
     name: 'fieldset',

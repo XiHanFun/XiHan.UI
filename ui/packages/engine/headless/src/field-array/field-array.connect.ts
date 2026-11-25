@@ -51,8 +51,8 @@ export function connectFieldArray<T extends PropTypes>(
   const name = prop('name')
   const reorderable = !!prop('reorderable')
   const stickyActions = prop('stickyActions') !== false
-  const min = rowBound(prop('min'))
-  const max = rowBound(prop('max'))
+  const min = rowBound(prop('minItems'))
+  const max = rowBound(prop('maxItems'))
   const atMin = atRowMin(count, min)
   const atMax = atRowMax(count, max)
   const empty = count === 0

@@ -36,12 +36,12 @@ export function rowBound(raw: number | undefined): number | undefined {
   return raw != null && Number.isFinite(raw) && raw >= 0 ? Math.trunc(raw) : undefined
 }
 
-/** 已到下限：再删就少于 min 了。min 缺省为 0，空列表因此也算到底。 */
+/** 已到下限：再删就少于 minItems 了。minItems 缺省为 0，空列表因此也算到底。 */
 export function atRowMin(count: number, min: number | undefined): boolean {
   return count <= (min ?? 0)
 }
 
-/** 已到上限：再加就多于 max 了。 */
+/** 已到上限：再加就多于 maxItems 了。 */
 export function atRowMax(count: number, max: number | undefined): boolean {
   return max != null && count >= max
 }
@@ -244,8 +244,8 @@ export const fieldArrayMachine = createMachine({
   },
   implementations: {
     guards: {
-      canAdd: params => !params.prop('disabled') && !params.prop('readOnly') && !atRowMax(fieldArrayValue(params).length, rowBound(params.prop('max'))),
-      canRemove: params => !params.prop('disabled') && !params.prop('readOnly') && !atRowMin(fieldArrayValue(params).length, rowBound(params.prop('min'))),
+      canAdd: params => !params.prop('disabled') && !params.prop('readOnly') && !atRowMax(fieldArrayValue(params).length, rowBound(params.prop('maxItems'))),
+      canRemove: params => !params.prop('disabled') && !params.prop('readOnly') && !atRowMin(fieldArrayValue(params).length, rowBound(params.prop('minItems'))),
       canMove: params => !params.prop('disabled') && !params.prop('readOnly') && !!params.prop('reorderable'),
       // 整体禁用 / 只读一律不进；到上下限、首末行这类逐个把手的「按不动」由 connect 随事件带来
       canPress: ({ prop, event }) => {

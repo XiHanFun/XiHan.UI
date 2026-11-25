@@ -13,7 +13,7 @@
 
 ## 特性
 
-- `min` 与 `max` 限制行数。
+- `minItems` 与 `maxItems` 限制行数。
 - `reorderable` 启用换序：每行有拖动把手（`item-drag-trigger`）与上移、下移两个把手。按住拖动把手把这一行拖到别处，其余各行实时让位，松手后它从松手处收进新位置，值按 `{ type: 'move', from, to }` 换位。拖动把手只接指针，不占 Tab 位、对读屏隐藏，键盘与读屏用上移、下移；拖动由 [排序](./sortable) 的状态机驱动，与它同一套让位、自动滚动与放下归位。删掉的行在原处淡出时照常拖别的行，淡出的替身不算一项。
 - `onValueChange`（事件名 `value-change`）的载荷带上这次是哪一种行变更：`mutation` 为 `{ type: 'insert', index }`、`{ type: 'remove', index }`、`{ type: 'move', from, to }` 或整份写值的 `{ type: 'replace', length }`（类型 `FormArrayMutation`）。值存在外部 store 的宿主据此迁移行级状态（强制设定、选项、校验进度），不必整份替换后丢掉。
 - `createItem` 设置新增行的初始值。

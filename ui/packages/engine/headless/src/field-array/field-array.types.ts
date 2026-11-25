@@ -114,9 +114,9 @@ export interface FieldArraySchema extends MachineSchema {
     /** 非受控初始数据数组。 */
     defaultValue?: unknown[]
     /** 最少行数。到达该数值时删除把手不可按下。默认 0。 */
-    min?: number
+    minItems?: number
     /** 最多行数。到达该数值时新增把手不可按下。默认不限。 */
-    max?: number
+    maxItems?: number
     /** 新增一行时创建一个空项。未提供时插入 null。 */
     createItem?: () => unknown
     /**
@@ -244,19 +244,19 @@ export interface FieldArrayApi<T extends PropTypes = PropTypes> {
   layout: FieldArrayLayout
   /** 表格排布的各列，原样取自 columns；没给时为空数组。 */
   columns: FieldArrayColumn[]
-  /** 已到下限：再删除会少于 min。 */
+  /** 已到下限：再删除会少于 minItems。 */
   atMin: boolean
-  /** 已到上限：再新增会多于 max。 */
+  /** 已到上限：再新增会多于 maxItems。 */
   atMax: boolean
   canAdd: boolean
   /** 解析后的文案：作者给的 translations 盖在当前语言包上。 */
   translations: FieldArrayTranslations
-  /** 整份替换，不受 min / max 约束。 */
+  /** 整份替换，不受 minItems / maxItems 约束。 */
   setValue: (next: unknown[]) => void
-  /** 在末尾追加一行，数据由 createItem 造；受 max 约束。 */
+  /** 在末尾追加一行，数据由 createItem 造；受 maxItems 约束。 */
   add: () => void
   /**
-   * 在 index 处插入一行（夹到 0 到行数之间，等于行数即追加），原来在这个位置及之后的行往后挪；受 max 约束。
+   * 在 index 处插入一行（夹到 0 到行数之间，等于行数即追加），原来在这个位置及之后的行往后挪；受 maxItems 约束。
    * 给了 item 就用它作这一行的数据，缺省（undefined）由 createItem 造。嵌在 Form 里时，后面各行的值、规则与错误随之后移。
    */
   insert: (index: number, item?: unknown) => void

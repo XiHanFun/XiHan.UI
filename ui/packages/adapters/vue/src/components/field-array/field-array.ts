@@ -56,8 +56,8 @@ export const XhFieldArrayRoot = defineComponent({
     // 缺席值 undefined 表示非受控
     value: { type: Array as PropType<unknown[]> },
     defaultValue: { type: Array as PropType<unknown[]> },
-    min: { type: Number },
-    max: { type: Number },
+    minItems: { type: Number },
+    maxItems: { type: Number },
     createItem: { type: Function as PropType<() => unknown> },
     reorderable: Boolean,
     /** 表格排布下行尾把手钉在末端侧，缺省 true；关掉时把手随行一起横向滚动。 */

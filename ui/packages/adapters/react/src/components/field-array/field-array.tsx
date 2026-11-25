@@ -46,8 +46,8 @@ export interface XhFieldArrayRootProps extends Omit<ComponentPropsWithRef<'div'>
   ariaLabel?: string
   value?: unknown[]
   defaultValue?: unknown[]
-  min?: number
-  max?: number
+  minItems?: number
+  maxItems?: number
   /** 新增一行时构造一个空项；未提供时插入一个 null。 */
   createItem?: () => unknown
   reorderable?: boolean
@@ -75,8 +75,8 @@ export function XhFieldArrayRoot({
   ariaLabel,
   value,
   defaultValue,
-  min,
-  max,
+  minItems,
+  maxItems,
   createItem,
   reorderable,
   stickyActions,
@@ -98,8 +98,8 @@ export function XhFieldArrayRoot({
     ariaLabel,
     value,
     defaultValue,
-    min,
-    max,
+    minItems,
+    maxItems,
     createItem,
     reorderable,
     stickyActions,

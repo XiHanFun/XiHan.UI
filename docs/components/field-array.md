@@ -73,7 +73,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 
 ### 特性
 
-- `min` 与 `max` 限制行数。
+- `minItems` 与 `maxItems` 限制行数。
 - `reorderable` 启用换序：每行有拖动把手（`item-drag-trigger`）与上移、下移两个把手。按住拖动把手把这一行拖到别处，其余各行实时让位，松手后它从松手处收进新位置，值按 `{ type: 'move', from, to }` 换位。拖动把手只接指针，不占 Tab 位、对读屏隐藏，键盘与读屏用上移、下移；拖动由 [排序](./sortable) 的状态机驱动，与它同一套让位、自动滚动与放下归位。删掉的行在原处淡出时照常拖别的行，淡出的替身不算一项。
 - `onValueChange`（事件名 `value-change`）的载荷带上这次是哪一种行变更：`mutation` 为 `{ type: 'insert', index }`、`{ type: 'remove', index }`、`{ type: 'move', from, to }` 或整份写值的 `{ type: 'replace', length }`（类型 `FormArrayMutation`）。值存在外部 store 的宿主据此迁移行级状态（强制设定、选项、校验进度），不必整份替换后丢掉。
 - `createItem` 设置新增行的初始值。
@@ -119,8 +119,8 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | --- | --- | --- | --- |
 | `value` | `unknown[]` |  | 受控数据数组；提供后由宿主决定，状态机不自行修改，只发 onValueChange。 |
 | `defaultValue` | `unknown[]` |  | 非受控初始数据数组。 |
-| `min` | `number` |  | 最少行数。到达该数值时删除把手不可按下。默认 0。 |
-| `max` | `number` |  | 最多行数。到达该数值时新增把手不可按下。默认不限。 |
+| `minItems` | `number` |  | 最少行数。到达该数值时删除把手不可按下。默认 0。 |
+| `maxItems` | `number` |  | 最多行数。到达该数值时新增把手不可按下。默认不限。 |
 | `createItem` | `() => unknown` |  | 新增一行时创建一个空项。未提供时插入 null。 |
 | `reorderable` | `boolean` |  | 是否显示换序把手。关闭（默认）时上移、下移与拖动三个把手一律收起。 拖动把手只接指针（键盘与读屏用上移、下移），由适配器接上 sortable 的机器（见 fieldArrayDragProps）。 |
 | `stickyActions` | `boolean` |  | 表格排布下行尾把手钉在末端侧（缺省 true）：表格区横向滚动时把手留在原处，其余格子从下面滑过。 关掉时把手随行一起滚动，滚到末端才露出来；钉住的两侧占掉滚动区大半、中间的格子怎么滚都看不全时关掉它。 行号总是钉在起始侧。 |
@@ -204,13 +204,13 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `dragging` | `boolean` | 正有一行被拖动把手拖着（接了拖动时才可能为真）。 |
 | `layout` | `FieldArrayLayout` |  |
 | `columns` | `FieldArrayColumn[]` | 表格排布的各列，原样取自 columns；没给时为空数组。 |
-| `atMin` | `boolean` | 已到下限：再删除会少于 min。 |
-| `atMax` | `boolean` | 已到上限：再新增会多于 max。 |
+| `atMin` | `boolean` | 已到下限：再删除会少于 minItems。 |
+| `atMax` | `boolean` | 已到上限：再新增会多于 maxItems。 |
 | `canAdd` | `boolean` |  |
 | `translations` | `FieldArrayTranslations` | 解析后的文案：作者给的 translations 盖在当前语言包上。 |
-| `setValue` | `(next: unknown[]) => void` | 整份替换，不受 min / max 约束。 |
-| `add` | `() => void` | 在末尾追加一行，数据由 createItem 造；受 max 约束。 |
-| `insert` | `(index: number, item?: unknown) => void` | 在 index 处插入一行（夹到 0 到行数之间，等于行数即追加），原来在这个位置及之后的行往后挪；受 max 约束。 给了 item 就用它作这一行的数据，缺省（undefined）由 createItem 造。嵌在 Form 里时，后面各行的值、规则与错误随之后移。 |
+| `setValue` | `(next: unknown[]) => void` | 整份替换，不受 minItems / maxItems 约束。 |
+| `add` | `() => void` | 在末尾追加一行，数据由 createItem 造；受 maxItems 约束。 |
+| `insert` | `(index: number, item?: unknown) => void` | 在 index 处插入一行（夹到 0 到行数之间，等于行数即追加），原来在这个位置及之后的行往后挪；受 maxItems 约束。 给了 item 就用它作这一行的数据，缺省（undefined）由 createItem 造。嵌在 Form 里时，后面各行的值、规则与错误随之后移。 |
 | `remove` | `(index: number) => void` |  |
 | `move` | `(from: number, to: number) => void` |  |
 | `moveUp` | `(index: number) => void` |  |
