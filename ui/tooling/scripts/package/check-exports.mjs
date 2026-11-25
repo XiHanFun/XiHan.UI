@@ -40,6 +40,11 @@ const EXEMPT = {
   },
 }
 
+// 从总导出收回的泛名另记一张表，理由写在表头
+const { $description: _internalReason, ...internal } = JSON.parse(await readFile(new URL('./headless-internal-exports.json', import.meta.url), 'utf8'))
+for (const [specifier, names] of Object.entries(internal))
+  EXEMPT.headless[specifier] = [...(EXEMPT.headless[specifier] ?? []), ...names]
+
 const RE_REEXPORT = /export\s+(type\s+)?\{([^}]*)\}\s*from\s*['"]([^'"]+)['"]/g
 const RE_VUE_COMPONENT = /^export const (Xh\w+)/gm
 // react 的组件是函数声明，hook 与内部接线口不带 Xh 前缀，跟 vue 侧一样只收组件名
