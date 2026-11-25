@@ -101,7 +101,7 @@ export function connectToolCall<T extends PropTypes>(
       // 判定落定与出错两位布尔：阶段被开合占了 data-state，选中「已经跑完」与
       // 「跑完但出错」这两件事需要能直接落在根上
       'data-settled': dataAttr(settled),
-      'data-errored': dataAttr(errored),
+      'data-error': dataAttr(errored),
     }),
 
     // 开关是铺满一行的 disclosure trigger：接 Action Control 的 disclosure-trigger 档，ghost 形态、

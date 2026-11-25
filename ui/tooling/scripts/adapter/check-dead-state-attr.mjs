@@ -180,7 +180,7 @@ const HOOKS = {
   'tags-input:data-editing': '正在就地编辑：预览（tag 的 root）与编辑框的切换由两边各自的 hidden 承载',
   'tags-input:data-overflowing': '越过上限时 data-at-max 同时为真（前者是 count > max，后者是 count >= max），观感由 control 上的 at-max 描边一并承载，两者不另分档',
   'timer:data-action': '控制钮这一按是开始还是暂停，换的是文案不是外观',
-  'tool-call:data-settled': '跑完没跑完看的是状态文字与用时那两格；跑砸了另有 data-errored 换描边色',
+  'tool-call:data-settled': '跑完没跑完看的是状态文字与用时那两格；跑砸了另有 data-error 换描边色',
   'timer:data-controlled': '状态归 value / active 两个 prop 还是归起停按钮，两条通道画出来一模一样',
   'timer:data-countdown': '正计时还是倒计时，数字的排版两者一致',
   'timestamp:data-display': '按日期、时间还是两者一起渲染，换的是文本不是外观',

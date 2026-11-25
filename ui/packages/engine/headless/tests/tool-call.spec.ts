@@ -67,7 +67,7 @@ describe('connectToolCall 投影', () => {
     expect(running.running).toBe(true)
 
     const failed = t.api({ phase: 'output-error', variant: 'outline', tone: 'danger', size: 'sm' })
-    expect(failed.getRootProps()).toMatchObject({ 'data-settled': '', 'data-errored': '', 'data-variant': 'outline', 'data-tone': 'danger', 'data-size': 'sm' })
+    expect(failed.getRootProps()).toMatchObject({ 'data-settled': '', 'data-error': '', 'data-variant': 'outline', 'data-tone': 'danger', 'data-size': 'sm' })
     expect((failed.getRootProps() as Record<string, unknown>)['data-loading']).toBeUndefined()
     expect(failed.settled).toBe(true)
     expect(failed.errored).toBe(true)

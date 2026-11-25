@@ -82,9 +82,9 @@
   }
 
   /* 出错态换描边色，与语气轴各管各的：语气是作者定的强调，出错是组件自己的阶段。
-     根上的 data-state 已经被开合占着，阶段落成 data-errored 这一位；八个承载阶段的部件
+     根上的 data-state 已经被开合占着，阶段落成 data-error 这一位；八个承载阶段的部件
      渲出任何一个时那条 :has() 同样命中，两条并列，作者只渲根也照样变色 */
-  [data-scope='tool-call'][data-part='root'][data-errored],
+  [data-scope='tool-call'][data-part='root'][data-error],
   [data-scope='tool-call'][data-part='root']:has([data-scope='tool-call'][data-state='output-error']) {
     border-color: var(--xh-tool-call-border-error, var(--xh-border-invalid));
   }

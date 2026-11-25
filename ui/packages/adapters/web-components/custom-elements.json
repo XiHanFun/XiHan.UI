@@ -76822,7 +76822,7 @@
           "name": "XhToolCallElement",
           "cssParts": [
             {
-              "description": "外壳，承载 data-state（开合）/ data-loading / data-settled / data-errored 与三视觉轴",
+              "description": "外壳，承载 data-state（开合）/ data-loading / data-settled / data-error 与三视觉轴",
               "name": "root"
             },
             {

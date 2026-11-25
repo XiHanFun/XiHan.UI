@@ -243,7 +243,7 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
-| `root` | `data-errored` | ''（条件成立时才出现） |
+| `root` | `data-error` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-settled` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
@@ -282,7 +282,7 @@
 | --- | --- | --- | --- | --- | --- |
 | `--xh-tool-call-bg` | `root` | `background` | `default`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | tool-call 的 root 部件 background 覆盖槽。 |
 | `--xh-tool-call-border` | `root` | `border` | `default` | `--xh-border-default` | tool-call 的 root 部件 border 覆盖槽。 |
-| `--xh-tool-call-border-error` | `root` | `border-color` | `errored`<br>`has([data-scope='tool-call'][data-state='output-error'])`<br>`state=output-error` | `--xh-border-invalid` | tool-call 的 root 部件 border-color 覆盖槽。 |
+| `--xh-tool-call-border-error` | `root` | `border-color` | `error`<br>`has([data-scope='tool-call'][data-state='output-error'])`<br>`state=output-error` | `--xh-border-invalid` | tool-call 的 root 部件 border-color 覆盖槽。 |
 | `--xh-tool-call-content-gap` | `content` | `gap` | `default` | `--xh-space-2` | tool-call 的 content 部件 gap 覆盖槽。 |
 | `--xh-tool-call-divider` | `approval`<br>`content` | `border-block-start` | `default` | `--xh-border-subtle` | tool-call 的 approval、content 部件 border-block-start 覆盖槽。 |
 | `--xh-tool-call-duration-fg` | `duration` | `color` | `default` | `--xh-fg-subtle` | tool-call 的 duration 部件 color 覆盖槽。 |

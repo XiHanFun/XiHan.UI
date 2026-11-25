@@ -105,19 +105,19 @@ export const toolCallSuite: ConformanceSuite = {
       props: { phase: 'output-error' },
       initial: {
         parts: {
-          root: { 'data-settled': '', 'data-errored': '' },
+          root: { 'data-settled': '', 'data-error': '' },
         },
       },
       steps: [
         {
           kind: 'setProps',
           props: { phase: 'output-available' },
-          expect: { parts: { root: { 'data-settled': '', 'data-errored': null } }, events: [] },
+          expect: { parts: { root: { 'data-settled': '', 'data-error': null } }, events: [] },
         },
         {
           kind: 'setProps',
           props: { phase: 'awaiting-approval' },
-          expect: { parts: { root: { 'data-settled': null, 'data-errored': null } }, events: [] },
+          expect: { parts: { root: { 'data-settled': null, 'data-error': null } }, events: [] },
         },
       ],
     },

@@ -87944,7 +87944,7 @@
         "border-color"
       ],
       "state": [
-        "errored",
+        "error",
         "has([data-scope='tool-call'][data-state='output-error'])",
         "state=output-error"
       ],
