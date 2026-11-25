@@ -72,6 +72,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 - `presets` 提供“上午”“全天”等整段快捷项，值使用 ISO 8601 的区间写法拼接两端，点击后两端整份写入值并收起。
 - 终点早于起点、任一端越界时整个字段标为不合法，也可以用 `invalid` 显式声明。
 - 触发器打开空值时焦点直接落到起点组的第一项；从输入段打开时继续保留键入焦点，展开后落到正在编辑一端的时间列。
+- 浮层收起时 `onOpenChange` 带上关闭原因 `reason`：Escape 报 `esc`，点在浮层外或焦点移出浮层报 `interact-outside`；再点一次时钟钮或输入行、在段位上按 Enter 报 `close-trigger`；点快捷选项随之收起报 `selection`（在列里挑时分秒不收起）；`setOpen(false)` 报 `programmatic`。展开时不带。
 
 ### 组合
 
@@ -159,7 +160,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | --- | --- | --- |
 | `value-change` | `TimeRangePickerValueChangeDetails` | 两端变化；detail 为 `{ value: string[] }`，只填终点时为 `['', end]` |
 | `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
-| `open-change` | `TimeRangePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `open-change` | `TimeRangePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因 |
 
 ### 插槽
 

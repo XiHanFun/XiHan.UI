@@ -585,7 +585,7 @@ export const timeRangePickerSuite: ConformanceSuite = {
           key: 'Escape',
           expect: {
             parts: { content: { hidden: '' }, trigger: { 'aria-expanded': 'false' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'esc' } }],
           },
         },
         { kind: 'settle', until: { activeElement: 'trigger' }, timeoutMs: 500 },
@@ -593,6 +593,23 @@ export const timeRangePickerSuite: ConformanceSuite = {
           kind: 'raw',
           why: '隐藏输入的 value 是 property',
           run: ({ doc }) => expectHidden(doc, ['', ''], '收起不把锚点格写进值'),
+        },
+      ],
+    },
+    {
+      name: '再点一次触发器收起报 close-trigger：是用户点了收起，不是代码调的',
+      spec: { apg: APG },
+      props: { ...BASE },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { activeElement: S_HOUR_08 } },
+        {
+          kind: 'click',
+          part: 'trigger',
+          expect: {
+            parts: { content: { hidden: '' }, trigger: { 'aria-expanded': 'false' } },
+            events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }],
+          },
         },
       ],
     },
@@ -645,7 +662,7 @@ export const timeRangePickerSuite: ConformanceSuite = {
           },
           expect: {
             parts: { content: { hidden: '' }, trigger: { 'aria-expanded': 'false' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'interact-outside' } }],
           },
         },
       ],
@@ -912,7 +929,7 @@ export const timeRangePickerSuite: ConformanceSuite = {
             parts: { content: { hidden: '' } },
             events: [
               { type: 'value-change', detail: { value: ['08:00', '11:00'] } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },

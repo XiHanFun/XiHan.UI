@@ -1250,3 +1250,49 @@ describe('timeRangePickerStructure', () => {
     expect(parts(content)).toEqual(['preset-group', 'column-group', 'column-group'])
   })
 })
+
+describe('timeRangePickerMachine 关闭原因', () => {
+  // 收起意图带上这一次是怎么关的：取消（esc / 层外）常要回滚草稿，选完与「我填完了」不用
+  const reasons = (fn: ReturnType<typeof vi.fn>) =>
+    fn.mock.calls.map(c => c[0] as { open: boolean, reason?: string }).filter(d => !d.open).map(d => d.reason)
+  const yieldTurn = () => new Promise(resolve => setTimeout(resolve, 0))
+
+  it('escape 报 esc，层外按下报 interact-outside', async () => {
+    const onOpenChange = vi.fn()
+    const h = open({ onOpenChange })
+    h.trigger.click()
+    // 本层参与者延后一枚微任务武装，得让出一拍
+    await yieldTurn()
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+    expect(h.state()).toBe('closed')
+    h.trigger.click()
+    await yieldTurn()
+    document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
+    expect(h.state()).toBe('closed')
+    expect(reasons(onOpenChange)).toEqual(['esc', 'interact-outside'])
+  })
+
+  it('再点时钟钮、再点输入行、段位上按 Enter 都报 close-trigger', () => {
+    const onOpenChange = vi.fn()
+    const h = open({ onOpenChange })
+    h.trigger.click()
+    h.trigger.click()
+    h.trigger.click()
+    h.control.click()
+    h.trigger.click()
+    pressKey(h.segment(1, 'hour'), 'Enter')
+    expect(h.state()).toBe('closed')
+    expect(reasons(onOpenChange)).toEqual(['close-trigger', 'close-trigger', 'close-trigger'])
+  })
+
+  it('点快捷选项随之收起报 selection，setOpen(false) 报 programmatic，展开不带原因', () => {
+    const onOpenChange = vi.fn()
+    const h = open({ onOpenChange, defaultOpen: true, presets: [{ value: '09:00/12:00', label: '快捷' }] })
+    ;(h.api().getPresetProps({ value: '09:00/12:00' }) as { onClick: () => void }).onClick()
+    expect(h.value()).toEqual(['09:00', '12:00'])
+    h.api().setOpen(true)
+    h.api().setOpen(false)
+    expect(reasons(onOpenChange)).toEqual(['selection', 'programmatic'])
+    expect(onOpenChange.mock.calls.map(c => c[0]).filter(d => d.open)).toEqual([{ open: true }])
+  })
+})

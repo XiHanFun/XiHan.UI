@@ -333,7 +333,7 @@ export const timeRangePickerMachine = createMachine({
       },
     },
     actions: {
-      ...controlledOpenActions<TimeRangePickerSchema>(),
+      ...controlledOpenActions<TimeRangePickerSchema>({ reason: true }),
       followColumnSelection: (params) => {
         if (params.state.matches('open'))
           followColumnSelection(columnScrollTarget(params))
