@@ -5,7 +5,7 @@
 
 // 定义 date picker 类型契约。
 
-import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
+import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { CalendarPickerApi, CalendarPickerSchema, CalendarPickerTranslations } from '../calendar-picker/calendar-picker.types'
 import type { DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState, DateSegmentPlaceholders, DateSegmentSet } from '../date-field/date-field.types'
@@ -113,6 +113,12 @@ export interface DatePickerTimeItemProps {
 
 export interface DatePickerOpenChangeDetails {
   open: boolean
+  /**
+   * 本次关闭的原因；展开时不带。
+   * Escape 报 esc，点在浮层外或焦点移出浮层报 interact-outside；再点一次日历钮或输入行、
+   * 在段位上按 Enter、按确认钮报 close-trigger；选中日期或快捷选项随之收起报 selection；代码调用报 programmatic。
+   */
+  reason?: OverlayCloseReason
 }
 
 export interface DatePickerValueChangeDetails {
@@ -327,7 +333,7 @@ export interface DatePickerSchema extends MachineSchema {
     // src 记下这次是从哪儿展开的：点输入行那一路不把焦点搬进浮层（用户点段位是为了打字）
     | { type: 'OPEN', src?: 'trigger' | 'control' }
     | { type: 'TOGGLE', src?: 'trigger' | 'control' }
-    | { type: 'CLOSE', src?: 'esc' | 'tab' | 'interact-outside' }
+    | { type: 'CLOSE', src?: 'esc' | 'tab' | 'interact-outside' | 'close-trigger' }
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }

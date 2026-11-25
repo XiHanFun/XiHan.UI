@@ -152,7 +152,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @prop {TimeUnavailablePredicate} isTimeUnavailable - showTime 时间列的逐格可选性（函数只能通过 property 设置）
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
  * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
- * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
+ * @fires open-change - open 状态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因
  * @fires focused-value-change - 聚焦日变化（展示月可能随之变化）；detail 为 `{ focusedValue: string }`，作者据此重绘网格
  * @fires active-view-change - 切换到另一层级（点击标题向上、点击格子向下）；detail 为 `{ activeView: 'day'|'week'|'month'|'quarter'|'year' }`，作者据此重绘网格
  * @csspart root - 组件根容器（承载 data-state / data-disabled / data-readonly / data-invalid）

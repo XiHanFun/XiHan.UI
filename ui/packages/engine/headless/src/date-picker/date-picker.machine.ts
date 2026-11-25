@@ -363,7 +363,7 @@ export const datePickerMachine = createMachine({
       },
     },
     actions: {
-      ...controlledOpenActions<DatePickerSchema>(),
+      ...controlledOpenActions<DatePickerSchema>({ reason: true }),
       followColumnSelection: (params) => {
         if (params.state.matches('open'))
           followColumnSelection(columnScrollTarget(params))

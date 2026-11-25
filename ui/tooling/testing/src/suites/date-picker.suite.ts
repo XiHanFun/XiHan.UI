@@ -470,7 +470,7 @@ export const datePickerSuite: ConformanceSuite = {
           part: 'trigger',
           expect: {
             parts: { content: { hidden: '' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }],
           },
         },
       ],
@@ -522,7 +522,7 @@ export const datePickerSuite: ConformanceSuite = {
             parts: { content: { hidden: '' } },
             events: [
               { type: 'value-change', detail: { value: ['2024-02-29'] } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },
@@ -580,7 +580,7 @@ export const datePickerSuite: ConformanceSuite = {
           key: 'Escape',
           expect: {
             parts: { content: { hidden: '' }, trigger: { 'aria-expanded': 'false' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'esc' } }],
           },
         },
         {
@@ -634,7 +634,7 @@ export const datePickerSuite: ConformanceSuite = {
           },
           expect: {
             parts: { content: { hidden: '' }, trigger: { 'aria-expanded': 'false' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'interact-outside' } }],
           },
         },
       ],
@@ -658,7 +658,7 @@ export const datePickerSuite: ConformanceSuite = {
             parts: { content: { hidden: '' } },
             events: [
               { type: 'value-change', detail: { value: ['2024-02-20'] } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },
@@ -872,7 +872,7 @@ export const datePickerSuite: ConformanceSuite = {
           expect: {
             // 展开态点一下 = 收起意图；受控，所以只发不改
             parts: { content: { hidden: null }, trigger: { 'aria-expanded': 'true' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }],
           },
         },
         {
@@ -913,7 +913,7 @@ export const datePickerSuite: ConformanceSuite = {
             parts: { content: { hidden: '' } },
             events: [
               { type: 'value-change', detail: { value: ['2024-02-20'] } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },

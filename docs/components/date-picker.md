@@ -108,6 +108,7 @@ multiple 时选中的日期在输入行里排成标签，点标签上的叉或�
 - 切换粒度会清空旧选择，输入段、网格和周期边界随后一起切换，不做隐式转换。
 - 空值时显示日历入口；有值且渲染了清空按钮时，指针落在盒上（或焦点在盒内）由清空按钮原位接替日历图标，触屏上有值即接替；焦点正在日历钮上时它不让位。
 - 聚焦边界、段位强调与日期格按压都使用短过渡；减弱动效仍由全局动效轴收敛。
+- 浮层收起时 `onOpenChange` 带上关闭原因 `reason`：Escape 报 `esc`，点在浮层外或焦点移出浮层报 `interact-outside`；再点一次日历钮或输入行、在段位上按 Enter、按确认钮报 `close-trigger`；选中日期或快捷选项随之收起报 `selection`；`setOpen(false)` 报 `programmatic`。展开时不带。
 
 ### 组合
 
@@ -213,7 +214,7 @@ multiple 时选中的日期在输入行里排成标签，点标签上的叉或�
 | --- | --- | --- |
 | `value-change` | `DatePickerValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
 | `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
-| `open-change` | `DatePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `open-change` | `DatePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因 |
 | `focused-value-change` | `DatePickerFocusChangeDetails` | 聚焦日变化（展示月可能随之变化）；detail 为 `{ focusedValue: string }`，作者据此重绘网格 |
 | `active-view-change` | `CalendarViewChangeDetails` | 切换到另一层级（点击标题向上、点击格子向下）；detail 为 `{ activeView: 'day'\|'week'\|'month'\|'quarter'\|'year' }`，作者据此重绘网格 |
 
