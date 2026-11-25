@@ -799,8 +799,9 @@ function adapterArtifacts(id) {
   const siblings = manifest.categories
     .flatMap(c => c.components.map(x => x.id))
     .filter(other => other !== id && pascal(other).startsWith(P))
+  // 每个组件都另导出同名的 props 类型 Xh<组件>Props：那是类型不是组件，不进这一列
   const components = owned
-    .filter(name => !siblings.some(s => name.startsWith(`Xh${pascal(s)}`)))
+    .filter(name => !siblings.some(s => name.startsWith(`Xh${pascal(s)}`)) && !name.endsWith('Props'))
     .sort()
   const composable = vueExports.has(`use${P}`) ? `use${P}` : null
   const tag = wcTags.has(`xh-${id}`) ? `xh-${id}` : null
