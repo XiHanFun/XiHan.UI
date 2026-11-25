@@ -17,13 +17,10 @@ import type {
 import { resetDeclaredValue, setup } from '@xihan-ui/core'
 import { PlainTime } from '@xihan-ui/core/date'
 import { dayPeriodLabel } from '../shared/day-period'
+import { parseTimeValue, TIME_FIELD_GRANULARITY, TIME_FIELD_HOUR_CYCLE, to12Hour, to24Hour } from '../shared/time-value'
 
 const { createMachine } = setup<TimeFieldSchema>()
 
-/** 未显式给 hourCycle、也没有 locale 可推断时的小时制。 */
-export const TIME_FIELD_HOUR_CYCLE: TimeHourCycle = 24
-/** 未显式给 granularity 时的精度：时分。 */
-export const TIME_FIELD_GRANULARITY: TimeGranularity = 'minute'
 /** 空段的占位字符。 */
 export const TIME_FIELD_PLACEHOLDER = '-'
 /** 每段的显示宽度：两位数字，上午/下午同宽。 */
@@ -51,18 +48,6 @@ function withField(draft: TimeDraft, field: NumericSegment, value: number | null
   if (field === 'minute')
     return { ...draft, minute: value }
   return { ...draft, second: value }
-}
-
-/** 解析 ISO 时间串；解析不了返回 null，不抛。 */
-export function parseTimeValue(value: string | null | undefined): PlainTime | null {
-  if (!value)
-    return null
-  try {
-    return PlainTime.from(value)
-  }
-  catch {
-    return null
-  }
 }
 
 /** 时间对象 → 逐段缓冲。小时一旦有值，上午/下午由它决定，故 dayPeriod 归零。 */
@@ -110,23 +95,6 @@ export function resolveTimeDraft(value: string, draft: TimeDraft): TimeDraft {
 /** 逐段比内容；缓冲每次都是新对象，比引用一律判为已变。 */
 export function sameTimeDraft(a: TimeDraft, b: TimeDraft | undefined): boolean {
   return !!b && a.hour === b.hour && a.minute === b.minute && a.second === b.second && a.dayPeriod === b.dayPeriod
-}
-
-/**
- * 24 → 12 小时制。0 点显示 12 AM、12 点显示 12 PM，其余取 12 的余数。
- * 入参先回绕到 0-23。
- */
-export function to12Hour(hour24: number): { hour: number, period: TimeDayPeriod } {
-  const h = ((Math.trunc(hour24) % 24) + 24) % 24
-  const period: TimeDayPeriod = h < 12 ? 'am' : 'pm'
-  const hour = h % 12 === 0 ? 12 : h % 12
-  return { hour, period }
-}
-
-/** 12 → 24 小时制。12 AM 是 0 点、12 PM 是 12 点，其余下午加 12。 */
-export function to24Hour(hour12: number, period: TimeDayPeriod): number {
-  const base = ((Math.trunc(hour12) % 12) + 12) % 12
-  return period === 'pm' ? base + 12 : base
 }
 
 /** 此刻参与显示的段，文档序。时段恒在，上午/下午只在 12 小时制下出现。 */

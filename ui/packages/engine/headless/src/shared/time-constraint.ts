@@ -8,7 +8,7 @@
 
 import type { TimeDayPeriod, TimeDraft, TimeGranularity, TimeHourCycle } from '../time-field/time-field.types'
 import { PlainDate, PlainTime } from '@xihan-ui/core/date'
-import { parseTimeValue, TIME_FIELD_GRANULARITY, TIME_FIELD_HOUR_CYCLE, to12Hour, to24Hour } from '../time-field/time-field.machine'
+import { parseTimeValue, TIME_FIELD_GRANULARITY, TIME_FIELD_HOUR_CYCLE, to12Hour, to24Hour } from './time-value'
 
 /**
  * 成列排布的单位，与分段输入里的段同名同域：列上选择与段上输入写入的是同一个值。

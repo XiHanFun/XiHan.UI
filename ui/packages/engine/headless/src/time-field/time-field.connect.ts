@@ -10,6 +10,7 @@ import type { TimeFieldApi, TimeFieldSchema, TimeSegmentType } from './time-fiel
 import { dataAttr, focusSafely, ITEM_VALUE_ATTR, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { TIME_FIELD_EN_US } from '../locale/en-US'
 import { pressHandlers } from '../shared/press'
+import { TIME_FIELD_GRANULARITY } from '../shared/time-value'
 import { resolveTranslations } from '../shared/translations'
 import { timeFieldAnatomy } from './time-field.anatomy'
 import {
@@ -19,7 +20,6 @@ import {
   resolveTimeDraft,
   segmentNumber,
   segmentRange,
-  TIME_FIELD_GRANULARITY,
   timeSegments,
   timeSegmentText,
 } from './time-field.machine'

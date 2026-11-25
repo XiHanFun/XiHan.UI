@@ -17,7 +17,8 @@ import {
   timeDraftPeriod,
   timeItemValue,
 } from '../shared/time-constraint'
-import { draftFromTime, formatTimeValue, parseTimeValue, segmentNumber, setTimeSegment } from '../time-field/time-field.machine'
+import { parseTimeValue } from '../shared/time-value'
+import { draftFromTime, formatTimeValue, segmentNumber, setTimeSegment } from '../time-field/time-field.machine'
 
 /** showTime 下时间段的精度：分或秒（时间列没有只到小时的形态）。 */
 export type DatePickerTimeGranularity = Extract<TimeGranularity, 'minute' | 'second'>

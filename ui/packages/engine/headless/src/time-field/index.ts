@@ -6,6 +6,7 @@
 // 导出 time field 模块的公共接口。
 
 export { dayPeriodLabel } from '../shared/day-period'
+export { parseTimeValue, TIME_FIELD_GRANULARITY, TIME_FIELD_HOUR_CYCLE, to12Hour, to24Hour } from '../shared/time-value'
 export { timeFieldAnatomy } from './time-field.anatomy'
 export { connectTimeField } from './time-field.connect'
 export { timeFieldKeyboard } from './time-field.keyboard'
@@ -17,7 +18,6 @@ export {
   emptyTimeDraft,
   formatTimeValue,
   isTimeOutOfRange,
-  parseTimeValue,
   resolveHourCycle,
   resolveTimeDraft,
   sameTimeDraft,
@@ -25,14 +25,10 @@ export {
   segmentRange,
   setTimeDayPeriod,
   setTimeSegment,
-  TIME_FIELD_GRANULARITY,
-  TIME_FIELD_HOUR_CYCLE,
   TIME_FIELD_PLACEHOLDER,
   timeFieldMachine,
   timeSegments,
   timeSegmentText,
-  to12Hour,
-  to24Hour,
 } from './time-field.machine'
 export { timeFieldMeta } from './time-field.meta'
 export type { TimeDayPeriod, TimeDraft, TimeFieldApi, TimeFieldSchema, TimeFieldSegmentProps, TimeFieldTranslations, TimeFieldValueChangeDetails, TimeGranularity, TimeHourCycle, TimeSegmentType } from './time-field.types'
