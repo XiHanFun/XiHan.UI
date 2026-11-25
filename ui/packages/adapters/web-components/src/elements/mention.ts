@@ -76,7 +76,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @fires value-change - 正文变化；detail 为 `{ value: string }`
  * @fires query-change - 查询串变化；detail 为 `{ query, prefix }`，作者据此过滤候选；收起时报告 null
  * @fires item-select - 候选被插入正文；detail 为 `{ value, label, prefix }`
- * @fires open-change - 浮层开合；detail 为 `{ open: boolean }`
+ * @fires open-change - 浮层开合；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因
  * @csspart root - 组件根容器（承载 data-state / data-disabled 与三个视觉轴）
  * @csspart label - 标题；`for` 恒指向输入框，因此须是原生 `<label>` 才可点击
  * @csspart input - 输入框：写 `<input>` 即单行，写 `<textarea>` 即多行（撤掉 type、combobox 角色与 aria-expanded，正文可以换行）；未提供 translations.input 时名字取自 label 部件

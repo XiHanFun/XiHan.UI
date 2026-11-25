@@ -1059,7 +1059,7 @@ describe('mention 浮层的层与消解', () => {
     await tick()
     press(document.body, 'Escape')
     expect(m.state()).toBe('closed')
-    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false })
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false, reason: 'esc' })
     type(m.input, '@lil')
     expect(m.state()).toBe('closed')
   })
@@ -1071,7 +1071,7 @@ describe('mention 浮层的层与消解', () => {
     await tick()
     pointerDown(document.body)
     expect(m.state()).toBe('closed')
-    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false })
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false, reason: 'interact-outside' })
     type(m.input, '@lil')
     expect(m.state()).toBe('open')
   })
@@ -1228,5 +1228,46 @@ describe('副文本', () => {
   it('数据里写了的进元信息，没写的为 null', () => {
     const h = mount({ collection: [{ value: 'lilei', description: '产品' }, { value: 'poly' }] })
     expect(h.api().collection.map(node => node.description)).toEqual(['产品', null])
+  })
+})
+
+describe('mentionMachine 关闭原因', () => {
+  // 收起意图带上这一次是怎么关的：只有用户的关闭手势有原因，随正文算出来的收起记 programmatic
+  const reasons = (fn: ReturnType<typeof vi.fn>) =>
+    fn.mock.calls.map(c => c[0] as { open: boolean, reason?: string }).filter(d => !d.open).map(d => d.reason)
+
+  it('失焦报 interact-outside，Tab 报 tab，没有可提交的候选时 Enter 报 close-trigger', () => {
+    const onOpenChange = vi.fn()
+    const m = mount({ onOpenChange })
+    m.input.focus()
+    type(m.input, '@li')
+    m.input.dispatchEvent(new FocusEvent('blur', { relatedTarget: null }))
+    expect(m.state()).toBe('closed')
+    type(m.input, '@lil')
+    press(m.input, 'Tab')
+    expect(m.state()).toBe('closed')
+    // 候选全被筛掉：浮层照开着（空态），Enter 无可提交
+    type(m.input, '@lile')
+    m.setItems([])
+    expect(m.state()).toBe('open')
+    press(m.input, 'Enter')
+    expect(m.state()).toBe('closed')
+    expect(reasons(onOpenChange)).toEqual(['interact-outside', 'tab', 'close-trigger'])
+  })
+
+  it('选中候选报 selection；打了空格、光标挪出与 close() 报 programmatic', () => {
+    const onOpenChange = vi.fn()
+    const m = mount({ onOpenChange })
+    type(m.input, '@li')
+    press(m.input, 'Enter')
+    type(m.input, '@li')
+    type(m.input, '@li ')
+    type(m.input, '你好 @li')
+    moveCaret(m.input, 1)
+    type(m.input, '你好 @li')
+    m.api().close()
+    expect(m.state()).toBe('closed')
+    expect(reasons(onOpenChange)).toEqual(['selection', 'programmatic', 'programmatic', 'programmatic'])
+    expect(onOpenChange.mock.calls.map(c => c[0]).filter(d => d.open).every(d => d.reason === undefined)).toBe(true)
   })
 })

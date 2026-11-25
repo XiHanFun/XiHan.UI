@@ -85,6 +85,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 - 同一层里只要有一条写了行首格，这一层的行首格都至少一个图标宽，没写的条目也空出这一格，正文左缘对齐；整层都没有就不留。
 - `onQueryChange` 给出当前查询串，异步候选据此拉取。
 - 正文可受控，选中时另有回调。
+- 收起时 `onOpenChange` 带上关闭原因 `reason`：Escape 报 `esc`；点在候选外、焦点离开输入框报 `interact-outside`；Tab 报 `tab`；没有可提交的候选时按 Enter 报 `close-trigger`；选中候选报 `selection`。候选随正文与光标自动收起（打了空格、删掉触发符、光标挪出、改写正文）不是一次关闭手势，与 `close()` 一样报 `programmatic`。展开时不带。
 - `label` 部件为输入框提供可点击的标题；提供 `translations.input` 时仍使用 `aria-label`。
 - 提供 `collection` 但没有任何候选时显示 `empty` 部件。
 - `content` 是候选、空态与加载态共用的唯一浮层表面；`empty` / `loading` 是 listbox 之外的同级 `role=status`，只在零可见候选时把文字覆盖到该表面。自动结构保留 `No results`，手写结构没有状态文案时不绘制空框。
@@ -173,7 +174,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `value-change` | `MentionValueChangeDetails` | 正文变化；detail 为 `{ value: string }` |
 | `query-change` | `MentionQueryChangeDetails` | 查询串变化；detail 为 `{ query, prefix }`，作者据此过滤候选；收起时报告 null |
 | `item-select` | `MentionItemSelectDetails` | 候选被插入正文；detail 为 `{ value, label, prefix }` |
-| `open-change` | `MentionOpenChangeDetails` | 浮层开合；detail 为 `{ open: boolean }` |
+| `open-change` | `MentionOpenChangeDetails` | 浮层开合；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因 |
 
 ### 插槽
 

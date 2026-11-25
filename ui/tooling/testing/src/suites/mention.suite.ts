@@ -275,7 +275,7 @@ export const mentionSuite: ConformanceSuite = {
             parts: { content: { hidden: '' } },
             events: [
               { type: 'value-change', detail: { value: '@li ' } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'programmatic' } },
             ],
           },
         },
@@ -293,7 +293,7 @@ export const mentionSuite: ConformanceSuite = {
           run: ({ doc, flush }) => moveCaret(doc, 1, flush),
           expect: {
             parts: { content: { hidden: '' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'programmatic' } }],
           },
         },
         {
@@ -362,7 +362,7 @@ export const mentionSuite: ConformanceSuite = {
             events: [
               { type: 'value-change', detail: { value: '请 @Lilei  看一下' } },
               { type: 'item-select', detail: { value: 'lilei', label: 'Lilei', prefix: '@' } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },
@@ -439,7 +439,7 @@ export const mentionSuite: ConformanceSuite = {
             events: [
               { type: 'value-change', detail: { value: '@Poly ' } },
               { type: 'item-select', detail: { value: 'poly', label: 'Poly', prefix: '@' } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },
@@ -458,7 +458,7 @@ export const mentionSuite: ConformanceSuite = {
           key: 'Escape',
           expect: {
             parts: { content: { hidden: '' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'esc' } }],
           },
         },
         {
@@ -484,7 +484,7 @@ export const mentionSuite: ConformanceSuite = {
           key: 'Tab',
           expect: {
             parts: { content: { hidden: '' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'tab' } }],
           },
         },
       ],
@@ -507,7 +507,7 @@ export const mentionSuite: ConformanceSuite = {
           expect: {
             parts: { content: { hidden: '' } },
             // 正文没被改过，只发开合
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }],
           },
         },
       ],

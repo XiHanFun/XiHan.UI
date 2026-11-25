@@ -250,7 +250,7 @@ export function connectMention<T extends PropTypes>(
         // 焦点还在组件内部（点了候选之类）不算离场
         if (root && contains(root, event.relatedTarget as Node | null))
           return
-        send({ type: 'CLOSE' })
+        send({ type: 'CLOSE', src: 'interact-outside' })
       },
       'onKeyDown': (event: KeyboardEvent) => {
         // 插入的提及是一个整体：光标紧贴它时 Backspace（在它之后）/ Delete（在它之前）整条删掉，不逐字退格。
@@ -297,7 +297,7 @@ export function connectMention<T extends PropTypes>(
             return
           }
           // 没有可提交的候选：不拦按键，只把浮层收起来；这一发照常留给表单做隐式提交
-          send({ type: 'CLOSE' })
+          send({ type: 'CLOSE', src: 'close-trigger' })
           return
         }
         if (key === 'Escape') {
@@ -307,7 +307,7 @@ export function connectMention<T extends PropTypes>(
         }
         if (key === 'Tab') {
           // 不拦：焦点要按 Tab 序列自然离开，浮层让开即可
-          send({ type: 'CLOSE' })
+          send({ type: 'CLOSE', src: 'tab' })
         }
         // Home / End 一概不拦：正文里它们是把光标跳到首尾，抢走就没法打字了。
         // 光标随之挪动，keyup 会把新位置报回来，触发跟着重算

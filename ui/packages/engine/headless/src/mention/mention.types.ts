@@ -5,7 +5,7 @@
 
 // 定义 mention 类型契约。
 
-import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 
 /** 输入宿主元素。状态机只使用 value、selectionStart / selectionEnd 与 setSelectionRange，两种标签都提供。 */
@@ -128,6 +128,13 @@ export interface MentionItemSelectDetails {
 
 export interface MentionOpenChangeDetails {
   open: boolean
+  /**
+   * 本次关闭的原因；展开时不带。
+   * Escape 报 esc；点在候选外、焦点离开输入框报 interact-outside；Tab 报 tab；没有可提交的候选时按 Enter 报 close-trigger；
+   * 选中候选报 selection。候选随正文与光标自动收起（打了空格、删掉触发符、光标挪出、改写正文）不是一次关闭手势，
+   * 与代码调用（close()）一样报 programmatic。
+   */
+  reason?: OverlayCloseReason
 }
 
 // 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；缺省时副作用一律短路。
@@ -237,7 +244,8 @@ export interface MentionSchema extends MachineSchema {
   state: 'open' | 'closed'
   event:
     | { type: 'OPEN' }
-    | { type: 'CLOSE' }
+    /** src 记收起的手势：层外按下与失焦、Tab、没有可提交候选时的 Enter；随正文自动收起与代码调用不带。 */
+    | { type: 'CLOSE', src?: 'interact-outside' | 'tab' | 'close-trigger' }
     /** 消解层收到 Escape：收起并记录该位置，光标不移开就不再自动展开。 */
     | { type: 'ESCAPE' }
     /** 用户修改了正文。caret 是修改完成时的光标位置。 */

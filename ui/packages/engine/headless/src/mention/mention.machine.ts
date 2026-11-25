@@ -6,8 +6,10 @@
 // 提供 mention 相关实现。
 
 import type { PositionResult } from '@xihan-ui/core'
+import type { CloseEventLike } from '../shared/close-reason'
 import type { MentionRange, MentionSchema, MentionTrigger } from './mention.types'
 import { caretClientRect, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { mentionItemQuery } from './mention.anatomy'
@@ -153,7 +155,8 @@ export const mentionMachine = createMachine({
       },
 
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
+      // 收起带上原因：ESCAPE 与 ITEM.SELECT 各自认得出，CLOSE 看 src；随正文算出来的收起不带 src，记 programmatic
+      invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current() as CloseEventLike) }),
 
       // 禁用或只读时正文一动不动：原生属性已经挡住了打字，这条兜住程序化派进来的输入事件
       setValue: ({ context, prop, event }) => {
@@ -414,7 +417,7 @@ export const mentionMachine = createMachine({
             // 两处都收口时 onOpenChange 会为同一次离场发两遍
             if (reason === 'focus-outside')
               return
-            send({ type: 'CLOSE' })
+            send({ type: 'CLOSE', src: 'interact-outside' })
           },
         }),
       }),
