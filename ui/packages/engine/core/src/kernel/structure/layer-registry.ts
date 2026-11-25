@@ -56,6 +56,11 @@ export interface Layer {
    * 缺省按 kind 取：内联层为 true；其余的层经按下、聚焦打开，栈序即嵌套，护着下面每一层。
    */
   readonly opensOnHover?: boolean
+  /**
+   * 本层不收 Escape：Escape 越过它交给下面最近一个收 Escape 的层；栈里只剩这类层时，Escape 照常落到页面的 Escape 兜底。
+   * 只管焦点、自己不消解的层（焦点陷阱）登记它，放进对话框里时 Escape 仍然关掉对话框。缺省 false。
+   */
+  readonly passesEscape?: boolean
 }
 
 export interface LayerRegistry {

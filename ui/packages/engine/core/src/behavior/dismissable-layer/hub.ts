@@ -210,6 +210,20 @@ function sameParticipant(lane: Lane, participant: Participant): boolean {
   return participant.active && lane.participants.get(participant.layer) === participant
 }
 
+/** 这一层收 Escape：没登记 passesEscape 的层都收。 */
+function takesEscape(layer: Layer): boolean {
+  return !layer.passesEscape
+}
+
+/** 快照里最上面一个收 Escape 的层的下标；一个都没有时是 -1。 */
+function topEscapeIndex(snapshot: readonly Layer[]): number {
+  for (let index = snapshot.length - 1; index >= 0; index--) {
+    if (takesEscape(snapshot[index]!))
+      return index
+  }
+  return -1
+}
+
 class DismissHub {
   readonly lanes = new Map<LayerRegistry, Lane>()
   readonly listenerCleanups: Cleanup[] = []
@@ -631,7 +645,7 @@ class DismissHub {
   }
 
   private planEscapeFallback(capture: EscapeLaneCapture): EscapeLanePlan | null {
-    if (capture.snapshot.length > 0) {
+    if (capture.snapshot.some(takesEscape)) {
       return Object.freeze({
         ...capture,
         consumed: true,
@@ -787,7 +801,7 @@ class DismissHub {
   private planEscape(capture: LaneCapture): LanePlan {
     if (capture.lane.registry.list() !== capture.snapshot)
       return Object.freeze({ ...capture, candidates: Object.freeze([]) })
-    const index = capture.snapshot.length - 1
+    const index = topEscapeIndex(capture.snapshot)
     if (index < 0)
       return Object.freeze({ ...capture, candidates: Object.freeze([]) })
     const layer = capture.snapshot[index]!
@@ -838,7 +852,7 @@ class DismissHub {
   }
 
   /**
-   * Escape 只认真实栈顶。层外交互的候选之上只容许留着悬停就出现的层：没被这次交互碰到的、
+   * Escape 只认收 Escape 的层里的栈顶：之上只容许留着登记了 passesEscape 的层。层外交互的候选之上只容许留着悬停就出现的层：没被这次交互碰到的、
    * 否决了层外票的、收到关闭意图却还没退栈的（其中也有开在候选内容里的）；其余的层留在上面就不是原计划的栈。
    */
   private candidateHoldsTop(
@@ -848,7 +862,7 @@ class DismissHub {
     kind: 'escape' | OutsideKind,
   ): boolean {
     if (kind === 'escape')
-      return registry.top() === layer
+      return registry.list() === snapshot && topEscapeIndex(snapshot) === snapshot.indexOf(layer)
     for (let index = snapshot.length - 1; index >= 0; index--) {
       const above = snapshot[index]!
       if (above === layer)
