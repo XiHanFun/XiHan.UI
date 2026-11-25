@@ -13,6 +13,9 @@ export interface CloseEventLike {
   src?: string
 }
 
+/** 组件专有出口的补充判定：认得出来就给原因，认不出来返回 undefined，交回通用规则。 */
+export type CloseReasonExtra = (event: CloseEventLike) => OverlayCloseReason | undefined
+
 /** 事件的 src 直接就是对外原因的那几个取值。 */
 const PASS_THROUGH = new Set<string>(['esc', 'close-trigger', 'interact-outside', 'tab', 'hover', 'selection'])
 
@@ -31,7 +34,7 @@ const SELECTION_EVENTS = new Set<string>(['ITEM.SELECT', 'ITEM.CLICK', 'VALUE.SE
  */
 export function closeReasonOf(
   event: CloseEventLike,
-  extra?: (event: CloseEventLike) => OverlayCloseReason | undefined,
+  extra?: CloseReasonExtra,
 ): OverlayCloseReason {
   const fromExtra = extra?.(event)
   if (fromExtra)
