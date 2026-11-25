@@ -66835,7 +66835,7 @@
               "name": "suffix"
             },
             {
-              "description": "涨跌段，承载 data-direction；为空时皮肤按方向绘制兜底箭头",
+              "description": "涨跌段，承载 data-trend；为空时皮肤按方向绘制兜底箭头",
               "name": "trend"
             }
           ],
@@ -66908,7 +66908,7 @@
               "type": {
                 "text": "StatisticTrend | undefined"
               },
-              "description": "涨跌，写到 trend 部件的 data-direction 上；与 tone 正交",
+              "description": "涨跌，写到 trend 部件的 data-trend 上；与 tone 正交",
               "name": "trend",
               "fieldName": "trend"
             }

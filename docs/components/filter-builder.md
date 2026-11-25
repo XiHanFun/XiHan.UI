@@ -260,7 +260,7 @@
 | `add-condition-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `add-group-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `condition` | `data-invalid` | ''（条件成立时才出现） |
-| `condition-operand` | `data-shape` | conditionAt(path)?.shape |
+| `condition-operand` | `data-operand` | conditionAt(path)?.shape |
 | `condition-delete-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->

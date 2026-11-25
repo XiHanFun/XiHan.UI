@@ -1,4 +1,4 @@
-<!-- 涨跌 | trend 写为 trend 部件的 data-direction，箭头由皮肤绘制；与 tone 正交：下跌也可以是正向语气 -->
+<!-- 涨跌 | trend 写为 trend 部件的 data-trend，箭头由皮肤绘制；与 tone 正交：下跌也可以是正向语气 -->
 <script setup lang="ts">
 import {
   XhStatisticLabel,

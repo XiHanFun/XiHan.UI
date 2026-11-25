@@ -19,7 +19,7 @@ export interface XhStatisticRootProps extends ComponentPropsWithRef<'div'> {
   size?: Size
   /** 语气：决定使用哪族颜色。 */
   tone?: Tone
-  /** 涨跌方向，写为涨跌段的 data-direction；与语气正交。 */
+  /** 涨跌方向，写为涨跌段的 data-trend；与语气正交。 */
   trend?: StatisticTrend
 }
 

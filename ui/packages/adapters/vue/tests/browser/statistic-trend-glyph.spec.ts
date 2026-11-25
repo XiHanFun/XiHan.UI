@@ -19,7 +19,7 @@ function mount(size?: 'sm' | 'md' | 'lg', style?: string) {
       <div data-scope="statistic" class="xh-scope-statistic" data-part="label">活跃用户</div>
       <span data-scope="statistic" class="xh-scope-statistic" data-part="value">1,024</span>
       <span data-scope="statistic" class="xh-scope-statistic" data-part="suffix">人</span>
-      <span data-scope="statistic" class="xh-scope-statistic" data-part="trend" data-direction="up">12%</span>
+      <span data-scope="statistic" class="xh-scope-statistic" data-part="trend" data-trend="up">12%</span>
     </div>`
   document.body.append(host)
   return {

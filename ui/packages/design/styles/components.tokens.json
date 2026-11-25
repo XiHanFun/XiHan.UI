@@ -44273,7 +44273,6 @@
       "state": [
         "@media (min-width: 640px)",
         "default",
-        "direction",
         "empty",
         "error",
         "folded",
@@ -44298,6 +44297,7 @@
         "state=completed",
         "state=paused",
         "state=running",
+        "trend",
         "variant=dot",
         "xh-check-mark"
       ],

@@ -16,7 +16,8 @@
 // ⑨ 一名多义的另一半：同一个属性名在两个组件里都是枚举、取值域却互不相交，
 //    说明它在两处问的不是同一个问题（形态轴那种「同一个问题、各家自己的取值」不算）。
 //    取值域两头收：connect 里的字面量，加上皮肤选择器里 [data-x='v'] 选中的值——
-//    取值经变量中转的组件（'data-tone': tone）静态看不出字面量，皮肤那一头补得上。
+//    取值经变量中转的组件（'data-tone': tone）静态看不出字面量，皮肤那一头补得上；
+//    变量名能在组件目录里对上恰好一个字面量联合类型（side → DiffSide）时也拿它当取值域。
 //    判定为同一个问题的写进 state-vocabulary.json 的 enum 段，一句话说不清的即须拆名。
 //
 // ④ data-state 的取值必须登记在 state-vocabulary.json 的某个族里，connect 的字面量与皮肤的选择器两头都查；
@@ -59,6 +60,10 @@ const RE_STATE_LITERALS = /'data-state'\s*:\s*([^,\n]+)/g
 const RE_ENUM_VALUE = /^(?:'[a-z][a-z0-9-]*'|.*\?\s*'[a-z][a-z0-9-]*'\s*:\s*'[a-z][a-z0-9-]*')$/
 /** 值表达式里的取值字面量，判据⑨拿它当取值域。 */
 const RE_VALUE_LITERAL = /'([a-z][a-z0-9-]*)'/g
+/** 值是一个变量或成员访问（side、props.trend、ref?.side）：取最后那个名字。 */
+const RE_VALUE_NAME = /^(?:[A-Za-z_$][\w$]*(?:\??\.))*([A-Za-z_$][\w$]*)$/
+/** 组件目录里的字面量联合类型：export type DiffSide = 'old' | 'new'。 */
+const RE_UNION_TYPE = /export type (\w+) = ((?:\s*\|?\s*'[a-z][a-z0-9-]*')+)\s*(?:\n|$)/g
 /** 选择器里按出现顺序扫 scope 限定与带值的属性，用来把取值归到组件名下。 */
 const RE_SCOPE_OR_VALUE = /\[data-scope=['"]([a-z0-9-]+)['"]\]|\[(data-[a-z0-9-]+)=['"]([a-z0-9-]+)['"]\]/g
 
@@ -131,6 +136,38 @@ function noteShape(attr, shape, where) {
   shapes.get(attr)[shape].push(where)
 }
 
+/** 组件目录 → 类型名 → 字面量取值，按需读一次。 */
+const unionTypes = new Map()
+
+async function unionsOf(component) {
+  if (unionTypes.has(component))
+    return unionTypes.get(component)
+  const map = new Map()
+  for (const name of await readdir(join(HEADLESS_SRC, component))) {
+    if (!name.endsWith('.ts'))
+      continue
+    const text = await readFile(join(HEADLESS_SRC, component, name), 'utf8')
+    for (const m of text.matchAll(RE_UNION_TYPE))
+      map.set(m[1], [...m[2].matchAll(RE_VALUE_LITERAL)].map(v => v[1]))
+  }
+  unionTypes.set(component, map)
+  return map
+}
+
+/**
+ * 值经变量中转（'data-side': side）时字面量抠不出来：按变量名到组件目录找名字以它收尾的联合类型
+ * （side → DiffSide / TransferSide / PaginationEllipsisSide，trend → StatisticTrend）。
+ * 恰好一个才算数，找不到或不止一个就当看不出来，不猜。
+ */
+async function domainOfName(component, value) {
+  const m = RE_VALUE_NAME.exec(value)
+  if (!m)
+    return null
+  const tail = m[1][0].toUpperCase() + m[1].slice(1)
+  const hits = [...(await unionsOf(component))].filter(([type]) => type.endsWith(tail))
+  return hits.length === 1 ? hits[0][1] : null
+}
+
 function noteDomain(attr, component, values) {
   if (!enumDomains.has(attr))
     enumDomains.set(attr, new Map())
@@ -186,6 +223,11 @@ for (const entry of entries) {
       else if (RE_ENUM_VALUE.test(value)) {
         noteShape(match[1], 'enum', where)
         noteDomain(match[1], entry.name, [...value.matchAll(RE_VALUE_LITERAL)].map(m => m[1]))
+      }
+      else if (match[1] !== 'data-state' && match[1] !== 'data-part' && match[1] !== 'data-scope') {
+        const union = await domainOfName(entry.name, value)
+        if (union && union.length >= 2)
+          noteDomain(match[1], entry.name, union)
       }
     }
   }

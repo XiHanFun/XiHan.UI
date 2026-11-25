@@ -25,13 +25,13 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @customElement xh-statistic
  * @attr {'sm'|'md'|'lg'} size - 尺寸档位，写到 root 的 data-size 上
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，写到 root 的 data-tone 上
- * @attr {'up'|'down'|'flat'} trend - 涨跌，写到 trend 部件的 data-direction 上；与 tone 正交
+ * @attr {'up'|'down'|'flat'} trend - 涨跌，写到 trend 部件的 data-trend 上；与 tone 正交
  * @csspart root - 承载 data-size 与 data-tone 的容器
  * @csspart label - 数值上方的标签
  * @csspart value - 数值本体，用等宽数字排版
  * @csspart prefix - 数值前的货币符号或升降箭头
  * @csspart suffix - 数值后的单位或百分号
- * @csspart trend - 涨跌段，承载 data-direction；为空时皮肤按方向绘制兜底箭头
+ * @csspart trend - 涨跌段，承载 data-trend；为空时皮肤按方向绘制兜底箭头
  */
 export class XhStatisticElement extends XhElement {
   static override partContract = { anatomy: statisticAnatomy, meta: statisticMeta }

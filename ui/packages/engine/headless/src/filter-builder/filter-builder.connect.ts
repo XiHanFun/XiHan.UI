@@ -434,7 +434,7 @@ export function connectFilterBuilder<T extends PropTypes>(
     getConditionOperandProps: (path) => {
       const shape = conditionAt(path)?.shape
       // 操作数的形状：single 一个控件，list 一组值，range 两个控件夹着分隔文字
-      return normalize.element({ ...parts['condition-operand'].attrs, 'data-shape': shape, 'hidden': shape === 'none' || undefined })
+      return normalize.element({ ...parts['condition-operand'].attrs, 'data-operand': shape, 'hidden': shape === 'none' || undefined })
     },
     getRangeSeparatorProps: () => normalize.element({ ...parts['range-separator'].attrs, 'aria-hidden': true }),
     getConditionIgnoreCaseProps: path => normalize.element({ ...parts['condition-ignore-case'].attrs, hidden: !conditionAt(path)?.caseToggle || undefined }),

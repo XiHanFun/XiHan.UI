@@ -11,7 +11,7 @@ import type { PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 语气档位，决定数值与前后缀使用哪族颜色。 */
 
-/** 该数值与上一期相比是上涨、下跌，还是持平。取值写为 trend 部件的 data-direction。 */
+/** 该数值与上一期相比是上涨、下跌，还是持平。取值写为 trend 部件的 data-trend。 */
 export type StatisticTrend = 'up' | 'down' | 'flat'
 
 export interface StatisticProps {
@@ -20,7 +20,7 @@ export interface StatisticProps {
   /** 语气：brand / neutral / success / warning / danger / info，只写为 root 的 data-tone。 */
   tone?: Tone
   /**
-   * 涨跌：up / down / flat，写为 trend 部件的 data-direction，皮肤据此绘制兜底箭头。
+   * 涨跌：up / down / flat，写为 trend 部件的 data-trend，皮肤据此绘制兜底箭头。
    * 与 tone 正交，方向与颜色互不联动：下跌也可以是正面信息（差错率、退货率）。
    */
   trend?: StatisticTrend

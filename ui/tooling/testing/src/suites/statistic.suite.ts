@@ -89,24 +89,24 @@ export const statisticSuite: ConformanceSuite = {
       name: '不写 trend 时涨跌那一段不带方向，皮肤也就画不出箭头',
       spec: { apg: APG },
       initial: {
-        parts: { trend: { 'data-direction': null } },
+        parts: { trend: { 'data-trend': null } },
       },
     },
     {
-      name: 'trend 落成 trend 部件的 data-direction，与语气正交：跌也可以是好事',
+      name: 'trend 落成 trend 部件的 data-trend，与语气正交：跌也可以是好事',
       spec: { apg: APG },
       props: { trend: 'down', tone: 'success' },
       initial: {
         parts: {
-          root: { 'data-tone': 'success', 'data-direction': null },
-          trend: { 'data-direction': 'down', 'data-tone': null },
+          root: { 'data-tone': 'success', 'data-trend': null },
+          trend: { 'data-trend': 'down', 'data-tone': null },
         },
       },
       steps: [
         {
           kind: 'setProps',
           props: { trend: 'flat' },
-          expect: { parts: { trend: { 'data-direction': 'flat' } } },
+          expect: { parts: { trend: { 'data-trend': 'flat' } } },
         },
       ],
     },

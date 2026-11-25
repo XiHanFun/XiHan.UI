@@ -44,7 +44,7 @@ tone 决定数值与前后缀使用哪族颜色，标签始终保持弱前景；
 
 ### 涨跌
 
-trend 写为 trend 部件的 data-direction，箭头由皮肤绘制；与 tone 正交：下跌也可以是正向语气
+trend 写为 trend 部件的 data-trend，箭头由皮肤绘制；与 tone 正交：下跌也可以是正向语气
 
 <XhDemo src="statistic/06-trend" />
 
@@ -96,7 +96,7 @@ trend 写为 trend 部件的 data-direction，箭头由皮肤绘制；与 tone �
 | --- | --- | --- | --- |
 | `size` | `Size` |  | 尺寸：sm / md / lg，只写为 root 的 data-size。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，只写为 root 的 data-tone。 |
-| `trend` | `StatisticTrend` |  | 涨跌：up / down / flat，写为 trend 部件的 data-direction，皮肤据此绘制兜底箭头。 与 tone 正交，方向与颜色互不联动：下跌也可以是正面信息（差错率、退货率）。 |
+| `trend` | `StatisticTrend` |  | 涨跌：up / down / flat，写为 trend 部件的 data-trend，皮肤据此绘制兜底箭头。 与 tone 正交，方向与颜色互不联动：下跌也可以是正面信息（差错率、退货率）。 |
 
 ### connect API
 
@@ -136,7 +136,7 @@ trend 写为 trend 部件的 data-direction，箭头由皮肤绘制；与 tone �
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
-| `trend` | `data-direction` | props.trend |
+| `trend` | `data-trend` | props.trend |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

@@ -2275,7 +2275,13 @@
     "conversion": true,
     "corner": true,
     "count": true,
-    "counter": true,
+    "counter": {
+      "synonymOf": "count",
+      "$description": "计数一律叫 count（tags-input、text-field 已是）",
+      "pendingUsers": [
+        "counter"
+      ]
+    },
     "crosshair": true,
     "day": true,
     "defs": true,
@@ -2298,7 +2304,15 @@
     "grid": true,
     "group": true,
     "guide": true,
-    "handle": true,
+    "handle": {
+      "synonymOf": "trigger",
+      "$description": "能拖的把手一律叫 *-trigger（drawer、floating-panel、splitter 的 resize-trigger）",
+      "pendingUsers": [
+        "crop-handle",
+        "handle",
+        "zoom-handle"
+      ]
+    },
     "head": true,
     "header": true,
     "heading": true,

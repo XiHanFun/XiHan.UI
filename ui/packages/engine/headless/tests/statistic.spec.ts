@@ -19,12 +19,12 @@ describe('connectStatistic', () => {
     expect(api().trend).toBeUndefined()
   })
 
-  it('两轴只落在根上；涨跌落在 trend 部件的 data-direction 上并经 api 透出', () => {
+  it('两轴只落在根上；涨跌落在 trend 部件的 data-trend 上并经 api 透出', () => {
     const a = api({ size: 'lg', tone: 'success', trend: 'up' })
     expect(a.getRootProps()).toMatchObject({ 'data-size': 'lg', 'data-tone': 'success' })
-    expect(a.getTrendProps()).toMatchObject({ ...parts.trend.attrs, 'data-direction': 'up' })
+    expect(a.getTrendProps()).toMatchObject({ ...parts.trend.attrs, 'data-trend': 'up' })
     expect(a.trend).toBe('up')
-    expect((api().getTrendProps() as Record<string, unknown>)['data-direction']).toBeUndefined()
+    expect((api().getTrendProps() as Record<string, unknown>)['data-trend']).toBeUndefined()
   })
 
   it('标签与数值不互相引用、不生成 id；前后缀是数值的一部分，不对读屏隐藏', () => {

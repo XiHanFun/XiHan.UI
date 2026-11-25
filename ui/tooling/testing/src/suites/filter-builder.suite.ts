@@ -94,7 +94,7 @@ export const filterBuilderSuite: ConformanceSuite = {
           'condition': [{ 'role': 'group', 'aria-label': 'Condition 1' }, { 'role': 'group', 'aria-label': 'Condition 2' }],
           'condition-delete-trigger': [{ 'aria-label': 'Remove condition 1' }, { 'aria-label': 'Remove condition 2' }],
           'group-delete-trigger': { 'aria-label': 'Remove group' },
-          'condition-operand': [{ 'data-shape': 'single' }, { 'data-shape': 'single' }],
+          'condition-operand': [{ 'data-operand': 'single' }, { 'data-operand': 'single' }],
         },
       },
       steps: [

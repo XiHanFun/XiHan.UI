@@ -102,19 +102,19 @@
   }
 
   /* 方向逐档换字形，箭头由皮肤画，示例里不必手打 */
-  [data-scope='statistic'][data-part='trend'][data-direction='up'] {
+  [data-scope='statistic'][data-part='trend'][data-trend='up'] {
     --xh-_statistic-trend-mark: var(--xh-glyph-mark-arrow-up);
   }
 
-  [data-scope='statistic'][data-part='trend'][data-direction='down'] {
+  [data-scope='statistic'][data-part='trend'][data-trend='down'] {
     --xh-_statistic-trend-mark: var(--xh-glyph-mark-arrow-down);
   }
 
-  [data-scope='statistic'][data-part='trend'][data-direction='flat'] {
+  [data-scope='statistic'][data-part='trend'][data-trend='flat'] {
     --xh-_statistic-trend-mark: var(--xh-glyph-mark-minus);
   }
 
-  [data-scope='statistic'][data-part='trend'][data-direction]::before {
+  [data-scope='statistic'][data-part='trend'][data-trend]::before {
     content: '';
     display: inline-block;
     flex: none;
@@ -135,7 +135,7 @@
     /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
        字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
        落在 Canvas 面上的取 CanvasText */
-    [data-scope='statistic'][data-part='trend'][data-direction]::before {
+    [data-scope='statistic'][data-part='trend'][data-trend]::before {
       forced-color-adjust: none;
       background-color: CanvasText;
     }

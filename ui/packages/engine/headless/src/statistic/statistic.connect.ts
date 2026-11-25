@@ -43,7 +43,7 @@ export function connectStatistic<T extends PropTypes>(
     // 部件空着时皮肤按方向出兜底字形，那个箭头是装饰，对读屏隐藏由作者的文案兜住
     getTrendProps: () => normalize.element({
       ...parts.trend.attrs,
-      'data-direction': props.trend,
+      'data-trend': props.trend,
     }),
   }
 }
