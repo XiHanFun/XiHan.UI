@@ -283,7 +283,7 @@ direction="up" 画成金字塔：第一阶段在最下面，往上逐级收窄�
 | `tooltip` | `data-xh-chart-part` | 'tooltip' |
 | `tooltip-header` | `data-xh-chart-part` | 'tooltip-header' |
 | `tooltip-row` | `data-xh-chart-part` | 'tooltip-row' |
-| `tooltip-swatch` | `data-seg` | stop?.seg |
+| `tooltip-swatch` | `data-stop` | stop?.seg |
 | `tooltip-swatch` | `data-xh-chart-part` | 'tooltip-swatch' |
 | `tooltip-value` | `data-xh-chart-part` | 'tooltip-value' |
 | `tooltip-name` | `data-xh-chart-part` | 'tooltip-name' |

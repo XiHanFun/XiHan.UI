@@ -390,7 +390,7 @@ describe('语义与着色', () => {
     const value = await makeRig({ ...BASE, colorBy: 'value', palette: 'teal' })
     const v = value.api()
     const top = v.getMarkProps(nodeOf(v, '华南')) as Dict
-    expect([top['data-seg'], top.style['--xh-_chart-p'], top['data-xh-chart-slot']]).toEqual(['high', '100.0%', undefined])
+    expect([top['data-stop'], top.style['--xh-_chart-p'], top['data-xh-chart-slot']]).toEqual(['high', '100.0%', undefined])
     expect((v.getRootProps() as Dict)['data-palette']).toBe('teal')
   })
 

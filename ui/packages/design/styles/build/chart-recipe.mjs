@@ -303,9 +303,9 @@ export function compileChartRecipe(source) {
   rule(`${part('legend-item')}[aria-pressed='false'] > ${part('legend-swatch')}`, 'background: transparent;')
 
   comment('按值着色的数据：连接层在标记与色标上写段号与段内百分比，这里用一层 color-mix 在相邻两个锚点之间兑出颜色，\n     放进私有槽；各图表的标记从槽里取色，提示框的色标画成数据自己的颜色')
-  rule(`${part('root')} [data-seg='low']`, '--xh-_chart-seq-fill: color-mix(in oklch, var(--xh-_chart-seq-mid) var(--xh-_chart-p), var(--xh-_chart-seq-start));')
-  rule(`${part('root')} [data-seg='high']`, '--xh-_chart-seq-fill: color-mix(in oklch, var(--xh-_chart-seq-end) var(--xh-_chart-p), var(--xh-_chart-seq-mid));')
-  rule(`${part('tooltip-swatch')}[data-seg]`, 'background: var(--xh-_chart-seq-fill);')
+  rule(`${part('root')} [data-stop='low']`, '--xh-_chart-seq-fill: color-mix(in oklch, var(--xh-_chart-seq-mid) var(--xh-_chart-p), var(--xh-_chart-seq-start));')
+  rule(`${part('root')} [data-stop='high']`, '--xh-_chart-seq-fill: color-mix(in oklch, var(--xh-_chart-seq-end) var(--xh-_chart-p), var(--xh-_chart-seq-mid));')
+  rule(`${part('tooltip-swatch')}[data-stop]`, 'background: var(--xh-_chart-seq-fill);')
 
   comment('提示框：frosted 材质，画在根里；绘图区不随 RTL 镜像，这里的左右也是物理方向。正文排版，与根同一档：\n     不反白、不缩字，色标按承载面校准。提示框不接指针：跟着指针走时压住下面的标记，命中就断了')
   const up = `calc(-100% - ${tooltip.offsetBlock})`

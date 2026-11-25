@@ -523,7 +523,7 @@
   }
 
   /* 按值着色的点：颜色由 Chart 家族配方按段号与段内百分比兑好，放在私有槽里 */
-  [data-scope='cartesian-chart'][data-part='point'][data-seg] {
+  [data-scope='cartesian-chart'][data-part='point'][data-stop] {
     fill: var(--xh-_chart-seq-fill);
   }
 
@@ -692,7 +692,7 @@
 
     [data-scope='cartesian-chart'][data-part='dot'],
     [data-scope='cartesian-chart'][data-part='point'],
-    [data-scope='cartesian-chart'][data-part='point'][data-seg] {
+    [data-scope='cartesian-chart'][data-part='point'][data-stop] {
       fill: CanvasText;
       stroke: Canvas;
     }

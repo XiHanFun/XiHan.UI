@@ -80,7 +80,7 @@ describe('规格与派生', () => {
     const ts = rig.api().model.derived.visible.map(s => s.t)
     expect(ts[0]).toBe(1)
     expect(ts[3]).toBeCloseTo(0.3)
-    expect((rig.api().getMarkProps(byPart(rig.api(), 'stage')[0]!) as Dict)['data-seg']).toBe('high')
+    expect((rig.api().getMarkProps(byPart(rig.api(), 'stage')[0]!) as Dict)['data-stop']).toBe('high')
   })
 
   it('负值报 chart.negative-share、根上写 data-state="error"；字段不存在报 chart.unknown-field', async () => {

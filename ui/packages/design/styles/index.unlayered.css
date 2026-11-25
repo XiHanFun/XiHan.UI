@@ -2736,15 +2736,15 @@
 
 /* 按值着色的数据：连接层在标记与色标上写段号与段内百分比，这里用一层 color-mix 在相邻两个锚点之间兑出颜色，
    放进私有槽；各图表的标记从槽里取色，提示框的色标画成数据自己的颜色 */
-[data-scope][data-xh-chart-part='root'] [data-seg='low'] {
+[data-scope][data-xh-chart-part='root'] [data-stop='low'] {
   --xh-_chart-seq-fill: color-mix(in oklch, var(--xh-_chart-seq-mid) var(--xh-_chart-p), var(--xh-_chart-seq-start));
 }
 
-[data-scope][data-xh-chart-part='root'] [data-seg='high'] {
+[data-scope][data-xh-chart-part='root'] [data-stop='high'] {
   --xh-_chart-seq-fill: color-mix(in oklch, var(--xh-_chart-seq-end) var(--xh-_chart-p), var(--xh-_chart-seq-mid));
 }
 
-[data-scope][data-xh-chart-part='tooltip-swatch'][data-seg] {
+[data-scope][data-xh-chart-part='tooltip-swatch'][data-stop] {
   background: var(--xh-_chart-seq-fill);
 }
 
@@ -21976,7 +21976,7 @@
 }
 
 /* 按值着色的点：颜色由 Chart 家族配方按段号与段内百分比兑好，放在私有槽里 */
-.xh-scope-cartesian-chart[data-part='point'][data-seg] {
+.xh-scope-cartesian-chart[data-part='point'][data-stop] {
   fill: var(--xh-_chart-seq-fill);
 }
 
@@ -22145,7 +22145,7 @@
 
   .xh-scope-cartesian-chart[data-part='dot'],
   .xh-scope-cartesian-chart[data-part='point'],
-  .xh-scope-cartesian-chart[data-part='point'][data-seg] {
+  .xh-scope-cartesian-chart[data-part='point'][data-stop] {
     fill: CanvasText;
     stroke: Canvas;
   }
@@ -34520,15 +34520,15 @@
 
 /* 按值着色：颜色由 Chart 家族配方按段号与段内百分比兑好放在私有槽里，不再按层变浅。两段上的名字取
    --xh-chart-on-sequential-low / -high：亮色的浅色调色阶两段都写正文色，暗色的高段贴近亮端、写承载面色 */
-.xh-scope-hierarchy-chart[data-part='node'][data-seg] {
+.xh-scope-hierarchy-chart[data-part='node'][data-stop] {
   fill: var(--xh-_chart-seq-fill);
 }
 
-.xh-scope-hierarchy-chart[data-seg='low'] {
+.xh-scope-hierarchy-chart[data-stop='low'] {
   --xh-_hierarchy-ink: var(--xh-chart-on-sequential-low);
 }
 
-.xh-scope-hierarchy-chart[data-seg='high'] {
+.xh-scope-hierarchy-chart[data-stop='high'] {
   --xh-_hierarchy-ink: var(--xh-chart-on-sequential-high);
 }
 
@@ -34579,7 +34579,7 @@
 /* 强制色：节点改成系统色的面与描边，名字取正文色；路径的尖角取正文色；色阶只留轮廓；焦点环在配方里 */
 @media (forced-colors: active) {
   .xh-scope-hierarchy-chart[data-part='node'],
-  .xh-scope-hierarchy-chart[data-part='node'][data-seg] {
+  .xh-scope-hierarchy-chart[data-part='node'][data-stop] {
     fill: Canvas;
     stroke: CanvasText;
     stroke-width: var(--xh-stroke-thin);

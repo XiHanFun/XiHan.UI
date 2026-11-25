@@ -954,7 +954,7 @@ export function connectCartesianChart<T extends PropTypes>(
         // 按值着色：色阶位置换成段号与段内百分比，皮肤用一层 color-mix 在相邻两个锚点之间插值
         const stop = mark.paint?.t == null ? null : chartSequentialStop(mark.paint.t)
         if (stop) {
-          props['data-seg'] = stop.seg
+          props['data-stop'] = stop.seg
           props.style = { ...(props.style as Record<string, string> | undefined), '--xh-_chart-p': stop.p }
         }
       }
@@ -1136,7 +1136,7 @@ export function connectCartesianChart<T extends PropTypes>(
       'data-mark': swatchMark(row),
       'data-symbol': row.symbol ?? undefined,
       // 按值着色的数据：色标画成这个数据自己的颜色
-      'data-seg': row.t == null ? undefined : chartSequentialStop(row.t).seg,
+      'data-stop': row.t == null ? undefined : chartSequentialStop(row.t).seg,
       ...(row.t == null ? {} : { style: { '--xh-_chart-p': chartSequentialStop(row.t).p } }),
     }),
 

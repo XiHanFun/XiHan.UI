@@ -107,7 +107,7 @@ describe('分层', () => {
     })
     const api = rig.api()
     const anchors = walk(api.layers.plot).filter(isCartesianProbe).map(m => api.getMarkProps(m) as Dict)
-    expect(anchors.map(p => p['data-seg'])).toEqual(['low', 'low', 'high'])
+    expect(anchors.map(p => p['data-stop'])).toEqual(['low', 'low', 'high'])
     expect(anchors.map(p => (p.style as Dict)['--xh-_chart-p'])).toEqual(['0.0%', '100.0%', '100.0%'])
   })
 

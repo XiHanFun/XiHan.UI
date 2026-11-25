@@ -107,7 +107,7 @@ export function connectHierarchyChart<T extends PropTypes>(
     if (model.colorBy === 'value') {
       const max = levelMax.get(node.depth) ?? 0
       const stop = chartSequentialStop(0.3 + 0.7 * (max > 0 ? (node.value ?? 0) / max : 0))
-      return { 'data-seg': stop.seg, 'style': { '--xh-_chart-p': stop.p } }
+      return { 'data-stop': stop.seg, 'style': { '--xh-_chart-p': stop.p } }
     }
     const slot = model.colorBy === 'uniform' ? 1 : model.spec.meta.get(node)?.slot
     return { 'data-xh-chart-slot': slot == null ? undefined : String(slot) }

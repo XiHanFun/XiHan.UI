@@ -39,7 +39,7 @@ function escapeValue(value: string): string {
 
 /** 探针的选择器：部件、涨跌、画法都对上；不带涨跌的标记找不带 data-trend 的探针。 */
 function probeSelector(d: CartesianProbeDescriptor): string {
-  return `:scope > [data-part="${d.part}"]${d.trend ? `[data-trend="${d.trend}"]` : ':not([data-trend])'}${d.style ? `[data-style="${d.style}"]` : ''}${d.sequential ? '[data-seg]' : ':not([data-seg])'}`
+  return `:scope > [data-part="${d.part}"]${d.trend ? `[data-trend="${d.trend}"]` : ':not([data-trend])'}${d.style ? `[data-style="${d.style}"]` : ''}${d.sequential ? '[data-stop]' : ':not([data-stop])'}`
 }
 
 /** 一个标记的路径写进一条 Path2D：带几何参数的路径按参数重写，只有 d 的按 d 并进来，其余交给 markPath。 */
@@ -121,7 +121,7 @@ function seriesStylesOf(frame: ChartCanvasFrame, id: string): SeriesStyles | nul
     // 按值着色的点：三个锚点探针依次是色阶的起点、中点与终点，按皮肤里同样的两段 oklch 插值
     rampOf: () => {
       if (!ramp) {
-        const anchors = [...host.querySelectorAll(':scope > [data-part="point"][data-seg]')].map(el => styles.read(el).fillColor)
+        const anchors = [...host.querySelectorAll(':scope > [data-part="point"][data-stop]')].map(el => styles.read(el).fillColor)
         if (anchors.length === 3 && anchors.every(Boolean))
           ramp = createColorRamp(anchors as NonNullable<typeof anchors[number]>[], 'oklch', 256, color => styles.color(formatCssColor(color)))
       }

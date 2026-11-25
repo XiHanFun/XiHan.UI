@@ -214,15 +214,15 @@
 
   /* 按值着色：颜色由 Chart 家族配方按段号与段内百分比兑好放在私有槽里，不再按层变浅。两段上的名字取
      --xh-chart-on-sequential-low / -high：亮色的浅色调色阶两段都写正文色，暗色的高段贴近亮端、写承载面色 */
-  [data-scope='hierarchy-chart'][data-part='node'][data-seg] {
+  [data-scope='hierarchy-chart'][data-part='node'][data-stop] {
     fill: var(--xh-_chart-seq-fill);
   }
 
-  [data-scope='hierarchy-chart'][data-seg='low'] {
+  [data-scope='hierarchy-chart'][data-stop='low'] {
     --xh-_hierarchy-ink: var(--xh-chart-on-sequential-low);
   }
 
-  [data-scope='hierarchy-chart'][data-seg='high'] {
+  [data-scope='hierarchy-chart'][data-stop='high'] {
     --xh-_hierarchy-ink: var(--xh-chart-on-sequential-high);
   }
 
@@ -273,7 +273,7 @@
   /* 强制色：节点改成系统色的面与描边，名字取正文色；路径的尖角取正文色；色阶只留轮廓；焦点环在配方里 */
   @media (forced-colors: active) {
     [data-scope='hierarchy-chart'][data-part='node'],
-    [data-scope='hierarchy-chart'][data-part='node'][data-seg] {
+    [data-scope='hierarchy-chart'][data-part='node'][data-stop] {
       fill: Canvas;
       stroke: CanvasText;
       stroke-width: var(--xh-stroke-thin);

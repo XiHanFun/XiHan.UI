@@ -260,7 +260,7 @@ export function connectFunnelChart<T extends PropTypes>(
         const t = (id == null ? undefined : stageT(id)) ?? mark.paint?.t
         if (t != null) {
           const stop = chartSequentialStop(t)
-          props['data-seg'] = stop.seg
+          props['data-stop'] = stop.seg
           props.style = { '--xh-_chart-p': stop.p }
         }
         if (mark.exiting) {
@@ -315,7 +315,7 @@ export function connectFunnelChart<T extends PropTypes>(
         ...parts['tooltip-swatch'].attrs,
         'data-xh-chart-part': 'tooltip-swatch',
         'hidden': stop == null || undefined,
-        'data-seg': stop?.seg,
+        'data-stop': stop?.seg,
         ...(stop == null ? {} : { style: { '--xh-_chart-p': stop.p } }),
       })
     },

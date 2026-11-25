@@ -316,7 +316,7 @@ describe('按值着色', () => {
     const api = rig.api()
     const props = points(api).map(m => api.getMarkProps(m) as Dict)
     // 点只用色阶上 0.3–1 这一段：最小值落在 0.3（低段的 60%），最大值落在终点
-    expect(props.map(p => p['data-seg'])).toEqual(['low', 'high', 'high', 'high', undefined])
+    expect(props.map(p => p['data-stop'])).toEqual(['low', 'high', 'high', 'high', undefined])
     expect(props.map(p => p.style?.['--xh-_chart-p'])).toEqual(['60.0%', '6.7%', '53.3%', '100.0%', undefined])
   })
 
@@ -332,7 +332,7 @@ describe('按值着色', () => {
     const next = rig.api()
     const row = next.tooltip!.rows[0]!
     expect(row.value).toBe('4 · 气温 40')
-    expect((next.getTooltipSwatchProps(row) as Dict)['data-seg']).toBe('high')
+    expect((next.getTooltipSwatchProps(row) as Dict)['data-stop']).toBe('high')
     expect((next.getMarkProps(hot) as Dict)['aria-label']).toBe('4, 站点 4, 气温 40')
   })
 
