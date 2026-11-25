@@ -147,22 +147,10 @@ XiHan.UI 是 pnpm + Turborepo 管理的多包组件库。组件行为由框架�
 
 ### 样式
 
-- 统一设计真源是 `.agents/skills/component-design/references/component-design.md`。
-- 圆角由一颗种子 `--xh-radius-seed`（8px）派生：inset 4px（勾选方框、集合行、轨道里的段与滑块、字段里的标签），control / surface / overlay 8px（含 RadioGroup segmented 形态 / Tabs segment 轨道），sheet 10px（Dialog、Drawer、Notification 卡片）；内层圆角不大于外层减内衬；pill 只给状态 chip 与一维对象，正方盒取 circle。
-- 组件的缺省、下限与上限尺寸按设计真源 §6.8 取档，只经语义尺寸令牌：控件高 sm/md/lg 28/32/36（compact 24/28/32），md 缺省；字段缺省宽 16rem、压缩底线 12rem、上限 100%，放进 Field 即铺满；Tooltip / Popover 上限 20rem（size 16/20/24），菜单 10–20rem，候选面板与字段盒等宽，Dialog 上限 24/32/48rem，Drawer 16/20/28rem；滚动面限高只取 viewport-h-sm/md/lg（12/16/24rem）与 viewport-max-h，浮层取 overlay-max-h / overlay-menu-max-h；浮层上限再与可用区取 min。表里没有的尺寸先加语义令牌。
-- 定尺离散 Action Control 使用统一按压反馈：150ms 换到 active 底，缩放取 `--xh-motion-scale-press`（缺省 1，只换面），释放 200ms 回到 rest；行级与 disclosure trigger 只换面，不允许零反馈。登记例外：Rating 的星悬停（只在能悬停的设备上）与键盘聚焦放大到 `--xh-motion-scale-emphasis` 强调落点、按下保持放大，减弱动效下归 1。
-- 面级披露（Accordion、Collapsible、Reasoning、ToolCall）的正文行高、内缩、淡变与指示器转向同一段动画、同一条 `--xh-motion-ease-disclosure`；内容区的 `hidden` 跟退场闸门走，开合不换字重、不铺底、不画占高度的线。
-- 带退场部件的 `hidden` 跟退场闸门走，播完才落：适配器覆盖 connect 给的 `hidden`，否则宿主的 `[hidden]{display:none!important}` 让退场一帧都播不出来。
-- 动效按设计真源 §9 的角色取令牌，时长两档：换色 150ms、几何 200ms。几何动画不用 `micro` / `enter` / `exit` 时长，有进场即有退场，初始内容不播进场；弹层只有一套进出场（§9.5）；勾选标记描线生长、全选与半选交叉缩放（§9.13）；减弱动效去位移、留淡变；JS 动效只经 `@xihan-ui/motion`，不写固定毫秒。
-- Tooltip 不反白，与 Popover 同一副浮层面（写了 tone 才取语气实底），悬停 150ms 出、100ms 收；模态遮罩浅色 40%、深色 60%；控件内图标 16 / 18 / 20；字段清空钮圆形、有值且悬停或聚焦才出现（触屏常显）；字段内嵌钮的面比命中盒内收一个环宽、不贴聚焦环（配方给，皮肤不各写）；Alert 带语气淡边；Progress 线形厚 4 / 8 / 12；字体继承宿主，`--xh-font-family-sans` 只经可选的 `@xihan-ui/styles/global.css` 落到 `:root`；Button 另有 `dashed` / `link` 两档。
-- 浏览器按标签给的缺省外观（原生外观、内衬、描边、底色、字体与字色、项目符号、表单控件里自带的清除钮与显示密码钮）统一由 `css/reset.css` 收掉，皮肤与配方不各收各的，也不写原生伪元素的重置；媒体元素（img / svg / video / canvas）按块排也在这一层；库节点的样子不取决于它渲染成什么标签。用原生控件承载行为时（图片裁切的滑杆是原生 `range`）样子由皮肤自己画，不留给浏览器。
-- 禁止 glass 材质及兼容别名；锚定浮层走 frosted 配方（缺省是实体底 + 描边 + md 档投影，透景只作主题档）；导航层在 `data-material="liquid"` 下可用 liquid（设计真源 §8.5），内容层、浮层与模态不用。
-- 彩色面声明墨色域，中性描边与淡底取墨色比例；弹簧只用于手势松手与 liquid 档的切换、指示；断点按视口，低于断点用补集写法，不用容器查询。
-- 边界只由描边承担：根面取描边（outline，缺省）/ 淡底（subtle）/ 无壳（ghost）之一；raised 必带 border-default；`--xh-border-subtle` 只作内部分隔。字段静息为 `--xh-bg-field`（缺省白底）+ `--xh-border-control` + 无影，聚焦换品牌描边 + 内侧 inset 线（合起来一个环宽）。阴影三档按面的类型取：raised sm、floating / frosted md、sheet lg。
-- 聚焦环是一道 2px 品牌实线，画在元素自己的盒内（偏移负一个环宽），不出盒、不被裁切容器裁掉，不随 tone、即时出现；实心与任意色的面在环内侧衬 1px 底色间隔线（`--xh-_ring-gap: var(--xh-ring-gap)`）；字段的环是品牌描边加内侧 inset 线，强制色档补一道同宽的 Highlight 环。图表数据标记的 focus-ring 部件是唯一登记的盒外例外。
-- 只有 Button 缺省品牌实心；Action Control 上 `tone="neutral"` 与不写等价；交互阶梯按承载面（白底 hover 100 → pressed 200，淡底 hover 200 → pressed 300）；`--xh-bg-brand-subtle` 专属选中 / 当前。
-- 图表按数据任务与坐标系划分组件，同一标记的不同外观是样式轴，不另建组件；数据色只经 `--xh-chart-*` 语义层，图表文字不用系列色；不提供双 y 轴。
-- 不写颜色、间距、圆角、阴影和动效散值；新增槽必须被真实消费并进入生成物。
+- 圆角、尺寸档、按压与动效时长、材质与浮层面、边界与阴影、聚焦环、颜色与数据色等数值和细则只以设计真源 `.agents/skills/component-design/references/component-design.md` 为准；改样式前先读对应章节，不凭记忆写数。
+- 不写颜色、间距、圆角、阴影和动效散值，只经语义令牌与组件槽；表里没有的尺寸先加语义令牌；新增槽必须被真实消费并进入生成物。
+- 边界只由描边承担，根面取描边 / 淡底 / 无壳之一；禁止 glass 材质及兼容别名。
+- 浏览器按标签给的缺省外观由 `css/reset.css` 统一收掉，皮肤与配方不各收各的；带退场部件的 `hidden` 跟退场闸门走，播完才落。
 - 亮色、暗色、comfortable/compact、RTL、粗指针、reduced motion、reduced transparency、forced colors 和 print 必须一起审查。
 
 ## 测试
