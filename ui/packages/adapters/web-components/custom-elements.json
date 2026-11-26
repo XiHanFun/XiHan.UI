@@ -8112,25 +8112,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
-            },
-            {
-              "kind": "field",
               "name": "portal",
               "privacy": "private",
               "readonly": true
@@ -8354,6 +8335,14 @@
             },
             {
               "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.cascaderScope, idGenerator: this.idGen, layer: () => ({ kind: 'popover', node: () => this.getPart('content'), // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换。 // 浮层壳一并记上：content 之外还浮着自绘滚动条，按住它拖动不该把浮层消解掉 branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[], isModal: () => false, }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -8364,7 +8353,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['horizontal'], // 条子走浮层 4px 档 props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['horizontal'], // 条子走浮层 4px 档 props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "列区的自绘滚动条：与 content 同级挂在已经 fixed 的 positioner 上。\n只排布横向：列多到放不下时整体横向滚动，纵向溢出归每一列自身；\n横条的正负按排版方向计算，而组件不读取计算样式，把作者写的显式值交过去。"
             },
             {
@@ -8372,7 +8361,7 @@
               "name": "columnBars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('content'), scrollables: () => this.getParts('column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('content'), scrollables: () => this.getParts('column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "每一列自己的竖条：列并排住在 content 里，条子贴在各列的盒子上、紧跟在那一列后面，\n按此刻在场的列逐列建一套，列离场即拆。搜索列表与列互斥，同样贴自己的盒子。"
             },
             {
@@ -8380,7 +8369,7 @@
               "name": "searchBars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('content'), scrollable: () => this.getPart('search-list'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })"
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('content'), scrollable: () => this.getPart('search-list'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })"
             },
             {
               "kind": "method",
@@ -8394,16 +8383,6 @@
             },
             {
               "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -8411,12 +8390,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -10506,15 +10479,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
               "name": "portal",
               "privacy": "private",
               "readonly": true,
@@ -10540,20 +10504,18 @@
             },
             {
               "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.citationScope, idGenerator: this.idGen, layer: () => ({ kind: 'popover', node: () => this.getPart('positioner'), // 行内引用记为本层分支：按在另一处引用上是切换，不是层外交互 branches: () => this.getParts('trigger'), isModal: () => false, // 只有 hover 档入栈：卡片悬停就出现，压在别的层上面不代表开在里面，只护着它开在其内容里的层 opensOnHover: true, }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<CitationSchema>( this, citationMachine, () => this.machineProps(), { scope: this.citationScope, onBuilt: svc => this.injectRefs(svc) }, )"
-            },
-            {
-              "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
             },
             {
               "kind": "method",
@@ -10564,12 +10526,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -13328,25 +13284,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
-            },
-            {
-              "kind": "field",
               "name": "portal",
               "privacy": "private",
               "readonly": true
@@ -13380,6 +13317,14 @@
               "name": "notifyClear",
               "privacy": "private",
               "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.pickerScope, idGenerator: this.idGen, layer: () => ({ kind: 'popover', node: () => this.getPart('content'), // 触发器记为本层分支：点它算层内交互，开合交给它自己切换。 // 浮层壳一并记上：content 之外还浮着自绘滚动条，按住它拖动不该把浮层消解掉 branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[], isModal: () => false, }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
             },
             {
               "kind": "field",
@@ -13446,7 +13391,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
               "description": "面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；条子走浮层 4px 档"
             },
             {
@@ -13461,16 +13406,6 @@
             },
             {
               "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -13478,12 +13413,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -16105,25 +16034,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
-            },
-            {
-              "kind": "field",
               "name": "portal",
               "privacy": "private",
               "readonly": true
@@ -16162,6 +16072,14 @@
             },
             {
               "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.comboboxScope, idGenerator: this.idGen, layer: () => ({ kind: 'popover', node: () => this.getPart('content'), // 整个输入行记为本层分支：点输入框或触发按钮算层内交互，开合交给它们自己切换。 // 浮层壳一并记上：候选列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉 branches: () => [this.getPart('control'), this.getPart('positioner')].filter(Boolean) as Element[], isModal: () => false, }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -16172,7 +16090,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
               "description": "候选列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，条子走浮层 4px 档"
             },
             {
@@ -16216,16 +16134,6 @@
             },
             {
               "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -16233,12 +16141,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -17258,25 +17160,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
-            },
-            {
-              "kind": "field",
               "name": "bars",
               "privacy": "private",
               "readonly": true,
@@ -17313,6 +17196,14 @@
               "name": "notifyItemSelect",
               "privacy": "private",
               "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.commandScope, idGenerator: this.idGen, layer: () => ({ kind: 'modal', node: () => this.getPart('content'), branches: () => [], isModal: () => this.modal ?? true, surfaces: () => [this.getPart('backdrop')].filter(Boolean) as Element[], }), // 不靠落位藏面板：焦点陷阱与滚动锁所在的浮层按需块到了才露出内容 awaitOverlayKit: true, })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
             },
             {
               "kind": "field",
@@ -17452,16 +17343,6 @@
             },
             {
               "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -17469,12 +17350,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -18604,25 +18479,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
-            },
-            {
-              "kind": "field",
               "name": "submenuBridges",
               "privacy": "private",
               "readonly": true,
@@ -18713,6 +18569,14 @@
             },
             {
               "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.menuScope, idGenerator: this.idGen, layer: () => ({ kind: 'popover', node: () => this.getPart('content'), // 触发区记为本层分支：展开着再右键要能就地换坐标，先被判成层外交互关一次就白闪了。 // 代价是\"左键点在触发区内也该关\"落不到消解层头上，那条由 connect 在 pointerdown 上自己收口。 // 浮层壳一并记上：条目列表之外还浮着自绘滚动条，按住它拖动不该把菜单消解掉 branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[], isModal: () => false, }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -18723,7 +18587,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), // 浮层里的条子走 4px 档 props: () => ({ size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), // 浮层里的条子走 4px 档 props: () => ({ size: 'sm' }), })",
               "description": "条目列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
             },
             {
@@ -18764,16 +18628,6 @@
             },
             {
               "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -18781,12 +18635,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -20334,25 +20182,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
-            },
-            {
-              "kind": "field",
               "name": "portal",
               "privacy": "private",
               "readonly": true
@@ -20390,6 +20219,14 @@
             },
             {
               "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.pickerScope, idGenerator: this.idGen, layer: () => ({ kind: 'popover', node: () => this.getPart('content'), // 整个输入行记为本层分支：点 trigger 或段位算层内交互，开合交给它们自己切换。 // 浮层壳一并记上：content 之外还浮着自绘滚动条，按住它拖动不该把浮层消解掉 branches: () => [this.getPart('control'), this.getPart('positioner')].filter(Boolean) as Element[], isModal: () => false, }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "rootCtrl",
               "privacy": "private",
               "readonly": true,
@@ -20414,7 +20251,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "浮层面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；面板两轴都滚，条子走浮层 4px 档"
             },
             {
@@ -20422,7 +20259,7 @@
               "name": "presetBars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('content'), scrollable: () => this.getPart('preset-group'), anchor: 'layer', axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('content'), scrollable: () => this.getPart('preset-group'), anchor: 'layer', axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "快捷选项列与时间列各自的条子：都住在 content 里，条子贴在各自的盒子上、紧跟在那一层后面。\n快捷列窄视口横排横滚、宽视口竖排竖滚，两轴都摆；时间列按在场的列逐列建一套，列离场即拆。"
             },
             {
@@ -20430,7 +20267,7 @@
               "name": "timeBars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('content'), scrollables: () => this.getParts('time-column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })"
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('content'), scrollables: () => this.getParts('time-column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })"
             },
             {
               "kind": "method",
@@ -20454,16 +20291,6 @@
             },
             {
               "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -20471,12 +20298,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -22029,25 +21850,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
-            },
-            {
-              "kind": "field",
               "name": "portal",
               "privacy": "private",
               "readonly": true
@@ -22091,6 +21893,14 @@
             },
             {
               "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.pickerScope, idGenerator: this.idGen, layer: () => ({ kind: 'popover', node: () => this.getPart('content'), // 整个输入行记为本层分支：点 trigger 或段位算层内交互，开合交给它们自己切换。 // 浮层壳一并记上：content 之外还浮着自绘滚动条，按住它拖动不该把浮层消解掉 branches: () => [this.getPart('control'), this.getPart('positioner')].filter(Boolean) as Element[], isModal: () => false, }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "rootCtrl",
               "privacy": "private",
               "readonly": true,
@@ -22122,7 +21932,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "浮层面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；面板两轴都滚，条子走浮层 4px 档"
             },
             {
@@ -22130,7 +21940,7 @@
               "name": "presetBars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('content'), scrollable: () => this.getPart('preset-group'), anchor: 'layer', axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('content'), scrollable: () => this.getPart('preset-group'), anchor: 'layer', axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "快捷选项列自己的条子：住在 content 里，条子贴在它的盒子上、紧跟在那一层后面；\n窄视口横排横滚、宽视口竖排竖滚，两轴都摆。"
             },
             {
@@ -22138,7 +21948,7 @@
               "name": "timeBars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('content'), scrollables: () => this.getParts('time-column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('content'), scrollables: () => this.getParts('time-column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "每一列时间选项自己竖滚：每列一套贴层的竖条，紧跟在那一列后面（浮层 4px 档）。"
             },
             {
@@ -22163,16 +21973,6 @@
             },
             {
               "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -22180,12 +21980,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -23666,27 +23460,9 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
               "name": "contentNode",
               "type": {
                 "text": "HTMLElement | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null"
@@ -23721,6 +23497,14 @@
             },
             {
               "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.dialogScope, idGenerator: this.idGen, layer: () => ({ kind: 'modal', node: () => this.contentNode, branches: () => [], isModal: () => this.machineProps().modal ?? true, surfaces: () => [this.backdropNode].filter(Boolean) as Element[], }), // 不靠落位藏面板：焦点陷阱与滚动锁所在的浮层按需块到了才露出内容 awaitOverlayKit: true, })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -23738,35 +23522,6 @@
             },
             {
               "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "ensureExit",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "ExitGate"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "open",
-                  "type": {
-                    "text": "boolean"
-                  }
-                }
-              ],
-              "description": "退场闸门建一次；presence 不是响应式 cell，退场结束要显式排一次更新才轮得到收起。"
-            },
-            {
-              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -23774,12 +23529,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -25397,27 +25146,9 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
               "name": "contentNode",
               "type": {
                 "text": "HTMLElement | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null"
@@ -25452,6 +25183,14 @@
             },
             {
               "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.drawerScope, idGenerator: this.idGen, layer: () => ({ kind: 'modal', node: () => this.contentNode, branches: () => [], isModal: () => this.machineProps().modal ?? true, surfaces: () => [this.backdropNode].filter(Boolean) as Element[], }), // 不靠落位藏面板：焦点陷阱与滚动锁所在的浮层按需块到了才露出内容 awaitOverlayKit: true, })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -25469,35 +25208,6 @@
             },
             {
               "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "ensureExit",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "ExitGate"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "open",
-                  "type": {
-                    "text": "boolean"
-                  }
-                }
-              ],
-              "description": "退场闸门建一次；presence 不是响应式 cell，退场结束要显式排一次更新才轮得到收起。"
-            },
-            {
-              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -25505,12 +25215,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -27210,24 +26914,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
               "name": "portal",
               "privacy": "private",
               "readonly": true
@@ -27258,6 +26944,14 @@
             },
             {
               "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.inputScope, idGenerator: this.idGen, layer: () => ({ kind: 'popover', node: () => this.getPart('content'), branches: () => [this.getPart('input'), this.getPart('positioner')].filter(Boolean) as Element[], isModal: () => false, }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "readonly": true,
               "default": "new MachineController<ExpressionInputSchema>( this, expressionInputMachine, () => this.machineProps(), { scope: this.inputScope, onBuilt: svc => this.injectRefs(svc) }, )"
@@ -27267,7 +26961,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })"
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })"
             },
             {
               "kind": "method",
@@ -27281,16 +26975,6 @@
             },
             {
               "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -27298,12 +26982,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -38412,25 +38090,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
-            },
-            {
-              "kind": "field",
               "name": "lazyContent",
               "privacy": "private",
               "readonly": true,
@@ -38451,6 +38110,14 @@
             },
             {
               "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.hoverCardScope, idGenerator: this.idGen, layer: () => ({ kind: 'popover', node: () => this.getPart('content'), // trigger 记为本层分支：指针按在它上面算层内交互，不该把刚悬停出来的卡片关掉。 // 浮层壳一并记上：卡片之外还浮着自绘滚动条，按住它拖动不该把卡片消解掉 branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[], // 悬停卡片从不模态：不陷焦点、不锁滚动、没有自带遮罩 isModal: () => false, // 悬停就出现，压在别的层上面不代表开在里面：只护着它开在其内容里的层 opensOnHover: true, }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -38461,7 +38128,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), // 浮层里走 4px 档 props: () => ({ size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), // 浮层里走 4px 档 props: () => ({ size: 'sm' }), })",
               "description": "卡片内容的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
             },
             {
@@ -38476,16 +38143,6 @@
             },
             {
               "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -38493,12 +38150,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -40084,27 +39735,9 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
               "name": "contentNode",
               "type": {
                 "text": "HTMLElement | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null"
@@ -40148,6 +39781,14 @@
             },
             {
               "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.viewerScope, idGenerator: this.idGen, layer: () => ({ kind: 'modal', node: () => this.contentNode, branches: () => [], isModal: () => true, surfaces: () => [this.backdropNode].filter(Boolean) as Element[], }), // 不靠落位藏面板：焦点陷阱与滚动锁所在的浮层按需块到了才露出内容 awaitOverlayKit: true, })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -40165,27 +39806,6 @@
             },
             {
               "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "ensureExit",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "ExitGate"
-                }
-              },
-              "description": "退场闸门建一次；presence 不是响应式 cell，退场结束要显式排一次更新才轮得到收起。"
-            },
-            {
-              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -40193,12 +39813,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -45756,25 +45370,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
-            },
-            {
-              "kind": "field",
               "name": "portal",
               "privacy": "private",
               "readonly": true
@@ -45805,6 +45400,14 @@
             },
             {
               "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.mentionScope, idGenerator: this.idGen, layer: () => ({ kind: 'popover', node: () => this.getPart('content'), // 输入框记为本层分支：在正文里打字、点击都算层内交互，不该把浮层点没。 // 浮层壳一并记上：候选列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉 branches: () => [this.getPart('input'), this.getPart('positioner')].filter(Boolean) as Element[], isModal: () => false, }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -45815,7 +45418,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
               "description": "候选列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，条子走浮层 4px 档"
             },
             {
@@ -45837,16 +45440,6 @@
             },
             {
               "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -45854,12 +45447,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -46703,15 +46290,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
               "name": "submenuBridges",
               "privacy": "private",
               "readonly": true,
@@ -46769,16 +46347,6 @@
             },
             {
               "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
-            },
-            {
-              "kind": "field",
               "name": "notifyOpen",
               "privacy": "private",
               "readonly": true
@@ -46809,6 +46377,14 @@
             },
             {
               "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.menuScope, idGenerator: this.idGen, layer: () => ({ kind: 'popover', node: () => this.getPart('content'), // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换。 // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，菜单等于关不掉。 // 浮层壳一并记上：条目列表之外还浮着自绘滚动条，按住它拖动不该把菜单消解掉 branches: () => [this.getPart('trigger'), this.anchor, this.getPart('positioner')].filter(Boolean) as Element[], isModal: () => false, // 悬停就展开的菜单（含子菜单）压在别的层上面不代表开在里面：只护着它开在其内容里的层 opensOnHover: menuOpensOnHover({ openOnHover: this.openOnHover, submenu: this.submenu }), }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -46819,7 +46395,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
               "description": "条目列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；浮层里的条子走 4px 档"
             },
             {
@@ -46836,16 +46412,6 @@
               "return": {
                 "type": {
                   "text": "Partial<MenuSchema['props']>"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
                 }
               }
             },
@@ -46912,12 +46478,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -47701,15 +47261,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
               "name": "submenuBridges",
               "privacy": "private",
               "readonly": true,
@@ -47812,6 +47363,14 @@
             },
             {
               "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.barScope, idGenerator: this.idGen, layer: () => ({ kind: 'popover', node: () => this.partFor('content', this.openValue()), // 整条菜单栏记为本层分支：点 trigger、在 trigger 之间走、掠过换菜单都算层内交互， // 开合归菜单栏自己切换；当前那张的定位层一并记上：条目列表之外还浮着自绘滚动条， // 按住它拖动不该把菜单消解掉 branches: () => [this.getPart('root'), this.partFor('positioner', this.openValue())].filter(Boolean) as Element[], isModal: () => false, }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -47864,16 +47423,6 @@
             },
             {
               "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -47881,12 +47430,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -48748,16 +48291,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门与消解层共用一份环境包。"
-            },
-            {
-              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -48938,6 +48471,14 @@
             },
             {
               "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.menuScope, idGenerator: this.idGen, layer: () => ({ // 导航只参与 Escape 仲裁与栈顶判定：面板就在文档流里，不陷焦点、不锁滚动、没有遮罩 kind: 'inline', // 整个 nav 都算层内：trigger 与面板都住在里面 node: () => this.getPart('root'), branches: () => [], isModal: () => false, }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -48952,22 +48493,6 @@
                   "text": "Partial<NavigationMenuSchema['props']>"
                 }
               }
-            },
-            {
-              "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -51606,25 +51131,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门：收起从跟着展开态走改成跟着 presence 走，退场动画播完才真收。"
-            },
-            {
-              "kind": "field",
               "name": "ellipsisPortalSource",
               "type": {
                 "text": "HTMLElement | null"
@@ -51649,6 +51155,14 @@
               "name": "notifyPageSize",
               "privacy": "private",
               "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.paginationScope, idGenerator: this.idGen, layer: () => ({ kind: 'popover', node: () => this.getPart('content'), // 省略位记为本层分支：指针按在它上面算层内交互。 // 浮层壳一并记上：页码列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉 branches: () => [...this.getParts('ellipsis-trigger'), this.getPart('positioner')].filter(Boolean) as Element[], isModal: () => false, }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
             },
             {
               "kind": "field",
@@ -51705,37 +51219,8 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
               "description": "折叠页码列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，浮层里的条子走 4px 档"
-            },
-            {
-              "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "ensureExit",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "ExitGate"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "open",
-                  "type": {
-                    "text": "boolean"
-                  }
-                }
-              ],
-              "description": "在状态机挂载前建立 Presence，让省略位行为资源与真实退场共享租约。"
             },
             {
               "kind": "method",
@@ -51783,12 +51268,6 @@
                 }
               ],
               "description": "当前展开的省略位节点：它是定位锚点。"
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "field",
@@ -54557,25 +54036,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
-            },
-            {
-              "kind": "field",
               "name": "lazyContent",
               "privacy": "private",
               "readonly": true,
@@ -54593,7 +54053,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
               "description": "面板内容的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，浮层里走 4px 档"
             },
             {
@@ -54660,6 +54120,14 @@
             },
             {
               "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.popconfirmScope, idGenerator: this.idGen, layer: () => ({ kind: 'popover', node: () => this.getPart('content'), // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换。 // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，浮层等于关不掉。 // 浮层壳一并记上：面板之外还浮着自绘滚动条，按住它拖动不该把面板消解掉 branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[], isModal: () => false, }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -54688,16 +54156,6 @@
             },
             {
               "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -54705,31 +54163,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "method",
-              "name": "ensureExit",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "ExitGate"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "open",
-                  "type": {
-                    "text": "boolean"
-                  }
-                }
-              ],
-              "description": "状态机挂载前建立 Presence，让行为资源与视觉退场从第一轮展开起共用生命周期。"
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -55342,25 +54775,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
-            },
-            {
-              "kind": "field",
               "name": "lazyContent",
               "privacy": "private",
               "readonly": true,
@@ -55381,6 +54795,14 @@
             },
             {
               "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.popoverScope, idGenerator: this.idGen, layer: () => ({ kind: 'popover', node: () => this.getPart('content'), // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换。 // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，浮层等于关不掉。 // 浮层壳一并记上：面板之外还浮着自绘滚动条，按住它拖动不该把面板消解掉。 // 外部锚点同理：点它是交给打开它的那条命令去切换 // 虚拟锚点只给得出矩形，不是节点，不记 branches: () => [this.getPart('trigger'), (this.anchor as Partial<Node> | null | undefined)?.nodeType === 1 ? this.anchor : null, this.getPart('positioner')].filter(Boolean) as Element[], // modal 档会加滚动锁 isModal: () => this.ctrl.service.prop('modal') ?? false, }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -55391,7 +54813,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
               "description": "面板内容的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，浮层里走 4px 档"
             },
             {
@@ -55406,16 +54828,6 @@
             },
             {
               "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -55423,31 +54835,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "method",
-              "name": "ensureExit",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "ExitGate"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "open",
-                  "type": {
-                    "text": "boolean"
-                  }
-                }
-              ],
-              "description": "状态机挂载前建立 Presence，让行为资源与视觉退场从第一轮展开起共用生命周期。"
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -62698,25 +62085,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
-            },
-            {
-              "kind": "field",
               "name": "portal",
               "privacy": "private",
               "readonly": true
@@ -62780,6 +62148,14 @@
             },
             {
               "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.selectScope, idGenerator: this.idGen, layer: () => ({ kind: 'popover', node: () => this.getPart('content'), // 整个盒记为本层分支：点触发器或清空钮算层内交互，开合交给 trigger 自己切换。 // 浮层壳一并记上：列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉 branches: () => [this.getPart('control'), this.getPart('positioner')].filter(Boolean) as Element[], isModal: () => false, }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -62820,7 +62196,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.currentVirtualizer()?.getViewportElement() ?? this.getPart('list'), props: () => ({ size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('positioner'), scrollable: () => this.currentVirtualizer()?.getViewportElement() ?? this.getPart('list'), props: () => ({ size: 'sm' }), })",
               "description": "列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，滚动层是 list，条子走浮层 4px 档。\n虚拟化时滚的是 Virtualizer 的视口，列表只是视口里的一层：条子跟着桥交出的视口走，与 TreeSelect、Transfer 同一做法"
             },
             {
@@ -62850,16 +62226,6 @@
             },
             {
               "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -62867,31 +62233,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "method",
-              "name": "ensureExit",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "ExitGate"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "open",
-                  "type": {
-                    "text": "boolean"
-                  }
-                }
-              ],
-              "description": "在状态机挂载前建立 Presence，确保 default-open 的行为资源与视觉退场共享同一租约。"
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -74912,25 +74253,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
-            },
-            {
-              "kind": "field",
               "name": "portal",
               "privacy": "private",
               "readonly": true
@@ -74956,6 +74278,14 @@
             },
             {
               "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.pickerScope, idGenerator: this.idGen, layer: () => ({ kind: 'popover', node: () => this.getPart('content'), // 整个输入行记为本层分支：点触发器算层内交互，开合交给它自己切换。 branches: () => [this.getPart('control')].filter(Boolean) as Element[], isModal: () => false, }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -74968,16 +74298,6 @@
               "return": {
                 "type": {
                   "text": "Partial<TimePickerSchema['props']>"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
                 }
               }
             },
@@ -74996,7 +74316,7 @@
               "name": "presetBars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('content'), scrollable: () => this.getPart('preset-group'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('content'), scrollable: () => this.getPart('preset-group'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "快捷选项列与时间列各自的条子：都住在 content 里，条子贴在各自的盒子上、紧跟在那一层后面；\n时间列按在场的列逐列建一套，列离场即拆。条子走浮层 4px 档"
             },
             {
@@ -75004,13 +74324,7 @@
               "name": "columnBars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('content'), scrollables: () => this.getParts('column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })"
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('content'), scrollables: () => this.getParts('column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })"
             },
             {
               "kind": "method",
@@ -76163,25 +75477,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
-            },
-            {
-              "kind": "field",
               "name": "portal",
               "privacy": "private",
               "readonly": true
@@ -76207,6 +75502,14 @@
             },
             {
               "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.pickerScope, idGenerator: this.idGen, layer: () => ({ kind: 'popover', node: () => this.getPart('content'), // 整个输入行记为本层分支：点触发器算层内交互，开合交给它自己切换。 // 浮层壳一并记上：content 之外还浮着自绘横条，按住它拖动不该把浮层消解掉 branches: () => [this.getPart('control'), this.getPart('positioner')].filter(Boolean) as Element[], isModal: () => false, }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -76219,16 +75522,6 @@
               "return": {
                 "type": {
                   "text": "Partial<TimeRangePickerSchema['props']>"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
                 }
               }
             },
@@ -76247,7 +75540,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "浮层面板的自绘横条：两组时列并排放不下时面板整体横滚，条子与 content 同级挂在已经 fixed 的 positioner 上，走浮层 4px 档"
             },
             {
@@ -76255,7 +75548,7 @@
               "name": "presetBars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('content'), scrollable: () => this.getPart('preset-group'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('content'), scrollable: () => this.getPart('preset-group'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "快捷选项列与各时间列各自的竖条：都住在 content 里，条子贴在各自的盒子上、紧跟在那一层后面；\n时间列按在场的列逐列建一套，列离场即拆"
             },
             {
@@ -76263,13 +75556,7 @@
               "name": "columnBars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('content'), scrollables: () => this.getParts('column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })"
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('content'), scrollables: () => this.getParts('column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })"
             },
             {
               "kind": "method",
@@ -79666,16 +78953,6 @@
             },
             {
               "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
-            },
-            {
-              "kind": "field",
               "name": "open",
               "privacy": "public",
               "type": {
@@ -79916,16 +79193,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "消解层与退场闸门共用一份环境包。"
-            },
-            {
-              "kind": "field",
               "name": "portal",
               "privacy": "private",
               "readonly": true
@@ -79935,6 +79202,14 @@
               "name": "notify",
               "privacy": "private",
               "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.tooltipScope, idGenerator: this.idGen, layer: () => ({ // 提示只参与 Escape 仲裁与栈顶判定：节点就在文档流里，不陷焦点、不锁滚动、没有遮罩 kind: 'inline', node: () => this.getPart('content'), // trigger 记为本层分支，点它算层内交互 branches: () => [this.getPart('trigger')].filter(Boolean) as Element[], isModal: () => false, }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
             },
             {
               "kind": "field",
@@ -79955,16 +79230,6 @@
             },
             {
               "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -79972,12 +79237,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -80652,15 +79911,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
               "name": "contentNode",
               "type": {
                 "text": "HTMLElement | null"
@@ -80676,16 +79926,6 @@
               },
               "privacy": "private",
               "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，气泡的退场动画播完才真收。"
             },
             {
               "kind": "field",
@@ -80733,6 +79973,14 @@
             },
             {
               "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.tourScope, idGenerator: this.idGen, layer: () => ({ kind: 'modal', node: () => this.contentNode, branches: () => [], isModal: () => true, // 遮罩是\"点它就该关本层\"的表面；关不关仍由 closeOnInteractOutside 说了算（缺省不关） surfaces: () => [this.backdropNode].filter(Boolean) as Element[], // 写本层层号的节点：内容、定位层、遮罩，还有高亮框：它的暗幕与描边与遮罩同层，开在别的层里时也排在那一层之上 visuals: () => [this.contentNode, this.getPart('positioner'), this.backdropNode, this.getPart('spotlight')].filter(Boolean) as Element[], // 限定在区域里时罩住那块区域：引导途中区域里新开的层（如抽屉）排在引导之下 covers: () => resolveTourBoundary(this.tourScope, this.boundary), }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -80750,16 +79998,6 @@
             },
             {
               "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -80767,23 +80005,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "method",
-              "name": "ensureExit",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "ExitGate"
-                }
-              },
-              "description": "退场闸门建立一次，并在状态机挂载前把同一份 Presence 交给 Headless。"
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",
@@ -82609,25 +81830,6 @@
             },
             {
               "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "ExitGate | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
-            },
-            {
-              "kind": "field",
               "name": "portal",
               "privacy": "private",
               "readonly": true
@@ -82712,6 +81914,14 @@
               "name": "notifyBranchLoadError",
               "privacy": "private",
               "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "overlay",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverlayController(this, { scope: this.treeSelectScope, idGenerator: this.idGen, layer: () => ({ kind: 'popover', node: () => this.getPart('content'), // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换。 // 浮层壳一并记上：content 之外还浮着自绘滚动条，按住它拖动不该把浮层消解掉 branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[], isModal: () => false, }), })",
+              "description": "配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
             },
             {
               "kind": "field",
@@ -82873,7 +82083,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), // 虚拟窗口的滚动层是 Virtualizer 的视口，条子跟着它走 scrollable: () => this.virtualizer?.getViewportElement() ?? this.getPart('tree'), axes: ['vertical', 'horizontal'], // 条子走浮层 4px 档 props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.overlay.visible, shell: () => this.getPart('positioner'), // 虚拟窗口的滚动层是 Virtualizer 的视口，条子跟着它走 scrollable: () => this.virtualizer?.getViewportElement() ?? this.getPart('tree'), axes: ['vertical', 'horizontal'], // 条子走浮层 4px 档 props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "树的自绘滚动条：与 content 同级挂在已经 fixed 的 positioner 上。\n两条轴都排布：深层节点依靠缩进向行末推，横向溢出与纵向一样是常态；\n横条的正负按排版方向计算，而组件不读取计算样式，把作者写的显式值交过去。"
             },
             {
@@ -82924,16 +82134,6 @@
             },
             {
               "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -82941,12 +82141,6 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
             },
             {
               "kind": "method",

@@ -5,8 +5,7 @@
 
 // 提供 date picker 相关实现。
 
-import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { ExitGate } from '@xihan-ui/core/presence'
+import type { ControlVariant, Direction, IdGenerator, Placement, PositionEnginePort, Service, Size, Tone } from '@xihan-ui/core'
 import type {
   CalendarDay,
   CalendarGranularity,
@@ -37,8 +36,7 @@ import type {
   TimeStep,
 } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { createExitGate } from '@xihan-ui/core/presence'
+import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { calendarPickerAnatomy, calendarPickerMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldProps, datePickerMachine, datePickerMeta, datePickerStructure, resolveDatePickerPanelIndex } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
@@ -49,6 +47,7 @@ import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
 import { TIME_STEP_CONVERTER } from '../dom/time-step'
 import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { OverlayController } from '../runtime/overlay-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 
@@ -313,12 +312,9 @@ export class XhDatePickerElement extends XhPortalHostElement {
   // 三台机器共用一份 scope，part id 里带组件名故不相撞
   private readonly pickerScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
-  private config: RuntimeConfig | null = null
-  /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
-  private exit: ExitGate | null = null
   private readonly portal = this.createAnchoredPortalController({
     name: 'DatePicker',
-    config: () => this.config,
+    config: () => this.overlay.currentConfig,
     source: () => this.getPart('control'),
     root: () => this.getPart('positioner'),
     onChange: () => this.requestUpdate(),
@@ -347,6 +343,20 @@ export class XhDatePickerElement extends XhPortalHostElement {
   }
 
   // 声明顺序即 controller 挂载顺序：两台内嵌机器的 props 从编排机现读，编排机须先建
+  /** 配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
+  private readonly overlay = new OverlayController(this, {
+    scope: this.pickerScope,
+    idGenerator: this.idGen,
+    layer: () => ({
+      kind: 'popover',
+      node: () => this.getPart('content'),
+      // 整个输入行记为本层分支：点 trigger 或段位算层内交互，开合交给它们自己切换。
+      // 浮层壳一并记上：content 之外还浮着自绘滚动条，按住它拖动不该把浮层消解掉
+      branches: () => [this.getPart('control'), this.getPart('positioner')].filter(Boolean) as Element[],
+      isModal: () => false,
+    }),
+  })
+
   private readonly rootCtrl = new MachineController<DatePickerSchema>(
     this,
     datePickerMachine,
@@ -376,7 +386,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
 
   /** 浮层面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；面板两轴都滚，条子走浮层 4px 档 */
   private readonly bars = new OverlayScrollbarsController(this, {
-    present: () => this.exit?.visible ?? false,
+    present: () => this.overlay.visible,
     shell: () => this.getPart('positioner'),
     scrollable: () => this.getPart('content'),
     axes: ['vertical', 'horizontal'],
@@ -388,7 +398,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
    * 快捷列窄视口横排横滚、宽视口竖排竖滚，两轴都摆；时间列按在场的列逐列建一套，列离场即拆。
    */
   private readonly presetBars = new OverlayScrollbarsController(this, {
-    present: () => this.exit?.visible ?? false,
+    present: () => this.overlay.visible,
     shell: () => this.getPart('content'),
     scrollable: () => this.getPart('preset-group'),
     anchor: 'layer',
@@ -397,7 +407,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
   })
 
   private readonly timeBars = new OverlayScrollbarsController(this, {
-    present: () => this.exit?.visible ?? false,
+    present: () => this.overlay.visible,
     shell: () => this.getPart('content'),
     scrollables: () => this.getParts('time-column'),
     anchor: 'layer',
@@ -471,41 +481,13 @@ export class XhDatePickerElement extends XhPortalHostElement {
     }
   }
 
-  private ensureConfig(): void {
-    if (this.config)
-      return
-    this.config = createRuntimeConfig({ scope: this.pickerScope, idGenerator: this.idGen })
-  }
-
   protected override externalPartRoots(): readonly HTMLElement[] {
     return this.portal.roots
   }
 
-  // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
-  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
-    this.ensureConfig()
-    return this.config!.layerRegistry.register({
-      kind: 'popover',
-      node: () => this.getPart('content'),
-      // 整个输入行记为本层分支：点 trigger 或段位算层内交互，开合交给它们自己切换。
-      // 浮层壳一并记上：content 之外还浮着自绘滚动条，按住它拖动不该把浮层消解掉
-      branches: () => [this.getPart('control'), this.getPart('positioner')].filter(Boolean) as Element[],
-      isModal: () => false,
-      // 浮层不带遮罩，无可点关闭的表面
-      surfaces: () => [],
-    })
-  }
-
   // onBuilt 在 ctrl 构造期就跑，service 由参数传入。
   private injectRefs(svc: Service<DatePickerSchema>): void {
-    this.ensureConfig()
-    this.exit ??= createExitGate({
-      open: (this.open ?? this.defaultOpen) ?? false,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    svc.refs.set('config', this.config)
-    svc.refs.set('registerLayer', this.registerLayer)
-    svc.refs.set('presence', this.exit.presence)
+    this.overlay.inject(svc.refs, (this.open ?? this.defaultOpen) ?? false)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getAnchorEl', () => this.getPart('control'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
@@ -820,30 +802,22 @@ export class XhDatePickerElement extends XhPortalHostElement {
     // 节点常驻，用内联 display 收起（作者层的 display 声明会盖过 [hidden]）
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
-    this.ensureConfig()
-    this.exit ??= createExitGate({
-      open: api.open,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    this.exit.track(this.getPart('content'))
-    this.exit.update(api.open)
-    this.setPartHidden(this.getPart('content'), !this.exit.visible, { attribute: true })
+    const visible = this.overlay.sync(api.open, this.getPart('content'))
+    this.setPartHidden(this.getPart('content'), !visible, { attribute: true })
 
     this.bars.wire()
     this.presetBars.wire()
     this.timeBars.wire()
-    this.portal.sync(this.exit.visible)
+    this.portal.sync(visible)
   }
 
   override disconnectedCallback(): void {
     this.portal.dispose()
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
-    this.exit?.dispose()
-    this.exit = null
+    this.overlay.dispose()
     if (this.rootCtrl.service.state.get() !== 'open')
       this.setPartHidden(this.getPart('content'), true, { attribute: true })
     // 层随机器停机一并撤掉，此处不再管
-    this.config = null // 重连时 ensureConfig 重建
   }
 }

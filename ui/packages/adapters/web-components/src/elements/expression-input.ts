@@ -5,8 +5,7 @@
 
 // 提供 expression input 相关实现。
 
-import type { Cleanup, ControlVariant, Direction, ExpressionCheck, ExpressionCompletionKind, ExpressionCompletionSource, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { ExitGate } from '@xihan-ui/core/presence'
+import type { ControlVariant, Direction, ExpressionCheck, ExpressionCompletionKind, ExpressionCompletionSource, IdGenerator, Placement, PositionEnginePort, Service, Size, Tone } from '@xihan-ui/core'
 import type { FunctionTable } from '@xihan-ui/expression'
 import type {
   ExpressionInputApi,
@@ -23,8 +22,7 @@ import type {
   ExpressionInputValueChangeDetails,
 } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { createExitGate } from '@xihan-ui/core/presence'
+import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import {
   connectExpressionInput,
   EXPRESSION_INPUT_STRUCTURE_TAKEOVER,
@@ -39,6 +37,7 @@ import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { OverlayController } from '../runtime/overlay-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 
@@ -168,11 +167,9 @@ export class XhExpressionInputElement extends XhPortalHostElement {
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly inputScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
-  private config: RuntimeConfig | null = null
-  private exit: ExitGate | null = null
   private readonly portal = this.createAnchoredPortalController({
     name: 'ExpressionInput',
-    config: () => this.config,
+    config: () => this.overlay.currentConfig,
     source: () => this.getPart('input'),
     root: () => this.getPart('positioner'),
     onChange: () => this.requestUpdate(),
@@ -194,6 +191,18 @@ export class XhExpressionInputElement extends XhPortalHostElement {
     emitEvent(this, 'open-change', details)
   }
 
+  /** 配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
+  private readonly overlay = new OverlayController(this, {
+    scope: this.inputScope,
+    idGenerator: this.idGen,
+    layer: () => ({
+      kind: 'popover',
+      node: () => this.getPart('content'),
+      branches: () => [this.getPart('input'), this.getPart('positioner')].filter(Boolean) as Element[],
+      isModal: () => false,
+    }),
+  })
+
   readonly ctrl = new MachineController<ExpressionInputSchema>(
     this,
     expressionInputMachine,
@@ -202,7 +211,7 @@ export class XhExpressionInputElement extends XhPortalHostElement {
   )
 
   private readonly bars = new OverlayScrollbarsController(this, {
-    present: () => this.exit?.visible ?? false,
+    present: () => this.overlay.visible,
     shell: () => this.getPart('positioner'),
     scrollable: () => this.getPart('content'),
     props: () => ({ size: 'sm' }),
@@ -249,36 +258,12 @@ export class XhExpressionInputElement extends XhPortalHostElement {
     }
   }
 
-  private ensureConfig(): void {
-    if (this.config)
-      return
-    this.config = createRuntimeConfig({ scope: this.inputScope, idGenerator: this.idGen })
-  }
-
   protected override externalPartRoots(): readonly HTMLElement[] {
     return this.portal.roots
   }
 
-  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
-    this.ensureConfig()
-    return this.config!.layerRegistry.register({
-      kind: 'popover',
-      node: () => this.getPart('content'),
-      branches: () => [this.getPart('input'), this.getPart('positioner')].filter(Boolean) as Element[],
-      isModal: () => false,
-      surfaces: () => [],
-    })
-  }
-
   private injectRefs(svc: Service<ExpressionInputSchema>): void {
-    this.ensureConfig()
-    this.exit ??= createExitGate({
-      open: false,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    svc.refs.set('config', this.config)
-    svc.refs.set('registerLayer', this.registerLayer)
-    svc.refs.set('presence', this.exit.presence)
+    this.overlay.inject(svc.refs, false)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
     svc.refs.set('getInputEl', () => this.getPart('input') as ExpressionInputEl | null)
@@ -421,26 +406,18 @@ export class XhExpressionInputElement extends XhPortalHostElement {
     }
 
     // 退场动画播完之前先别收：必须排在 put('content') 之后，data-state 得先落进 DOM
-    this.ensureConfig()
-    this.exit ??= createExitGate({
-      open: api.open,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    this.exit.track(this.getPart('content'))
-    this.exit.update(api.open)
-    this.setPartHidden(this.getPart('content'), !this.exit.visible, { attribute: true })
+    const visible = this.overlay.sync(api.open, this.getPart('content'))
+    this.setPartHidden(this.getPart('content'), !visible, { attribute: true })
 
     this.bars.wire()
-    this.portal.sync(this.exit.visible)
+    this.portal.sync(visible)
   }
 
   override disconnectedCallback(): void {
     this.portal.dispose()
     super.disconnectedCallback()
-    this.exit?.dispose()
-    this.exit = null
+    this.overlay.dispose()
     if (this.ctrl.service.state.get() !== 'open')
       this.setPartHidden(this.getPart('content'), true, { attribute: true })
-    this.config = null
   }
 }

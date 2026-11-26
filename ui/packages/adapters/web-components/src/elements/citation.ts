@@ -5,7 +5,7 @@
 
 // 提供 citation 相关实现。
 
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size } from '@xihan-ui/core'
+import type { Direction, IdGenerator, Placement, PositionEnginePort, Service, Size } from '@xihan-ui/core'
 import type {
   CitationActiveSourceChangeDetails,
   CitationOpenChangeDetails,
@@ -17,13 +17,14 @@ import type {
   CitationSourceOpenDetails,
   CitationTriggerProps,
 } from '@xihan-ui/headless'
-import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { citationAnatomy, citationMachine, citationMeta, connectCitation } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER, NUMBER_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { MachineController } from '../runtime/machine-controller'
+import { OverlayController } from '../runtime/overlay-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 
 /**
@@ -105,11 +106,10 @@ export class XhCitationElement extends XhPortalHostElement {
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly citationScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
-  private config: RuntimeConfig | null = null
   /** hover 档的卡片搬到 portal 落点；inline 档不搬。 */
   private readonly portal = this.createAnchoredPortalController({
     name: 'Citation',
-    config: () => this.config,
+    config: () => this.overlay.currentConfig,
     source: () => this.getPart('root'),
     root: () => this.getPart('positioner'),
     onChange: () => this.requestUpdate(),
@@ -127,6 +127,21 @@ export class XhCitationElement extends XhPortalHostElement {
     emitEvent(this, 'source-open', details)
   }
 
+  /** 配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
+  private readonly overlay = new OverlayController(this, {
+    scope: this.citationScope,
+    idGenerator: this.idGen,
+    layer: () => ({
+      kind: 'popover',
+      node: () => this.getPart('positioner'),
+      // 行内引用记为本层分支：按在另一处引用上是切换，不是层外交互
+      branches: () => this.getParts('trigger'),
+      isModal: () => false,
+      // 只有 hover 档入栈：卡片悬停就出现，压在别的层上面不代表开在里面，只护着它开在其内容里的层
+      opensOnHover: true,
+    }),
+  })
+
   private readonly ctrl = new MachineController<CitationSchema>(
     this,
     citationMachine,
@@ -134,34 +149,13 @@ export class XhCitationElement extends XhPortalHostElement {
     { scope: this.citationScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
-  private ensureConfig(): void {
-    this.config ??= createRuntimeConfig({ scope: this.citationScope, idGenerator: this.idGen })
-  }
-
   protected override externalPartRoots(): readonly HTMLElement[] {
     return this.portal.roots
   }
 
-  // 只交注册函数：入栈出栈由机器按悬停卡片的开合驱动
-  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
-    this.ensureConfig()
-    return this.config!.layerRegistry.register({
-      kind: 'popover',
-      node: () => this.getPart('positioner'),
-      // 行内引用记为本层分支：按在另一处引用上是切换，不是层外交互
-      branches: () => this.getParts('trigger'),
-      isModal: () => false,
-      surfaces: () => [],
-      // 只有 hover 档入栈：卡片悬停就出现，压在别的层上面不代表开在里面，只护着它开在其内容里的层
-      opensOnHover: true,
-    })
-  }
-
   // onBuilt 在 ctrl 构造期就跑（此刻 this.ctrl 尚未赋值），故 service 由参数传入
   private injectRefs(svc: Service<CitationSchema>): void {
-    this.ensureConfig()
-    svc.refs.set('config', this.config)
-    svc.refs.set('registerLayer', this.registerLayer)
+    this.overlay.injectLayer(svc.refs)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
   }
@@ -284,7 +278,8 @@ export class XhCitationElement extends XhPortalHostElement {
   override disconnectedCallback(): void {
     this.portal.dispose()
     super.disconnectedCallback()
-    this.config = null
+    // 配置在重连时按新的 Document 重建
+    this.overlay.dispose()
   }
 }
 

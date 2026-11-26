@@ -5,14 +5,11 @@
 
 // 提供 popover 相关实现。
 
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, VirtualAnchor } from '@xihan-ui/core'
-import type { ExitGate } from '@xihan-ui/core/presence'
+import type { Direction, IdGenerator, Placement, PositionEnginePort, Service, Size, VirtualAnchor } from '@xihan-ui/core'
 import type { PopoverOpenChangeDetails, PopoverSchema, PopoverTranslations } from '@xihan-ui/headless'
-import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { createExitGate } from '@xihan-ui/core/presence'
+import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectPopover, popoverAnatomy, popoverMachine, popoverMeta } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
-import { resolveXhConfig } from '../config'
 import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { createNamingContentWatch } from '../dom/naming-watch'
@@ -21,6 +18,7 @@ import { renderedTitleDescription } from '../dom/title-description'
 import { withoutHidden } from '../overlay-exit'
 import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
+import { OverlayController } from '../runtime/overlay-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 
@@ -118,14 +116,11 @@ export class XhPopoverElement extends XhPortalHostElement {
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly popoverScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
-  private config: RuntimeConfig | null = null
-  /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
-  private exit: ExitGate | null = null
   /** content 里 `<template>` 写的内容按 headless 的挂卸判定克隆进来或撤走；没写模板的作者节点照旧常驻 */
   private readonly lazyContent = new LazyContent({ stash: false })
   private readonly portal = this.createAnchoredPortalController({
     name: 'Popover',
-    config: () => this.config,
+    config: () => this.overlay.currentConfig,
     // 视觉环境取自作者树：写了 anchor（哪怕暂时是 null）取宿主自己，否则取 trigger
     source: () => (this.anchor !== undefined ? this : this.getPart('trigger')),
     root: () => this.getPart('positioner'),
@@ -136,6 +131,24 @@ export class XhPopoverElement extends XhPortalHostElement {
     emitEvent(this, 'open-change', details)
   }
 
+  /** 配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
+  private readonly overlay = new OverlayController(this, {
+    scope: this.popoverScope,
+    idGenerator: this.idGen,
+    layer: () => ({
+      kind: 'popover',
+      node: () => this.getPart('content'),
+      // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换。
+      // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，浮层等于关不掉。
+      // 浮层壳一并记上：面板之外还浮着自绘滚动条，按住它拖动不该把面板消解掉。
+      // 外部锚点同理：点它是交给打开它的那条命令去切换
+      // 虚拟锚点只给得出矩形，不是节点，不记
+      branches: () => [this.getPart('trigger'), (this.anchor as Partial<Node> | null | undefined)?.nodeType === 1 ? this.anchor : null, this.getPart('positioner')].filter(Boolean) as Element[],
+      // modal 档会加滚动锁
+      isModal: () => this.ctrl.service.prop('modal') ?? false,
+    }),
+  })
+
   private readonly ctrl = new MachineController<PopoverSchema>(
     this,
     popoverMachine,
@@ -145,7 +158,7 @@ export class XhPopoverElement extends XhPortalHostElement {
 
   /** 面板内容的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，浮层里走 4px 档 */
   private readonly bars = new OverlayScrollbarsController(this, {
-    present: () => this.exit?.visible ?? false,
+    present: () => this.overlay.visible,
     shell: () => this.getPart('positioner'),
     scrollable: () => this.getPart('content'),
     props: () => ({ size: 'sm' }),
@@ -179,56 +192,13 @@ export class XhPopoverElement extends XhPortalHostElement {
     }
   }
 
-  private ensureConfig(): void {
-    if (this.config)
-      return
-    // modal 档会加滚动锁。scrollRoot 每次现读：配置沿祖先链解析，元素搬家或 <xh-config> 改了都要跟上
-    this.config = createRuntimeConfig({
-      scope: this.popoverScope,
-      idGenerator: this.idGen,
-      scrollRoot: () => resolveXhConfig(this).scrollRoot?.() ?? null,
-    })
-  }
-
   protected override externalPartRoots(): readonly HTMLElement[] {
     return this.portal.roots
   }
 
-  /** 状态机挂载前建立 Presence，让行为资源与视觉退场从第一轮展开起共用生命周期。 */
-  private ensureExit(open: boolean): ExitGate {
-    this.ensureConfig()
-    this.exit ??= createExitGate({
-      open,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    return this.exit
-  }
-
-  // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
-  // 连接期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
-  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
-    this.ensureConfig()
-    return this.config!.layerRegistry.register({
-      kind: 'popover',
-      node: () => this.getPart('content'),
-      // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换。
-      // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，浮层等于关不掉。
-      // 浮层壳一并记上：面板之外还浮着自绘滚动条，按住它拖动不该把面板消解掉。
-      // 外部锚点同理：点它是交给打开它的那条命令去切换
-      // 虚拟锚点只给得出矩形，不是节点，不记
-      branches: () => [this.getPart('trigger'), (this.anchor as Partial<Node> | null | undefined)?.nodeType === 1 ? this.anchor : null, this.getPart('positioner')].filter(Boolean) as Element[],
-      isModal: () => this.ctrl.service.prop('modal') ?? false,
-      // 非模态浮层不自带遮罩，没有"点它就该关本层"的表面
-      surfaces: () => [],
-    })
-  }
-
   // onBuilt 在 ctrl 构造期就跑（此刻 this.ctrl 尚未赋值），故 service 由参数传入。
   private injectRefs(svc: Service<PopoverSchema>): void {
-    this.ensureConfig()
-    svc.refs.set('config', this.config)
-    svc.refs.set('registerLayer', this.registerLayer)
-    svc.refs.set('presence', this.ensureExit(svc.state.get() === 'open').presence)
+    this.overlay.inject(svc.refs, svc.state.get() === 'open')
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
@@ -277,17 +247,14 @@ export class XhPopoverElement extends XhPortalHostElement {
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     const content = this.getPart('content')
-    this.ensureConfig()
-    const exit = this.ensureExit(api.open)
-    exit.track(content)
-    exit.update(api.open)
+    const visible = this.overlay.sync(api.open, content)
     if (content)
-      this.setPartHidden(content, !exit.visible, { attribute: true })
+      this.setPartHidden(content, !visible, { attribute: true })
     // 写在 content 里 <template> 中的内容按 headless 的判定克隆或撤走；新挂上的部件由部件观察器补一轮 wire 接上属性
-    this.lazyContent.sync(content, api.isContentMounted(exit.visible))
+    this.lazyContent.sync(content, api.isContentMounted(visible))
 
     this.bars.wire()
-    this.portal.sync(exit.visible)
+    this.portal.sync(visible)
   }
 
   override disconnectedCallback(): void {
@@ -295,11 +262,9 @@ export class XhPopoverElement extends XhPortalHostElement {
     this.portal.dispose()
     super.disconnectedCallback()
     // 层由展开态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
-    // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
-    this.exit?.dispose()
-    this.exit = null
+    // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上；配置在重连时重建
+    this.overlay.dispose()
     if (this.ctrl.service.state.get() !== 'open')
       this.setPartHidden(this.getPart('content'), true, { attribute: true })
-    this.config = null // 重连时 ensureConfig 重建
   }
 }

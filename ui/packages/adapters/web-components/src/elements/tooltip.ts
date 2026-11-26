@@ -5,14 +5,12 @@
 
 // 提供 tooltip 相关实现。
 
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone, VirtualAnchor } from '@xihan-ui/core'
+import type { Direction, IdGenerator, Placement, PositionEnginePort, Service, Size, Tone, VirtualAnchor } from '@xihan-ui/core'
 import type { KbdPlatform } from '@xihan-ui/core/hotkey'
-import type { ExitGate } from '@xihan-ui/core/presence'
 import type { TooltipApi, TooltipGroup, TooltipOpenChangeDetails, TooltipSchema, TooltipTranslations } from '@xihan-ui/headless'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import type { ElementStructure } from '../element-base'
-import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { createExitGate } from '@xihan-ui/core/presence'
+import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectTooltip, createTooltipGroup, tooltipAnatomy, tooltipMachine, tooltipMeta, tooltipStructure } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
@@ -23,6 +21,7 @@ import { withoutHidden } from '../overlay-exit'
 import { XhReactiveElement } from '../reactive'
 import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
+import { OverlayController } from '../runtime/overlay-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 
 /** 委托模式下铺在 content 里的文字与快捷键用的生成标记，与标准结构的那一份分开。 */
@@ -87,9 +86,6 @@ export class XhTooltipElement extends XhPortalHostElement {
     }),
   }
 
-  /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
-  private exit: ExitGate | null = null
-
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     open: { converter: BOOLEAN_CONVERTER },
@@ -151,11 +147,9 @@ export class XhTooltipElement extends XhPortalHostElement {
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly tooltipScope = createScope(() => this, this.idGen)
 
-  /** 消解层与退场闸门共用一份环境包。 */
-  private config: RuntimeConfig | null = null
   private readonly portal = this.createAnchoredPortalController({
     name: 'Tooltip',
-    config: () => this.config,
+    config: () => this.overlay.currentConfig,
     source: () => this.getPart('trigger'),
     root: () => this.getPart('positioner') ?? this.getPart('content'),
     onChange: () => this.requestUpdate(),
@@ -164,6 +158,20 @@ export class XhTooltipElement extends XhPortalHostElement {
   private readonly notify = (details: TooltipOpenChangeDetails): void => {
     emitEvent(this, 'open-change', details)
   }
+
+  /** 配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
+  private readonly overlay = new OverlayController(this, {
+    scope: this.tooltipScope,
+    idGenerator: this.idGen,
+    layer: () => ({
+      // 提示只参与 Escape 仲裁与栈顶判定：节点就在文档流里，不陷焦点、不锁滚动、没有遮罩
+      kind: 'inline',
+      node: () => this.getPart('content'),
+      // trigger 记为本层分支，点它算层内交互
+      branches: () => [this.getPart('trigger')].filter(Boolean) as Element[],
+      isModal: () => false,
+    }),
+  })
 
   private readonly ctrl = new MachineController<TooltipSchema>(
     this,
@@ -198,27 +206,8 @@ export class XhTooltipElement extends XhPortalHostElement {
     }
   }
 
-  private ensureConfig(): void {
-    this.config ??= createRuntimeConfig({ scope: this.tooltipScope, idGenerator: this.idGen })
-  }
-
   protected override externalPartRoots(): readonly HTMLElement[] {
     return this.portal.roots
-  }
-
-  // 只交注册函数、不在连接期注册：层的入栈出栈跟着可见态走（机器的 trackLayer 效应负责）。
-  // 连接期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
-  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
-    this.ensureConfig()
-    return this.config!.layerRegistry.register({
-      // 提示只参与 Escape 仲裁与栈顶判定：节点就在文档流里，不陷焦点、不锁滚动、没有遮罩
-      kind: 'inline',
-      node: () => this.getPart('content'),
-      // trigger 记为本层分支，点它算层内交互
-      branches: () => [this.getPart('trigger')].filter(Boolean) as Element[],
-      isModal: () => false,
-      surfaces: () => [],
-    })
   }
 
   // 每次(重)建机器后都要重注：refs 属于机器实例，重连时的新机器不会继承旧的。
@@ -227,14 +216,7 @@ export class XhTooltipElement extends XhPortalHostElement {
     // 无 DOM（SSR / 纯逻辑测试）时不建引擎，机器读到 null 会跳过定位
     if (!this.engine && typeof document !== 'undefined')
       this.engine = createDeferredPositionEngine()
-    this.ensureConfig()
-    this.exit ??= createExitGate({
-      open: (this.open ?? this.defaultOpen) ?? false,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    svc.refs.set('config', this.config)
-    svc.refs.set('registerLayer', this.registerLayer)
-    svc.refs.set('presence', this.exit.presence)
+    this.overlay.inject(svc.refs, (this.open ?? this.defaultOpen) ?? false)
     svc.refs.set('position', this.engine)
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
@@ -286,21 +268,15 @@ export class XhTooltipElement extends XhPortalHostElement {
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     const content = this.getPart('content')
-    this.ensureConfig()
-    this.exit ??= createExitGate({
-      open: api.open,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    this.exit.track(content)
-    this.exit.update(api.open)
+    const visible = this.overlay.sync(api.open, content)
     if (content)
-      this.setPartHidden(content, !this.exit.visible, { attribute: true })
+      this.setPartHidden(content, !visible, { attribute: true })
     // 写在 content 里 <template> 中的内容与委托模式下铺的文字、快捷键，都按 headless 的判定挂上或撤走
-    const mounted = api.isContentMounted(this.exit.visible)
+    const mounted = api.isContentMounted(visible)
     this.lazyContent.sync(content, mounted)
     if (content)
       this.syncDelegated(content, api, mounted)
-    this.portal.sync(this.exit.visible)
+    this.portal.sync(visible)
   }
 
   /**
@@ -321,11 +297,9 @@ export class XhTooltipElement extends XhPortalHostElement {
     this.portal.dispose()
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
-    this.exit?.dispose()
-    this.exit = null
+    this.overlay.dispose()
     if (!this.ctrl.service.state.matches('visible'))
       this.setPartHidden(this.getPart('content'), true, { attribute: true })
-    this.config = null // adopt / 重连必须按宿主此刻所属 Document 重建 registry 与 Portal 落点
   }
 }
 

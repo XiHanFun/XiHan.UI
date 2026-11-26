@@ -5,13 +5,11 @@
 
 // 提供 select 相关实现。
 
-import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, PropTypes, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { ExitGate } from '@xihan-ui/core/presence'
+import type { ControlVariant, Direction, IdGenerator, Placement, PositionEnginePort, PropTypes, Service, Size, Tone } from '@xihan-ui/core'
 import type { CollectionVirtualizer, SelectionValueKey, SelectItemProps, SelectNode, SelectOpenChangeDetails, SelectSchema, SelectTagMeta, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import type { StructureVirtualBinding } from '../runtime/structure-virtual'
-import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { createExitGate } from '@xihan-ui/core/presence'
+import { createCounterIdGenerator, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectSelect, selectAnatomy, selectMachine, selectMeta, selectStructure, VIRTUAL_STRUCTURE_DELEGATE } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
@@ -22,6 +20,7 @@ import { unwrapDelegated } from '../dom/structure'
 import { withoutHidden } from '../overlay-exit'
 import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
+import { OverlayController } from '../runtime/overlay-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 
@@ -223,12 +222,9 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly selectScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
-  private config: RuntimeConfig | null = null
-  /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
-  private exit: ExitGate | null = null
   private readonly portal = this.createAnchoredPortalController({
     name: 'Select',
-    config: () => this.config,
+    config: () => this.overlay.currentConfig,
     source: () => this.getPart('trigger'),
     root: () => this.getPart('positioner'),
     onChange: () => this.requestUpdate(),
@@ -264,6 +260,20 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
     emitEvent(this, 'retry')
   }
 
+  /** 配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
+  private readonly overlay = new OverlayController(this, {
+    scope: this.selectScope,
+    idGenerator: this.idGen,
+    layer: () => ({
+      kind: 'popover',
+      node: () => this.getPart('content'),
+      // 整个盒记为本层分支：点触发器或清空钮算层内交互，开合交给 trigger 自己切换。
+      // 浮层壳一并记上：列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
+      branches: () => [this.getPart('control'), this.getPart('positioner')].filter(Boolean) as Element[],
+      isModal: () => false,
+    }),
+  })
+
   private readonly ctrl = new MachineController<SelectSchema>(
     this,
     selectMachine,
@@ -288,7 +298,7 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
    * 虚拟化时滚的是 Virtualizer 的视口，列表只是视口里的一层：条子跟着桥交出的视口走，与 TreeSelect、Transfer 同一做法
    */
   private readonly bars = new OverlayScrollbarsController(this, {
-    present: () => this.exit?.visible ?? false,
+    present: () => this.overlay.visible,
     shell: () => this.getPart('positioner'),
     scrollable: () => this.currentVirtualizer()?.getViewportElement() ?? this.getPart('list'),
     props: () => ({ size: 'sm' }),
@@ -350,47 +360,13 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
     }
   }
 
-  private ensureConfig(): void {
-    if (this.config)
-      return
-    this.config = createRuntimeConfig({ scope: this.selectScope, idGenerator: this.idGen })
-  }
-
   protected override externalPartRoots(): readonly HTMLElement[] {
     return [...this.portal.roots, ...(this.virtualizer?.getRenderedItemRoots() ?? [])]
   }
 
-  /** 在状态机挂载前建立 Presence，确保 default-open 的行为资源与视觉退场共享同一租约。 */
-  private ensureExit(open: boolean): ExitGate {
-    this.ensureConfig()
-    this.exit ??= createExitGate({
-      open,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    return this.exit
-  }
-
-  // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
-  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
-    this.ensureConfig()
-    return this.config!.layerRegistry.register({
-      kind: 'popover',
-      node: () => this.getPart('content'),
-      // 整个盒记为本层分支：点触发器或清空钮算层内交互，开合交给 trigger 自己切换。
-      // 浮层壳一并记上：列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
-      branches: () => [this.getPart('control'), this.getPart('positioner')].filter(Boolean) as Element[],
-      isModal: () => false,
-      // 列表不带遮罩，无可点关闭的表面
-      surfaces: () => [],
-    })
-  }
-
   // onBuilt 在 ctrl 构造期就跑，service 由参数传入。
   private injectRefs(svc: Service<SelectSchema>): void {
-    this.ensureConfig()
-    svc.refs.set('config', this.config)
-    svc.refs.set('registerLayer', this.registerLayer)
-    svc.refs.set('presence', this.ensureExit(svc.state.get() === 'open').presence)
+    this.overlay.inject(svc.refs, svc.state.get() === 'open')
     svc.refs.set('position', this.positionEngine)
     // 锚点是字段盒：列表面板与盒子同宽、左缘对齐；作者没写 control 时退回触发器
     svc.refs.set('getAnchorEl', () => this.getPart('control') ?? this.getPart('trigger'))
@@ -646,12 +622,10 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
     const content = this.getPart('content')
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
-    const exit = this.ensureExit(api.open)
-    exit.track(content)
-    exit.update(api.open)
-    this.setPartHidden(content, !exit.visible, { attribute: true })
+    const visible = this.overlay.sync(api.open, content)
+    this.setPartHidden(content, !visible, { attribute: true })
     this.bars.wire()
-    this.portal.sync(exit.visible)
+    this.portal.sync(visible)
     // 虚拟化的视口、内容层与条目外壳排在最后接：外壳里的条目要先接上本元素的属性与集合条目的样式，
     // 量出来才是排好版的高度；先量会量到没上样式的那一版，样式一到尺寸再变，正赶上尺寸观察的投递就成了循环
     const binding = this.virtualBinding
@@ -672,11 +646,9 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
     this.portal.dispose()
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
-    this.exit?.dispose()
-    this.exit = null
+    this.overlay.dispose()
     if (this.ctrl.service.state.get() !== 'open')
       this.setPartHidden(this.getPart('content'), true, { attribute: true })
     // 层随机器停机一并撤掉，此处不再管
-    this.config = null // 重连时 ensureConfig 重建
   }
 }

@@ -5,12 +5,12 @@
 
 // 提供 menubar 相关实现。
 
-import type { Cleanup, Direction, IdGenerator, Layer, Orientation, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
+import type { Direction, IdGenerator, Orientation, Placement, PositionEnginePort, Service, Size, Tone } from '@xihan-ui/core'
 import type { ExitGate } from '@xihan-ui/core/presence'
 import type { MenubarAnyItemProps, MenubarCheckboxValueChangeDetails, MenubarItemSelectDetails, MenubarNode, MenubarRadioValue, MenubarRadioValueChangeDetails, MenubarSchema, MenubarTranslations, MenubarValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
-import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { createCounterIdGenerator, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { createExitGate } from '@xihan-ui/core/presence'
 import { connectMenubar, createMenuTreeNode, menubarAnatomy, menubarMachine, menubarMeta, menubarStructure } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
@@ -21,6 +21,7 @@ import { wcNormalize } from '../dom/normalize'
 import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { setMenuSubmenuOwner } from '../runtime/menu-submenu-owner'
+import { OverlayController } from '../runtime/overlay-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 import { XhIconElement } from './icon'
@@ -89,7 +90,7 @@ export class XhMenubarElement extends XhPortalHostElement {
    */
   private readonly portal = this.createPortalLeaseController({
     name: 'Menubar',
-    config: () => this.config,
+    config: () => this.overlay.currentConfig,
     source: () => this.getPart('root'),
     roots: () => this.getParts('positioner'),
     onShellReady: (shell) => {
@@ -202,7 +203,6 @@ export class XhMenubarElement extends XhPortalHostElement {
   // trigger 与 content 按 value 逐对互指的 id 由 scope 派生
   private readonly barScope = createScope(this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
-  private config: RuntimeConfig | null = null
   /** 子菜单 trigger 的 WC 属性铺设桥；逻辑树由 headless 节点维护。 */
   private readonly submenuBridges = new Map<HTMLElement, MenuSubmenuChild>()
 
@@ -297,6 +297,21 @@ export class XhMenubarElement extends XhPortalHostElement {
     }
   }
 
+  /** 配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
+  private readonly overlay = new OverlayController(this, {
+    scope: this.barScope,
+    idGenerator: this.idGen,
+    layer: () => ({
+      kind: 'popover',
+      node: () => this.partFor('content', this.openValue()),
+      // 整条菜单栏记为本层分支：点 trigger、在 trigger 之间走、掠过换菜单都算层内交互，
+      // 开合归菜单栏自己切换；当前那张的定位层一并记上：条目列表之外还浮着自绘滚动条，
+      // 按住它拖动不该把菜单消解掉
+      branches: () => [this.getPart('root'), this.partFor('positioner', this.openValue())].filter(Boolean) as Element[],
+      isModal: () => false,
+    }),
+  })
+
   private readonly ctrl = new MachineController<MenubarSchema>(
     this,
     menubarMachine,
@@ -342,37 +357,13 @@ export class XhMenubarElement extends XhPortalHostElement {
     return this.ctrl.service.context.get('value') ?? null
   }
 
-  private ensureConfig(): void {
-    if (this.config)
-      return
-    this.config = createRuntimeConfig({ scope: this.barScope, idGenerator: this.idGen })
-  }
-
   protected override externalPartRoots(): readonly HTMLElement[] {
     return this.portal.roots
   }
 
-  // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
-  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
-    this.ensureConfig()
-    return this.config!.layerRegistry.register({
-      kind: 'popover',
-      node: () => this.partFor('content', this.openValue()),
-      // 整条菜单栏记为本层分支：点 trigger、在 trigger 之间走、掠过换菜单都算层内交互，
-      // 开合归菜单栏自己切换；当前那张的定位层一并记上：条目列表之外还浮着自绘滚动条，
-      // 按住它拖动不该把菜单消解掉
-      branches: () => [this.getPart('root'), this.partFor('positioner', this.openValue())].filter(Boolean) as Element[],
-      isModal: () => false,
-      // 菜单不带遮罩，无可点关闭的表面
-      surfaces: () => [],
-    })
-  }
-
   // onBuilt 在 ctrl 构造期就跑，service 由参数传入。
   private injectRefs(svc: Service<MenubarSchema>): void {
-    this.ensureConfig()
-    svc.refs.set('config', this.config)
-    svc.refs.set('registerLayer', this.registerLayer)
+    this.overlay.injectLayer(svc.refs)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getAnchorEl', () => this.partFor('trigger', this.openValue()))
     svc.refs.set('getFloatingEl', () => this.partFor('positioner', this.openValue()))
@@ -549,7 +540,7 @@ export class XhMenubarElement extends XhPortalHostElement {
       this.setPartHidden(el, true)
     }
     this.exits.clear()
-    // 层随机器停机一并撤掉，此处不再管
-    this.config = null // 重连时 ensureConfig 重建
+    // 层随机器停机一并撤掉，此处不再管；配置在重连时按新的 Document 重建
+    this.overlay.dispose()
   }
 }

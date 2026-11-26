@@ -5,11 +5,9 @@
 
 // 提供 hover card 相关实现。
 
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, VirtualAnchor } from '@xihan-ui/core'
-import type { ExitGate } from '@xihan-ui/core/presence'
+import type { Direction, IdGenerator, Placement, PositionEnginePort, Service, Size, VirtualAnchor } from '@xihan-ui/core'
 import type { HoverCardOpenChangeDetails, HoverCardSchema } from '@xihan-ui/headless'
-import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { createExitGate } from '@xihan-ui/core/presence'
+import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectHoverCard, hoverCardAnatomy, hoverCardMachine, hoverCardMeta } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
@@ -20,6 +18,7 @@ import { renderedTitleDescription } from '../dom/title-description'
 import { withoutHidden } from '../overlay-exit'
 import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
+import { OverlayController } from '../runtime/overlay-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 
@@ -101,14 +100,11 @@ export class XhHoverCardElement extends XhPortalHostElement {
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly hoverCardScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
-  private config: RuntimeConfig | null = null
-  /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
-  private exit: ExitGate | null = null
   /** content 里 `<template>` 写的内容按 headless 的挂卸判定克隆进来或撤走；没写模板的作者节点照旧常驻 */
   private readonly lazyContent = new LazyContent({ stash: false })
   private readonly portal = this.createAnchoredPortalController({
     name: 'HoverCard',
-    config: () => this.config,
+    config: () => this.overlay.currentConfig,
     source: () => this.getPart('trigger'),
     root: () => this.getPart('positioner') ?? this.getPart('content'),
     onChange: () => this.requestUpdate(),
@@ -117,6 +113,23 @@ export class XhHoverCardElement extends XhPortalHostElement {
   private readonly notify = (details: HoverCardOpenChangeDetails): void => {
     emitEvent(this, 'open-change', details)
   }
+
+  /** 配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
+  private readonly overlay = new OverlayController(this, {
+    scope: this.hoverCardScope,
+    idGenerator: this.idGen,
+    layer: () => ({
+      kind: 'popover',
+      node: () => this.getPart('content'),
+      // trigger 记为本层分支：指针按在它上面算层内交互，不该把刚悬停出来的卡片关掉。
+      // 浮层壳一并记上：卡片之外还浮着自绘滚动条，按住它拖动不该把卡片消解掉
+      branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
+      // 悬停卡片从不模态：不陷焦点、不锁滚动、没有自带遮罩
+      isModal: () => false,
+      // 悬停就出现，压在别的层上面不代表开在里面：只护着它开在其内容里的层
+      opensOnHover: true,
+    }),
+  })
 
   private readonly ctrl = new MachineController<HoverCardSchema>(
     this,
@@ -127,7 +140,7 @@ export class XhHoverCardElement extends XhPortalHostElement {
 
   /** 卡片内容的自绘条：与 content 同级挂在已经 fixed 的 positioner 上 */
   private readonly bars = new OverlayScrollbarsController(this, {
-    present: () => this.exit?.visible ?? false,
+    present: () => this.overlay.visible,
     shell: () => this.getPart('positioner'),
     scrollable: () => this.getPart('content'),
     // 浮层里走 4px 档
@@ -156,45 +169,14 @@ export class XhHoverCardElement extends XhPortalHostElement {
     }
   }
 
-  private ensureConfig(): void {
-    if (this.config)
-      return
-    this.config = createRuntimeConfig({ scope: this.hoverCardScope, idGenerator: this.idGen })
-  }
-
   protected override externalPartRoots(): readonly HTMLElement[] {
     return this.portal.roots
-  }
-
-  // 只交注册函数、不在连接期注册：层的入栈出栈跟着可见态走（机器的 trackLayer 效应负责）。
-  // 连接期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
-  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
-    this.ensureConfig()
-    return this.config!.layerRegistry.register({
-      kind: 'popover',
-      node: () => this.getPart('content'),
-      // trigger 记为本层分支：指针按在它上面算层内交互，不该把刚悬停出来的卡片关掉。
-      // 浮层壳一并记上：卡片之外还浮着自绘滚动条，按住它拖动不该把卡片消解掉
-      branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
-      // 悬停卡片从不模态：不陷焦点、不锁滚动、没有自带遮罩
-      isModal: () => false,
-      surfaces: () => [],
-      // 悬停就出现，压在别的层上面不代表开在里面：只护着它开在其内容里的层
-      opensOnHover: true,
-    })
   }
 
   // onBuilt 在 ctrl 构造期就跑（此刻 this.ctrl 尚未赋值），故 service 由参数传入。
   // 每次(重)建机器后都要重注：refs 属于机器实例，重连时的新机器不会继承旧的。
   private injectRefs(svc: Service<HoverCardSchema>): void {
-    this.ensureConfig()
-    this.exit ??= createExitGate({
-      open: (this.open ?? this.defaultOpen) ?? false,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    svc.refs.set('config', this.config)
-    svc.refs.set('registerLayer', this.registerLayer)
-    svc.refs.set('presence', this.exit.presence)
+    this.overlay.inject(svc.refs, (this.open ?? this.defaultOpen) ?? false)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
@@ -237,22 +219,15 @@ export class XhHoverCardElement extends XhPortalHostElement {
     // [data-part=content][hidden]{display:none} 压得住，但宿主不能指望作者装了它——
     // 换别家样式给 content 来一句 display，收起态的卡片就会永久悬在页面上，只有内联 style 压得住。
     const content = this.getPart('content')
-    if (content)
-      // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
-      // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
-      this.ensureConfig()
-    this.exit ??= createExitGate({
-      open: api.open,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    this.exit.track(content)
-    this.exit.update(api.open)
-    this.setPartHidden(content, !this.exit.visible, { attribute: true })
+    // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
+    // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
+    const visible = this.overlay.sync(api.open, content)
+    this.setPartHidden(content, !visible, { attribute: true })
     // 写在 content 里 <template> 中的内容按 headless 的判定克隆或撤走；新挂上的部件由部件观察器补一轮 wire 接上属性
-    this.lazyContent.sync(content, api.isContentMounted(this.exit.visible))
+    this.lazyContent.sync(content, api.isContentMounted(visible))
 
     this.bars.wire()
-    this.portal.sync(this.exit.visible)
+    this.portal.sync(visible)
   }
 
   override disconnectedCallback(): void {
@@ -260,10 +235,8 @@ export class XhHoverCardElement extends XhPortalHostElement {
     this.portal.dispose()
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
-    this.exit?.dispose()
-    this.exit = null
+    this.overlay.dispose()
     this.setPartHidden(this.getPart('content'), true, { attribute: true })
     // 层由可见态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
-    this.config = null // 重连时 ensureConfig 重建
   }
 }

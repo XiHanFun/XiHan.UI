@@ -5,8 +5,7 @@
 
 // 提供 cascader 相关实现。
 
-import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { ExitGate } from '@xihan-ui/core/presence'
+import type { ControlVariant, Direction, IdGenerator, Placement, PositionEnginePort, Service, Size, Tone } from '@xihan-ui/core'
 import type {
   CascaderApi,
   CascaderBranchLoadDetails,
@@ -21,8 +20,7 @@ import type {
   CascaderValueChangeDetails,
 } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { createExitGate } from '@xihan-ui/core/presence'
+import { createCounterIdGenerator, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { cascaderAnatomy, cascaderMachine, cascaderMeta, cascaderStructure, connectCascader } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
@@ -31,6 +29,7 @@ import { wcNormalize } from '../dom/normalize'
 import { PART_ATTR } from '../dom/parts'
 import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { OverlayController } from '../runtime/overlay-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 
@@ -233,12 +232,9 @@ export class XhCascaderElement extends XhPortalHostElement {
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly cascaderScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
-  private config: RuntimeConfig | null = null
-  /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
-  private exit: ExitGate | null = null
   private readonly portal = this.createAnchoredPortalController({
     name: 'Cascader',
-    config: () => this.config,
+    config: () => this.overlay.currentConfig,
     source: () => this.getPart('trigger'),
     root: () => this.getPart('positioner'),
     onChange: () => this.requestUpdate(),
@@ -359,6 +355,20 @@ export class XhCascaderElement extends XhPortalHostElement {
     emitEvent(this, 'open-change', details)
   }
 
+  /** 配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
+  private readonly overlay = new OverlayController(this, {
+    scope: this.cascaderScope,
+    idGenerator: this.idGen,
+    layer: () => ({
+      kind: 'popover',
+      node: () => this.getPart('content'),
+      // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换。
+      // 浮层壳一并记上：content 之外还浮着自绘滚动条，按住它拖动不该把浮层消解掉
+      branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
+      isModal: () => false,
+    }),
+  })
+
   private readonly ctrl = new MachineController<CascaderSchema>(
     this,
     cascaderMachine,
@@ -372,7 +382,7 @@ export class XhCascaderElement extends XhPortalHostElement {
    * 横条的正负按排版方向计算，而组件不读取计算样式，把作者写的显式值交过去。
    */
   private readonly bars = new OverlayScrollbarsController(this, {
-    present: () => this.exit?.visible ?? false,
+    present: () => this.overlay.visible,
     shell: () => this.getPart('positioner'),
     scrollable: () => this.getPart('content'),
     axes: ['horizontal'],
@@ -385,7 +395,7 @@ export class XhCascaderElement extends XhPortalHostElement {
    * 按此刻在场的列逐列建一套，列离场即拆。搜索列表与列互斥，同样贴自己的盒子。
    */
   private readonly columnBars = new OverlayScrollbarsController(this, {
-    present: () => this.exit?.visible ?? false,
+    present: () => this.overlay.visible,
     shell: () => this.getPart('content'),
     scrollables: () => this.getParts('column'),
     anchor: 'layer',
@@ -393,7 +403,7 @@ export class XhCascaderElement extends XhPortalHostElement {
   })
 
   private readonly searchBars = new OverlayScrollbarsController(this, {
-    present: () => this.exit?.visible ?? false,
+    present: () => this.overlay.visible,
     shell: () => this.getPart('content'),
     scrollable: () => this.getPart('search-list'),
     anchor: 'layer',
@@ -452,41 +462,13 @@ export class XhCascaderElement extends XhPortalHostElement {
     }
   }
 
-  private ensureConfig(): void {
-    if (this.config)
-      return
-    this.config = createRuntimeConfig({ scope: this.cascaderScope, idGenerator: this.idGen })
-  }
-
   protected override externalPartRoots(): readonly HTMLElement[] {
     return this.portal.roots
   }
 
-  // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
-  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
-    this.ensureConfig()
-    return this.config!.layerRegistry.register({
-      kind: 'popover',
-      node: () => this.getPart('content'),
-      // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换。
-      // 浮层壳一并记上：content 之外还浮着自绘滚动条，按住它拖动不该把浮层消解掉
-      branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
-      isModal: () => false,
-      // 浮层不带遮罩，无可点关闭的表面
-      surfaces: () => [],
-    })
-  }
-
   // onBuilt 在 ctrl 构造期就跑，service 由参数传入。
   private injectRefs(svc: Service<CascaderSchema>): void {
-    this.ensureConfig()
-    this.exit ??= createExitGate({
-      open: (this.open ?? this.defaultOpen) ?? false,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    svc.refs.set('config', this.config)
-    svc.refs.set('registerLayer', this.registerLayer)
-    svc.refs.set('presence', this.exit.presence)
+    this.overlay.inject(svc.refs, (this.open ?? this.defaultOpen) ?? false)
     svc.refs.set('position', this.positionEngine)
     // 锚点是字段盒：面板起始缘与盒对齐；作者没写 control 时退回触发器
     svc.refs.set('getAnchorEl', () => this.getPart('control') ?? this.getPart('trigger'))
@@ -764,14 +746,8 @@ export class XhCascaderElement extends XhPortalHostElement {
     // 节点常驻，用内联 display 收起（作者层的 display 声明会盖过 [hidden]）
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
-    this.ensureConfig()
-    this.exit ??= createExitGate({
-      open: api.open,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    this.exit.track(this.getPart('content'))
-    this.exit.update(api.open)
-    this.setPartHidden(this.getPart('content'), !this.exit.visible, { attribute: true })
+    const visible = this.overlay.sync(api.open, this.getPart('content'))
+    this.setPartHidden(this.getPart('content'), !visible, { attribute: true })
     this.getParts('column').forEach((el, position) => {
       this.setPartHidden(el, this.levelOf(el, position) >= api.columns.length)
     })
@@ -781,7 +757,7 @@ export class XhCascaderElement extends XhPortalHostElement {
     this.bars.wire()
     this.columnBars.wire()
     this.searchBars.wire()
-    this.portal.sync(this.exit.visible)
+    this.portal.sync(visible)
   }
 
   override disconnectedCallback(): void {
@@ -793,10 +769,8 @@ export class XhCascaderElement extends XhPortalHostElement {
     this.formInputs.length = 0
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
-    this.exit?.dispose()
-    this.exit = null
+    this.overlay.dispose()
     if (this.ctrl.service.state.get() !== 'open')
       this.setPartHidden(this.getPart('content'), true, { attribute: true })
-    this.config = null // 重连时 ensureConfig 重建
   }
 }

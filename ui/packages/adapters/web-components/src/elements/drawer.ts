@@ -5,14 +5,11 @@
 
 // 提供 drawer 相关实现。
 
-import type { Cleanup, IdGenerator, Layer, OverlayBackdropVariant, RuntimeConfig, Service, Size } from '@xihan-ui/core'
-import type { ExitGate } from '@xihan-ui/core/presence'
+import type { IdGenerator, OverlayBackdropVariant, Service, Size } from '@xihan-ui/core'
 import type { DrawerActionIntents, DrawerConfirmErrorDetails, DrawerOpenChangeDetails, DrawerPanelSizeChangeDetails, DrawerSchema, DrawerStructureActions } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { createExitGate } from '@xihan-ui/core/presence'
+import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectDrawer, drawerAnatomy, drawerMachine, drawerMeta, drawerStructure } from '@xihan-ui/headless'
-import { resolveXhConfig } from '../config'
 import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { createNamingContentWatch } from '../dom/naming-watch'
@@ -21,6 +18,7 @@ import { renderedTitleDescription } from '../dom/title-description'
 import { withoutHidden } from '../overlay-exit'
 import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
+import { OverlayController } from '../runtime/overlay-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 
 /**
@@ -206,14 +204,12 @@ export class XhDrawerElement extends XhPortalHostElement {
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   // 运行时环境必须始终取宿主当前所属 Document：iframe 创建或 adopt 之后不能继续用构造时的全局 realm。
   private readonly drawerScope = createScope(() => this, this.idGen)
-  private config: RuntimeConfig | null = null
   private contentNode: HTMLElement | null = null
-  private exit: ExitGate | null = null
   private backdropNode: HTMLElement | null = null
   private readonly lazyContent = new LazyContent({ stash: false })
   private readonly portal = this.createPortalLeaseController({
     name: 'Drawer 视口模态',
-    config: () => this.config,
+    config: () => this.overlay.currentConfig,
     source: () => this,
     roots: () => {
       const positioner = this.getPart('positioner')
@@ -225,6 +221,21 @@ export class XhDrawerElement extends XhPortalHostElement {
   private readonly notify = (details: DrawerOpenChangeDetails): void => {
     emitEvent(this, 'open-change', details)
   }
+
+  /** 配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
+  private readonly overlay = new OverlayController(this, {
+    scope: this.drawerScope,
+    idGenerator: this.idGen,
+    layer: () => ({
+      kind: 'modal',
+      node: () => this.contentNode,
+      branches: () => [],
+      isModal: () => this.machineProps().modal ?? true,
+      surfaces: () => [this.backdropNode].filter(Boolean) as Element[],
+    }),
+    // 不靠落位藏面板：焦点陷阱与滚动锁所在的浮层按需块到了才露出内容
+    awaitOverlayKit: true,
+  })
 
   private readonly ctrl = new MachineController<DrawerSchema>(
     this,
@@ -262,51 +273,13 @@ export class XhDrawerElement extends XhPortalHostElement {
     }
   }
 
-  private ensureConfig(): void {
-    if (this.config)
-      return
-    // scrollRoot 每次现读：配置沿祖先链解析，元素搬家或 <xh-config> 改了都要跟上
-    this.config = createRuntimeConfig({
-      scope: this.drawerScope,
-      idGenerator: this.idGen,
-      scrollRoot: () => resolveXhConfig(this).scrollRoot?.() ?? null,
-    })
-  }
-
-  /** 退场闸门建一次；presence 不是响应式 cell，退场结束要显式排一次更新才轮得到收起。 */
-  private ensureExit(open: boolean): ExitGate {
-    this.ensureConfig()
-    this.exit ??= createExitGate({
-      open,
-      onExitComplete: () => this.requestUpdate(),
-      // 不靠落位藏面板：焦点陷阱与滚动锁所在的浮层按需块到了才露出内容
-      onOverlayKitReady: () => this.requestUpdate(),
-    })
-    return this.exit
-  }
-
   protected override externalPartRoots(): readonly HTMLElement[] {
     return this.portal.roots
   }
 
-  // 只交注册函数，层的入栈出栈由机器的 trackOverlay 效应跟着展开态做。
-  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
-    this.ensureConfig()
-    return this.config!.layerRegistry.register({
-      kind: 'modal',
-      node: () => this.contentNode,
-      branches: () => [],
-      isModal: () => this.machineProps().modal ?? true,
-      surfaces: () => [this.backdropNode].filter(Boolean) as Element[],
-    })
-  }
-
   // onBuilt 在 ctrl 构造期就跑，service 由参数传入。
   private injectRefs(svc: Service<DrawerSchema>): void {
-    this.ensureConfig()
-    svc.refs.set('config', this.config)
-    svc.refs.set('registerLayer', this.registerLayer)
-    svc.refs.set('presence', this.ensureExit(svc.state.get() === 'open').presence)
+    this.overlay.inject(svc.refs, svc.state.get() === 'open')
     svc.refs.set('getContentEl', () => this.contentNode)
     svc.refs.set('getTriggerEl', () => this.getPart('trigger'))
     svc.refs.set('branches', () => [])
@@ -346,7 +319,7 @@ export class XhDrawerElement extends XhPortalHostElement {
 
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
-    const exit = this.ensureExit(open)
+    const exit = this.overlay.ensureExit(open)
     const modal = this.machineProps().modal ?? true
     exit.track(this.contentNode, modal ? this.backdropNode : null)
     exit.update(open)
@@ -373,11 +346,9 @@ export class XhDrawerElement extends XhPortalHostElement {
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并把子树收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上。
     // 只在机器已经收起时才强收——元素被移动（remove 后立刻 append）时展开态不该被打断
-    this.exit?.dispose()
-    this.exit = null
+    this.overlay.dispose()
     this.portal.dispose()
     if (this.ctrl.service.state.get() !== 'open')
       this.setPartHidden(this.contentNode, true, { attribute: true })
-    this.config = null // 重连时 ensureConfig 重建
   }
 }

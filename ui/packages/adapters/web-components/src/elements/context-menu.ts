@@ -5,13 +5,11 @@
 
 // 提供 context menu 相关实现。
 
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { ExitGate } from '@xihan-ui/core/presence'
+import type { Direction, IdGenerator, Placement, PositionEnginePort, Service, Size, Tone } from '@xihan-ui/core'
 import type { ContextMenuAnyItemProps, ContextMenuCheckboxValueChangeDetails, ContextMenuItemSelectDetails, ContextMenuNode, ContextMenuOpenChangeDetails, ContextMenuRadioValue, ContextMenuRadioValueChangeDetails, ContextMenuSchema } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
-import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { createExitGate } from '@xihan-ui/core/presence'
+import { createCounterIdGenerator, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectContextMenu, contextMenuAnatomy, contextMenuMachine, contextMenuMeta, contextMenuStructure, createMenuTreeNode } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
@@ -21,6 +19,7 @@ import { wcNormalize } from '../dom/normalize'
 import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { setMenuSubmenuOwner } from '../runtime/menu-submenu-owner'
+import { OverlayController } from '../runtime/overlay-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 import { XhIconElement } from './icon'
@@ -152,9 +151,6 @@ export class XhContextMenuElement extends XhPortalHostElement {
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly menuScope = createScope(this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
-  private config: RuntimeConfig | null = null
-  /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
-  private exit: ExitGate | null = null
   /** 子菜单 trigger 的 WC 属性铺设桥；逻辑树由 headless 节点维护。 */
   private readonly submenuBridges = new Map<HTMLElement, MenuSubmenuChild>()
 
@@ -173,7 +169,7 @@ export class XhContextMenuElement extends XhPortalHostElement {
 
   private readonly portal = this.createAnchoredPortalController({
     name: 'ContextMenu',
-    config: () => this.config,
+    config: () => this.overlay.currentConfig,
     source: () => this.getPart('trigger'),
     root: () => this.getPart('positioner'),
     onShellReady: (shell) => {
@@ -245,6 +241,21 @@ export class XhContextMenuElement extends XhPortalHostElement {
     }
   }
 
+  /** 配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
+  private readonly overlay = new OverlayController(this, {
+    scope: this.menuScope,
+    idGenerator: this.idGen,
+    layer: () => ({
+      kind: 'popover',
+      node: () => this.getPart('content'),
+      // 触发区记为本层分支：展开着再右键要能就地换坐标，先被判成层外交互关一次就白闪了。
+      // 代价是"左键点在触发区内也该关"落不到消解层头上，那条由 connect 在 pointerdown 上自己收口。
+      // 浮层壳一并记上：条目列表之外还浮着自绘滚动条，按住它拖动不该把菜单消解掉
+      branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
+      isModal: () => false,
+    }),
+  })
+
   private readonly ctrl = new MachineController<ContextMenuSchema>(
     this,
     contextMenuMachine,
@@ -254,7 +265,7 @@ export class XhContextMenuElement extends XhPortalHostElement {
 
   /** 条目列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上 */
   private readonly bars = new OverlayScrollbarsController(this, {
-    present: () => this.exit?.visible ?? false,
+    present: () => this.overlay.visible,
     shell: () => this.getPart('positioner'),
     scrollable: () => this.getPart('content'),
     // 浮层里的条子走 4px 档
@@ -296,43 +307,13 @@ export class XhContextMenuElement extends XhPortalHostElement {
     }
   }
 
-  private ensureConfig(): void {
-    if (this.config)
-      return
-    this.config = createRuntimeConfig({ scope: this.menuScope, idGenerator: this.idGen })
-  }
-
   protected override externalPartRoots(): readonly HTMLElement[] {
     return this.portal.roots
   }
 
-  // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
-  // 连接期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
-  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
-    this.ensureConfig()
-    return this.config!.layerRegistry.register({
-      kind: 'popover',
-      node: () => this.getPart('content'),
-      // 触发区记为本层分支：展开着再右键要能就地换坐标，先被判成层外交互关一次就白闪了。
-      // 代价是"左键点在触发区内也该关"落不到消解层头上，那条由 connect 在 pointerdown 上自己收口。
-      // 浮层壳一并记上：条目列表之外还浮着自绘滚动条，按住它拖动不该把菜单消解掉
-      branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
-      isModal: () => false,
-      // 上下文菜单不带遮罩，没有"点它就该关本层"的表面
-      surfaces: () => [],
-    })
-  }
-
   // onBuilt 在 ctrl 构造期就跑（此刻 this.ctrl 尚未赋值），故 service 由参数传入。
   private injectRefs(svc: Service<ContextMenuSchema>): void {
-    this.ensureConfig()
-    this.exit ??= createExitGate({
-      open: (this.open ?? this.defaultOpen) ?? false,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    svc.refs.set('config', this.config)
-    svc.refs.set('registerLayer', this.registerLayer)
-    svc.refs.set('presence', this.exit.presence)
+    this.overlay.inject(svc.refs, (this.open ?? this.defaultOpen) ?? false)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
     // 触发区兼作两用：收起时焦点归还它，没有光标坐标时它的起始角就是锚点
@@ -448,20 +429,13 @@ export class XhContextMenuElement extends XhPortalHostElement {
     // 就会盖过 UA 的 [hidden]{display:none}，只有内联 style.display 压得住。
     // 展开时还回作者原本写的内联值，不把他自己的 style="display:grid" 抹掉。
     const content = this.getPart('content')
-    if (content)
-      // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
-      // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
-      this.ensureConfig()
-    this.exit ??= createExitGate({
-      open: api.open,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    this.exit.track(content)
-    this.exit.update(api.open)
-    this.setPartHidden(content, !this.exit.visible, { attribute: true })
+    // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
+    // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
+    const visible = this.overlay.sync(api.open, content)
+    this.setPartHidden(content, !visible, { attribute: true })
 
     this.bars.wire()
-    this.portal.sync(this.exit.visible)
+    this.portal.sync(visible)
   }
 
   override disconnectedCallback(): void {
@@ -469,11 +443,9 @@ export class XhContextMenuElement extends XhPortalHostElement {
     this.portal.dispose()
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
-    this.exit?.dispose()
-    this.exit = null
+    this.overlay.dispose()
     if (this.ctrl.service.state.get() !== 'open')
       this.setPartHidden(this.getPart('content'), true, { attribute: true })
     // 层由展开态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
-    this.config = null // 重连时 ensureConfig 重建
   }
 }

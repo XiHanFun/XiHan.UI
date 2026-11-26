@@ -5,8 +5,7 @@
 
 // 提供 tour 相关实现。
 
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service } from '@xihan-ui/core'
-import type { ExitGate } from '@xihan-ui/core/presence'
+import type { Direction, IdGenerator, Placement, PositionEnginePort, Service } from '@xihan-ui/core'
 import type {
   TourCompleteDetails,
   TourOpenChangeDetails,
@@ -17,8 +16,7 @@ import type {
   TourTranslations,
   TourValueChangeDetails,
 } from '@xihan-ui/headless'
-import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { createExitGate } from '@xihan-ui/core/presence'
+import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectTour, resolveTourBoundary, tourAnatomy, tourMachine, tourMeta } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
@@ -27,6 +25,7 @@ import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
 import { MachineController } from '../runtime/machine-controller'
+import { OverlayController } from '../runtime/overlay-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 
 /** 读作者写在部件上的下标，缺席或写坏了退回文档序。 */
@@ -130,14 +129,11 @@ export class XhTourElement extends XhPortalHostElement {
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly tourScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
-  private config: RuntimeConfig | null = null
   private contentNode: HTMLElement | null = null
   private backdropNode: HTMLElement | null = null
-  /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，气泡的退场动画播完才真收。 */
-  private exit: ExitGate | null = null
   private readonly portal = this.createPortalLeaseController({
     name: 'Tour',
-    config: () => this.config,
+    config: () => this.overlay.currentConfig,
     source: () => this.getPart('root'),
     roots: () => {
       const roots = [
@@ -161,6 +157,24 @@ export class XhTourElement extends XhPortalHostElement {
   private readonly notifyValue = (details: TourValueChangeDetails): void => this.emit('value-change', details)
   private readonly notifyComplete = (details: TourCompleteDetails): void => this.emit('complete', details)
   private readonly notifySkip = (details: TourSkipDetails): void => this.emit('skip', details)
+
+  /** 配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
+  private readonly overlay = new OverlayController(this, {
+    scope: this.tourScope,
+    idGenerator: this.idGen,
+    layer: () => ({
+      kind: 'modal',
+      node: () => this.contentNode,
+      branches: () => [],
+      isModal: () => true,
+      // 遮罩是"点它就该关本层"的表面；关不关仍由 closeOnInteractOutside 说了算（缺省不关）
+      surfaces: () => [this.backdropNode].filter(Boolean) as Element[],
+      // 写本层层号的节点：内容、定位层、遮罩，还有高亮框：它的暗幕与描边与遮罩同层，开在别的层里时也排在那一层之上
+      visuals: () => [this.contentNode, this.getPart('positioner'), this.backdropNode, this.getPart('spotlight')].filter(Boolean) as Element[],
+      // 限定在区域里时罩住那块区域：引导途中区域里新开的层（如抽屉）排在引导之下
+      covers: () => resolveTourBoundary(this.tourScope, this.boundary),
+    }),
+  })
 
   private readonly ctrl = new MachineController<TourSchema>(
     this,
@@ -196,50 +210,14 @@ export class XhTourElement extends XhPortalHostElement {
     }
   }
 
-  private ensureConfig(): void {
-    if (this.config)
-      return
-    this.config = createRuntimeConfig({ scope: this.tourScope, idGenerator: this.idGen })
-  }
-
   protected override externalPartRoots(): readonly HTMLElement[] {
     return this.portal.roots
   }
 
-  /** 退场闸门建立一次，并在状态机挂载前把同一份 Presence 交给 Headless。 */
-  private ensureExit(): ExitGate {
-    this.ensureConfig()
-    this.exit ??= createExitGate({
-      open: this.ctrl.service.state.get() === 'open',
-      onExitComplete: () => this.requestUpdate(),
-    })
-    return this.exit
-  }
-
-  // 只交注册函数、不在连接期注册：层的入栈出栈由机器的 trackOverlay 效应与 Presence 共同负责。
-  // 连接期就注册会让层常驻栈里占着栈顶，把同页其它层的 Escape 堵死。
-  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
-    this.ensureConfig()
-    return this.config!.layerRegistry.register({
-      kind: 'modal',
-      node: () => this.contentNode,
-      branches: () => [],
-      isModal: () => true,
-      // 遮罩是"点它就该关本层"的表面；关不关仍由 closeOnInteractOutside 说了算（缺省不关）
-      surfaces: () => [this.backdropNode].filter(Boolean) as Element[],
-      // 写本层层号的节点：内容、定位层、遮罩，还有高亮框：它的暗幕与描边与遮罩同层，开在别的层里时也排在那一层之上
-      visuals: () => [this.contentNode, this.getPart('positioner'), this.backdropNode, this.getPart('spotlight')].filter(Boolean) as Element[],
-      // 限定在区域里时罩住那块区域：引导途中区域里新开的层（如抽屉）排在引导之下
-      covers: () => resolveTourBoundary(this.tourScope, this.boundary),
-    })
-  }
-
   // onBuilt 在机器建好、启动之前跑（此刻 this.ctrl 尚未赋值），故 service 由参数传入。
   private injectRefs(svc: Service<TourSchema>): void {
-    this.ensureConfig()
-    svc.refs.set('config', this.config)
-    svc.refs.set('registerLayer', this.registerLayer)
-    svc.refs.set('presence', this.ensureExit().presence)
+    // 退场闸门在状态机挂载前建立，把同一份 Presence 交给 Headless
+    this.overlay.inject(svc.refs, svc.state.get() === 'open')
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
     svc.refs.set('getContentEl', () => this.getPart('content'))
@@ -336,13 +314,12 @@ export class XhTourElement extends XhPortalHostElement {
     // 收起跟着退场闸门走：presence 读 content 的 animationName 决定要不要多留一会儿，
     // 遮罩、高亮框与定位层与气泡一起收——定位层先 display:none 的话里面的退场一帧都播不出来。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
-    const exit = this.ensureExit()
     const positioner = this.getPart('positioner')
     const spotlight = this.getPart('spotlight')
     // 本轮逻辑已收起、但上一帧 Presence 仍在时，connect 会先给这些节点落 hidden。
     // 先撤掉它再让 Presence 采样，UA 的 [hidden] 才不会把真实退场动画压成 display:none。
     // positioner 是 content 的祖先，也必须一并留住；showBackdrop / anchored 为假时不把本来就不存在的表面拉出来。
-    if (exit.visible) {
+    if (this.overlay.visible) {
       if (positioner) {
         positioner.toggleAttribute('hidden', false)
         this.setPartHidden(positioner, false)
@@ -360,9 +337,7 @@ export class XhTourElement extends XhPortalHostElement {
         this.setPartHidden(spotlight, false)
       }
     }
-    exit.track(this.contentNode, this.backdropNode, spotlight)
-    exit.update(api.open)
-    const visible = exit.visible
+    const visible = this.overlay.sync(api.open, this.contentNode, this.backdropNode, spotlight)
     const hiddenOf: Record<string, boolean> = {
       backdrop: !visible || !(this.showBackdrop ?? true),
       spotlight: !visible || !api.anchored,
@@ -387,14 +362,12 @@ export class XhTourElement extends XhPortalHostElement {
     super.disconnectedCallback()
     // 层由展开态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
-    this.exit?.dispose()
-    this.exit = null
+    this.overlay.dispose()
     if (this.ctrl.service.state.get() !== 'open') {
       for (const name of ['backdrop', 'spotlight', 'positioner', 'content', 'arrow']) {
         const el = this.getPart(name)
         this.setPartHidden(el, true)
       }
     }
-    this.config = null // 重连时 ensureConfig 重建
   }
 }

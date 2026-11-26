@@ -5,8 +5,7 @@
 
 // 提供 command 相关实现。
 
-import type { Cleanup, Direction, IdGenerator, Layer, OverlayBackdropVariant, RuntimeConfig, Service, Size } from '@xihan-ui/core'
-import type { ExitGate } from '@xihan-ui/core/presence'
+import type { Direction, IdGenerator, OverlayBackdropVariant, Service, Size } from '@xihan-ui/core'
 import type {
   CommandApi,
   CommandGroup,
@@ -20,16 +19,15 @@ import type {
   CommandSchema,
 } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { createExitGate } from '@xihan-ui/core/presence'
+import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { commandAnatomy, commandMachine, commandMeta, commandStructure, connectCommand, resolveCommandGroups } from '@xihan-ui/headless'
-import { resolveXhConfig } from '../config'
 import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { OverlayController } from '../runtime/overlay-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
@@ -150,9 +148,6 @@ export class XhCommandElement extends XhPortalHostElement {
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly commandScope = createScope(() => this, this.idGen)
-  private config: RuntimeConfig | null = null
-  /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
-  private exit: ExitGate | null = null
 
   /** 结果列表的自绘条：与 list 同级挂在面板（content 已经 relative）里；模态浮层里的条子走 4px 档 */
   private readonly bars = new ScrollbarsController(this, {
@@ -163,7 +158,7 @@ export class XhCommandElement extends XhPortalHostElement {
 
   private readonly portal = this.createPortalLeaseController({
     name: 'Command 视口',
-    config: () => this.config,
+    config: () => this.overlay.currentConfig,
     source: () => this,
     roots: () => {
       const positioner = this.getPart('positioner')
@@ -189,6 +184,21 @@ export class XhCommandElement extends XhPortalHostElement {
   private readonly notifyItemSelect = (details: CommandItemSelectDetails): void => {
     emitEvent(this, 'item-select', details)
   }
+
+  /** 配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
+  private readonly overlay = new OverlayController(this, {
+    scope: this.commandScope,
+    idGenerator: this.idGen,
+    layer: () => ({
+      kind: 'modal',
+      node: () => this.getPart('content'),
+      branches: () => [],
+      isModal: () => this.modal ?? true,
+      surfaces: () => [this.getPart('backdrop')].filter(Boolean) as Element[],
+    }),
+    // 不靠落位藏面板：焦点陷阱与滚动锁所在的浮层按需块到了才露出内容
+    awaitOverlayKit: true,
+  })
 
   private readonly ctrl = new MachineController<CommandSchema>(
     this,
@@ -285,48 +295,13 @@ export class XhCommandElement extends XhPortalHostElement {
     }
   }
 
-  private ensureConfig(): void {
-    if (this.config)
-      return
-    // scrollRoot 每次现读：全局配置、最近的 <xh-config> 与元素搬家都按打开当刻解析
-    this.config = createRuntimeConfig({
-      scope: this.commandScope,
-      idGenerator: this.idGen,
-      scrollRoot: () => {
-        const scrollRoot = resolveXhConfig(this).scrollRoot
-        return scrollRoot === undefined ? null : scrollRoot()
-      },
-    })
-  }
-
   protected override externalPartRoots(): readonly HTMLElement[] {
     return this.portal.roots
   }
 
-  // 只交注册函数，层的入栈出栈由机器的 trackOverlay 效应跟着展开态做。
-  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
-    this.ensureConfig()
-    return this.config!.layerRegistry.register({
-      kind: 'modal',
-      node: () => this.getPart('content'),
-      branches: () => [],
-      isModal: () => this.modal ?? true,
-      surfaces: () => [this.getPart('backdrop')].filter(Boolean) as Element[],
-    })
-  }
-
   // onBuilt 在 ctrl 构造期就跑，service 由参数传入。
   private injectRefs(svc: Service<CommandSchema>): void {
-    this.ensureConfig()
-    this.exit ??= createExitGate({
-      open: (this.open ?? this.defaultOpen) ?? false,
-      onExitComplete: () => this.requestUpdate(),
-      // 不靠落位藏面板：焦点陷阱与滚动锁所在的浮层按需块到了才露出内容
-      onOverlayKitReady: () => this.requestUpdate(),
-    })
-    svc.refs.set('config', this.config)
-    svc.refs.set('registerLayer', this.registerLayer)
-    svc.refs.set('presence', this.exit.presence)
+    this.overlay.inject(svc.refs, (this.open ?? this.defaultOpen) ?? false)
     svc.refs.set('getContentEl', () => this.getPart('content'))
     svc.refs.set('getListEl', () => this.getPart('list'))
     svc.refs.set('getInputEl', () => this.getPart('input') as HTMLInputElement | null)
@@ -412,16 +387,7 @@ export class XhCommandElement extends XhPortalHostElement {
     // 节点常驻，用内联 display 收起（作者层的 display 声明会盖过 [hidden]）。
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
-    this.ensureConfig()
-    this.exit ??= createExitGate({
-      open: api.open,
-      onExitComplete: () => this.requestUpdate(),
-      // 不靠落位藏面板：焦点陷阱与滚动锁所在的浮层按需块到了才露出内容
-      onOverlayKitReady: () => this.requestUpdate(),
-    })
-    this.exit.track(this.getPart('content'), this.getPart('backdrop'))
-    this.exit.update(api.open)
-    const visible = this.exit.visible
+    const visible = this.overlay.sync(api.open, this.getPart('content'), this.getPart('backdrop'))
     const modal = this.modal ?? true
     this.portal.sync(visible)
 
@@ -439,10 +405,8 @@ export class XhCommandElement extends XhPortalHostElement {
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并把子树收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上。
     // 只在机器已经收起时才强收——元素被移动（remove 后立刻 append）时展开态不该被打断
-    this.exit?.dispose()
-    this.exit = null
+    this.overlay.dispose()
     if (this.ctrl.service.state.get() !== 'open')
       this.setPartHidden(this.getPart('content'), true, { attribute: true })
-    this.config = null // 重连时 ensureConfig 重建
   }
 }

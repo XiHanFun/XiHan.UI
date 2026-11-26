@@ -5,11 +5,11 @@
 
 // 提供 pagination 相关实现。
 
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
+import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, Service, Size, Tone } from '@xihan-ui/core'
 import type { ExitGate } from '@xihan-ui/core/presence'
 import type { PaginationApi, PaginationEllipsisSide, PaginationEntryRange, PaginationPage, PaginationPageChangeDetails, PaginationPageItem, PaginationSchema, PaginationTranslations, SelectApi, SelectSchema } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { createExitGate } from '@xihan-ui/core/presence'
 import { connectPagination, paginationAnatomy, paginationMachine, paginationMeta, paginationPageSizeSelectProps, paginationStructure, selectMachine } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
@@ -18,6 +18,7 @@ import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { OverlayController } from '../runtime/overlay-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 
@@ -148,13 +149,10 @@ export class XhPaginationElement extends XhPortalHostElement {
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly paginationScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
-  private config: RuntimeConfig | null = null
-  /** 退场闸门：收起从跟着展开态走改成跟着 presence 走，退场动画播完才真收。 */
-  private exit: ExitGate | null = null
   private ellipsisPortalSource: HTMLElement | null = null
   private readonly ellipsisPortal = this.createAnchoredPortalController({
     name: 'Pagination ellipsis',
-    config: () => this.config,
+    config: () => this.overlay.currentConfig,
     source: () => this.ellipsisPortalSource,
     root: () => this.getPart('positioner') ?? this.getPart('content'),
     onChange: () => this.requestUpdate(),
@@ -167,6 +165,20 @@ export class XhPaginationElement extends XhPortalHostElement {
   private readonly notifyPageSize = (details: { pageSize: number, page: number }): void => {
     emitEvent(this, 'page-size-change', details)
   }
+
+  /** 配置、消隐层与退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
+  private readonly overlay = new OverlayController(this, {
+    scope: this.paginationScope,
+    idGenerator: this.idGen,
+    layer: () => ({
+      kind: 'popover',
+      node: () => this.getPart('content'),
+      // 省略位记为本层分支：指针按在它上面算层内交互。
+      // 浮层壳一并记上：页码列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
+      branches: () => [...this.getParts('ellipsis-trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
+      isModal: () => false,
+    }),
+  })
 
   private readonly ctrl = new MachineController<PaginationSchema>(
     this,
@@ -193,7 +205,7 @@ export class XhPaginationElement extends XhPortalHostElement {
   private pageSizeExit: ExitGate | null = null
   private readonly pageSizePortal = this.createAnchoredPortalController({
     name: 'Pagination page size',
-    config: () => this.config,
+    config: () => this.overlay.currentConfig,
     source: () => this.pageSizeNodes?.control ?? null,
     root: () => this.pageSizeNodes?.positioner ?? null,
     onChange: () => this.requestUpdate(),
@@ -201,30 +213,13 @@ export class XhPaginationElement extends XhPortalHostElement {
 
   /** 折叠页码列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，浮层里的条子走 4px 档 */
   private readonly bars = new OverlayScrollbarsController(this, {
-    present: () => this.exit?.visible ?? false,
+    present: () => this.overlay.visible,
     shell: () => this.getPart('positioner'),
     scrollable: () => this.getPart('content'),
     props: () => ({ size: 'sm' }),
   })
 
-  private ensureConfig(): void {
-    if (this.config)
-      return
-    this.config = createRuntimeConfig({ scope: this.paginationScope, idGenerator: this.idGen })
-  }
-
-  /** 在状态机挂载前建立 Presence，让省略位行为资源与真实退场共享租约。 */
-  private ensureExit(open: boolean): ExitGate {
-    this.ensureConfig()
-    this.exit ??= createExitGate({
-      open,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    return this.exit
-  }
-
   private ensurePageSizeExit(open: boolean): ExitGate {
-    this.ensureConfig()
     this.pageSizeExit ??= createExitGate({
       open,
       onExitComplete: () => this.requestUpdate(),
@@ -247,25 +242,9 @@ export class XhPaginationElement extends XhPortalHostElement {
     return null
   }
 
-  // 只交注册函数、不在连接期注册：层的入栈出栈跟着可见态走（机器的 trackLayer 效应负责）。
-  // 连接期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
-  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
-    this.ensureConfig()
-    return this.config!.layerRegistry.register({
-      kind: 'popover',
-      node: () => this.getPart('content'),
-      // 省略位记为本层分支：指针按在它上面算层内交互。
-      // 浮层壳一并记上：页码列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
-      branches: () => [...this.getParts('ellipsis-trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
-      isModal: () => false,
-      surfaces: () => [],
-    })
-  }
-
   // 下拉自己一层：触发器记为本层分支，点它算层内交互
   private readonly registerPageSizeLayer = (): { layer: Layer, dispose: Cleanup } => {
-    this.ensureConfig()
-    return this.config!.layerRegistry.register({
+    return this.overlay.config.layerRegistry.register({
       kind: 'popover',
       node: () => this.pageSizeNodes?.content ?? null,
       branches: () => [this.pageSizeNodes?.trigger].filter(Boolean) as Element[],
@@ -275,8 +254,7 @@ export class XhPaginationElement extends XhPortalHostElement {
   }
 
   private injectPageSizeRefs(svc: Service<SelectSchema>): void {
-    this.ensureConfig()
-    svc.refs.set('config', this.config)
+    svc.refs.set('config', this.overlay.config)
     svc.refs.set('registerLayer', this.registerPageSizeLayer)
     svc.refs.set('presence', this.ensurePageSizeExit(svc.state.get() === 'open').presence)
     svc.refs.set('position', createDeferredPositionEngine())
@@ -289,10 +267,7 @@ export class XhPaginationElement extends XhPortalHostElement {
   // onBuilt 在 ctrl 构造期就跑（此刻 this.ctrl 尚未赋值），故 service 由参数传入。
   // 每次(重)建机器后都要重注：refs 属于机器实例，重连时的新机器不会继承旧的。
   private injectRefs(svc: Service<PaginationSchema>): void {
-    this.ensureConfig()
-    svc.refs.set('config', this.config)
-    svc.refs.set('registerLayer', this.registerLayer)
-    svc.refs.set('presence', this.ensureExit(svc.state.matches('visible')).presence)
+    this.overlay.inject(svc.refs, svc.state.matches('visible'))
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getAnchorEl', () => this.openEllipsisEl(svc.context.get('openEllipsis')))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
@@ -457,13 +432,11 @@ export class XhPaginationElement extends XhPortalHostElement {
     const anchor = this.openEllipsisEl(api.openEllipsis)
     if (anchor)
       this.ellipsisPortalSource = anchor
-    const exit = this.ensureExit(api.openEllipsis != null)
-    exit.track(content)
-    exit.update(api.openEllipsis != null)
-    this.setPartHidden(content, !exit.visible, { attribute: true })
+    const visible = this.overlay.sync(api.openEllipsis != null, content)
+    this.setPartHidden(content, !visible, { attribute: true })
 
     this.bars.wire()
-    this.ellipsisPortal.sync(exit.visible)
+    this.ellipsisPortal.sync(visible)
   }
 
   /**
@@ -571,7 +544,6 @@ export class XhPaginationElement extends XhPortalHostElement {
     }
 
     // 与省略位那层同一套：收起押后到退场播完，皮肤给 content 设了 display，只有内联 style 压得住
-    this.ensureConfig()
     const exit = this.ensurePageSizeExit(select.open)
     exit.track(nodes.content)
     exit.update(select.open)
@@ -590,10 +562,8 @@ export class XhPaginationElement extends XhPortalHostElement {
     this.pageSizeExit = null
     this.releasePageSizeNodes()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
-    this.exit?.dispose()
-    this.exit = null
+    this.overlay.dispose()
     this.setPartHidden(this.getPart('content'), true, { attribute: true })
     // 层由可见态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
-    this.config = null // 重连时 ensureConfig 重建
   }
 }
