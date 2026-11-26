@@ -8,6 +8,7 @@
 import type { Orientation, Size, Tone } from '@xihan-ui/core'
 import type { SpinnerSchema, SpinnerTranslations, SpinnerVariant } from '@xihan-ui/headless'
 import { connectSpinner, spinnerAnatomy, spinnerMachine, spinnerMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -15,8 +16,6 @@ import { MachineController } from '../runtime/machine-controller'
 // 属性缺席翻成 undefined，缺省值由 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null || v === '' ? undefined : Number(v)) }
-// 缺省为真的布尔：不写属性取缺省，写 loading="false" 才算假
-const DEFAULT_TRUE_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-spinner>`：加载指示器宿主，把活区语义与可及名接到角色节点上；状态机只管露面前的等待。
@@ -50,9 +49,10 @@ export class XhSpinnerElement extends XhElement {
     tone: { converter: STRING_CONVERTER },
     orientation: { converter: STRING_CONVERTER },
     delay: { converter: NUMBER_CONVERTER },
-    loading: { converter: DEFAULT_TRUE_CONVERTER },
-    overlay: { type: Boolean },
-    fullscreen: { type: Boolean },
+    // 三态布尔：不写取缺省（loading 缺省为真），写 "false" 才算假
+    loading: { converter: BOOLEAN_CONVERTER },
+    overlay: { converter: BOOLEAN_CONVERTER },
+    fullscreen: { converter: BOOLEAN_CONVERTER },
     // 文案是对象，只走 property
     translations: { attribute: false },
   }
