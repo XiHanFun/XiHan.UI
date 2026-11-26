@@ -94,7 +94,7 @@
 ### 组合
 
 - 与[表单](./form)组合实现分步填写。
-- 使用 `content` 展示当前步骤内容。
+- 使用 `content` 展示当前步骤内容。 一块面板都不写（只当进度条用、标准结构）时触发器不带 `aria-controls`，不指向不存在的节点；面板挂上之前（服务端直出、首帧）按有面板写。
 
 ### 最佳实践
 
@@ -141,6 +141,7 @@
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `variant` | `StepsVariant` |  | 标记形态，默认 number。dot 把序号圆点收成不盛内容的小圆点：走过的实心、当前步实心并放大一档、 没走到的空心；indicator 留空，不放序号与图标。 |
 | `percent` | `number` |  | 当前这一步自己的完成比例（0–100），越界夹回。当前步的序号圆点外画一圈进度环； 可操作时比例作为触发器的描述读出，只读展示下圆点是一个 progressbar。 只画在序号圆点上：点状形态画不下进度环，给了会报 steps.option-ignored 并按没给处理；非有限数同样报错并按没给处理。 |
+| `parts` | `StepsParts` |  | 可选部件的在场情况，由适配器统计后交进来：一块步骤面板都没挂（只当进度条用、标准结构）时 触发器不再写 aria-controls，免得指向不存在的节点。缺省（含服务端直出、首帧）按在场处理。 |
 | `onValueChange` | `(details: StepsValueChangeDetails) => void` |  | 步序变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
 ### StepNode
@@ -259,7 +260,7 @@
 | `list` | `role` | 'list' |
 | `item` | `aria-current` | 'step' \| undefined |
 | `item` | `role` | 'listitem' \| undefined |
-| `trigger` | `aria-controls` | `content` 部件的 id |
+| `trigger` | `aria-controls` | undefined \| `content` 部件的 id |
 | `trigger` | `aria-current` | 'step' \| undefined |
 | `trigger` | `aria-describedby` | `indicator` 部件的 id \| undefined |
 | `trigger` | `aria-disabled` | 'true' \| 'false' |

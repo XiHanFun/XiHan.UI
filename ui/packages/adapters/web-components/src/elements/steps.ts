@@ -144,6 +144,8 @@ export class XhStepsElement extends XhElement {
       size: this.size,
       variant: this.variant,
       percent: this.percent,
+      // 一块面板都没写（只当进度条用、按数据铺的标准结构）时触发器不写 aria-controls
+      parts: { content: this.getParts('content').length > 0 },
       onValueChange: this.notify,
     }
   }

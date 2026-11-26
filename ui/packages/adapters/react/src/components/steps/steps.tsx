@@ -232,6 +232,9 @@ export interface XhStepsContentProps extends Omit<ComponentPropsWithRef<'div'>, 
 /** 面板挂在 list 之外，自带 value 与 trigger 配对；value 等于 count 的面板即完成页。 */
 export function XhStepsContent({ value, children, ...rest }: XhStepsContentProps): ReactNode {
   const ctx = useStepsContext()
+  // 挂载期间登记在场：触发器的 aria-controls 只在有面板时才写
+  const { registerContent } = ctx
+  useIsomorphicLayoutEffect(() => registerContent(), [registerContent])
   return (
     <div
       {...mergeReactProps(

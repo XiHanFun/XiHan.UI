@@ -272,7 +272,8 @@ export function connectSteps<T extends PropTypes>(
         'aria-selected': s.current ? 'true' : 'false',
         // aria-current 取值是词不是布尔，省略即不是当前项；与 aria-selected 并存，读屏两句都念
         'aria-current': s.current ? 'step' : undefined,
-        'aria-controls': contentId(item.index),
+        // 一块面板都没挂时不指：引用不存在的节点读屏与校验器都会报错
+        'aria-controls': prop('parts')?.content === false ? undefined : contentId(item.index),
         // tab 的子节点对读屏是纯展示的，圆点里放不了一个 progressbar：当前步的完成比例改作触发器的描述，
         // 由圆点的名字供给（圆点本身仍对读屏隐藏，直接引用的隐藏节点照样参与描述计算）
         'aria-describedby': carriesProgress(s) ? indicatorId(item.index) : undefined,

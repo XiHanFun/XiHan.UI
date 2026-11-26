@@ -11,7 +11,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { PropsOf } from '../../runtime/props-of'
 import { stepsStructure } from '@xihan-ui/headless'
-import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { defineComponent, h, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { renderStructure } from '../../runtime/structure'
 import { provideSteps, provideStepsItem, useStepsContext, useStepsItemContext } from './context'
@@ -182,6 +182,13 @@ export const XhStepsContent = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useStepsContext()
+    // 挂载期间登记在场：触发器的 aria-controls 只在有面板时才写
+    onMounted(() => {
+      ctx.contents.value++
+    })
+    onBeforeUnmount(() => {
+      ctx.contents.value--
+    })
     return () => h(
       'div',
       ctx.api.value.getContentProps({ index: Number(props.value) }),

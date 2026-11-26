@@ -720,8 +720,9 @@ export const stepsSuite: ConformanceSuite = {
         parts: {
           'list': { role: 'tablist' },
           'item[0]': { 'data-state': 'completed' },
-          'trigger[1]': { 'role': 'tab', 'aria-current': 'step', 'aria-posinset': '2', 'aria-setsize': '3', 'tabindex': '0' },
-          'trigger[2]': { 'aria-current': null, 'tabindex': '-1' },
+          // 标准结构不铺面板：触发器不指向不存在的 content
+          'trigger[1]': { 'role': 'tab', 'aria-current': 'step', 'aria-posinset': '2', 'aria-setsize': '3', 'tabindex': '0', 'aria-controls': null },
+          'trigger[2]': { 'aria-current': null, 'tabindex': '-1', 'aria-controls': null },
           'indicator[0]': { 'aria-hidden': 'true', 'data-state': 'completed' },
           'separator[0]': { 'aria-hidden': 'true' },
         },

@@ -77,6 +77,12 @@ export interface StepsItemState {
   disabled: boolean
 }
 
+/** 可选部件的在场情况，由适配器按实际渲染统计后交给 connect。 */
+export interface StepsParts {
+  /** 至少挂着一块步骤面板（content）。 */
+  content: boolean
+}
+
 export interface StepsSchema extends MachineSchema {
   props: {
     /** 当前步序（0 起）。提供即受控：内部不再自行修改，只发 onValueChange。 */
@@ -135,6 +141,11 @@ export interface StepsSchema extends MachineSchema {
      * 只画在序号圆点上：点状形态画不下进度环，给了会报 steps.option-ignored 并按没给处理；非有限数同样报错并按没给处理。
      */
     percent?: number
+    /**
+     * 可选部件的在场情况，由适配器统计后交进来：一块步骤面板都没挂（只当进度条用、标准结构）时
+     * 触发器不再写 aria-controls，免得指向不存在的节点。缺省（含服务端直出、首帧）按在场处理。
+     */
+    parts?: StepsParts
     /** 步序变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onValueChange?: (details: StepsValueChangeDetails) => void
   }
