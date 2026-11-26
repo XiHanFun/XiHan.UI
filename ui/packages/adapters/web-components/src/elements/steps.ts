@@ -7,8 +7,9 @@
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { StepNode, StepsItemProps, StepsSchema, StepStatus, StepsTranslations, StepsValueChangeDetails, StepsVariant } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectSteps, stepsAnatomy, stepsMachine, stepsMeta } from '@xihan-ui/headless'
+import { connectSteps, stepsAnatomy, stepsMachine, stepsMeta, stepsStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -36,8 +37,9 @@ function stepIndexOf(el: HTMLElement): number {
  * trigger / indicator / title / description / separator 向上查找自己的 item，不必各写一遍。
  * content 挂在 list 之外、无法到达 item，因此自带 `value` 与 trigger 配对（与 `<xh-tabs>` 同一写法）。
  *
- * 步序序列由作者渲染，元素不替作者生成节点：生成节点等于收走模板控制权，
- * 图标、自定义序号、i18n 文案都无法再加入。
+ * 不写部件（或只写 root）时元素按标准结构生成：一个列表，collection 的每一步一个 item（值是第几步），
+ * 触发器里依次是序号圆点（走过的步留空、由皮肤画对号，点状形态一律留空）、标题与说明，之后是连接线；
+ * read-only 时触发器生成为 div。面板不在其中，要面板、图标或自定义序号时手写结构。
  *
  * @customElement xh-steps
  * @attr {number} value - 受控步序（0 起）；未提供该属性即非受控
@@ -67,6 +69,11 @@ function stepIndexOf(el: HTMLElement): number {
  */
 export class XhStepsElement extends XhElement {
   static override partContract = { anatomy: stepsAnatomy, meta: stepsMeta }
+
+  static override structure: ElementStructure<XhStepsElement> = {
+    rootTag: 'div',
+    build: host => host.ctrl.service ? stepsStructure(connectSteps(host.ctrl.service, wcNormalize)) : undefined,
+  }
 
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。

@@ -10,8 +10,10 @@ import type { StepNode, StepsApi, StepsSchema, StepStatus, StepsTranslations, St
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { PropsOf } from '../../runtime/props-of'
+import { stepsStructure } from '@xihan-ui/headless'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { renderStructure } from '../../runtime/structure'
 import { provideSteps, provideStepsItem, useStepsContext, useStepsItemContext } from './context'
 import { useSteps } from './use-steps'
 
@@ -63,15 +65,17 @@ export const XhStepsRoot = defineComponent({
     }
     const ctx = useSteps(withXhConfig('steps', props) as StepsProps, notify)
     provideSteps(ctx)
-    // 经插槽暴露状态与前进/后退方法，供步骤条外的按钮使用
-    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
-      value: ctx.api.value.value,
-      count: ctx.api.value.count,
-      complete: ctx.api.value.complete,
-      setValue: ctx.api.value.setValue,
-      goToNextStep: ctx.api.value.goToNextStep,
-      goToPrevStep: ctx.api.value.goToPrevStep,
-    }))
+    // 经插槽暴露状态与前进/后退方法，供步骤条外的按钮使用；没写默认插槽时照标准结构铺
+    return () => h('div', ctx.api.value.getRootProps(), slots.default
+      ? slots.default({
+          value: ctx.api.value.value,
+          count: ctx.api.value.count,
+          complete: ctx.api.value.complete,
+          setValue: ctx.api.value.setValue,
+          goToNextStep: ctx.api.value.goToNextStep,
+          goToPrevStep: ctx.api.value.goToPrevStep,
+        })
+      : renderDefaultStructure(ctx.api.value))
   },
 })
 
@@ -185,6 +189,25 @@ export const XhStepsContent = defineComponent({
     )
   },
 })
+
+/** 标准结构里各部件对应的组件。 */
+const STEPS_PARTS = {
+  list: XhStepsList,
+  item: XhStepsItem,
+  trigger: XhStepsTrigger,
+  indicator: XhStepsIndicator,
+  title: XhStepsTitle,
+  description: XhStepsDescription,
+  separator: XhStepsSeparator,
+}
+
+/**
+ * 未写默认插槽时照 stepsStructure 铺开的整条步骤条，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 面板不在其中，要面板时手写结构。
+ */
+function renderDefaultStructure(api: StepsApi): VNode[] {
+  return renderStructure(stepsStructure(api), STEPS_PARTS)
+}
 
 // 各组件接受的 props，与 React 同名
 export type XhStepsContentProps = PropsOf<typeof XhStepsContent>

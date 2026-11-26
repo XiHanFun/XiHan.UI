@@ -156,6 +156,7 @@ export function connectSteps<T extends PropTypes>(
     complete,
     focusedStep,
     readOnly,
+    variant,
     getItemState,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     goToNextStep: () => send({ type: 'STEP.NEXT' }),

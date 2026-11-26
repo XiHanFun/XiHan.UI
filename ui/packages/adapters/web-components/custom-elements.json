@@ -67295,7 +67295,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-steps>`：Light-DOM 行为宿主：作者写\nroot / list / item / trigger / indicator / title / description / separator / content 角色节点，\n元素运行 steps 状态机并把 connect 产出接上。\n\n身份写在 item 节点的 `value` 属性上（第几步，0 起），\ntrigger / indicator / title / description / separator 向上查找自己的 item，不必各写一遍。\ncontent 挂在 list 之外、无法到达 item，因此自带 `value` 与 trigger 配对（与 `<xh-tabs>` 同一写法）。\n\n步序序列由作者渲染，元素不替作者生成节点：生成节点等于收走模板控制权，\n图标、自定义序号、i18n 文案都无法再加入。",
+          "description": "`<xh-steps>`：Light-DOM 行为宿主：作者写\nroot / list / item / trigger / indicator / title / description / separator / content 角色节点，\n元素运行 steps 状态机并把 connect 产出接上。\n\n身份写在 item 节点的 `value` 属性上（第几步，0 起），\ntrigger / indicator / title / description / separator 向上查找自己的 item，不必各写一遍。\ncontent 挂在 list 之外、无法到达 item，因此自带 `value` 与 trigger 配对（与 `<xh-tabs>` 同一写法）。\n\n不写部件（或只写 root）时元素按标准结构生成：一个列表，collection 的每一步一个 item（值是第几步），\n触发器里依次是序号圆点（走过的步留空、由皮肤画对号，点状形态一律留空）、标题与说明，之后是连接线；\nread-only 时触发器生成为 div。面板不在其中，要面板、图标或自定义序号时手写结构。",
           "name": "XhStepsElement",
           "cssParts": [
             {
@@ -67344,6 +67344,15 @@
               },
               "static": true,
               "default": "{ anatomy: stepsAnatomy, meta: stepsMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhStepsElement>"
+              },
+              "static": true,
+              "default": "{ rootTag: 'div', build: host => host.ctrl.service ? stepsStructure(connectSteps(host.ctrl.service, wcNormalize)) : undefined, }"
             },
             {
               "kind": "field",

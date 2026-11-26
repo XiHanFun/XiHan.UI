@@ -285,7 +285,7 @@ export { collapsePanel, connectSplitter, expandPanel, SPLITTER_DEFAULT_PANELS, S
 export type { SplitterApi, SplitterDragSession, SplitterPanelProps, SplitterPanelState, SplitterPoint, SplitterSchema, SplitterSizesChangeDetails, SplitterSizesChangeEndDetails, SplitterTranslations } from './splitter'
 export { connectStatistic, statisticAnatomy, statisticKeyboard, statisticMeta, statisticStructure } from './statistic'
 export type { StatisticApi, StatisticProps, StatisticStructureOptions, StatisticTranslations, StatisticTrend } from './statistic'
-export { connectSteps, stepsAnatomy, stepsKeyboard, stepsMachine, stepsMeta } from './steps'
+export { connectSteps, stepsAnatomy, stepsKeyboard, stepsMachine, stepsMeta, stepsStructure } from './steps'
 export type { StepNode, StepsApi, StepsItemProps, StepsItemState, StepsSchema, StepStatus, StepsTranslations, StepsValueChangeDetails, StepsVariant } from './steps'
 export { connectSwitch, switchAnatomy, switchKeyboard, switchMachine, switchMeta, switchStructure } from './switch'
 export type { SwitchApi, SwitchCheckedChangeDetails, SwitchSchema, SwitchStructureOptions, SwitchTranslations } from './switch'

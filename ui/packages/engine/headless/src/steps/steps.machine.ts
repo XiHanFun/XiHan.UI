@@ -29,8 +29,9 @@ export function clampStep(step: number | undefined, count: number | undefined): 
   return Math.min(Math.max(Math.trunc(step), 0), max)
 }
 
+/** 步数缺省取 collection 的长度，与连接层同一口径：只交数据时步序的上界也得认它，不然点哪一步都被夹回 0。 */
 function stepCount(prop: PropFn<StepsSchema>): number {
-  return normalizeStepCount(prop('count'))
+  return normalizeStepCount(prop('count') ?? (prop('collection')?.length || undefined))
 }
 
 /**

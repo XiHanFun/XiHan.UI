@@ -9,12 +9,14 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { StepNode, StepsApi, StepsSchema, StepStatus, StepsTranslations, StepsVariant } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { stepsStructure } from '@xihan-ui/headless'
 import { useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { StepsItemProvider, StepsProvider, useStepsContext, useStepsItemContext } from './context'
 import { useSteps } from './use-steps'
 
@@ -101,18 +103,20 @@ export function XhStepsRoot({
     onValueChange,
   }) as StepsProps)
   const api = ctx.api
-  // 经 children 载荷交出状态与前进/后退方法，供步骤条外的按钮使用
+  // 经 children 载荷交出状态与前进/后退方法，供步骤条外的按钮使用；没给 children 时照标准结构铺
   return (
     <StepsProvider value={ctx}>
       <div {...mergeReactProps(api.getRootProps(), rest)}>
-        {renderSlot(children, {
-          value: api.value,
-          count: api.count,
-          complete: api.complete,
-          setValue: api.setValue,
-          goToNextStep: api.goToNextStep,
-          goToPrevStep: api.goToPrevStep,
-        })}
+        {children === undefined
+          ? renderDefaultStructure(api)
+          : renderSlot(children, {
+              value: api.value,
+              count: api.count,
+              complete: api.complete,
+              setValue: api.setValue,
+              goToNextStep: api.goToNextStep,
+              goToPrevStep: api.goToPrevStep,
+            })}
       </div>
     </StepsProvider>
   )
@@ -238,4 +242,23 @@ export function XhStepsContent({ value, children, ...rest }: XhStepsContentProps
       {children}
     </div>
   )
+}
+
+/** 标准结构里各部件对应的组件。 */
+const STEPS_PARTS = {
+  list: XhStepsList,
+  item: XhStepsItem,
+  trigger: XhStepsTrigger,
+  indicator: XhStepsIndicator,
+  title: XhStepsTitle,
+  description: XhStepsDescription,
+  separator: XhStepsSeparator,
+}
+
+/**
+ * 未给 children 时照 stepsStructure 铺开的整条步骤条，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 面板不在其中，要面板时手写结构。
+ */
+function renderDefaultStructure(api: StepsApi): ReactNode[] {
+  return renderStructure(stepsStructure(api), STEPS_PARTS)
 }

@@ -192,6 +192,8 @@ export interface StepsApi<T extends PropTypes = PropTypes> {
   focusedStep: number | null
   /** 只读展示：适配器据此把 trigger 渲染为普通容器而不是按钮。 */
   readOnly: boolean
+  /** 标记形态，不写时为 number；点状形态的圆点不盛内容，标准结构据此不往圆点里写序号。 */
+  variant: StepsVariant
   getItemState: (props: StepsItemProps) => StepsItemState
   /**
    * 直接跳到某一步；越界会被夹回 [0, count]。
