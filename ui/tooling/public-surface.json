@@ -9672,6 +9672,7 @@
       "SplitterTranslations",
       "StatisticApi",
       "StatisticProps",
+      "StatisticStructureOptions",
       "StatisticTranslations",
       "StatisticTrend",
       "StepNode",
@@ -11192,6 +11193,7 @@
       "statisticAnatomy",
       "statisticKeyboard",
       "statisticMeta",
+      "statisticStructure",
       "stepImageViewerIndex",
       "stepRating",
       "stepsAnatomy",
@@ -16679,9 +16681,12 @@
       "translations"
     ],
     "statistic": [
+      "formatOptions",
+      "locale",
       "size",
       "tone",
-      "trend"
+      "trend",
+      "value"
     ],
     "steps": [
       "collection",
@@ -25636,9 +25641,13 @@
     },
     "xh-statistic": {
       "attributes": [
+        "label",
+        "locale",
         "size",
         "tone",
-        "trend"
+        "trend",
+        "trend-text",
+        "value"
       ],
       "events": []
     },

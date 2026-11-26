@@ -66811,7 +66811,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-statistic>`：Light-DOM 行为宿主，无状态机，把 connectStatistic 产出接到各角色节点。\n\n除 root 外的部件全部可省略：只放置一个数值也是合法的统计块。\n数值由作者格式化后放入 value 槽，组件不做千分位、不做单位换算、不做动画。\n\nroot 上不写 role：一块统计数是否为列表项、是否需要可及名，由它所在的位置决定。",
+          "description": "`<xh-statistic>`：Light-DOM 行为宿主，无状态机，把 connectStatistic 产出接到各角色节点。\n\n除 root 外的部件全部可省略：只放置一个数值也是合法的统计块。\n给了 value 时元素按 locale 与 formatOptions 格式化它：作者写的 value 部件是空的，就把这串字写进去；\n部件里写了内容就照写的显示，不覆盖。不给 value 时数值由作者格式化后放入 value 部件。组件不做动画。\n\nroot 上不写 role：一块统计数是否为列表项、是否需要可及名，由它所在的位置决定。\n\n不写部件（或只写 root）时元素按标准结构生成：标签（label 属性或 `slot=\"label\"`）、前缀（`slot=\"prefix\"`）、\n数值（value 格式化好的文字）、后缀（`slot=\"suffix\"`）、涨跌（给了 trend 或 trend-text 才有），给了哪段才生成哪段。",
           "name": "XhStatisticElement",
           "cssParts": [
             {
@@ -66851,6 +66851,15 @@
             },
             {
               "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhStatisticElement>"
+              },
+              "static": true,
+              "default": "{ build: host => statisticStructure({ label: host.label, valueText: host.api().valueText, trend: host.trend, trendText: host.trendText, slotted: (name, key) => host.slotted(name, key), }), }"
+            },
+            {
+              "kind": "field",
               "name": "size",
               "privacy": "public",
               "type": {
@@ -66875,6 +66884,94 @@
                 "text": "StatisticTrend | undefined"
               },
               "attribute": "trend"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "locale",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "formatOptions",
+              "privacy": "public",
+              "type": {
+                "text": "Intl.NumberFormatOptions"
+              },
+              "description": "交给 Intl.NumberFormat 的选项（小数位、分组、货币、百分比、单位、紧凑记数），只能通过 property 设置"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "trendText",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "trend-text"
+            },
+            {
+              "kind": "field",
+              "name": "writtenValue",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, string>()",
+              "description": "作者写的 value 部件 → 元素上一次写进去的数值文字：文字还是这一串，就仍归元素管，可以换成新值。"
+            },
+            {
+              "kind": "method",
+              "name": "api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "ReturnType<typeof connectStatistic>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "fillValue",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string | undefined"
+                  }
+                }
+              ],
+              "description": "作者写的 value 部件里放格式化好的数值：部件是空的、或里面仍是元素上次写的那串字时才写，\n作者自己写了内容（文字或节点）就不动。标准结构生成的 value 由结构同步写字，这里跳过。"
             },
             {
               "kind": "method",
@@ -66911,6 +67008,38 @@
               "description": "涨跌，写到 trend 部件的 data-trend 上；与 tone 正交",
               "name": "trend",
               "fieldName": "trend"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "数值：按 locale 与 formatOptions 格式化后写进 value 部件；部件里写了内容就照写的显示",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "BCP 47 语言标记，决定小数点、分组符与货币写法；未提供时取全局配置，再没有按宿主语言，宿主也没有时按 en-US",
+              "name": "locale",
+              "fieldName": "locale"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标签文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它",
+              "name": "label",
+              "fieldName": "label"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "涨跌段的比数文字（「同比 12%」）：生成结构时铺进 trend 部件；手写部件时不使用它",
+              "name": "trend-text",
+              "fieldName": "trendText"
             }
           ],
           "superclass": {

@@ -1,4 +1,4 @@
-<!-- 基础用法 | 标签在上、数值在下；数值由使用者格式化后放入，组件不做千分位也不做换算 -->
+<!-- 基础用法 | 标签在上、数值在下；手写部件时数值由作者格式化好放进 value 部件，组件原样显示 -->
 <script setup lang="ts">
 import { XhStatisticLabel, XhStatisticRoot, XhStatisticValue } from "@xihan-ui/vue";
 </script>

@@ -1,0 +1,13 @@
+<!-- 格式化 | formatOptions 原样交给 Intl.NumberFormat：货币、百分比与紧凑记数都按当前语言的写法输出 -->
+<div style="display: flex; flex-wrap: wrap; gap: 32px">
+  <xh-statistic id="statistic-format-revenue" label="本月营收" value="1284500.5"></xh-statistic>
+  <xh-statistic id="statistic-format-rate" label="转化率" value="0.0384"></xh-statistic>
+  <xh-statistic id="statistic-format-visits" label="累计访问" value="3218000"></xh-statistic>
+</div>
+
+<script type="module">
+  // 选项是对象，只能走 property
+  document.getElementById("statistic-format-revenue").formatOptions = { style: "currency", currency: "CNY" };
+  document.getElementById("statistic-format-rate").formatOptions = { style: "percent", minimumFractionDigits: 1 };
+  document.getElementById("statistic-format-visits").formatOptions = { notation: "compact" };
+</script>

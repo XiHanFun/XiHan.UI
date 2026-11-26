@@ -1,4 +1,4 @@
-import type { ConformanceSuite } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { statisticAnatomy, statisticKeyboard } from '@xihan-ui/headless'
 
 // 一块统计数是纯展示，APG 没有对应模式；判据只锁「两个轴如实落到根上、各段拿得到自己的身份、组件不额外插语义」。
@@ -116,6 +116,35 @@ export const statisticSuite: ConformanceSuite = {
       initial: {
         order: ['root', 'label', 'prefix', 'value', 'suffix', 'trend'],
         counts: { root: 1, label: 1, prefix: 1, value: 1, suffix: 1, trend: 1 },
+      },
+    },
+    {
+      name: '作者不写结构：三端都照 statisticStructure 铺出标签、数值与涨跌，各段的身份与手写时相同',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { label: '本月新增用户', value: 12480, locale: 'zh-CN', trend: 'up', trendText: '同比 12%', tone: 'success' },
+      initial: {
+        order: ['root', 'label', 'value', 'trend'],
+        counts: { prefix: 0, suffix: 0 },
+        parts: {
+          root: { 'role': null, 'data-tone': 'success' },
+          trend: { 'data-trend': 'up' },
+        },
+      },
+      steps: [
+        {
+          kind: 'setProps',
+          props: { trend: 'down', value: 9860 },
+          expect: { order: ['root', 'label', 'value', 'trend'], parts: { trend: { 'data-trend': 'down' } } },
+        },
+      ],
+    },
+    {
+      name: '作者不写结构且什么都不给：root 里是空的，不铺空段',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      initial: {
+        order: ['root'],
       },
     },
   ],

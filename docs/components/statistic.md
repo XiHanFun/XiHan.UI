@@ -12,7 +12,7 @@
 
 ## 用法
 
-标签在上、数值在下；数值由使用者格式化后放入，组件不做千分位也不做换算
+标签在上、数值在下；手写部件时数值由作者格式化好放进 value 部件，组件原样显示
 
 <XhDemo src="statistic/01-basic" />
 
@@ -48,6 +48,18 @@ trend 写为 trend 部件的 data-trend，箭头由皮肤绘制；与 tone 正�
 
 <XhDemo src="statistic/06-trend" />
 
+### props 写法
+
+不写结构时按标准结构铺：标签、数值与涨跌几项写出一块统计数，单位放进 suffix 插槽；数值按当前语言分组
+
+<XhDemo src="statistic/07-props" />
+
+### 格式化
+
+formatOptions 原样交给 Intl.NumberFormat：货币、百分比与紧凑记数都按当前语言的写法输出
+
+<XhDemo src="statistic/08-format" />
+
 ## 设计指引
 
 ### 何时使用
@@ -64,6 +76,9 @@ trend 写为 trend 部件的 data-trend，箭头由皮肤绘制；与 tone 正�
 - 标签、值、前缀、后缀各占一段。
 - 数字使用等宽字形，位数变化时不会左右晃动。
 - `trend` 给出涨跌方向，箭头由皮肤绘制；它与 `tone` 正交，下跌也可以是正向语气。
+- 给了 `value` 就由组件格式化：`formatOptions` 原样交给 `Intl.NumberFormat`（小数位、分组、货币、百分比、单位、紧凑记数），不写时按该语言的缺省，分组打开、至多三位小数；选项不合法时当场报错。`locale` 不写时取全局配置的语言，再没有按宿主语言，宿主也没有时按 en-US。`null` 与不给同义，不会铺成 0。
+- 值部件里写了内容就照写的显示，不覆盖；部件空着才放格式化好的数值。不给 `value` 时数值由作者格式化好放进值部件。
+- 不写结构时按标准结构铺（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：标签、前缀、值、后缀、涨跌，给了哪段才铺哪段。标签取 `label` 或同名插槽，前后缀只来自插槽，值是 `value` 格式化好的文字，涨跌给了 `trend` 或 `trendText` 才铺、比数文字写在里面。Vue 是 `label`、`prefix`、`suffix` 三个具名插槽，React 是同名的三个属性，Web Components 是宿主直接子节点上的同名 `slot`，`trendText` 写作 `trend-text`。
 
 ### 组合
 
@@ -94,9 +109,34 @@ trend 写为 trend 部件的 data-trend，箭头由皮肤绘制；与 tone 正�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `formatOptions` | `Intl.NumberFormatOptions` |  | 交给 Intl.NumberFormat 的选项：小数位、分组、货币、百分比、单位、紧凑记数等。 不写按该语言的缺省（分组打开、至多三位小数）；只在给了 value 时生效，选项不合法时格式化当场报错。 |
+| `locale` | `string` |  | BCP 47 语言标记，决定小数点、分组符、数字系统与货币写法。 未提供时取全局配置的 locale，再没有按宿主语言，宿主也没有时按 en-US。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，只写为 root 的 data-size。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，只写为 root 的 data-tone。 |
 | `trend` | `StatisticTrend` |  | 涨跌：up / down / flat，写为 trend 部件的 data-trend，皮肤据此绘制兜底箭头。 与 tone 正交，方向与颜色互不联动：下跌也可以是正面信息（差错率、退货率）。 |
+| `value` | `number` |  | 数值。给了就按 locale 与 formatOptions 格式化成 valueText，value 部件没写内容时显示这串字； 部件里写了内容就照写的显示，不覆盖。不给时数值由作者写进 value 部件。 |
+
+### 插槽
+
+仅列出带载荷的插槽。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhStatisticRoot` | `default` | — |  |
+| `XhStatisticRoot` | `label` | — | 标签，压过 label。 |
+| `XhStatisticRoot` | `prefix` | — | 数值前的货币符号或图标。 |
+| `XhStatisticRoot` | `suffix` | — | 数值后的单位或百分号。 |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhStatisticRoot` | `label` | `ReactNode` |  | 标签。是字符串时作文字，是别的节点时由 label 部件装着。 |
+| `XhStatisticRoot` | `prefix` | `ReactNode` |  | 数值前的货币符号或图标，铺进 prefix 部件。 |
+| `XhStatisticRoot` | `suffix` | `ReactNode` |  | 数值后的单位或百分号，铺进 suffix 部件。 |
+| `XhStatisticRoot` | `trendText` | `string` |  | 涨跌段的比数文字（「同比 12%」），铺进 trend 部件。 |
 
 ### connect API
 
@@ -105,6 +145,7 @@ trend 写为 trend 部件的 data-trend，箭头由皮肤绘制；与 tone 正�
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `trend` | `StatisticTrend` | 当前涨跌方向；未提供时为 undefined。 |
+| `valueText` | `string` | value 按 locale 与 formatOptions 格式化后的文字；没给 value 时为 undefined。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getValueProps` | `() => T['element']` |  |

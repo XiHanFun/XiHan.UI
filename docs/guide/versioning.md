@@ -217,12 +217,12 @@ brand  neutral  success  warning  danger  info
 | --- | --- | --- |
 | 自定义元素标签 `xh-*` | 153（`defineXhElements()` 注册 152 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 1729 条声明 / 506 个不同名字 | **受约束**（具体元素上的具体属性名） |
-| attribute 名词汇表本身 | 506 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
+| observed attribute | 1733 条声明 / 507 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| attribute 名词汇表本身 | 507 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
 | `CustomEvent` 名 | 122 个名字 / 303 条「元素 × 事件」 | **受约束** |
 | 事件传播语义 | `bubbles: true, composed: true`（293 处中 291 处） | **受约束**。取消冒泡会使祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，避免被祖先 `<form>` 视为自身的提交 |
 | 事件 `detail` 形状 | 244 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
-| `attribute: false` 的 JS 字段 | 344 条（涉及 122 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 等只能通过 JS 赋值，HTML 中无法表达：不是每个 property 都有对应 attribute |
+| `attribute: false` 的 JS 字段 | 345 条（涉及 122 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 等只能通过 JS 赋值，HTML 中无法表达：不是每个 property 都有对应 attribute |
 | 命令式方法 | 151（分布在 43 个元素） | **受约束**，含参数与返回类型 |
 
 命令式方法全清单：
@@ -431,11 +431,11 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，22301 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，22306 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 250 条子入口、12524 个导出名、148 个 `data-scope` 与 1435 条部件配对、
-148 个组件的 2364 个 prop 名、325 种 `data-*`、33 个 `data-state` 取值、812 个令牌、
+覆盖：包名与 250 条子入口、12526 个导出名、148 个 `data-scope` 与 1435 条部件配对、
+148 个组件的 2367 个 prop 名、325 种 `data-*`、33 个 `data-state` 取值、812 个令牌、
 5 个 `@layer` 名、4841 个组件覆盖槽、152 个自定义元素及其 attribute 与事件。
 
 prop 名一维是后补的：在它加入之前，修改一个 prop 名（实测 `transfer` 的 `items` 改
