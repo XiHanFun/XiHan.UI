@@ -7,6 +7,7 @@
 
 import type { Bindable, CellParams, Dep, ReactiveRuntime } from '@xihan-ui/core'
 import type { ReactiveControllerHost } from '../reactive'
+import { createCell } from '@xihan-ui/core'
 
 // 把机器的 ReactiveRuntime 契约桥到自定义元素基类的 controller 生命周期。
 
@@ -42,52 +43,13 @@ export function createElementRuntime(host: ReactiveControllerHost): ElementRunti
   let written = false
 
   function cell<V>(params: () => CellParams<V>): Bindable<V> {
-    const p0 = params()
-    const eq = p0.isEqual ?? Object.is
-    const initial = (p0.defaultValue ?? p0.value) as V
-    let inner = initial
-    let lastSeen = initial
-    let version = 0
-    const isControlled = (): boolean => params().value !== undefined
-    const read = (): V => (isControlled() ? (params().value as V) : inner)
-    const set = (next: V | ((prev: V) => V)): void => {
-      const prev = read()
-      const value = typeof next === 'function' ? (next as (p: V) => V)(prev) : next
-      if (eq(value, prev))
-        return
-      if (!isControlled())
-        inner = value
-      const onChange = params().onChange
-      if (onChange !== undefined) {
+    return createCell(params, {
+      reporting: () => {
         written ||= settled
-        onChange(value, prev)
-      }
-      host.requestUpdate()
-    }
-    return {
-      initial,
-      get: read,
-      set,
-      // 落点按当下 props 重算，不用挂载时冻结的 initial：宿主换了 defaultValue
-      // （比如切去编辑另一条记录）就该回到新的那一份
-      reset() {
-        const next = params().defaultValue
-        if (next === undefined)
-          return undefined
-        set(next)
-        return next
       },
+      changed: () => host.requestUpdate(),
       notify: () => host.requestUpdate(),
-      // 版本号按值拉取比对，受控值不经过 set。
-      version: () => {
-        const cur = read()
-        if (!eq(cur, lastSeen)) {
-          lastSeen = cur
-          version += 1
-        }
-        return version
-      },
-    }
+    })
   }
 
   return {

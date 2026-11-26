@@ -6,6 +6,8 @@
 // 提供 create vue runtime 相关实现。
 
 import type { Bindable, CellParams, Dep, ReactiveRuntime } from '@xihan-ui/core'
+import type { ShallowRef } from 'vue'
+import { createCell } from '@xihan-ui/core'
 import { getCurrentInstance, nextTick, onBeforeUnmount, onMounted, shallowRef, triggerRef, watch } from 'vue'
 
 export interface VueRuntimeOptions {
@@ -28,50 +30,24 @@ export function createVueRuntime(options: VueRuntimeOptions = {}): ReactiveRunti
     isServer: typeof window === 'undefined',
 
     cell<V>(params: () => CellParams<V>): Bindable<V> {
-      const p0 = params()
-      const initial = (p0.defaultValue ?? p0.value) as V
-      const eq = p0.isEqual ?? Object.is
-      const inner = shallowRef<V>(initial)
-      let lastSeen = initial
-      let version = 0
-
-      const isControlled = (): boolean => params().value !== undefined
-      const read = (): V => (isControlled() ? (params().value as V) : inner.value)
-
-      const set = (next: V | ((prev: V) => V)): void => {
-        const prev = read()
-        const value = typeof next === 'function' ? (next as (p: V) => V)(prev) : next
-        if (!isControlled())
-          inner.value = value
-        if (!eq(value, prev))
-          params().onChange?.(value, prev)
-      }
-
-      return {
-        initial,
-        get: read,
-        set,
-        // 落点按当下 props 重算，不用挂载时冻结的 initial：宿主换了 defaultValue
-        // （比如切去编辑另一条记录）就该回到新的那一份
-        reset() {
-          const next = params().defaultValue
-          if (next === undefined)
-            return undefined
-          set(next)
-          return next
-        },
-        notify() {
-          triggerRef(inner)
-        },
-        version() {
-          const cur = read()
-          if (!eq(cur, lastSeen)) {
-            lastSeen = cur
-            version += 1
+      // shallowRef 写入时自己触发依赖，真变之后不必再通知
+      let inner: ShallowRef<V> | undefined
+      return createCell(params, {
+        store: (initial) => {
+          const ref = shallowRef<V>(initial)
+          inner = ref
+          return {
+            get: () => ref.value,
+            set: (value) => {
+              ref.value = value
+            },
           }
-          return version
         },
-      }
+        notify: () => {
+          if (inner)
+            triggerRef(inner)
+        },
+      })
     },
 
     track(deps: Dep[], fn) {

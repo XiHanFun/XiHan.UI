@@ -6,6 +6,7 @@
 // 提供 create react runtime 相关实现。
 
 import type { Bindable, CellParams, Dep, ReactiveRuntime } from '@xihan-ui/core'
+import { createCell } from '@xihan-ui/core'
 import { flushSync } from 'react-dom'
 
 // 把机器的 ReactiveRuntime 契约桥到 React 的「整体重渲 + 提交后拉取」模型。
@@ -177,52 +178,7 @@ export function createReactRuntime(): ReactRuntime {
   }
 
   function cell<V>(params: () => CellParams<V>): Bindable<V> {
-    const p0 = params()
-    const eq = p0.isEqual ?? Object.is
-    const initial = (p0.defaultValue ?? p0.value) as V
-    let inner = initial
-    let lastSeen = initial
-    let ver = 0
-
-    // 受控判定每次现读：宿主中途开始传 value 就立刻按受控走
-    const isControlled = (): boolean => params().value !== undefined
-    const read = (): V => (isControlled() ? (params().value as V) : inner)
-
-    const set = (next: V | ((prev: V) => V)): void => {
-      const prev = read()
-      const value = typeof next === 'function' ? (next as (p: V) => V)(prev) : next
-      if (!isControlled())
-        inner = value
-      if (eq(value, prev))
-        return
-      params().onChange?.(value, prev)
-      notify()
-    }
-
-    return {
-      initial,
-      get: read,
-      set,
-      // 落点按当下 props 重算，不用挂载时冻结的 initial：宿主换了 defaultValue
-      // （比如切去编辑另一条记录）就该回到新的那一份
-      reset() {
-        const next = params().defaultValue
-        if (next === undefined)
-          return undefined
-        set(next)
-        return next
-      },
-      notify,
-      // 版本号按值拉取比对，不数 set 调用次数（受控值不经过 set）
-      version: () => {
-        const cur = read()
-        if (!eq(cur, lastSeen)) {
-          lastSeen = cur
-          ver += 1
-        }
-        return ver
-      },
-    }
+    return createCell(params, { changed: notify, notify })
   }
 
   return {

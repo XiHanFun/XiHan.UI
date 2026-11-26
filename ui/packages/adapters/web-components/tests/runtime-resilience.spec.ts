@@ -153,3 +153,27 @@ describe('flush：等 DOM 真正落定', () => {
     expect(reads).toBeGreaterThan(1)
   })
 })
+
+describe('cell：内容一样的另一份', () => {
+  it('非受控时照样落下新引用、排一次更新，盯引用的 tracker 在下一轮看得到；不报告变化', () => {
+    let updates = 0
+    const host = { ...fakeHost(), requestUpdate: () => void (updates += 1) }
+    const runtime = createElementRuntime(host)
+    const reports: unknown[] = []
+    const value = runtime.cell<string[]>(() => ({
+      defaultValue: [],
+      isEqual: (a, b) => !!b && a.length === b.length && a.every((v, i) => v === b[i]),
+      onChange: next => reports.push(next),
+    }))
+    let fired = 0
+    runtime.track([() => value.get()], () => void (fired += 1))
+    runtime.mount()
+    const next: string[] = []
+    value.set(next)
+    expect(value.get()).toBe(next)
+    expect(updates).toBe(1)
+    expect(reports).toEqual([])
+    runtime.runTrackers()
+    expect(fired).toBe(1)
+  })
+})

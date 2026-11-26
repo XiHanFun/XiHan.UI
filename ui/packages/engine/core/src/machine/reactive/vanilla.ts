@@ -6,6 +6,7 @@
 // 内置参考运行时：同步 dirty 循环的微 signal，叠加受控语义。
 // set → 通知局部订阅者 → flushGlobal 全局同步冲刷，直到没有新的脏标记。
 import type { Bindable, CellParams, MachineSchema, ReactiveRuntime, Service } from '../types'
+import { createCell } from './cell'
 
 export interface Signal<V> {
   get: () => V
@@ -73,46 +74,14 @@ export function createVanillaRuntime(opts: { isServer?: boolean } = {}): Vanilla
   }
 
   function cell<V>(params: () => CellParams<V>): Bindable<V> {
-    const p0 = params()
-    const initial = (p0.defaultValue ?? p0.value) as V
-    const eq = p0.isEqual ?? Object.is
-    const inner = signal<V>(initial)
-    const isControlled = (): boolean => params().value !== undefined
-    const read = (): V => (isControlled() ? (params().value as V) : inner.get())
-    let lastSeen = initial
-    let version = 0
-    const set = (next: V | ((prev: V) => V)): void => {
-      const prev = read()
-      const value = typeof next === 'function' ? (next as (p: V) => V)(prev) : next
-      if (!isControlled())
-        inner.set(value)
-      if (!eq(value, prev))
-        params().onChange?.(value, prev)
-    }
-    return {
-      initial,
-      get: read,
-      set,
-      // 落点按当下 props 重算，不用挂载时冻结的 initial：宿主换了 defaultValue
-      // （比如切去编辑另一条记录）就该回到新的那一份
-      reset() {
-        const next = params().defaultValue
-        if (next === undefined)
-          return undefined
-        set(next)
-        return next
+    // signal 写入时自己冲刷全局订阅，真变之后不必再通知
+    return createCell(params, {
+      store: (initial) => {
+        const inner = signal<V>(initial)
+        return { get: inner.get, set: value => inner.set(() => value) }
       },
       notify: () => flushGlobal(),
-      // 版本号按值拉取比对，不数 set 调用次数（受控值不经过 set）
-      version: () => {
-        const cur = read()
-        if (!eq(cur, lastSeen)) {
-          lastSeen = cur
-          version += 1
-        }
-        return version
-      },
-    }
+    })
   }
 
   return {
