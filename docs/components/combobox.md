@@ -193,10 +193,10 @@ variant 设置输入框外观，invalid 标记无效输入
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `ComboboxValueChangeDetails` | 选中集合变化；detail 为 `{ value: 值[] }`，值是 value / collection 里交进来的原值（字符串、数字或对象） |
-| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
+| `clear` | — | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `input-value-change` | `ComboboxInputValueChangeDetails` | 输入串变化；detail 为 `{ inputValue: string }`，作者据此过滤候选 |
 | `open-change` | `ComboboxOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因 |
-| `load-more` | `` | 浮层里的列表滚到末端时请求下一页：只在跨进末端那一下派发；loading、disabled 时不派发 |
+| `load-more` | — | 浮层里的列表滚到末端时请求下一页：只在跨进末端那一下派发；loading、disabled 时不派发 |
 
 ### 插槽
 

@@ -208,7 +208,7 @@ multiple 时各列拼出的是草稿，按「添加」收进值、浮层不收�
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TimePickerValueChangeDetails` | 选中的时刻变化；detail 为 `{ value: string[] }`，单选至多一项 |
-| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
+| `clear` | — | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `open-change` | `TimePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因 |
 
 ### 插槽

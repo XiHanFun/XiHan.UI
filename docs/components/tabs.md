@@ -200,7 +200,7 @@ fullWidth 让标签按标签带的宽度平分，适合两三个并列入口撑�
 | `value-change` | `TabsValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| null }` |
 | `tab-move` | `TabsMoveDetails` | 标签换位；detail 为 `{ value, from, to, values }`，values 是重排后的整份标签序 |
 | `tab-close` | `TabsCloseDetails` | 标签被关闭；detail 为 `{ value, values }`，values 是关闭该标签之后剩余的标签序 |
-| `tab-add` | `` | 新增钮被按下；没有 detail，新标签由使用方追加进自己的数据源 |
+| `tab-add` | — | 新增钮被按下；没有 detail，新标签由使用方追加进自己的数据源 |
 
 ### React 适配器 props
 

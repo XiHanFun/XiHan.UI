@@ -187,7 +187,7 @@ onValueCommit 在回车时带出当前值，输入法选字的回车不算；loa
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TextFieldValueChangeDetails` | 值变化；detail 为 `{ value: string, unmaskedValue?: string }`，写了 mask 时带去掉分隔符的值 |
-| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
+| `clear` | — | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `value-commit` | `TextFieldValueChangeDetails` | 单行输入框里按下回车；detail 为 `{ value: string, unmaskedValue?: string }`。输入法组合期间、多行宿主、禁用与只读时不发 |
 
 ### 插槽

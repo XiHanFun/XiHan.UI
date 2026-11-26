@@ -161,7 +161,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TimeRangePickerValueChangeDetails` | 两端变化；detail 为 `{ value: string[] }`，只填终点时为 `['', end]` |
-| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
+| `clear` | — | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `open-change` | `TimeRangePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因 |
 
 ### 插槽

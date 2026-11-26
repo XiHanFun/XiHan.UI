@@ -136,7 +136,7 @@ variant 只改变分段框的底色与描边用法，tone 与 variant 正交，s
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TimeFieldValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
-| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
+| `clear` | — | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 插槽
 

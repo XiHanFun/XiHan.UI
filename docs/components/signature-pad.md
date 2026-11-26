@@ -174,7 +174,7 @@ drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，sim
 | `draw` | `SignaturePadDrawDetails` | 笔迹变化时通知一次（含清空、撤销、重做与表单重置）；detail 为 `{ paths: string[], path: string }` |
 | `draw-end` | `SignaturePadDrawEndDetails` | 签名定稿时通知一次（抬笔、清空、撤销、重做、表单重置）；detail 为 `{ paths: string[], svg: string }`，svg 可直接存储 |
 | `value-change` | `SignaturePadValueChangeDetails` | 签名数据定稿，时机同 draw-end；detail 为 `{ value: { strokes, surface } }`，可原样存下再赋回 defaultValue 回显 |
-| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
+| `clear` | — | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 插槽
 

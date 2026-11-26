@@ -1393,7 +1393,7 @@ function renderComponent(entry, category) {
     )
     push('| 事件 | 载荷 | 说明 |', '| --- | --- | --- |')
     for (const e of es.events)
-      push(`| ${cell(e.name)} | ${cell(e.type?.text ?? '')} | ${esc(e.description ?? '')} |`)
+      push(`| ${cell(e.name)} | ${e.type?.text ? cell(e.type.text) : '—'} | ${esc(e.description ?? '')} |`)
     push('')
   }
 

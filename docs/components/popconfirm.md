@@ -135,10 +135,10 @@ placement 是首选位，空间不足时引擎自行避让，实际落点写在 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `open-change` | `PopoverOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
-| `confirm` | `` | 点击了确认按钮；随后浮层收起。异步门经 confirmAction 属性： 事件拿不到监听函数的返回值，给元素赋 `confirmAction = () =&gt; thenable` 即挂起确认门 （浮层等兑现才收、确认按钮转圈，拒绝留在原地），confirm 事件照发只作通知 |
+| `confirm` | — | 点击了确认按钮；随后浮层收起。异步门经 confirmAction 属性： 事件拿不到监听函数的返回值，给元素赋 `confirmAction = () =&gt; thenable` 即挂起确认门 （浮层等兑现才收、确认按钮转圈，拒绝留在原地），confirm 事件照发只作通知 |
 | `confirm-error` | `PopconfirmConfirmErrorDetails` | 确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因 |
-| `cancel-press` | `` | 点击了取消按钮；随后浮层收起。Escape 与层外交互只发 open-change |
-| `exit-complete` | `` | 退场动画播完、本层资源全部释放；卸载和退场途中重开不派发 |
+| `cancel-press` | — | 点击了取消按钮；随后浮层收起。Escape 与层外交互只发 open-change |
+| `exit-complete` | — | 退场动画播完、本层资源全部释放；卸载和退场途中重开不派发 |
 
 ### 插槽
 

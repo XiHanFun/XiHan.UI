@@ -173,7 +173,7 @@ anchor 交一个只给得出矩形的虚拟锚点，浮层就固定在刚点击�
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `open-change` | `PopoverOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
-| `exit-complete` | `` | 退场动画播完、本层资源全部释放；卸载和退场途中重开不派发 |
+| `exit-complete` | — | 退场动画播完、本层资源全部释放；卸载和退场途中重开不派发 |
 
 ### 插槽
 

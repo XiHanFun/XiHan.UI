@@ -188,7 +188,7 @@ multiple 时浮层里调出的颜色是草稿，按「添加」收进值、浮�
 | `open-change` | `ColorPickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因 |
 | `color-error` | `ColorPickerErrorDetails` | 格式、输入、颜色解析或屏幕取色失败；detail 为判别式错误对象 |
 | `recent-colors-change` | `ColorPickerRecentColorsChangeDetails` | 一轮取色结束、颜色变了，最近使用色随之变化；detail 为 `{ recentColors: string[] }` |
-| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化（value 为空数组），再发它。程序化的 setValue([]) 不发。 |
+| `clear` | — | 用户按清空钮（clear-trigger）清掉了值；先发值变化（value 为空数组），再发它。程序化的 setValue([]) 不发。 |
 
 ### 插槽
 

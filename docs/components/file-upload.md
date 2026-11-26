@@ -198,7 +198,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `files-change` | `FileUploadFilesChangeDetails` | 列表变化；detail 为 `{ files: File[] }` |
-| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
+| `clear` | — | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `remote-files-change` | `FileUploadRemoteFilesChangeDetails` | 远程附件列表变化；detail 为 `{ files: FileUploadRemoteFile[] }` |
 | `upload-complete` | `FileUploadCompleteDetails` | 单个文件传输完成；detail 为 `{ file, url?, id? }`，带 id 时这个文件随后转入 remoteFiles |
 | `upload-error` | `FileUploadErrorDetails` | 单个文件传输失败；detail 为 `{ file, error }` |

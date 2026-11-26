@@ -248,10 +248,10 @@ max-selected=2：选满后其余选项不可再选，点掉一个即腾出名额
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `SelectValueChangeDetails` | 选中值变化；detail 为 `{ value: 值[] }`，值是 value / collection 里交进来的原值（字符串、数字或对象） |
-| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
+| `clear` | — | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `open-change` | `SelectOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
-| `retry` | `` | 整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space |
-| `load-more` | `` | 浮层里的列表滚到末端时请求下一页：只在跨进末端那一下派发；loading、error、disabled 时不派发 |
+| `retry` | — | 整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space |
+| `load-more` | — | 浮层里的列表滚到末端时请求下一页：只在跨进末端那一下派发；loading、error、disabled 时不派发 |
 
 ### 插槽
 

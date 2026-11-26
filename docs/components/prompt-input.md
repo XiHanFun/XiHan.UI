@@ -165,7 +165,7 @@ tone 切换聚焦描边与发送按钮使用哪族颜色，输入与提交链路
 | --- | --- | --- |
 | `value-change` | `PromptInputValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
 | `submit` | `PromptInputSubmitDetails` | 提交；detail 为 `{ value: string }`，清空发生在派发之后。 与原生表单提交同名，故不冒泡，请直接在 `&lt;xh-prompt-input&gt;` 元素上监听 |
-| `stop` | `` | 生成期间按下停止；无 detail |
+| `stop` | — | 生成期间按下停止；无 detail |
 
 ### 插槽
 

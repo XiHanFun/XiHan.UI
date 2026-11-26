@@ -125,7 +125,7 @@
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `ColorFieldValueChangeDetails` | 已接受的值变化；detail 为 `{ value: string }`，输入途中不发出 |
-| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
+| `clear` | — | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 插槽
 

@@ -179,7 +179,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `CascaderValueChangeDetails` | 选中路径集合变化；detail 为 `{ value: string[][] }` |
-| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
+| `clear` | — | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `open-change` | `CascaderOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `branch-load-start` | `CascaderBranchLoadStartDetails` | 懒分支请求开始；detail 为 `{ value, path, node, reason }` |
 | `branch-load` | `CascaderBranchLoadDetails` | 懒分支请求成功；detail 为 `{ value, path, node, children }` |

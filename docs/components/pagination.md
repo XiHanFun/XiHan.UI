@@ -141,7 +141,7 @@ size 适配不同的界面密度；disabled 让数据加载期间整组不可操
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `page-change` | `PaginationPageChangeDetails` | 页码变化；detail 为 `{ page: number, pageSize: number }` |
-| `page-size-change` | `` | 每页条数变化；detail 为 `{ pageSize: number, page: number }`，页码是换算后的 |
+| `page-size-change` | — | 每页条数变化；detail 为 `{ pageSize: number, page: number }`，页码是换算后的 |
 
 ### 插槽
 
