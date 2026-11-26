@@ -84,6 +84,16 @@ async function inAct(fn: () => void | Promise<void>): Promise<void> {
   }
 }
 
+/**
+ * 套件按 Vue / Web Components 的写法给标准结构的文字：触发器文字叫 triggerText（触发器本身另有同名插槽）。
+ * React 的标准结构里同一处是一个 trigger 节点 prop，字符串即文字，这里换成 React 的写法。
+ */
+const REACT_PROP_NAMES: Readonly<Record<string, string>> = { triggerText: 'trigger' }
+
+function reactProps(input: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(input).map(([key, value]) => [REACT_PROP_NAMES[key] ?? key, value]))
+}
+
 export function createReactHarness(): AdapterHarness {
   let host: HTMLElement | null = null
   let root: Root | null = null
@@ -134,7 +144,7 @@ export function createReactHarness(): AdapterHarness {
         await this.unmount()
       host = document.createElement('div')
       attachHost(host)
-      props = { ...fixture.props }
+      props = reactProps({ ...fixture.props })
       events = []
       const Root = resolveRoot(fixture.component)
 
@@ -174,7 +184,7 @@ export function createReactHarness(): AdapterHarness {
     },
 
     async setProps(next) {
-      props = { ...props, ...next }
+      props = { ...props, ...reactProps(next) }
       await inAct(async () => {
         render?.(props)
       })

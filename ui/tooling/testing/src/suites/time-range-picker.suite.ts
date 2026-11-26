@@ -1050,7 +1050,7 @@ export const timeRangePickerSuite: ConformanceSuite = {
       name: 'clearable 写 false：有值也不露清空钮、标准结构不铺；改回 true 即铺出并露面',
       spec: { apg: APG },
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
-      props: { ...BASE, defaultValue: ['08:30', '10:30'], clearable: false },
+      props: { label: '营业时段', ...BASE, defaultValue: ['08:30', '10:30'], clearable: false },
       initial: { counts: { 'clear-trigger': 0 } },
       steps: [
         { kind: 'setProps', props: { clearable: true }, expect: { parts: { 'clear-trigger': { hidden: null } } } },
