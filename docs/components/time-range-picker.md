@@ -65,6 +65,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 
 - 值始终为区间两端 `[start, end]`，按位存放：只填了终点时是 `['', 终点]`，受控回写按同一下标对应。
 - 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：标题（`label` 给文字，是原生 `label`），盒里的起止两组段位（时、分、秒之间是冒号，挨着上下午段的是空格）、分隔符、清空钮与触发钮，起止两份表单影子，浮层里依次是快捷选项列与起止两组时间列（小标题取 `translations.startTime` / `endTime`）。精度、小时制与选中变化时结构随之重铺。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。
+- `clearable` 缺省开启；写 false 即关掉清空能力：有值也不露清空按钮、标准结构不再铺它，盒上只留时钟钮，`api.clear()` 也被拦下；段位上按退格逐段清值照旧。必选的字段用它去掉清空钮。
 - 起止各一组段位，`range-separator` 隔在中间；方向键换段不跨组，`name` 与 `endName` 各自决定两份隐藏输入是否参与提交。
 - 浮层内起止两组时间列并排，左右键跨组换列；选中一格只改对应端的段，浮层不收起。
 - 终点组以起点为下界、起点组以终点为上界：另一端填满后，界外的格留在原位并标为禁用，列高、滚动位置与焦点节点不跳。
@@ -124,6 +125,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `presets` | `TimeRangePickerPreset[]` |  | 快捷选项（「上午」「全天」等）。提供后浮层中多出一列，点击即两端整份写入值并收起。 时刻需计算后传入：连接层每帧求值，把当前时刻放进渲染期会每帧得出一个新结果。 无法解析、不是恰好两端、任一端落在 min / max 之外或终点早于起点的选项自动不可按下。 |
 | `disabled` | `boolean` |  | 禁用：两组分段输入整组退出 Tab 序列、触发器使用原生 disabled，隐藏输入不参与提交。 |
 | `readOnly` | `boolean` |  | 只读：浮层照常展开、列表照常浏览，但值不可修改也不可清空。 |
+| `clearable` | `boolean` |  | 清空能力，默认开启：有值且改得动时露出清空按钮。 写 false 即关掉：清空按钮恒带 hidden 收起、标准结构不再铺它，api.clear() 也被拦下；段位上按退格逐段清值照旧。 |
 | `invalid` | `boolean` |  | 校验失败标注。未提供时也会自行判定：任一端越界，或终点早于起点。 |
 | `required` | `boolean` |  | 必填标注（写入每段的 aria-required）。 |
 | `name` | `string` |  | 起点隐藏输入的表单字段名；提供后才带 name。 |
@@ -245,6 +247,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `focusedItem` | `string \| null` |  |
 | `presets` | `readonly TimeRangePickerPresetState[]` | 快捷选项逐条的状态，数据顺序。未提供 presets 时为空数组。 |
 | `canClear` | `boolean` | 清空按钮当前是否可按。 |
+| `clearable` | `boolean` | 清空能力是否开启（clearable 没写成 false）。 |
 | `translations` | `TimeRangePickerTranslations` | 解析后的文案：作者给的 translations 盖在当前语言包上。 |
 | `getSegmentText` | `(props: TimeRangePickerSegmentProps) => string` | 某一端某一段应显示的文字（空段是占位串）。各适配器都用它填充文本，保证同构。 |
 | `getItemText` | `(props: TimeRangePickerItemTextProps) => string` | 某一格应显示的文字。数字列即格子自身的值，上下午列按 locale 给出「上午 / 下午」。 各适配器都用它填充文本，保证同构。 |
@@ -252,7 +255,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `isItemDisabled` | `(props: TimeRangePickerItemProps) => boolean` | 落在 min / max 之外、被另一端限制（或整个控件禁用）：仍在列表中，但不可选、方向键跳过。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string[]) => void` | 整份写入两端。 |
-| `clear` | `() => void` |  |
+| `clear` | `() => void` | 发起清空；关掉 clearable 时不生效，无条件清空用 setValue([])。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |

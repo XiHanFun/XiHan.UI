@@ -103,6 +103,8 @@ export interface XhTimeRangePickerRootProps extends Omit<ComponentPropsWithRef<'
   /** 逐格可选性：时列按 24 小时制给值，第三个参数带这一端已选的时分与端号。 */
   isTimeUnavailable?: TimeUnavailablePredicate
   readOnly?: boolean
+  /** 清空能力，缺省开启；写 false 时不铺清空按钮，api.clear() 也不生效。 */
+  clearable?: boolean
   invalid?: boolean
   required?: boolean
   name?: string
@@ -147,6 +149,7 @@ export function XhTimeRangePickerRoot({
   translations,
   isTimeUnavailable,
   readOnly,
+  clearable,
   invalid,
   required,
   name,
@@ -182,6 +185,7 @@ export function XhTimeRangePickerRoot({
     translations,
     isTimeUnavailable,
     readOnly,
+    clearable,
     invalid,
     required,
     name,

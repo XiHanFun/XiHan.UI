@@ -1047,6 +1047,16 @@ export const timeRangePickerSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'clearable 写 false：有值也不露清空钮、标准结构不铺；改回 true 即铺出并露面',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { ...BASE, defaultValue: ['08:30', '10:30'], clearable: false },
+      initial: { counts: { 'clear-trigger': 0 } },
+      steps: [
+        { kind: 'setProps', props: { clearable: true }, expect: { parts: { 'clear-trigger': { hidden: null } } } },
+      ],
+    },
+    {
       name: '作者不写结构：三端都照 timeRangePickerStructure 铺出标题、起止两组段与分隔符、两颗钮、两份表单影子与起止两组时间列',
       spec: { apg: APG },
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),

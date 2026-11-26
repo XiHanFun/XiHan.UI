@@ -49,7 +49,7 @@ export interface TimeRangePickerStructureOptions {
   slotted?: StructureSlotted
 }
 
-type TimeRangePickerStructureModel = Pick<TimeRangePickerApi, 'segments' | 'presets' | 'columnGroups' | 'getItemText' | 'translations'>
+type TimeRangePickerStructureModel = Pick<TimeRangePickerApi, 'clearable' | 'segments' | 'presets' | 'columnGroups' | 'getItemText' | 'translations'>
 
 /** 一端的时间组：小标题（起点取 translations.startTime、终点取 endTime），再是这一端的各列与列里的格。 */
 function columnGroupNode(model: TimeRangePickerStructureModel, group: TimeRangePickerColumnGroup): TimeRangePickerNode {
@@ -85,6 +85,8 @@ function columnGroupNode(model: TimeRangePickerStructureModel, group: TimeRangeP
  * - 浮层：有快捷选项时先铺快捷选项列，再是起止两组时间列，各带小标题。
  */
 export function timeRangePickerStructure(model: TimeRangePickerStructureModel, options: TimeRangePickerStructureOptions = {}): TimeRangePickerNode[] {
+  // 关掉 clearable 就不铺清空钮
+  const clearTrigger: TimeRangePickerNode[] = model.clearable ? [{ key: 'clear-trigger', tag: 'button', part: 'clear-trigger' }] : []
   const nodes: TimeRangePickerNode[] = []
   if (options.slotted?.('label'))
     nodes.push({ key: 'label', tag: 'label', part: 'label', slot: { name: 'label' } })
@@ -111,7 +113,7 @@ export function timeRangePickerStructure(model: TimeRangePickerStructureModel, o
         { key: 'segment-group:0', tag: 'div', part: 'segment-group', attrs: { index: '0' }, children: timeSegmentGroupChildren(model.segments) },
         { key: 'range-separator', tag: 'span', part: 'range-separator', text: '-' },
         { key: 'segment-group:1', tag: 'div', part: 'segment-group', attrs: { index: '1' }, children: timeSegmentGroupChildren(model.segments) },
-        { key: 'clear-trigger', tag: 'button', part: 'clear-trigger' },
+        ...clearTrigger,
         { key: 'trigger', tag: 'button', part: 'trigger' },
       ],
     },

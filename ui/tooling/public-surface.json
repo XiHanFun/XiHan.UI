@@ -17044,6 +17044,7 @@
     ],
     "time-range-picker": [
       "ariaLabel",
+      "clearable",
       "defaultOpen",
       "defaultValue",
       "dir",
@@ -26069,6 +26070,7 @@
     },
     "xh-time-range-picker": {
       "attributes": [
+        "clearable",
         "default-open",
         "dir",
         "disabled",

@@ -111,7 +111,9 @@ export function connectTimeRangePicker<T extends PropTypes>(
   const flagged = invalid || outOfRange || reversed
   // 值还凑不成一个时间时也可能已经填了几段，清空按钮此时就能按
   const dirty = !empty || draftDirty(drafts[0]) || draftDirty(drafts[1])
-  const canClear = editable && dirty
+  // 清空钮缺省开着；写 false 即收起、标准结构不铺，clear() 一并拦下
+  const clearable = prop('clearable') !== false
+  const canClear = clearable && editable && dirty
 
   // 按压通道：四类可按部件各自合成一份跟踪器，真源是机器 context 里「正被按住的那一个」；
   // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档。
@@ -347,6 +349,7 @@ export function connectTimeRangePicker<T extends PropTypes>(
     focusedItem,
     presets,
     canClear,
+    clearable,
     translations,
     getSegmentText: ({ index, segment }) => segmentTextOf(index, segment),
     getItemText: itemTextOf,
@@ -357,7 +360,10 @@ export function connectTimeRangePicker<T extends PropTypes>(
         send(next ? { type: 'OPEN' } : { type: 'CLOSE' })
     },
     setValue: next => send({ type: 'VALUE.SET', value: next }),
-    clear: () => send({ type: 'VALUE.CLEAR' }),
+    clear: () => {
+      if (clearable)
+        send({ type: 'VALUE.CLEAR' })
+    },
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
