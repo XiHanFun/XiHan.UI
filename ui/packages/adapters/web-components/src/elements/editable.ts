@@ -46,6 +46,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {string} placeholder - 值为空时预览区显示它，输入框也将其用作占位
  * @attr {boolean} disabled - 禁用：无法进入编辑态，输入框带原生 disabled
  * @attr {boolean} read-only - 只读：无法进入编辑态，但已在编辑态时仍能退出
+ * @attr {boolean} required - 必填：根带 data-required、输入框带 aria-required；放进字段时从字段继承
  * @attr {boolean} invalid - 校验失败标注
  * @attr {number} max-length - 字符数上限；同时落为原生 maxlength 与状态机侧截断
  * @attr {string} name - 表单字段名；提供后输入框才参与提交
@@ -60,7 +61,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @fires value-commit - 提交；detail 为 `{ value: string, previousValue: string }`
  * @fires value-revert - 撤销；detail 为 `{ value: string, discardedValue: string }`
  * @fires edit-change - 编辑态变化；detail 为 `{ edit: boolean }`
- * @csspart root - role=group 容器，承载 data-state / data-disabled / data-readonly / data-invalid / data-empty
+ * @csspart root - role=group 容器，承载 data-state / data-disabled / data-readonly / data-invalid / data-required / data-empty
  * @csspart label - 标题；`for` 恒指向 input，因此须是原生 `<label>`
  * @csspart preview - 预览态的文字；留空即由元素填入显示值，作者写了内容则由作者负责
  * @csspart input - 编辑态的输入框，须是原生 `<input>`；键盘交互全部在它身上
@@ -81,6 +82,7 @@ export class XhEditableElement extends XhElement {
     placeholder: { converter: STRING_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    required: { converter: BOOLEAN_CONVERTER },
     invalid: { converter: BOOLEAN_CONVERTER },
     maxLength: { converter: NUMBER_CONVERTER, attribute: 'max-length' },
     name: { converter: STRING_CONVERTER },
@@ -100,6 +102,7 @@ export class XhEditableElement extends XhElement {
   declare placeholder?: string
   declare disabled?: boolean
   declare readOnly?: boolean
+  declare required?: boolean
   declare invalid?: boolean
   declare maxLength?: number
   declare name?: string
@@ -141,6 +144,7 @@ export class XhEditableElement extends XhElement {
     const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
+      required: this.required,
       invalid: this.invalid,
     })
     return {
@@ -154,6 +158,7 @@ export class XhEditableElement extends XhElement {
       placeholder: this.placeholder,
       disabled: control.disabled,
       readOnly: control.readOnly,
+      required: control.required,
       invalid: control.invalid,
       maxLength: this.maxLength,
       name: this.name,

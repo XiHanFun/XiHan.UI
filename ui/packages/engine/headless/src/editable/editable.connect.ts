@@ -31,6 +31,7 @@ export function connectEditable<T extends PropTypes>(
   const empty = value === ''
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
+  const required = !!prop('required')
   const invalid = !!prop('invalid')
   const interactive = !disabled && !readOnly
   const placeholder = prop('placeholder')
@@ -100,6 +101,7 @@ export function connectEditable<T extends PropTypes>(
     displayValue,
     disabled,
     readOnly,
+    required,
     invalid,
     interactive,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
@@ -120,6 +122,8 @@ export function connectEditable<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
+      // 必填标记只做钩子：星号由外面的字段壳画
+      'data-required': dataAttr(required),
       'data-empty': dataAttr(empty),
     }),
 
@@ -188,6 +192,8 @@ export function connectEditable<T extends PropTypes>(
       'aria-labelledby': prop('labelled') ? ids.label : undefined,
       'aria-label': prop('ariaLabel'),
       'aria-invalid': invalid ? 'true' : 'false',
+      // 必填只经 aria 上报：预览态这份输入框收着，原生 required 的提示落不到它身上
+      'aria-required': required ? 'true' : 'false',
       // Field Chrome 不读取 editable anatomy；原生输入角色与单行布局由 Headless 明确投影
       'data-xh-field-input': '',
       'data-xh-field-layout': 'single-line',

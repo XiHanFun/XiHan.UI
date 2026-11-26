@@ -36,6 +36,8 @@ export const XhEditableRoot = defineComponent({
     placeholder: { type: String },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
+    /** 必填：根带 data-required、输入框带 aria-required；放进字段时从字段继承。 */
+    required: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     maxLength: { type: Number },
     name: { type: String },

@@ -36,6 +36,8 @@ export interface XhEditableRootProps extends Omit<ComponentPropsWithRef<'div'>, 
   placeholder?: string
   disabled?: boolean
   readOnly?: boolean
+  /** 必填：根带 data-required、输入框带 aria-required；放进字段时从字段继承。 */
+  required?: boolean
   invalid?: boolean
   maxLength?: number
   /** 表单字段名；提供后才参与提交。 */
@@ -63,6 +65,7 @@ export function XhEditableRoot({
   placeholder,
   disabled,
   readOnly,
+  required,
   invalid,
   maxLength,
   name,
@@ -89,6 +92,7 @@ export function XhEditableRoot({
     placeholder,
     disabled,
     readOnly,
+    required,
     invalid,
     maxLength,
     name,

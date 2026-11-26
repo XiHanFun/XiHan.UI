@@ -89,6 +89,11 @@ export interface EditableSchema extends MachineSchema {
     disabled?: boolean
     /** 只读：无法进入编辑态，但已在编辑态时仍能退出（撤销 / 提交都可用）。 */
     readOnly?: boolean
+    /**
+     * 必填：根带 data-required，输入框带 aria-required。不写原生 required：预览态的输入框收着，
+     * 浏览器的必填提示落不到收起的节点上，只会把表单提交静默拦下；空值的拦截交给表单层的校验。
+     */
+    required?: boolean
     /** 校验失败标注。 */
     invalid?: boolean
     /** 字符数上限；同时落为原生 maxlength 与状态机侧截断。 */
@@ -180,6 +185,7 @@ export interface EditableApi<T extends PropTypes = PropTypes> {
   displayValue: string
   disabled: boolean
   readOnly: boolean
+  required: boolean
   invalid: boolean
   /** 可以进入编辑态（既未禁用也不只读）。 */
   interactive: boolean

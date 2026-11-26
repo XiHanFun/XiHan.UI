@@ -54,6 +54,7 @@ variant 设置编辑框外观；禁用、只读与空值占位各是一种状态
 - `activationMode` 设置单击、双击或按钮激活。
 - 支持提交、取消、受控值和受控编辑状态。
 - `autoSize` 让输入框随内容调整宽度。
+- `required` 在根上带 `data-required`、输入框带 `aria-required`，放进[表单字段](./field)时从字段继承。不写原生 `required`：预览态的输入框收着，浏览器的必填提示落不到收起的节点上，只会把表单提交静默拦下；空值的拦截交给[表单](./form)的校验规则。
 - 标题在上；预览文字或输入框与右侧动作组共用一个字段盒，不把动作按钮挂在编辑框外。预览态只显示编辑按钮，编辑态只显示确认与取消按钮；两态的盒都取 root 的形态（缺省 `outline`），与别的字段同一副外壳，一眼看得出这是个能改的字段。要读起来像一段文字（悬停才浮出描边），显式写 `variant="ghost"`。
 - 三颗动作的视觉盒按字段内钮尺寸表随档（sm 取 `--xh-control-action-size`、md 取 `--xh-control-h-sm`、lg 取 `--xh-control-h-md`），字形取次要前景；确认与取消之间隔 `--xh-space-1`，紧凑 sm 档两钮中心距仍不低于 24px；与内容段之间不画分隔线。
 - 三个动作使用图标呈现：编辑、确认、取消；图标按钮必须提供可访问名称。
@@ -100,6 +101,7 @@ variant 设置编辑框外观；禁用、只读与空值占位各是一种状态
 | `placeholder` | `string` |  | 值为空时预览区显示它，输入框也将其用作占位。 |
 | `disabled` | `boolean` |  | 禁用：无法进入编辑态，输入框带原生 disabled。 |
 | `readOnly` | `boolean` |  | 只读：无法进入编辑态，但已在编辑态时仍能退出（撤销 / 提交都可用）。 |
+| `required` | `boolean` |  | 必填：根带 data-required，输入框带 aria-required。不写原生 required：预览态的输入框收着， 浏览器的必填提示落不到收起的节点上，只会把表单提交静默拦下；空值的拦截交给表单层的校验。 |
 | `invalid` | `boolean` |  | 校验失败标注。 |
 | `maxLength` | `number` |  | 字符数上限；同时落为原生 maxlength 与状态机侧截断。 |
 | `name` | `string` |  | 表单字段名；提供后输入框才参与提交。 |
@@ -178,6 +180,7 @@ variant 设置编辑框外观；禁用、只读与空值占位各是一种状态
 | `displayValue` | `string` | 预览区当前应显示的文字：值为空时回退为 placeholder。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
+| `required` | `boolean` |  |
 | `invalid` | `boolean` |  |
 | `interactive` | `boolean` | 可以进入编辑态（既未禁用也不只读）。 |
 | `setValue` | `(next: string) => void` | 直接写值，只受 disabled / readOnly 与 maxLength 约束，与编辑态无关。 |
@@ -219,6 +222,7 @@ variant 设置编辑框外观；禁用、只读与空值占位各是一种状态
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-label` | props.ariaLabel |
 | `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `input` | `aria-required` | 'true' \| 'false' |
 | `edit-trigger` | `aria-controls` | `input` 部件的 id |
 
 ## 样式参考
@@ -239,6 +243,7 @@ variant 设置编辑框外观；禁用、只读与空值占位各是一种状态
 | `root` | `data-empty` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'edit' \| 'preview' |
 | `root` | `data-tone` | props.tone |

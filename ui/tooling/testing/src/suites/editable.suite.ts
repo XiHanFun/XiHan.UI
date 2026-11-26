@@ -220,8 +220,8 @@ export const editableSuite: ConformanceSuite = {
             parts: { root: { 'data-state': 'preview' }, preview: { hidden: null }, input: { hidden: '' } },
             // 输入框收起时焦点要有人接，不能掉进 body
             activeElement: { part: 'preview', exact: true },
-            // 提交本身不改值，因此不该再冒出一条值变化
-            events: [],
+            // 提交本身不改值，不再冒出值变化，只报一条提交（带上一次提交的值）
+            events: [{ type: 'value-commit', detail: { value: '小黑', previousValue: '阿旺' } }],
           },
         },
         {
@@ -275,7 +275,7 @@ export const editableSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'Tab',
-          expect: { parts: { root: { 'data-state': 'preview' } }, events: [] },
+          expect: { parts: { root: { 'data-state': 'preview' } }, events: [{ type: 'value-commit', detail: { value: '小黑', previousValue: '阿旺' } }] },
         },
         {
           kind: 'raw',
@@ -314,7 +314,7 @@ export const editableSuite: ConformanceSuite = {
             parts: { root: { 'data-state': 'preview' } },
             // 焦点已经离开输入框，不再抢回预览区
             activeElement: null,
-            events: [],
+            events: [{ type: 'value-commit', detail: { value: '小黑', previousValue: '阿旺' } }],
           },
         },
         {
@@ -338,7 +338,7 @@ export const editableSuite: ConformanceSuite = {
           run: async ctx => pressTrigger(ctx, 'submit-trigger'),
           expect: {
             parts: { root: { 'data-state': 'preview' } },
-            events: [],
+            events: [{ type: 'value-commit', detail: { value: '小黑', previousValue: '阿旺' } }],
           },
         },
         {
@@ -458,6 +458,29 @@ export const editableSuite: ConformanceSuite = {
           part: 'preview',
           expect: { parts: { root: { 'data-state': 'preview' } }, events: [] },
         },
+      ],
+    },
+    {
+      name: 'required：root 带 data-required，输入框带 aria-required；预览态收着的输入框不带原生 required',
+      spec: { apg: APG },
+      props: { required: true },
+      initial: {
+        parts: {
+          root: { 'data-required': '' },
+          input: { 'aria-required': 'true' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'required 不在快照的采集清单里（既不是 aria- 也不是 data-）',
+          run: ({ doc }) => {
+            // 收起的节点接不住浏览器的必填提示，带上只会把表单提交静默拦下
+            if (doc.querySelector('[data-scope="editable"][data-part="input"]')?.hasAttribute('required'))
+              throw new Error('输入框不应带原生 required')
+          },
+        },
+        { kind: 'setProps', props: { required: false }, expect: { parts: { root: { 'data-required': null }, input: { 'aria-required': 'false' } } } },
       ],
     },
     {

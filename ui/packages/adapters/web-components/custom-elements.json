@@ -25918,7 +25918,7 @@
           "name": "XhEditableElement",
           "cssParts": [
             {
-              "description": "role=group 容器，承载 data-state / data-disabled / data-readonly / data-invalid / data-empty",
+              "description": "role=group 容器，承载 data-state / data-disabled / data-readonly / data-invalid / data-required / data-empty",
               "name": "root"
             },
             {
@@ -26022,6 +26022,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "required"
             },
             {
               "kind": "field",
@@ -26302,6 +26311,14 @@
               "description": "只读：无法进入编辑态，但已在编辑态时仍能退出",
               "name": "read-only",
               "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "必填：根带 data-required、输入框带 aria-required；放进字段时从字段继承",
+              "name": "required",
+              "fieldName": "required"
             },
             {
               "type": {
