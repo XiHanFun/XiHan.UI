@@ -704,7 +704,7 @@ const translations = {
     empty: 'Нет данных',
     loading: 'Загрузка',
   },
-  'tabs': { ...drag, overflowTrigger: 'Другие вкладки' },
+  'tabs': { ...drag, overflowTrigger: 'Другие вкладки', addTrigger: 'Добавить вкладку' },
   'tag': { close: 'Удалить' },
   'tag-group': { deleteItem: label => `Удалить: ${label}`, list: 'Теги' },
   'tags-input': { deleteItem: value => `Удалить: ${value}`, editTagInput: value => `Изменить: ${value}`, clearTrigger: 'Очистить' },

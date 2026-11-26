@@ -33,10 +33,14 @@ export function connectTabs<T extends PropTypes>(
   // roving tabindex 的唯一锚点：焦点在组内时跟着焦点光标走，否则落在选中项
   const anchor = focusedValue ?? value
   const orientation = prop('orientation') ?? 'horizontal'
+  // 标签带落在面板哪一侧：不写时显式落 start，与 data-orientation 一样 root 上始终带着
+  const placement = prop('placement') ?? 'start'
   const dir = prop('dir')
   const loop = prop('loop') ?? true
   const horizontal = orientation === 'horizontal'
+  // 整组的可关闭；条目上写了的以条目为准，见 closableOf
   const closable = !!prop('closable')
+  const addable = !!prop('addable')
   const indicator = context.get('indicator')
   const indicatorStretch = context.get('indicatorStretch')
   // 标签带放不放得下由位移与上限推出：上限为 0 就是放得下
@@ -46,17 +50,29 @@ export function connectTabs<T extends PropTypes>(
   const overflowItems = context.get('overflowItems')
   const rtl = dir === 'rtl'
 
-  // collection 推出的条目元信息：标签文本与禁用都在这里定案，trigger 部件只报 value
+  // collection 推出的条目元信息：标签文本、禁用、可关闭与图标都在这里定案，trigger 部件只报 value
   const collection: TabsNodeMeta[] = (prop('collection') ?? []).map(node => ({
     value: node.value,
     label: node.label ?? node.value,
     disabled: !!node.disabled,
+    closable: node.closable ?? null,
+    icon: node.icon ?? null,
   }))
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
 
   /** 条目禁用：部件上写的优先，没写就回 collection 里查。 */
   const itemDisabled = (item: TabsTriggerProps): boolean =>
     item.disabled ?? metaOf.get(item.value)?.disabled ?? false
+
+  /** 这一条能不能关：条目上写了以条目为准，没写随整组。不给 collection 时只有整组那一档。 */
+  const closableOf = (target: string): boolean => metaOf.get(target)?.closable ?? closable
+
+  // 新增钮的按压通道：Space / Enter 与触屏按住投影 data-pressed，与标签的按压各记各的
+  const addPressed = context.get('addPressed')
+  const addPress: PressHandlers = createPressTracker({
+    isPressed: () => context.get('addPressed'),
+    onChange: down => send({ type: 'ADD.PRESS', pressed: down }),
+  })
 
   const triggerId = (target: string): string => scope.partId(tabsAnatomy.name, `trigger:${target}`)
 
@@ -206,10 +222,13 @@ export function connectTabs<T extends PropTypes>(
     collection,
     focusedValue,
     setValue,
-    // 三个视觉轴只写在 root 上，子部件靠继承私有槽消费
+    // 三个视觉轴只写在 root 上，子部件靠继承私有槽消费；标签带落在哪一侧、标签平不平分同样只在 root 上，
+    // 皮肤据它们排版面，不改 DOM 序
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-orientation': orientation,
+      'data-placement': placement,
+      'data-full-width': dataAttr(!!prop('fullWidth')),
       'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
@@ -322,9 +341,9 @@ export function connectTabs<T extends PropTypes>(
           navigate(event.currentTarget as HTMLElement, intent)
           return
         }
-        // 可关闭时 Delete / Backspace 关掉焦点所在那一条，只发意图不改标签序
-        if (closable && (event.key === 'Delete' || event.key === 'Backspace') && focusedValue != null
-          && !metaOf.get(focusedValue)?.disabled) {
+        // 焦点所在那一条能关时 Delete / Backspace 关掉它，只发意图不改标签序
+        if ((event.key === 'Delete' || event.key === 'Backspace') && focusedValue != null
+          && closableOf(focusedValue) && !metaOf.get(focusedValue)?.disabled) {
           event.preventDefault()
           closeTab(focusedValue)
           return
@@ -377,7 +396,7 @@ export function connectTabs<T extends PropTypes>(
         'data-dragging': dataAttr(draggingTab === item.value),
         'data-drop': dropSide(item.value),
         'data-draggable': dataAttr(reorderable && !itemDisabled(item)),
-        'data-closable': dataAttr(closable && !itemDisabled(item)),
+        'data-closable': dataAttr(closableOf(item.value) && !itemDisabled(item)),
         // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；与选中互相独立
         'data-pressed': dataAttr(pressedValue === item.value),
         // 同一个 pointerdown 先过跟踪器再判拖动起手：触屏归按压（拖动不认触屏），鼠标归拖动（按压不认鼠标）
@@ -409,13 +428,14 @@ export function connectTabs<T extends PropTypes>(
     // 接 Action Control icon 档 ghost 面、xs 档：它坐在标签的面里，比标签矮一截；字形由皮肤兜底
     getCloseTriggerProps: (item) => {
       const disabled = itemDisabled(item)
+      const canClose = closableOf(item.value)
       return normalize.button({
         ...parts['close-trigger'].attrs,
         'type': 'button',
         'tabIndex': -1,
         'aria-hidden': true,
-        // 不开放关闭时连钮一起收起；只是标签禁用时钮留在原地、按不动，标签宽度不因禁用跳变
-        'hidden': !closable || undefined,
+        // 这一条不能关时连钮一起收起；只是标签禁用时钮留在原地、按不动，标签宽度不因禁用跳变
+        'hidden': !canClose || undefined,
         'disabled': disabled || undefined,
         'data-disabled': dataAttr(disabled),
         'data-xh-action-control': '',
@@ -425,12 +445,41 @@ export function connectTabs<T extends PropTypes>(
         'data-xh-action-size': 'xs',
         'onClick': () => {
           // 作者把这份 props 摊到非按钮节点上时原生 disabled 不生效，守卫得自己带
-          if (!closable || disabled)
+          if (!canClose || disabled)
             return
           closeTab(item.value)
         },
       })
     },
+
+    // 新增钮：root 的孩子、排在标签带之后（tablist 只收 tab），自占一个 Tab 位，不是方向键走位的一站。
+    // 键盘的 Enter / Space 走原生按钮的激活，与点按同一个意图；库不建标签、不挪焦点，焦点留在钮上可以连着新建。
+    // 接 Action Control icon 档 ghost 面、与「更多」钮同档，字形由皮肤兜底
+    getAddTriggerProps: () => normalize.button({
+      ...parts['add-trigger'].attrs,
+      'type': 'button',
+      'aria-label': translations.addTrigger,
+      'hidden': !addable || undefined,
+      'data-orientation': orientation,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
+      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+      'data-pressed': dataAttr(addPressed),
+      'onPointerDown': addPress.onPointerDown,
+      'onPointerUp': addPress.onPointerUp,
+      'onPointerCancel': addPress.onPointerCancel,
+      'onKeyDown': addPress.onKeyDown,
+      'onKeyUp': addPress.onKeyUp,
+      'onBlur': addPress.onBlur,
+      'onClick': () => {
+        // 作者把这份 props 摊到别的节点上时 hidden 挡不住点按，守卫得自己带
+        if (addable)
+          send({ type: 'TAB.ADD' })
+      },
+    }),
 
     isContentMounted,
     // 选中标签的四个几何量由机器量好写成私有槽（它量得到，样式表量不到）：
@@ -442,6 +491,8 @@ export function connectTabs<T extends PropTypes>(
       // 首次落位与同一项的重量直接到位：皮肤在它身上撤掉几何过渡，只有换项才滑
       'data-instant': dataAttr(context.get('indicatorInstant')),
       'data-orientation': orientation,
+      // 标签带在面板之后时，line 档的指示线贴到标签带朝向面板的那一边（横排顶边、竖排行首侧）
+      'data-placement': placement,
       // 部件自带形态：line 档是一条线、segment 档是整块抬起面，皮肤按它换身份，不必回溯到 root
       'data-variant': variant,
       'data-value': value ?? undefined,

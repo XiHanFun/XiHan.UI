@@ -48084,6 +48084,13 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   flex-direction: row;
 }
 
+/* 标签带在面板之后（placement=end）：只把标签带排到最后，DOM 序不动——读屏与 Tab 序照旧先到标签带。
+   横排落到面板下方，竖排落到面板的行尾侧（随书写方向镜像）。根换成网格（放了「更多」钮或新增钮）时，
+   这条 order 同样让自动排布先排面板、再排标签带那一行，见下面「更多」钮一段 */
+.xh-scope-tabs[data-part='root'][data-placement='end'] > .xh-scope-tabs[data-part='list'] {
+  order: 1;
+}
+
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
 .xh-scope-tabs[data-part='root'][data-size='sm'] {
@@ -48147,6 +48154,11 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-default));
 }
 
+/* 横排的标签带在面板之后：那条指示条换到卡片背离面板的底边，与在上方时画在顶边同一个道理 */
+.xh-scope-tabs[data-part='root'][data-variant='card'][data-orientation='horizontal'][data-placement='end'] {
+  --xh-_tabs-trigger-shadow-active: inset 0 calc(-1 * var(--xh-stroke-thick)) 0 0 var(--xh-_tabs-accent);
+}
+
 /* 分段式（有滑块开关）：淡底轨道承载一块白色抬起的选中面，选中文字保持默认字色。
    未选中标签坐在淡底轨道里，悬停 200 → 按下 300；选中面自己不再叠悬停 / 按下态。
    选中面的三件（surface-raised 底、border-default 描边、raised 影）写在下面标签自己的规则里 */
@@ -48200,6 +48212,21 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   overflow: visible clip;
   border-block-end: 0;
   border-inline-end: var(--xh-_tabs-list-border-width) solid var(--xh-tabs-list-border, var(--xh-border-default));
+}
+
+/* 标签带在面板之后：line 档那道基线换到标签带朝向面板的一边（横排顶边、竖排行首侧），指示线跟着换（见指示条一段）。
+   segment 档的轨道四边一圈占位边，不分哪一边，不在这条里 */
+.xh-scope-tabs[data-part='root'][data-placement='end']:not([data-variant='segmented'])
+  .xh-scope-tabs[data-part='list'] {
+  border-block-end: 0;
+  border-block-start: var(--xh-_tabs-list-border-width) solid var(--xh-tabs-list-border, var(--xh-border-default));
+}
+
+.xh-scope-tabs[data-part='root'][data-placement='end']:not([data-variant='segmented'])
+  .xh-scope-tabs[data-part='list'][aria-orientation='vertical'] {
+  border-block-start: 0;
+  border-inline-end: 0;
+  border-inline-start: var(--xh-_tabs-list-border-width) solid var(--xh-tabs-list-border, var(--xh-border-default));
 }
 
 /* 排在标签带里的孩子——标签、分隔线、指示条——整体沿主轴位移；两端的翻页钮贴边不动，不在这条里。
@@ -48314,6 +48341,13 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 
 /* segment 档是一条轨道里的格子（与 RadioGroup 的 segmented 形态同构）：格子按可用宽度等分 */
 .xh-scope-tabs[data-part='root'][data-orientation='horizontal'][data-variant='segmented']
+  .xh-scope-tabs[data-part='trigger'] {
+  flex: 1 1 0;
+}
+
+/* fullWidth：line 与 card 档的标签同样按标签带的宽度平分（标签带本就撑满一行）。下限仍按文字算，
+   平分后排不下的那截照旧由标签带位移露出；竖排的标签本就横贯标签带，不在这条里 */
+.xh-scope-tabs[data-part='root'][data-orientation='horizontal'][data-full-width]
   .xh-scope-tabs[data-part='trigger'] {
   flex: 1 1 0;
 }
@@ -48629,6 +48663,19 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   inline-size: var(--xh-tabs-indicator-thickness, var(--xh-stroke-thick));
 }
 
+/* 标签带在面板之后：静态线跟着基线换到朝向面板的那一边——横排贴顶边，竖排贴行首侧 */
+.xh-scope-tabs[data-part='root'][data-variant='line'][data-orientation='horizontal'][data-placement='end']
+  .xh-scope-tabs[data-part='trigger'][data-current]:not([data-drop])::after {
+  inset-block-start: 0;
+  inset-block-end: auto;
+}
+
+.xh-scope-tabs[data-part='root'][data-variant='line'][data-orientation='vertical'][data-placement='end']
+  .xh-scope-tabs[data-part='trigger'][data-current]:not([data-drop])::after {
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+}
+
 /* 竖排 line 档：滑条从基线挪到结束缘那条轨道上，主轴换成块向，取 -y / -h 两支 */
 .xh-scope-tabs[data-part='indicator'][data-orientation='vertical']:not([data-variant='segmented']) {
   inset-block-end: auto;
@@ -48641,6 +48688,18 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   transition:
     transform var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
     block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+}
+
+/* 标签带在面板之后：line 档的指示线跟着基线换边——横排压在顶边那道基线上，竖排贴到行首侧那条轨道。
+   segment 档的抬起面四个几何量都由量测给，不分哪一边 */
+.xh-scope-tabs[data-part='indicator'][data-orientation='horizontal'][data-placement='end']:not([data-variant='segmented']) {
+  inset-block-start: calc(-1 * var(--xh-_tabs-list-border-width));
+  inset-block-end: auto;
+}
+
+.xh-scope-tabs[data-part='indicator'][data-orientation='vertical'][data-placement='end']:not([data-variant='segmented']) {
+  inset-inline-start: 0;
+  inset-inline-end: auto;
 }
 
 /* 首次落位与同一项的重量（窗口缩放、换上正式字体）直接到位，只有换项才滑：连接层在这一落点投影
@@ -48774,71 +48833,94 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   mask-image: var(--xh-glyph-mark-chevron-down);
 }
 
-/* —— 「更多」钮 —— */
-/* 放了「更多」钮：钮排在标签带之后、同一行（竖排是同一列的列尾）。它不能放进标签带——tablist 只收 tab，
-   所以是 root 的孩子；root 换成两轨网格，标签带占能伸缩的那一轨、钮占按内容的那一轨，面板等其余孩子横跨两轨排在
-   下面（竖排排在右侧）。钮收着（hidden）时那一轨是 0，标签带铺满；钮与标签带之间的间距挂在钮自己身上，
-   收着时一并让开。标签带的可用长度因此随钮的有无变：放不放得下由机器按让回钮那一截算，钮不会自己把自己留住 */
-.xh-scope-tabs[data-part='root']:has(> .xh-scope-tabs[data-part='overflow-trigger']) {
+/* —— 「更多」钮与新增钮 —— */
+/* 放了「更多」钮或新增钮：钮排在标签带之后、同一行（竖排是同一列的列尾）。它们不能放进标签带——tablist 只收 tab，
+   所以是 root 的孩子；root 换成三轨网格，标签带占能伸缩的那一轨、两颗钮按 DOM 序各占后面一条按内容的轨，
+   面板等其余孩子横跨三轨排在下面（竖排排在右侧）。钮收着（hidden）或没放时那一轨是 0，标签带铺满；
+   钮与标签带之间的间距挂在钮自己身上，收着时一并让开。标签带的可用长度因此随「更多」钮的有无变：放不放得下由机器
+   按让回钮那一截算，钮不会自己把自己留住；新增钮随 addable 常在，不随放不放得下进出 */
+.xh-scope-tabs[data-part='root']:has(> .xh-scope-tabs:is([data-part='overflow-trigger'], [data-part='add-trigger'])) {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   column-gap: 0;
   row-gap: var(--xh-tabs-gap, var(--xh-stack-gap-md));
 }
 
-.xh-scope-tabs[data-part='root']:has(> .xh-scope-tabs[data-part='overflow-trigger']) > * {
+.xh-scope-tabs[data-part='root']:has(> .xh-scope-tabs:is([data-part='overflow-trigger'], [data-part='add-trigger'])) > * {
   grid-column: 1 / -1;
 }
 
-.xh-scope-tabs[data-part='root']:has(> .xh-scope-tabs[data-part='overflow-trigger'])
+.xh-scope-tabs[data-part='root']:has(> .xh-scope-tabs:is([data-part='overflow-trigger'], [data-part='add-trigger']))
   > .xh-scope-tabs[data-part='list'] {
   grid-row: 1;
   grid-column: 1;
 }
 
-.xh-scope-tabs[data-part='root']:has(> .xh-scope-tabs[data-part='overflow-trigger'])
-  > .xh-scope-tabs[data-part='overflow-trigger'] {
+/* 两颗钮钉在标签带那一行、列不定：自动排布按 DOM 序把它们依次放进标签带后面的两条轨，画面顺序与 Tab 序一致 */
+.xh-scope-tabs[data-part='root']:has(> .xh-scope-tabs:is([data-part='overflow-trigger'], [data-part='add-trigger']))
+  > .xh-scope-tabs:is([data-part='overflow-trigger'], [data-part='add-trigger']) {
   grid-row: 1;
-  grid-column: 2;
+  grid-column: auto;
   align-self: center;
   margin-inline-start: var(--xh-space-1);
   /* line 档标签带底边多一道基线，这一行比标签高出它的厚度：钮让出同样一截，居中才落在标签的中线上 */
   margin-block-end: var(--xh-_tabs-list-border-width);
 }
 
-/* 竖排：标签带与钮上下叠成左侧一列（钮在列尾），面板占右侧那一轨、跨两行 */
-.xh-scope-tabs[data-part='root'][data-orientation='vertical']:has(> .xh-scope-tabs[data-part='overflow-trigger']) {
-  grid-template-rows: minmax(0, 1fr) auto;
-  grid-template-columns: auto minmax(0, 1fr);
+/* 横排、标签带在面板之后：标签带与两颗钮那一行不再钉在第一行，排在最后（order 见 root 一段）——
+   自动排布先排面板，再把标签带放进下一行的第一轨、两颗钮依次跟在后面。基线换到了顶边，钮让出的那一截跟着换边 */
+.xh-scope-tabs[data-part='root'][data-orientation='horizontal'][data-placement='end']:has(> .xh-scope-tabs:is([data-part='overflow-trigger'], [data-part='add-trigger']))
+  > .xh-scope-tabs:is([data-part='list'], [data-part='overflow-trigger'], [data-part='add-trigger']) {
+  grid-row: auto;
+  order: 1;
+}
+
+.xh-scope-tabs[data-part='root'][data-orientation='horizontal'][data-placement='end']:has(> .xh-scope-tabs:is([data-part='overflow-trigger'], [data-part='add-trigger']))
+  > .xh-scope-tabs:is([data-part='overflow-trigger'], [data-part='add-trigger']) {
+  margin-block-start: var(--xh-_tabs-list-border-width);
+  margin-block-end: 0;
+}
+
+/* 竖排：标签带与钮上下叠成行首侧一列（钮按 DOM 序排在列尾），面板占另一轨、跨三行。
+   两条列轨用具名线 bar / panel 认，标签带在面板之后时只换模板里两条轨的先后，子项不必另写一遍列号 */
+.xh-scope-tabs[data-part='root'][data-orientation='vertical']:has(> .xh-scope-tabs:is([data-part='overflow-trigger'], [data-part='add-trigger'])) {
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  grid-template-columns: [bar-start] auto [bar-end panel-start] minmax(0, 1fr) [panel-end];
   column-gap: var(--xh-tabs-gap, var(--xh-stack-gap-md));
   row-gap: 0;
 }
 
-.xh-scope-tabs[data-part='root'][data-orientation='vertical']:has(> .xh-scope-tabs[data-part='overflow-trigger']) > * {
+.xh-scope-tabs[data-part='root'][data-orientation='vertical']:has(> .xh-scope-tabs:is([data-part='overflow-trigger'], [data-part='add-trigger'])) > * {
   grid-row: 1 / -1;
-  grid-column: 2;
+  grid-column: panel;
 }
 
-.xh-scope-tabs[data-part='root'][data-orientation='vertical']:has(> .xh-scope-tabs[data-part='overflow-trigger'])
+.xh-scope-tabs[data-part='root'][data-orientation='vertical']:has(> .xh-scope-tabs:is([data-part='overflow-trigger'], [data-part='add-trigger']))
   > .xh-scope-tabs[data-part='list'] {
   grid-row: 1;
-  grid-column: 1;
+  grid-column: bar;
 }
 
-.xh-scope-tabs[data-part='root'][data-orientation='vertical']:has(> .xh-scope-tabs[data-part='overflow-trigger'])
-  > .xh-scope-tabs[data-part='overflow-trigger'] {
-  grid-row: 2;
-  grid-column: 1;
+.xh-scope-tabs[data-part='root'][data-orientation='vertical']:has(> .xh-scope-tabs:is([data-part='overflow-trigger'], [data-part='add-trigger']))
+  > .xh-scope-tabs:is([data-part='overflow-trigger'], [data-part='add-trigger']) {
+  grid-row: auto;
+  grid-column: bar;
   align-self: auto;
   margin-inline-start: 0;
   margin-block-start: var(--xh-space-1);
   margin-block-end: 0;
 }
 
+/* 竖排、标签带在面板之后：两条列轨对调，面板占行首侧那一轨，标签带与钮那一列落到行尾侧 */
+.xh-scope-tabs[data-part='root'][data-orientation='vertical'][data-placement='end']:has(> .xh-scope-tabs:is([data-part='overflow-trigger'], [data-part='add-trigger'])) {
+  grid-template-columns: [panel-start] minmax(0, 1fr) [panel-end bar-start] auto [bar-end];
+}
+
 /* 钮本身：接 Action Control icon 档 ghost 面（连接层投影 profile / variant / size），盒取标签同高的正方形，
    与两端翻页钮同一身份；四态面、0.97 按压、焦点环与粗指针 44px 命中区由家族配方给。它坐在 root 的面上
    （不在标签带里），承载面阶梯走家族缺省的白底 100 → 200；字取次要色，与静息的标签、翻页钮同档 */
-.xh-scope-tabs[data-part='overflow-trigger'] {
+.xh-scope-tabs[data-part='overflow-trigger'],
+.xh-scope-tabs[data-part='add-trigger'] {
   --xh-action-visual-size: var(--xh-tabs-trigger-h, var(--xh-_tabs-trigger-h));
   --xh-action-fg-rest: var(--xh-fg-muted);
   /* 作者塞进来的图标跟着 icon 档走，与皮肤画的兜底字形同一把尺 */
@@ -48848,7 +48930,8 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 }
 
 /* 竖排：与竖排的翻页钮一样躺平成横贯标签带那一列的一条 */
-.xh-scope-tabs[data-part='overflow-trigger'][data-orientation='vertical'] {
+.xh-scope-tabs[data-part='overflow-trigger'][data-orientation='vertical'],
+.xh-scope-tabs[data-part='add-trigger'][data-orientation='vertical'] {
   inline-size: auto;
 }
 
@@ -48858,8 +48941,10 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   --xh-action-bg-focus-visible: var(--xh-_action-variant-bg-hover);
 }
 
-/* 没写内容就由皮肤画兜底字形：横排三点（与工具条的「更多」同一枚）。作者塞了自己的图标这条即不命中 */
-.xh-scope-tabs[data-part='overflow-trigger']:empty::before {
+/* 没写内容就由皮肤画兜底字形：「更多」钮是横排三点（与工具条的「更多」同一枚），新增钮是一枚加号。
+   作者塞了自己的图标这两条即不命中 */
+.xh-scope-tabs[data-part='overflow-trigger']:empty::before,
+.xh-scope-tabs[data-part='add-trigger']:empty::before {
   content: '';
   display: inline-block;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -48867,6 +48952,11 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-ellipsis) center / contain no-repeat;
   mask: var(--xh-glyph-mark-ellipsis) center / contain no-repeat;
+}
+
+.xh-scope-tabs[data-part='add-trigger']:empty::before {
+  -webkit-mask-image: var(--xh-glyph-mark-plus);
+  mask-image: var(--xh-glyph-mark-plus);
 }
 
 /* —— 关闭钮 —— */
@@ -48930,6 +49020,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 .xh-scope-tabs[data-part='prev-trigger'][hidden],
 .xh-scope-tabs[data-part='next-trigger'][hidden],
 .xh-scope-tabs[data-part='overflow-trigger'][hidden],
+.xh-scope-tabs[data-part='add-trigger'][hidden],
 .xh-scope-tabs[data-part='tab-drag-trigger'][hidden] {
   display: none;
 }
@@ -48983,10 +49074,11 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
     text-decoration: underline;
   }
 
-  /* 纸上翻不了页、关不了标签、也弹不出下拉，这几只钮不上纸 */
+  /* 纸上翻不了页、关不了也加不了标签、也弹不出下拉，这几只钮不上纸 */
   .xh-scope-tabs[data-part='prev-trigger'],
   .xh-scope-tabs[data-part='next-trigger'],
   .xh-scope-tabs[data-part='overflow-trigger'],
+  .xh-scope-tabs[data-part='add-trigger'],
   .xh-scope-tabs[data-part='close-trigger'] {
     display: none;
   }
@@ -48997,16 +49089,16 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
      字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
      按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
      禁用取 GrayText */
-  .xh-scope-tabs:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger'], [data-part='overflow-trigger']):empty::before {
+  .xh-scope-tabs:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger'], [data-part='overflow-trigger'], [data-part='add-trigger']):empty::before {
     forced-color-adjust: none;
     background-color: ButtonText;
   }
 
-  .xh-scope-tabs:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger'], [data-part='overflow-trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+  .xh-scope-tabs:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger'], [data-part='overflow-trigger'], [data-part='add-trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
     background-color: HighlightText;
   }
 
-  .xh-scope-tabs:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger'], [data-part='overflow-trigger'])[data-disabled]:empty::before {
+  .xh-scope-tabs:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger'], [data-part='overflow-trigger'], [data-part='add-trigger'])[data-disabled]:empty::before {
     background-color: GrayText;
   }
 }

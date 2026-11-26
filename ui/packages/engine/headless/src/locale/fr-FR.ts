@@ -681,7 +681,7 @@ const translations = {
     empty: 'Aucune donnée',
     loading: 'Chargement',
   },
-  'tabs': { ...drag, overflowTrigger: 'Plus d’onglets' },
+  'tabs': { ...drag, overflowTrigger: 'Plus d’onglets', addTrigger: 'Ajouter un onglet' },
   'tag': { close: 'Supprimer' },
   'tag-group': { deleteItem: label => `Supprimer ${label}`, list: 'Étiquettes' },
   'tags-input': { deleteItem: value => `Supprimer ${value}`, editTagInput: value => `Modifier ${value}`, clearTrigger: 'Effacer' },

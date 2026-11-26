@@ -10,7 +10,7 @@
 // 可见区随位移走，下拉里的那几项也随之换；标签始终留在标签带与 tablist 里。
 // 只在挂载后的效应与事件处理器里读 DOM，渲染期不得调用。
 
-import type { Service } from '@xihan-ui/core'
+import type { IconRecord, Service } from '@xihan-ui/core'
 import type { MenuSchema } from '../menu/menu.types'
 import type { TabsOverflowItem, TabsSchema } from './tabs.types'
 import { isItemDisabled, itemValue } from '@xihan-ui/core'
@@ -43,6 +43,9 @@ export function sameTabsOverflowItems(a: readonly TabsOverflowItem[], b: unknown
  */
 export function tabsOverflowMenuProps(service: Service<TabsSchema>): MenuSchema['props'] {
   const { context, prop, send } = service
+  // 数据里给了图标的标签，下拉里那一项同样带上它，与标签带上的那枚对得上
+  const collection = prop('collection') ?? []
+  const iconOf = (value: string): IconRecord | null => collection.find(node => node.value === value)?.icon ?? null
   return overflowMenuProps({
     entries: context.get('overflowItems').map(item => ({
       value: item.value,
@@ -50,6 +53,7 @@ export function tabsOverflowMenuProps(service: Service<TabsSchema>): MenuSchema[
       disabled: item.disabled,
       checked: null,
       separatorBefore: false,
+      icon: iconOf(item.value),
     })),
     orientation: prop('orientation') ?? 'horizontal',
     dir: prop('dir'),

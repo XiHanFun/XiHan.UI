@@ -1320,6 +1320,7 @@ export { useTable } from './components/table/use-table'
 export type { TableContext } from './components/table/use-table'
 export { useTabsContext } from './components/tabs/context'
 export {
+  XhTabsAddTrigger,
   XhTabsCloseTrigger,
   XhTabsContent,
   XhTabsIndicator,
@@ -1333,7 +1334,7 @@ export {
   XhTabsTabDragTrigger,
   XhTabsTrigger,
 } from './components/tabs/tabs'
-export type { XhTabsCloseTriggerProps, XhTabsContentProps, XhTabsIndicatorProps, XhTabsListProps, XhTabsLiveRegionProps, XhTabsNextTriggerProps, XhTabsOverflowTriggerProps, XhTabsPrevTriggerProps, XhTabsRootProps, XhTabsSeparatorProps, XhTabsTabDragTriggerProps, XhTabsTriggerProps } from './components/tabs/tabs'
+export type { XhTabsAddTriggerProps, XhTabsCloseTriggerProps, XhTabsContentProps, XhTabsIndicatorProps, XhTabsListProps, XhTabsLiveRegionProps, XhTabsNextTriggerProps, XhTabsOverflowTriggerProps, XhTabsPrevTriggerProps, XhTabsRootProps, XhTabsSeparatorProps, XhTabsTabDragTriggerProps, XhTabsTriggerProps } from './components/tabs/tabs'
 export { useTabs } from './components/tabs/use-tabs'
 export type { TabsContext } from './components/tabs/use-tabs'
 export { useTagGroupContext, useTagGroupItemContext } from './components/tag-group/context'

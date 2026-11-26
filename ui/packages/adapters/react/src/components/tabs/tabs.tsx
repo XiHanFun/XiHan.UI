@@ -6,7 +6,7 @@
 // 提供 tabs 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { TabsActivationMode, TabsApi, TabsNode, TabsNodeMeta, TabsSchema, TabsVariant } from '@xihan-ui/headless'
+import type { TabsActivationMode, TabsApi, TabsNode, TabsNodeMeta, TabsSchema, TabsStructureOptions, TabsVariant } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { tabsOverflowMenuProps, tabsStructure } from '@xihan-ui/headless'
 import { useEffect, useRef } from 'react'
@@ -16,6 +16,7 @@ import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { slotPaints } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
+import { XhIcon } from '../icon/icon'
 import { XhMenuRoot } from '../menu/menu'
 import { TabsProvider, useTabsContext } from './context'
 import { useTabs } from './use-tabs'
@@ -30,6 +31,10 @@ export interface XhTabsRootProps extends RootElementProps {
   value?: string | null
   defaultValue?: string | null
   orientation?: Orientation
+  /** 标签带落在面板的哪一侧：start 在前、end 在后，轴向仍由 orientation 定。 */
+  placement?: TabsProps['placement']
+  /** 横排的标签按标签带的宽度平分。 */
+  fullWidth?: boolean
   dir?: Direction
   /** automatic：方向键移动到哪个标签即选中哪个；manual：方向键只移动焦点，Enter / Space 才选中。 */
   activationMode?: TabsActivationMode
@@ -41,6 +46,8 @@ export interface XhTabsRootProps extends RootElementProps {
   reorderable?: boolean
   /** 标签可关闭：点 close-trigger，或焦点落在标签上按 Delete / Backspace，即触发 tab-close。 */
   closable?: boolean
+  /** 标签带之后露出新增钮：点 add-trigger 即触发 tab-add。 */
+  addable?: boolean
   /** 面板内容等到对应标签第一次被选中才渲染。 */
   lazyMount?: boolean
   /** 标签被选走后卸掉面板内容。 */
@@ -51,6 +58,8 @@ export interface XhTabsRootProps extends RootElementProps {
   onTabMove?: TabsProps['onTabMove']
   /** 关闭同理：库不持有标签序，只发出意图。 */
   onTabClose?: TabsProps['onTabClose']
+  /** 新增同理：库不建标签，只发出意图。 */
+  onTabAdd?: TabsProps['onTabAdd']
   /** 每块面板的内容；未提供时为空面板。 */
   renderPanel?: (node: TabsNodeMeta) => ReactNode
   children?: ReactNode
@@ -61,6 +70,8 @@ export function XhTabsRoot({
   value,
   defaultValue,
   orientation,
+  placement,
+  fullWidth,
   dir,
   activationMode,
   loop,
@@ -69,12 +80,14 @@ export function XhTabsRoot({
   size,
   reorderable,
   closable,
+  addable,
   lazyMount,
   unmountOnExit,
   translations,
   onValueChange,
   onTabMove,
   onTabClose,
+  onTabAdd,
   renderPanel,
   children,
   ...rest
@@ -84,6 +97,8 @@ export function XhTabsRoot({
     value,
     defaultValue,
     orientation,
+    placement,
+    fullWidth,
     dir,
     activationMode,
     loop,
@@ -92,17 +107,19 @@ export function XhTabsRoot({
     size,
     reorderable,
     closable,
+    addable,
     lazyMount,
     unmountOnExit,
     translations,
     onValueChange,
     onTabMove,
     onTabClose,
+    onTabAdd,
   }) as TabsProps)
   // children 里有真会画出东西的节点就照旧交给作者；只剩空白时当没写，照标准结构按数据铺开
   const body = slotPaints(children)
     ? children
-    : renderDefaultStructure(ctx.api, !!closable, renderPanel)
+    : renderDefaultStructure(ctx.api, { closable, addable }, renderPanel)
   return (
     <TabsProvider value={ctx}>
       <div {...mergeReactProps(ctx.api.getRootProps(), rest)}>{body}</div>
@@ -110,7 +127,7 @@ export function XhTabsRoot({
   )
 }
 
-XhTabsRoot.xhEvents = ['value-change', 'tab-move', 'tab-close'] as const
+XhTabsRoot.xhEvents = ['value-change', 'tab-move', 'tab-close', 'tab-add'] as const
 
 export interface XhTabsListProps extends ComponentPropsWithRef<'div'> {}
 export function XhTabsList({ children, ...rest }: XhTabsListProps): ReactNode {
@@ -181,6 +198,17 @@ export function XhTabsOverflowTrigger({ children, ...rest }: XhTabsOverflowTrigg
     </button>
   )
   return <XhMenuRoot {...tabsOverflowMenuProps(ctx.service)} triggerAsChild trigger={trigger} />
+}
+
+export interface XhTabsAddTriggerProps extends ComponentPropsWithRef<'button'> {}
+/**
+ * 标签带之后的新增钮：addable 时露面，点按（键盘 Enter / Space 走原生按钮的激活）触发 tab-add，焦点留在钮上。
+ * 放在 root 里、排在 XhTabsList 之后（不放进 list：tablist 只收 tab），自占一个 Tab 位；与 XhTabsOverflowTrigger
+ * 并用时一般排在它之后。不写内容时由皮肤画一枚加号。
+ */
+export function XhTabsAddTrigger({ children, ...rest }: XhTabsAddTriggerProps): ReactNode {
+  const ctx = useTabsContext()
+  return <button {...mergeReactProps(ctx.api.getAddTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhTabsLiveRegionProps extends ComponentPropsWithRef<'div'> {}
@@ -316,15 +344,19 @@ const TABS_PARTS = {
   'list': XhTabsList,
   'trigger': XhTabsTrigger,
   'close-trigger': XhTabsCloseTrigger,
+  'add-trigger': XhTabsAddTrigger,
   'content': XhTabsContent,
 }
 
+/** 标准结构里组合进来的组件：数据里给了图标的标签，图标是一枚 XhIcon。 */
+const TABS_INSTANCES = { icon: XhIcon }
+
 /**
  * 未写 children 时照 tabsStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
- * 面板内容经 renderPanel，未给时为空面板。可关闭时每个标签后面跟一枚关闭钮。
+ * 面板内容经 renderPanel，未给时为空面板。能关的标签后面跟一枚关闭钮，addable 时标签带之后跟一颗新增钮。
  */
-function renderDefaultStructure(api: TabsApi, closable: boolean, renderPanel?: (node: TabsNodeMeta) => ReactNode): ReactNode[] {
-  const nodes = tabsStructure(api, { closable, slotted: name => name === 'panel' && renderPanel != null })
+function renderDefaultStructure(api: TabsApi, options: Pick<TabsStructureOptions, 'closable' | 'addable'>, renderPanel?: (node: TabsNodeMeta) => ReactNode): ReactNode[] {
+  const nodes = tabsStructure(api, { ...options, slotted: name => name === 'panel' && renderPanel != null })
   return renderStructure(nodes, TABS_PARTS, node =>
-    node.slot?.name === 'panel' ? renderPanel?.(node.data as TabsNodeMeta) : undefined)
+    node.slot?.name === 'panel' ? renderPanel?.(node.data as TabsNodeMeta) : undefined, TABS_INSTANCES)
 }

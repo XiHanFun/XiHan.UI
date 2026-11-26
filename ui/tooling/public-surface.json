@@ -2672,6 +2672,8 @@
       "XhTableSortTriggerProps",
       "XhTableToolbar",
       "XhTableToolbarProps",
+      "XhTabsAddTrigger",
+      "XhTabsAddTriggerProps",
       "XhTabsCloseTrigger",
       "XhTabsCloseTriggerProps",
       "XhTabsContent",
@@ -5906,6 +5908,8 @@
       "XhTableSortTriggerProps",
       "XhTableToolbar",
       "XhTableToolbarProps",
+      "XhTabsAddTrigger",
+      "XhTabsAddTriggerProps",
       "XhTabsCloseTrigger",
       "XhTabsCloseTriggerProps",
       "XhTabsContent",
@@ -9795,6 +9799,7 @@
       "TabsNodeMeta",
       "TabsOverflow",
       "TabsOverflowItem",
+      "TabsPlacement",
       "TabsSchema",
       "TabsStructureOptions",
       "TabsTranslations",
@@ -14338,6 +14343,7 @@
       "toolbar"
     ],
     "tabs": [
+      "add-trigger",
       "close-trigger",
       "content",
       "indicator",
@@ -16791,16 +16797,20 @@
     ],
     "tabs": [
       "activationMode",
+      "addable",
       "closable",
       "collection",
       "defaultValue",
       "dir",
+      "fullWidth",
       "lazyMount",
       "loop",
+      "onTabAdd",
       "onTabClose",
       "onTabMove",
       "onValueChange",
       "orientation",
+      "placement",
       "reorderable",
       "size",
       "tone",
@@ -25752,12 +25762,15 @@
     "xh-tabs": {
       "attributes": [
         "activation-mode",
+        "addable",
         "closable",
         "default-value",
         "dir",
+        "full-width",
         "lazy-mount",
         "loop",
         "orientation",
+        "placement",
         "reorderable",
         "size",
         "tone",
@@ -25766,6 +25779,7 @@
         "variant"
       ],
       "events": [
+        "tab-add",
         "tab-close",
         "tab-move",
         "value-change"

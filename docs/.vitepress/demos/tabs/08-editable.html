@@ -1,35 +1,36 @@
-<!-- 增删标签 | 关闭钮或 Delete 键关掉标签，新建按钮追加一枚；标签序由数据源持有 -->
-<div style="display: grid; gap: var(--xh-space-3); inline-size: 420px; max-inline-size: 100%">
-  <xh-button id="tabs-editable-add" variant="outline" style="justify-self: start">
-    <button data-xh-part="root">新建草稿</button>
-  </xh-button>
-  <xh-tabs id="tabs-editable" value="draft-1" closable>
-    <div data-xh-part="root">
-      <div data-xh-part="list" aria-label="草稿">
-        <button data-xh-part="trigger" value="draft-1">草稿 1</button>
-        <button data-xh-part="close-trigger" value="draft-1"></button>
-        <button data-xh-part="trigger" value="draft-2">草稿 2</button>
-        <button data-xh-part="close-trigger" value="draft-2"></button>
-        <button data-xh-part="trigger" value="draft-3">草稿 3</button>
-        <button data-xh-part="close-trigger" value="draft-3"></button>
-        <div data-xh-part="indicator"></div>
-      </div>
-
-      <div data-xh-part="content" value="draft-1">草稿 1的正文。</div>
-      <div data-xh-part="content" value="draft-2">草稿 2的正文。</div>
-      <div data-xh-part="content" value="draft-3">草稿 3的正文。</div>
+<!-- 增删标签 | 行尾的新增钮与关闭钮只发意图，标签序由数据源持有；条目上的 closable 让「概览」固定不可关 -->
+<xh-tabs id="tabs-editable" value="overview" closable addable>
+  <div data-xh-part="root" style="inline-size: 420px; max-inline-size: 100%">
+    <div data-xh-part="list" aria-label="草稿">
+      <button data-xh-part="trigger" value="overview">概览</button>
+      <button data-xh-part="close-trigger" value="overview"></button>
+      <button data-xh-part="trigger" value="draft-1">草稿 1</button>
+      <button data-xh-part="close-trigger" value="draft-1"></button>
+      <button data-xh-part="trigger" value="draft-2">草稿 2</button>
+      <button data-xh-part="close-trigger" value="draft-2"></button>
+      <div data-xh-part="indicator"></div>
     </div>
-  </xh-tabs>
-</div>
+    <button data-xh-part="add-trigger"></button>
+
+    <div data-xh-part="content" value="overview">概览的正文。</div>
+    <div data-xh-part="content" value="draft-1">草稿 1的正文。</div>
+    <div data-xh-part="content" value="draft-2">草稿 2的正文。</div>
+  </div>
+</xh-tabs>
 
 <script type="module">
-  // 标签序由页面持有：元素只发 tab-close，删不删、选中挪到哪由这里决定
+  // 标签序由页面持有：元素只发 tab-add / tab-close，建不建、删不删、选中挪到哪由这里决定
   const tabs = document.getElementById("tabs-editable");
   const root = tabs.querySelector('[data-xh-part="root"]');
   const list = tabs.querySelector('[data-xh-part="list"]');
   const indicator = tabs.querySelector('[data-xh-part="indicator"]');
-  const values = () => [...list.querySelectorAll('[data-xh-part="trigger"]')].map((el) => ({ value: el.getAttribute("value") }));
-  let next = 4;
+  // 「概览」固定不可关：条目上的 closable 压过整组
+  const pinned = new Set(["overview"]);
+  const values = () => [...list.querySelectorAll('[data-xh-part="trigger"]')].map((el) => {
+    const value = el.getAttribute("value");
+    return pinned.has(value) ? { value, closable: false } : { value };
+  });
+  let next = 3;
   tabs.collection = values();
 
   tabs.addEventListener("value-change", (event) => {
@@ -43,7 +44,8 @@
     tabs.collection = values();
     if (tabs.value === value) tabs.value = rest[Math.min(index, rest.length - 1)] ?? "";
   });
-  document.getElementById("tabs-editable-add").addEventListener("click", () => {
+  // 新建的标签追加到末尾并选中它：焦点留在新增钮上，Shift+Tab 回到这枚新标签
+  tabs.addEventListener("tab-add", () => {
     const value = `draft-${next}`;
     const label = `草稿 ${next}`;
     next += 1;

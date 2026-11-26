@@ -1,0 +1,13 @@
+<!-- 等分铺满 | fullWidth 让标签按标签带的宽度平分，适合两三个并列入口撑满一栏 -->
+<xh-tabs default-value="sign-in" full-width>
+  <div data-xh-part="root" style="inline-size: 360px; max-inline-size: 100%">
+    <div data-xh-part="list" aria-label="账号">
+      <button data-xh-part="trigger" value="sign-in">登录</button>
+      <button data-xh-part="trigger" value="sign-up">注册</button>
+      <div data-xh-part="indicator"></div>
+    </div>
+
+    <div data-xh-part="content" value="sign-in">用已有账号登录。</div>
+    <div data-xh-part="content" value="sign-up">创建一个新账号。</div>
+  </div>
+</xh-tabs>

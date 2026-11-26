@@ -27,6 +27,7 @@ const PUBLIC_EVENTS = {
   'download-complete': 'onDownloadComplete',
   'download-error': 'onDownloadError',
   'exit-complete': 'onExitComplete',
+  'tab-add': 'onTabAdd',
   'answers-change': 'onAnswersChange',
   'expanded-value-change': 'onExpandedValueChange',
   'index-change': 'onIndexChange',

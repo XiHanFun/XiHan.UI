@@ -692,7 +692,7 @@ const translations = {
     empty: '暂无数据',
     loading: '加载中',
   },
-  'tabs': { ...drag, overflowTrigger: '更多标签页' },
+  'tabs': { ...drag, overflowTrigger: '更多标签页', addTrigger: '新建标签页' },
   'tag': { close: '删除' },
   'tag-group': { deleteItem: label => `删除 ${label}`, list: '标签' },
   'tags-input': { deleteItem: value => `删除 ${value}`, editTagInput: value => `编辑 ${value}`, clearTrigger: '清空' },

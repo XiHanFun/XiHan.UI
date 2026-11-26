@@ -679,7 +679,7 @@ const translations = {
     empty: 'データがありません',
     loading: '読み込み中',
   },
-  'tabs': { ...drag, overflowTrigger: 'その他のタブ' },
+  'tabs': { ...drag, overflowTrigger: 'その他のタブ', addTrigger: 'タブを追加' },
   'tag': { close: '削除' },
   'tag-group': { deleteItem: label => `${label} を削除`, list: 'タグ' },
   'tags-input': { deleteItem: value => `${value} を削除`, editTagInput: value => `${value} を編集`, clearTrigger: 'クリア' },

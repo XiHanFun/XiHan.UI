@@ -69837,7 +69837,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tabs>`：Light-DOM 行为宿主，运行 tabs 状态机并把 connect 产出接到 root / list / trigger / content\n角色节点上。条目身份取作者写在 trigger / content 上的 value 属性，trigger 的禁用由部件声明。\n\n不写部件时元素按标准结构生成：标签带里每条一个标签（文字取 label），closable 时标签后面紧跟它的关闭钮，再是每条一块面板；\n只写 root 时生成在它里面。某一块面板的内容用宿主直接子节点 `slot=\"panel:<值>\"` 接管，\n要按 lazy-mount / unmount-on-exit 挂卸时写成 `<template slot=\"panel:<值>\">`。\n\n读屏文案 `translations` 是对象，属性无法表达，只能通过 property 设置（`el.translations = {...}`）。\n\n开启 reorderable 后标签可以拖动换位：整个标签都是拖动源。拖动中被拖的标签原地不动，\n只写 data-dragging；落点绘制在参照标签上，data-drop 为 before / after 即插在该标签前后。触屏路径经 tab-drag-trigger 把手。\n键盘使用 Alt + 主轴方向键（横向是左右、纵向是上下，横向 rtl 下左右对调），按一次即一次完整提交。\n顺序不由元素保管：换位只发出 tab-move，标签序由使用方写回自己的数据源。\n\n标签带放不下时，root 里紧跟 list 之后的 overflow-trigger 露面，弹出的下拉列出可见区外的标签。\n下拉的定位层、列表与条目由元素自己建（与工具条的「更多」菜单同一套）：作者只写一颗空的 overflow-trigger，\n建出来的节点归 menu 的 scope，不写 data-xh-part。",
+          "description": "`<xh-tabs>`：Light-DOM 行为宿主，运行 tabs 状态机并把 connect 产出接到 root / list / trigger / content\n角色节点上。条目身份取作者写在 trigger / content 上的 value 属性，trigger 的禁用由部件声明。\n\n不写部件时元素按标准结构生成：标签带里每条一个标签（文字取 label，给了 icon 时图标排在文字之前，是一枚 xh-icon），\n能关的标签后面紧跟它的关闭钮，addable 时标签带之后是新增钮，再是每条一块面板；\n只写 root 时生成在它里面。某一块面板的内容用宿主直接子节点 `slot=\"panel:<值>\"` 接管，\n要按 lazy-mount / unmount-on-exit 挂卸时写成 `<template slot=\"panel:<值>\">`。\n\n读屏文案 `translations` 是对象，属性无法表达，只能通过 property 设置（`el.translations = {...}`）。\n\n开启 reorderable 后标签可以拖动换位：整个标签都是拖动源。拖动中被拖的标签原地不动，\n只写 data-dragging；落点绘制在参照标签上，data-drop 为 before / after 即插在该标签前后。触屏路径经 tab-drag-trigger 把手。\n键盘使用 Alt + 主轴方向键（横向是左右、纵向是上下，横向 rtl 下左右对调），按一次即一次完整提交。\n顺序不由元素保管：换位只发出 tab-move，标签序由使用方写回自己的数据源。\n\n标签带放不下时，root 里紧跟 list 之后的 overflow-trigger 露面，弹出的下拉列出可见区外的标签。\n下拉的定位层、列表与条目由元素自己建（与工具条的「更多」菜单同一套）：作者只写一颗空的 overflow-trigger，\n建出来的节点归 menu 的 scope，不写 data-xh-part。",
           "name": "XhTabsElement",
           "cssParts": [
             {
@@ -69873,11 +69873,15 @@
               "name": "overflow-trigger"
             },
             {
+              "description": "新增钮，写一个空 `<button>` 放在 root 里、排在 list 之后（不放进 list）；自占一个 Tab 位，点按发 tab-add，addable 关闭时 hidden",
+              "name": "add-trigger"
+            },
+            {
               "description": "role=tab 的标签按钮，须自带 value 属性标识身份",
               "name": "trigger"
             },
             {
-              "description": "标签的关闭钮，紧跟在所属 trigger 之后、与它平级，须自带与它相同的 value 属性；对读屏隐藏、不占 Tab 位，closable 关闭时 hidden",
+              "description": "标签的关闭钮，紧跟在所属 trigger 之后、与它平级，须自带与它相同的 value 属性；对读屏隐藏、不占 Tab 位，这一条不能关时 hidden",
               "name": "close-trigger"
             },
             {
@@ -69909,12 +69913,21 @@
             },
             {
               "kind": "field",
+              "name": "dependencies",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ 'xh-icon': XhIconElement }"
+            },
+            {
+              "kind": "field",
               "name": "structure",
               "type": {
                 "text": "ElementStructure<XhTabsElement>"
               },
               "static": true,
-              "default": "{ build: host => host.ctrl.service ? tabsStructure(connectTabs(host.ctrl.service, wcNormalize), { closable: host.closable ?? false, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
+              "default": "{ build: host => host.ctrl.service ? tabsStructure(connectTabs(host.ctrl.service, wcNormalize), { closable: host.closable ?? false, addable: host.addable ?? false, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
             },
             {
               "kind": "field",
@@ -69950,6 +69963,24 @@
                 "text": "Orientation | undefined"
               },
               "attribute": "orientation"
+            },
+            {
+              "kind": "field",
+              "name": "placement",
+              "privacy": "public",
+              "type": {
+                "text": "TabsSchema['props']['placement'] | undefined"
+              },
+              "attribute": "placement"
+            },
+            {
+              "kind": "field",
+              "name": "fullWidth",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "full-width"
             },
             {
               "kind": "field",
@@ -70025,6 +70056,15 @@
             },
             {
               "kind": "field",
+              "name": "addable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "addable"
+            },
+            {
+              "kind": "field",
               "name": "lazyMount",
               "privacy": "public",
               "type": {
@@ -70064,6 +70104,12 @@
             {
               "kind": "field",
               "name": "notifyTabClose",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyTabAdd",
               "privacy": "private",
               "readonly": true
             },
@@ -70202,6 +70248,10 @@
               "type": {
                 "text": "TabsCloseDetails"
               }
+            },
+            {
+              "description": "新增钮被按下；没有 detail，新标签由使用方追加进自己的数据源",
+              "name": "tab-add"
             }
           ],
           "attributes": [
@@ -70228,6 +70278,22 @@
               "description": "方向键轴向，默认 horizontal",
               "name": "orientation",
               "fieldName": "orientation"
+            },
+            {
+              "type": {
+                "text": "TabsSchema['props']['placement'] | undefined"
+              },
+              "description": "标签带落在面板的哪一侧，默认 start；轴向仍由 orientation 定（横排上 / 下，竖排行首侧 / 行尾侧），只换版面、不改 DOM 序",
+              "name": "placement",
+              "fieldName": "placement"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "横排的标签按标签带的宽度平分，默认关闭；segmented 本就平分，竖排不受影响",
+              "name": "full-width",
+              "fieldName": "fullWidth"
             },
             {
               "type": {
@@ -70289,9 +70355,17 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "标签可关闭：点 close-trigger，或焦点在标签上按 Delete / Backspace，发 tab-close；默认关闭",
+              "description": "标签可关闭：点 close-trigger，或焦点在标签上按 Delete / Backspace，发 tab-close；默认关闭。这是整组的缺省，collection 的条目可以逐条覆盖",
               "name": "closable",
               "fieldName": "closable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "标签带之后露出新增钮：点 add-trigger 即发 tab-add，库不建标签、不挪焦点；默认关闭",
+              "name": "addable",
+              "fieldName": "addable"
             },
             {
               "type": {

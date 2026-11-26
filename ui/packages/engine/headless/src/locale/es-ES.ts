@@ -679,7 +679,7 @@ const translations = {
     empty: 'Sin datos',
     loading: 'Cargando',
   },
-  'tabs': { ...drag, overflowTrigger: 'Más pestañas' },
+  'tabs': { ...drag, overflowTrigger: 'Más pestañas', addTrigger: 'Añadir pestaña' },
   'tag': { close: 'Eliminar' },
   'tag-group': { deleteItem: label => `Eliminar ${label}`, list: 'Etiquetas' },
   'tags-input': { deleteItem: value => `Eliminar ${value}`, editTagInput: value => `Editar ${value}`, clearTrigger: 'Borrar' },

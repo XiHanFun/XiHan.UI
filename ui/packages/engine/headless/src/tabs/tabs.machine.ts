@@ -150,6 +150,8 @@ export const tabsMachine = createMachine({
     scrollMax: cell<number>(() => ({ defaultValue: 0 })),
     // 按压通道：正被按住的 trigger（按 value 记），与选中、焦点锚点、拖动无关
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
+    // 新增钮的按压通道：它不是标签，不与标签的值混记
+    addPressed: cell<boolean>(() => ({ defaultValue: false })),
     // 被选中过的标签：初值即首帧的选中项，之后每换一次选中记一笔，只增不减
     visited: cell<string[]>(() => {
       const initial = prop('value') ?? prop('defaultValue') ?? null
@@ -206,6 +208,9 @@ export const tabsMachine = createMachine({
         'TAB.MOVE_BY': { actions: ['moveTabBy'] },
         // 关闭只发意图，标签序归数据源
         'TAB.CLOSE': { actions: ['invokeOnTabClose'] },
+        // 新增同理：库不建标签，新标签由数据源追加
+        'TAB.ADD': { actions: ['invokeOnTabAdd'] },
+        'ADD.PRESS': { actions: ['setAddPressed'] },
         // 按压通道：条目按 value 记按住的那一个；条目自身的禁用由 connect 判定后随事件带入
         'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
         'PRESS.END': { actions: ['endPress'] },
@@ -541,6 +546,14 @@ export const tabsMachine = createMachine({
         if (e.type !== 'TAB.CLOSE')
           return
         prop('onTabClose')?.({ value: e.value, values: e.values })
+      },
+
+      invokeOnTabAdd: ({ prop }) => prop('onTabAdd')?.(),
+
+      setAddPressed: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'ADD.PRESS')
+          context.set('addPressed', e.pressed)
       },
 
       /**

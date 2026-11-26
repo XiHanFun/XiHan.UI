@@ -5,7 +5,7 @@
 
 // 定义 tabs 类型契约。
 
-import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { Direction, IconRecord, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
 import type { EasingFunction } from '@xihan-ui/motion'
 import type { MultiPointerSession } from '@xihan-ui/pointer'
 import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
@@ -14,6 +14,12 @@ import type { LiquidIndicator } from '../shared/indicator'
 /** 视觉变体。line 是默认档，segment 用于需要浮起选中面的主导航。 */
 export type TabsVariant = 'line' | 'card' | 'segmented'
 
+/**
+ * 标签带落在面板的哪一侧：start 排在面板之前，end 排在面板之后。哪条轴由 orientation 定——
+ * 横排时 start 在上、end 在下；竖排时 start 在行首侧、end 在行尾侧，随书写方向镜像。
+ */
+export type TabsPlacement = 'start' | 'end'
+
 export interface TabsValueChangeDetails {
   value: string | null
 }
@@ -21,13 +27,23 @@ export interface TabsValueChangeDetails {
 /** automatic：方向键移动焦点即切换选中；manual：焦点先走，Enter/Space 才切换。 */
 export type TabsActivationMode = 'automatic' | 'manual'
 
-/** 条目数据。提供 collection 时，标签文本与禁用以它为准。 */
+/** 条目数据。提供 collection 时，标签文本、禁用与可关闭以它为准。 */
 export interface TabsNode {
   value: string
   /** 标签上的文本；默认回退为 value。 */
   label?: string
   /** 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 */
   disabled?: boolean
+  /**
+   * 这一条能不能关。写了以这一条为准，没写随整组的 closable：整组可关时也能把某一条固定住，
+   * 整组不可关时也能单独放开某一条。不能关的标签收起关闭钮，Delete / Backspace 也不发关闭意图。
+   */
+  closable?: boolean
+  /**
+   * 图标：标准结构把它铺在标签文字之前。纯装饰，读屏从标签文字取名；
+   * 手写结构时图标由作者自己放进 trigger，这一项不参与。
+   */
+  icon?: IconRecord
 }
 
 /** 单个条目的元信息，由 collection 推导，不含选中态与焦点态。 */
@@ -36,6 +52,10 @@ export interface TabsNodeMeta {
   /** node.label ?? node.value，恒为字符串。 */
   label: string
   disabled: boolean
+  /** 条目自己声明的可关闭；没写为 null，随整组的 closable。 */
+  closable: boolean | null
+  /** 条目的图标；没写为 null。 */
+  icon: IconRecord | null
 }
 
 /**
@@ -91,8 +111,8 @@ export interface TabsCloseDetails {
 export interface TabsSchema extends MachineSchema {
   props: {
     /**
-     * 条目数据，标签文本与禁用的事实源。提供后 trigger 部件只需声明 value。
-     * 未提供时回到文本与禁用都写在 trigger 上的方式。
+     * 条目数据，标签文本、禁用、逐条可关闭与图标的事实源。提供后 trigger 部件只需声明 value。
+     * 未提供时回到文本与禁用都写在 trigger 上的方式，可关闭只有整组的 closable。
      */
     collection?: TabsNode[]
     /** 选中值。提供即受控：内部不再自行修改，只发 onValueChange。 */
@@ -100,6 +120,16 @@ export interface TabsSchema extends MachineSchema {
     defaultValue?: string | null
     /** 方向键轴向，默认 horizontal；不同轴的方向键放行给页面滚动与读屏。 */
     orientation?: Orientation
+    /**
+     * 标签带落在面板的哪一侧，默认 start；轴向仍由 orientation 定（横排上 / 下，竖排行首侧 / 行尾侧）。
+     * 只换版面，不改 DOM 序：标签带在读屏与 Tab 序里照旧排在面板之前。
+     */
+    placement?: TabsPlacement
+    /**
+     * 横排的标签按标签带的宽度平分，默认 false（标签只占自己的字宽）。标签带本就撑满一行，
+     * 这一项让标签把它铺满；segmented 本就平分，竖排不受影响。
+     */
+    fullWidth?: boolean
     /** 文字方向，默认 ltr；只影响水平轴上 ArrowLeft / ArrowRight 的前后语义。 */
     dir?: Direction
     /** 方向键移动焦点时是否同时切换选中，默认 automatic。 */
@@ -121,11 +151,18 @@ export interface TabsSchema extends MachineSchema {
     onTabMove?: (details: TabsMoveDetails) => void
     /**
      * 标签可关闭：点 close-trigger，或焦点在标签上按 Delete / Backspace，即发 onTabClose。
-     * 库不持有标签序，只发意图，是否删除由数据源决定。
+     * 库不持有标签序，只发意图，是否删除由数据源决定。这是整组的缺省，collection 的条目可以逐条覆盖。
      */
     closable?: boolean
     /** 标签被关闭。 */
     onTabClose?: (details: TabsCloseDetails) => void
+    /**
+     * 显示新增钮：点 add-trigger 即发 onTabAdd，默认 false。库不建标签，只发意图：新标签由数据源追加、
+     * 写回 collection，要选中它就一并写回 value。焦点留在新增钮上，不跟着挪。
+     */
+    addable?: boolean
+    /** 新增钮被按下。 */
+    onTabAdd?: () => void
     /**
      * 面板内容等到对应标签第一次被选中才渲染，默认 false（全部面板首帧即渲染）。
      * 面板节点本身常在，只推迟里面的内容。
@@ -168,6 +205,8 @@ export interface TabsSchema extends MachineSchema {
     scrollMax: number
     /** 按压通道：Space / Enter 或触屏按住的 trigger value。抬起、失焦或指针取消即清空，与选中互相独立。 */
     pressedValue: string | null
+    /** 新增钮的按压通道：Space / Enter 或触屏按住为 true，抬起、失焦或指针取消即撤。 */
+    addPressed: boolean
     /** 被选中过的标签，按首次选中的先后排列；lazyMount / unmountOnExit 据它判面板内容在不在。 */
     visited: string[]
     /**
@@ -248,6 +287,10 @@ export interface TabsSchema extends MachineSchema {
     | { type: 'TAB.MOVE_BY', value: string, target: DropTarget }
     /** 关闭一个标签：只发意图，库不修改标签序。 */
     | { type: 'TAB.CLOSE', value: string, values: string[] }
+    /** 新增一个标签：只发意图，库不建标签。 */
+    | { type: 'TAB.ADD' }
+    /** 新增钮被按住 / 松开。 */
+    | { type: 'ADD.PRESS', pressed: boolean }
     /** trigger 被 Space / Enter 或触屏按住；disabled 是条目自身的禁用事实，由 connect 判定后随事件带入。 */
     | { type: 'PRESS.START', value: string, disabled?: boolean }
     /** 按住的 trigger 抬起、失焦或指针取消；只松开 value 对应的那一个。 */
@@ -281,6 +324,8 @@ export interface TabsSchema extends MachineSchema {
     | 'cancelTabDrag'
     | 'moveTabBy'
     | 'invokeOnTabClose'
+    | 'invokeOnTabAdd'
+    | 'setAddPressed'
     | 'measureIndicator'
     | 'measureStrip'
     | 'scrollPrev'
@@ -323,9 +368,15 @@ export interface TabsApi<T extends PropTypes = PropTypes> {
   getTriggerProps: (props: TabsTriggerProps) => T['button']
   /**
    * 标签的关闭钮：紧跟在所属 trigger 之后、与它平级。点按发 onTabClose，与标签上按 Delete / Backspace 同一个意图。
-   * 鼠标与触屏专用：对读屏隐藏、不占 Tab 位，键盘那一路在标签自己身上。closable 关闭时 hidden，所属标签禁用时 disabled。
+   * 鼠标与触屏专用：对读屏隐藏、不占 Tab 位，键盘那一路在标签自己身上。这一条不能关时 hidden（条目的 closable，
+   * 没写随整组），所属标签禁用时 disabled。
    */
   getCloseTriggerProps: (props: TabsTriggerProps) => T['button']
+  /**
+   * 新增钮：root 的孩子、排在标签带之后（不进 tablist），自占一个 Tab 位，不是方向键走位的一站。
+   * 点按（键盘 Enter / Space 走原生按钮的激活）发 onTabAdd，焦点留在钮上。addable 关闭时 hidden。
+   */
+  getAddTriggerProps: () => T['button']
   /**
    * 该面板此刻是否渲染内容：选中的面板总是渲染；未选中的面板按 lazyMount / unmountOnExit 判——
    * 从没被选中过且开了 lazyMount 的不渲染，被选中过又被选走且开了 unmountOnExit 的不渲染，其余照常渲染（只 hidden）。
@@ -366,6 +417,8 @@ export interface TabsApi<T extends PropTypes = PropTypes> {
 export interface TabsTranslations extends Partial<DragTranslations> {
   /** 「更多」钮的可及名：可见区外的标签都列在它弹出的下拉里。 */
   overflowTrigger: string
+  /** 新增钮的可及名。 */
+  addTrigger: string
 }
 
 /** 标签换位：从哪一位移到哪一位，以及重排后的整份顺序。 */

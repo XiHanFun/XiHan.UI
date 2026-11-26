@@ -679,7 +679,7 @@ const translations = {
     empty: '데이터 없음',
     loading: '로드 중',
   },
-  'tabs': { ...drag, overflowTrigger: '탭 더 보기' },
+  'tabs': { ...drag, overflowTrigger: '탭 더 보기', addTrigger: '탭 추가' },
   'tag': { close: '삭제' },
   'tag-group': { deleteItem: label => `${label} 삭제`, list: '태그' },
   'tags-input': { deleteItem: value => `${value} 삭제`, editTagInput: value => `${value} 편집`, clearTrigger: '지우기' },

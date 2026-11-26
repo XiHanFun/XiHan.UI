@@ -23,6 +23,8 @@ export const tabsAnatomy = createAnatomy('tabs', [
   'next-trigger',
   // 标签带之后的「更多」钮：放不下时露面，弹出的下拉列出可见区外的标签；在 tablist 之外、自占一个 Tab 位
   'overflow-trigger',
+  // 标签带之后的新增钮：addable 时露面，点按只发新增意图；与「更多」钮一样在 tablist 之外、自占一个 Tab 位
+  'add-trigger',
   'content',
   'tab-drag-trigger',
   'live-region',

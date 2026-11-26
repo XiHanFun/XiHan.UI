@@ -2740,6 +2740,7 @@ export { useTable } from './components/table/use-table'
 export type { TableContext } from './components/table/use-table'
 export { useTabsContext } from './components/tabs/context'
 export {
+  XhTabsAddTrigger,
   XhTabsCloseTrigger,
   XhTabsContent,
   XhTabsIndicator,
@@ -2754,6 +2755,7 @@ export {
   XhTabsTrigger,
 } from './components/tabs/tabs'
 export type {
+  XhTabsAddTriggerProps,
   XhTabsCloseTriggerProps,
   XhTabsContentProps,
   XhTabsIndicatorProps,

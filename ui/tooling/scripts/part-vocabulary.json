@@ -15,7 +15,8 @@
       "filter-builder"
     ],
     "add-trigger": [
-      "field-array"
+      "field-array",
+      "tabs"
     ],
     "alpha-slider": [
       "color-picker"

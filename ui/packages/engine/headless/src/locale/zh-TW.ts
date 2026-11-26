@@ -679,7 +679,7 @@ const translations = {
     empty: '沒有資料',
     loading: '載入中',
   },
-  'tabs': { ...drag, overflowTrigger: '更多索引標籤' },
+  'tabs': { ...drag, overflowTrigger: '更多索引標籤', addTrigger: '新增索引標籤' },
   'tag': { close: '刪除' },
   'tag-group': { deleteItem: label => `刪除 ${label}`, list: '標籤' },
   'tags-input': { deleteItem: value => `刪除 ${value}`, editTagInput: value => `編輯 ${value}`, clearTrigger: '清除' },

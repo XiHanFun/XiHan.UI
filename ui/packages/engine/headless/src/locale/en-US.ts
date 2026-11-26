@@ -859,6 +859,7 @@ export const TABS_EN_US: XhLocaleBucket<'tabs'> = {
   canceledInto,
   rootLevel,
   overflowTrigger: 'More tabs',
+  addTrigger: 'Add tab',
 }
 
 export const TAG_EN_US: XhLocaleBucket<'tag'> = { close: 'Delete' }

@@ -1,7 +1,7 @@
-// 增删标签 | 关闭钮或 Delete 键关掉标签，新建按钮追加一枚；标签序由数据源持有
+// 增删标签 | 行尾的新增钮与关闭钮只发意图，标签序由数据源持有；条目上的 closable 让「概览」固定不可关
 import type { ReactNode } from "react";
 import {
-  XhButton,
+  XhTabsAddTrigger,
   XhTabsCloseTrigger,
   XhTabsContent,
   XhTabsIndicator,
@@ -11,61 +11,64 @@ import {
 } from "@xihan-ui/react";
 import { Fragment, useRef, useState } from "react";
 
-interface Draft {
+interface Tab {
   value: string;
   label: string;
+  closable?: boolean;
 }
 
 export default function Demo(): ReactNode {
-  const [drafts, setDrafts] = useState<Draft[]>([
+  const [tabs, setTabs] = useState<Tab[]>([
+    { value: "overview", label: "概览", closable: false },
     { value: "draft-1", label: "草稿 1" },
     { value: "draft-2", label: "草稿 2" },
-    { value: "draft-3", label: "草稿 3" },
   ]);
-  const [selected, setSelected] = useState<string | null>("draft-1");
-  const next = useRef(4);
+  const [selected, setSelected] = useState<string | null>("overview");
+  const next = useRef(3);
 
+  // 新建的标签追加到末尾并选中它：焦点留在新增钮上，Shift+Tab 回到这枚新标签
   function add(): void {
     const value = `draft-${next.current}`;
-    setDrafts([...drafts, { value, label: `草稿 ${next.current}` }]);
+    setTabs([...tabs, { value, label: `草稿 ${next.current}` }]);
     setSelected(value);
     next.current += 1;
   }
 
   // 关掉的是选中标签时，选中挪到原位置上的下一枚（没有就是上一枚）
   function close(details: { value: string; values: string[] }): void {
-    const index = drafts.findIndex(draft => draft.value === details.value);
-    setDrafts(drafts.filter(draft => draft.value !== details.value));
+    const index = tabs.findIndex(tab => tab.value === details.value);
+    setTabs(tabs.filter(tab => tab.value !== details.value));
     if (selected === details.value)
       setSelected(details.values[Math.min(index, details.values.length - 1)] ?? null);
   }
 
   return (
-    <div style={{ display: "grid", gap: "var(--xh-space-3)", inlineSize: "420px", maxInlineSize: "100%" }}>
-      <XhButton variant="outline" style={{ justifySelf: "start" }} onClick={add}>新建草稿</XhButton>
-      <XhTabsRoot
-        value={selected}
-        collection={drafts}
-        closable
-        onValueChange={({ value }) => setSelected(value)}
-        onTabClose={close}
-      >
-        <XhTabsList aria-label="草稿">
-          {drafts.map(draft => (
-            <Fragment key={draft.value}>
-              <XhTabsTrigger value={draft.value}>{draft.label}</XhTabsTrigger>
-              <XhTabsCloseTrigger value={draft.value} />
-            </Fragment>
-          ))}
-          <XhTabsIndicator />
-        </XhTabsList>
-
-        {drafts.map(draft => (
-          <XhTabsContent key={draft.value} value={draft.value}>
-            {`${draft.label}的正文。`}
-          </XhTabsContent>
+    <XhTabsRoot
+      value={selected}
+      collection={tabs}
+      closable
+      addable
+      style={{ inlineSize: "420px", maxInlineSize: "100%" }}
+      onValueChange={({ value }) => setSelected(value)}
+      onTabAdd={add}
+      onTabClose={close}
+    >
+      <XhTabsList aria-label="草稿">
+        {tabs.map(tab => (
+          <Fragment key={tab.value}>
+            <XhTabsTrigger value={tab.value}>{tab.label}</XhTabsTrigger>
+            <XhTabsCloseTrigger value={tab.value} />
+          </Fragment>
         ))}
-      </XhTabsRoot>
-    </div>
+        <XhTabsIndicator />
+      </XhTabsList>
+      <XhTabsAddTrigger />
+
+      {tabs.map(tab => (
+        <XhTabsContent key={tab.value} value={tab.value}>
+          {`${tab.label}的正文。`}
+        </XhTabsContent>
+      ))}
+    </XhTabsRoot>
   );
 }

@@ -9,6 +9,7 @@
 import type { StructureNode, StructureSlotted } from '../shared/structure'
 import type { tabsAnatomy } from './tabs.anatomy'
 import type { TabsApi, TabsNodeMeta } from './tabs.types'
+import { structureInstance } from '../shared/structure-instance'
 
 type TabsPart = (typeof tabsAnatomy)['parts'][number]
 
@@ -17,6 +18,7 @@ export const TABS_STRUCTURE_PARTS = [
   'list',
   'trigger',
   'close-trigger',
+  'add-trigger',
   'content',
 ] as const satisfies readonly TabsPart[]
 
@@ -37,8 +39,10 @@ type TabsNode = StructureNode<(typeof TABS_STRUCTURE_PARTS)[number]>
 
 /** 结构里要不要铺这几个可选部件。 */
 export interface TabsStructureOptions {
-  /** 每个标签后面跟不跟一枚关闭钮，缺省不跟。 */
+  /** 整组的可关闭，缺省不可关：条目上写了 closable 的以条目为准，能关的标签后面跟一枚关闭钮。 */
   closable?: boolean
+  /** 标签带之后跟不跟一颗新增钮，缺省不跟。 */
+  addable?: boolean
   /**
    * 作者给了哪些插槽的内容：panel（面板内容），按条目的值带 key。
    * 面板没给插槽时是空面板。
@@ -48,6 +52,14 @@ export interface TabsStructureOptions {
 
 const NOTHING_SLOTTED: StructureSlotted = () => false
 
+/** 一枚标签：给了图标时图标在前、文字在后（文字裹一层不带部件名的 span），没给时只有文字。 */
+function triggerStructure(node: TabsNodeMeta): TabsNode {
+  const base = { key: `trigger:${node.value}`, tag: 'button', part: 'trigger', attrs: { value: node.value } } as const
+  return node.icon
+    ? { ...base, children: [structureInstance('glyph', 'icon', { icon: node.icon }), { key: 'label', literal: node.label }] }
+    : { ...base, text: node.label }
+}
+
 /** 一块面板：内容归作者时带 slot，data 是这一条的元信息；没给内容时是空面板。 */
 function panelStructure(node: TabsNodeMeta, slotted: StructureSlotted): TabsNode {
   return slotted('panel', node.value)
@@ -56,23 +68,26 @@ function panelStructure(node: TabsNodeMeta, slotted: StructureSlotted): TabsNode
 }
 
 /**
- * 标签页在 root 里的标准结构：先是标签带，每条一个标签（文字取 label），可关闭时标签后面紧跟它的关闭钮；
- * 再是每条一块面板，按 collection 的先后排。没有条目时什么都不铺：空的标签带会白占一个 Tab 位。
+ * 标签页在 root 里的标准结构：先是标签带，每条一个标签（文字取 label，给了图标时排在文字之前），
+ * 能关的标签后面紧跟它的关闭钮；addable 时标签带之后是新增钮；再是每条一块面板，按 collection 的先后排。
+ * 没有条目时什么都不铺：空的标签带会白占一个 Tab 位。
  */
 export function tabsStructure(model: Pick<TabsApi, 'collection'>, options: TabsStructureOptions = {}): TabsNode[] {
   if (model.collection.length === 0)
     return []
   const slotted = options.slotted ?? NOTHING_SLOTTED
+  const closable = options.closable ?? false
   return [
     {
       key: 'list',
       tag: 'div',
       part: 'list',
       children: model.collection.flatMap((node): TabsNode[] => [
-        { key: `trigger:${node.value}`, tag: 'button', part: 'trigger', attrs: { value: node.value }, text: node.label },
-        ...(options.closable ? [{ key: `close-trigger:${node.value}`, tag: 'button', part: 'close-trigger', attrs: { value: node.value } } satisfies TabsNode] : []),
+        triggerStructure(node),
+        ...((node.closable ?? closable) ? [{ key: `close-trigger:${node.value}`, tag: 'button', part: 'close-trigger', attrs: { value: node.value } } satisfies TabsNode] : []),
       ]),
     },
+    ...(options.addable ? [{ key: 'add-trigger', tag: 'button', part: 'add-trigger' } satisfies TabsNode] : []),
     ...model.collection.map(node => panelStructure(node, slotted)),
   ]
 }

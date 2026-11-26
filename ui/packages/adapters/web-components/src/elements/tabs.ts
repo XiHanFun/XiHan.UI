@@ -16,6 +16,7 @@ import { wcNormalize } from '../dom/normalize'
 import { MachineController } from '../runtime/machine-controller'
 import { OverflowMenuController } from '../runtime/overflow-menu-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
+import { XhIconElement } from './icon'
 
 // 属性缺席翻成 undefined，缺省值由 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -31,7 +32,8 @@ const TRIGGER_SELECTOR = '[data-xh-part="trigger"]'
  * `<xh-tabs>`：Light-DOM 行为宿主，运行 tabs 状态机并把 connect 产出接到 root / list / trigger / content
  * 角色节点上。条目身份取作者写在 trigger / content 上的 value 属性，trigger 的禁用由部件声明。
  *
- * 不写部件时元素按标准结构生成：标签带里每条一个标签（文字取 label），closable 时标签后面紧跟它的关闭钮，再是每条一块面板；
+ * 不写部件时元素按标准结构生成：标签带里每条一个标签（文字取 label，给了 icon 时图标排在文字之前，是一枚 xh-icon），
+ * 能关的标签后面紧跟它的关闭钮，addable 时标签带之后是新增钮，再是每条一块面板；
  * 只写 root 时生成在它里面。某一块面板的内容用宿主直接子节点 `slot="panel:<值>"` 接管，
  * 要按 lazy-mount / unmount-on-exit 挂卸时写成 `<template slot="panel:<值>">`。
  *
@@ -50,6 +52,8 @@ const TRIGGER_SELECTOR = '[data-xh-part="trigger"]'
  * @attr {string} value - 受控选中值；未提供该属性即非受控
  * @attr {string} default-value - 非受控的初始选中值
  * @attr {'horizontal'|'vertical'} orientation - 方向键轴向，默认 horizontal
+ * @attr {'start'|'end'} placement - 标签带落在面板的哪一侧，默认 start；轴向仍由 orientation 定（横排上 / 下，竖排行首侧 / 行尾侧），只换版面、不改 DOM 序
+ * @attr {boolean} full-width - 横排的标签按标签带的宽度平分，默认关闭；segmented 本就平分，竖排不受影响
  * @attr {'ltr'|'rtl'} dir - 文字方向，只影响水平轴上 ArrowLeft / ArrowRight 的前后语义，默认 ltr
  * @attr {'automatic'|'manual'} activation-mode - 方向键移动焦点是否同时切换选中，默认 automatic
  * @attr {boolean} loop - 方向键到达末尾回绕，默认开启
@@ -57,12 +61,14 @@ const TRIGGER_SELECTOR = '[data-xh-part="trigger"]'
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} reorderable - 标签可以拖动换位，默认关闭
- * @attr {boolean} closable - 标签可关闭：点 close-trigger，或焦点在标签上按 Delete / Backspace，发 tab-close；默认关闭
+ * @attr {boolean} closable - 标签可关闭：点 close-trigger，或焦点在标签上按 Delete / Backspace，发 tab-close；默认关闭。这是整组的缺省，collection 的条目可以逐条覆盖
+ * @attr {boolean} addable - 标签带之后露出新增钮：点 add-trigger 即发 tab-add，库不建标签、不挪焦点；默认关闭
  * @attr {boolean} lazy-mount - 面板内容等到对应标签第一次被选中才渲染；面板内容须写在面板里的 `<template>` 中，默认关闭
  * @attr {boolean} unmount-on-exit - 标签被选走后卸掉面板内容；面板内容须写在面板里的 `<template>` 中，默认关闭
  * @fires value-change - 选中值变化；detail 为 `{ value: string | null }`
  * @fires tab-move - 标签换位；detail 为 `{ value, from, to, values }`，values 是重排后的整份标签序
  * @fires tab-close - 标签被关闭；detail 为 `{ value, values }`，values 是关闭该标签之后剩余的标签序
+ * @fires tab-add - 新增钮被按下；没有 detail，新标签由使用方追加进自己的数据源
  * @csspart root - 组件根容器（承载 data-orientation）
  * @csspart list - role=tablist 容器（方向键与 Tab 序列在此收口）
  * @csspart live-region - 视觉隐藏的播报区，拖动过程的读屏文案写在这里；写在 root 中、与 list 部件平级（root 自身不带角色，无法进入 role=tablist 的子节点集合）
@@ -71,8 +77,9 @@ const TRIGGER_SELECTOR = '[data-xh-part="trigger"]'
  * @csspart prev-trigger - 标签带放不下时的往前翻页钮，须位于 list 中；对读屏隐藏、不占 Tab 位，放得下时 hidden
  * @csspart next-trigger - 标签带放不下时的往后翻页钮，与 prev-trigger 成对
  * @csspart overflow-trigger - 标签带放不下时的「更多」钮，写一个空 `<button>` 放在 root 里、紧跟 list 之后（不放进 list）；弹出的下拉列出可见区外的标签，选中一项即选中并挪进可见区；自占一个 Tab 位，放得下时 hidden
+ * @csspart add-trigger - 新增钮，写一个空 `<button>` 放在 root 里、排在 list 之后（不放进 list）；自占一个 Tab 位，点按发 tab-add，addable 关闭时 hidden
  * @csspart trigger - role=tab 的标签按钮，须自带 value 属性标识身份
- * @csspart close-trigger - 标签的关闭钮，紧跟在所属 trigger 之后、与它平级，须自带与它相同的 value 属性；对读屏隐藏、不占 Tab 位，closable 关闭时 hidden
+ * @csspart close-trigger - 标签的关闭钮，紧跟在所属 trigger 之后、与它平级，须自带与它相同的 value 属性；对读屏隐藏、不占 Tab 位，这一条不能关时 hidden
  * @csspart content - role=tabpanel 的面板，须自带 value 属性与 trigger 配对；未选中时 hidden
  * @csspart tab-drag-trigger - 标签拖拽把手，触屏路径的入口（自带 touch-action: none，按下即拖动）；对读屏隐藏且不占 Tab 位，键盘路径由标签带上的 Alt + 方向键承担
  */
@@ -82,10 +89,14 @@ export class XhTabsElement extends XhPortalHostElement {
 
   static override partContract = { anatomy: tabsAnatomy, meta: tabsMeta }
 
+  // 标准结构里带图标的标签放一枚 xh-icon
+  static override dependencies = { 'xh-icon': XhIconElement }
+
   static override structure: ElementStructure<XhTabsElement> = {
     build: host => host.ctrl.service
       ? tabsStructure(connectTabs(host.ctrl.service, wcNormalize), {
           closable: host.closable ?? false,
+          addable: host.addable ?? false,
           slotted: (name, key) => host.slotted(name, key),
         })
       : undefined,
@@ -99,6 +110,8 @@ export class XhTabsElement extends XhPortalHostElement {
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     orientation: { converter: STRING_CONVERTER },
+    placement: { converter: STRING_CONVERTER },
+    fullWidth: { converter: BOOLEAN_CONVERTER, attribute: 'full-width' },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     activationMode: { converter: STRING_CONVERTER, attribute: 'activation-mode' },
     loop: { converter: BOOLEAN_CONVERTER },
@@ -109,6 +122,7 @@ export class XhTabsElement extends XhPortalHostElement {
     // 三态转换器只留给缺省为真的开关（如 loop），那种开关摘属性会落回默认值、写 "false" 才关得掉
     reorderable: { converter: BOOLEAN_CONVERTER },
     closable: { converter: BOOLEAN_CONVERTER },
+    addable: { converter: BOOLEAN_CONVERTER },
     lazyMount: { converter: BOOLEAN_CONVERTER, attribute: 'lazy-mount' },
     unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
     // 对象走不了属性，只作为 property 暴露
@@ -119,6 +133,8 @@ export class XhTabsElement extends XhPortalHostElement {
   declare value?: string
   declare defaultValue?: string
   declare orientation?: Orientation
+  declare placement?: TabsSchema['props']['placement']
+  declare fullWidth?: boolean
   declare direction?: Direction
   declare activationMode?: TabsActivationMode
   declare loop?: boolean
@@ -127,6 +143,7 @@ export class XhTabsElement extends XhPortalHostElement {
   declare size?: Size
   declare reorderable?: boolean
   declare closable?: boolean
+  declare addable?: boolean
   declare lazyMount?: boolean
   declare unmountOnExit?: boolean
   declare translations?: Partial<TabsTranslations>
@@ -141,6 +158,10 @@ export class XhTabsElement extends XhPortalHostElement {
 
   private readonly notifyTabClose = (details: TabsCloseDetails): void => {
     this.dispatchEvent(new CustomEvent('tab-close', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyTabAdd = (): void => {
+    this.dispatchEvent(new CustomEvent('tab-add', { bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<TabsSchema>(
@@ -169,6 +190,8 @@ export class XhTabsElement extends XhPortalHostElement {
       value: this.value,
       defaultValue: this.defaultValue,
       orientation: this.orientation,
+      placement: this.placement,
+      fullWidth: this.fullWidth ?? false,
       dir: this.direction,
       activationMode: this.activationMode,
       loop: this.loop,
@@ -177,12 +200,14 @@ export class XhTabsElement extends XhPortalHostElement {
       size: this.size,
       reorderable: this.reorderable ?? false,
       closable: this.closable ?? false,
+      addable: this.addable ?? false,
       lazyMount: this.lazyMount ?? false,
       unmountOnExit: this.unmountOnExit ?? false,
       translations: this.translations,
       onValueChange: this.notify,
       onTabMove: this.notifyTabMove,
       onTabClose: this.notifyTabClose,
+      onTabAdd: this.notifyTabAdd,
     }
   }
 
@@ -316,6 +341,14 @@ export class XhTabsElement extends XhPortalHostElement {
       const props = api.getContentProps({ value })
       this.spreader.spread(el, props)
       this.syncTemplateContent(el, api.isContentMounted(value))
+    }
+
+    // 新增钮：root 里、标签带之后的一颗钮，addable 关闭时按本帧产出的 hidden 用内联 display 收起（与关闭钮同一路）
+    const add = this.getPart('add-trigger')
+    if (add) {
+      const props = api.getAddTriggerProps()
+      this.spreader.spread(add, props)
+      this.setPartHidden(add, props.hidden === true)
     }
 
     // 「更多」钮与它弹出的下拉：钮是作者写的标签页部件，下拉那一套由共用的控制器自建

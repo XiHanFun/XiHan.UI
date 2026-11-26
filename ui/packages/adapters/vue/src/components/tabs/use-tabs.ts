@@ -28,11 +28,12 @@ export function useTabs(
   onValueChange?: TabsSchema['props']['onValueChange'],
   onTabMove?: TabsSchema['props']['onTabMove'],
   onTabClose?: TabsSchema['props']['onTabClose'],
+  onTabAdd?: TabsSchema['props']['onTabAdd'],
 ): TabsContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   const listRef = ref<HTMLElement | null>(null)
-  const service = useMachine(tabsMachine, () => ({ ...props, onValueChange, onTabMove, onTabClose }), scope)
+  const service = useMachine(tabsMachine, () => ({ ...props, onValueChange, onTabMove, onTabClose, onTabAdd }), scope)
   // 指示条量测在机器的 action 里跑，DOM 侧的取值口经 refs 交进去
   service.refs.set('getListEl', () => listRef.value)
   const api = computed(() => connectTabs(service, vueNormalize))

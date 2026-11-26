@@ -681,7 +681,7 @@ const translations = {
     empty: 'Keine Daten',
     loading: 'Wird geladen',
   },
-  'tabs': { ...drag, overflowTrigger: 'Weitere Tabs' },
+  'tabs': { ...drag, overflowTrigger: 'Weitere Tabs', addTrigger: 'Tab hinzufügen' },
   'tag': { close: 'Entfernen' },
   'tag-group': { deleteItem: label => `${label} entfernen`, list: 'Tags' },
   'tags-input': { deleteItem: value => `${value} entfernen`, editTagInput: value => `${value} bearbeiten`, clearTrigger: 'Leeren' },

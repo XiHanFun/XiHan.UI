@@ -1,7 +1,8 @@
+import type { IconRecord } from '@xihan-ui/core'
 import type { ConformanceCase, ConformanceSuite, FixtureNode } from '../conformance/types'
 import { tabsAnatomy, tabsKeyboard } from '@xihan-ui/headless'
 import { expectPartText } from './shared/content-text'
-import { singleTabStop } from './shared/native-activation'
+import { nativeActivation, singleTabStop } from './shared/native-activation'
 import { focusSettled, menuExited, overflowMenuItem, settled } from './shared/overflow-menu'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
@@ -18,6 +19,9 @@ const STRUCTURE_COLLECTION = [
 
 /** 标签序的真源是 collection：换位报出的新顺序按它算，没有它一次也搬不动。 */
 const COLLECTION = VALUES.map(value => ({ value }))
+
+/** 标准结构里给标签铺图标用的一枚图标记录：只需是一份合法的记录，画的是什么无关紧要。 */
+const DOT_ICON: IconRecord = { name: 'dot', viewBox: '0 0 24 24', nodes: [{ tag: 'circle', attrs: { cx: '12', cy: '12', r: '4' } }] }
 
 /**
  * 三个 trigger + 三个 content：panel 全部常挂，靠 hidden 显隐。
@@ -82,6 +86,14 @@ function withOverflowTrigger(base: FixtureNode): FixtureNode {
   const children = [...(base.children ?? [])]
   const at = children.findIndex(node => node.part === 'list')
   children.splice(at + 1, 0, { part: 'overflow-trigger', tag: 'button' })
+  return { ...base, children }
+}
+
+/** root 里、紧跟标签带之后放一颗新增钮。与「更多」钮同理，只在新增钮的用例里出现。 */
+function withAddTrigger(base: FixtureNode): FixtureNode {
+  const children = [...(base.children ?? [])]
+  const at = children.findIndex(node => node.part === 'list')
+  children.splice(at + 1, 0, { part: 'add-trigger', tag: 'button' })
   return { ...base, children }
 }
 
@@ -201,7 +213,8 @@ export const tabsSuite: ConformanceSuite = {
         ],
         counts: { 'root': 1, 'list': 1, 'prev-trigger': 1, 'next-trigger': 1, 'trigger': 3, 'tab-drag-trigger': 3, 'close-trigger': 3, 'content': 3, 'live-region': 1 },
         parts: {
-          'root': { 'data-orientation': 'horizontal', 'data-variant': 'line' },
+          // 标签带落在哪一侧缺省显式落 start；不平分时不写 data-full-width
+          'root': { 'data-orientation': 'horizontal', 'data-placement': 'start', 'data-full-width': null, 'data-variant': 'line' },
           'list': { 'role': 'tablist', 'aria-orientation': 'horizontal', 'tabindex': '0' },
           // 两端翻页钮：鼠标专用的辅助入口，不进可及树、不占 Tab 位；jsdom 里标签带放得下，收起且禁用
           'prev-trigger': {
@@ -320,6 +333,124 @@ export const tabsSuite: ConformanceSuite = {
       },
       steps: [
         { kind: 'click', part: 'close-trigger[1]', expect: { events: [] } },
+      ],
+    },
+    {
+      name: '逐条可关闭：条目写 closable: false 的那一条收起关闭钮、Delete 不发；没写的随整组',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      props: { collection: [{ value: 'one', closable: false }, { value: 'two' }, { value: 'three' }], closable: true, defaultValue: 'one' },
+      initial: {
+        parts: {
+          'close-trigger[0]': { hidden: '' },
+          'close-trigger[1]': { hidden: null },
+          'trigger[0]': { 'data-closable': null },
+          'trigger[1]': { 'data-closable': '' },
+        },
+      },
+      steps: [
+        { kind: 'focus', part: 'trigger[0]' },
+        { kind: 'key', key: 'Delete', expect: { activeElement: { part: 'trigger[0]', exact: true }, events: [] } },
+        { kind: 'setProps', props: { closable: false, collection: [{ value: 'one' }, { value: 'two', closable: true }, { value: 'three' }] } },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'close-trigger[1]', name: 'hidden', value: null } },
+          expect: { parts: { 'close-trigger[0]': { hidden: '' }, 'close-trigger[2]': { hidden: '' }, 'trigger[1]': { 'data-closable': '' } } },
+        },
+        { kind: 'click', part: 'close-trigger[1]', expect: { events: [{ type: 'tab-close', detail: { value: 'two', values: ['one', 'three'] } }] } },
+      ],
+    },
+    {
+      name: '新增钮：addable 关闭时收着，排在标签带之后、面板之前',
+      spec: { apg: APG },
+      fixture: withAddTrigger,
+      props: { defaultValue: 'one' },
+      initial: {
+        order: [
+          'root',
+          'list',
+          'prev-trigger',
+          'trigger[0]',
+          'tab-drag-trigger[0]',
+          'close-trigger[0]',
+          'trigger[1]',
+          'tab-drag-trigger[1]',
+          'close-trigger[1]',
+          'trigger[2]',
+          'tab-drag-trigger[2]',
+          'close-trigger[2]',
+          'next-trigger',
+          'add-trigger',
+          'content[0]',
+          'content[1]',
+          'content[2]',
+          'live-region',
+        ],
+        parts: { 'add-trigger': { 'hidden': '', 'type': 'button', 'aria-label': 'Add tab' } },
+      },
+    },
+    {
+      name: '新增钮：点按发 tab-add，库不建标签、不挪焦点；它自占一个 Tab 位，不是方向键走位的一站',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['tabs.kbd.add', 'tabs.kbd.add-stop'],
+      fixture: withAddTrigger,
+      props: { collection: COLLECTION, addable: true, defaultValue: 'one' },
+      initial: {
+        parts: {
+          'add-trigger': {
+            'hidden': null,
+            'type': 'button',
+            'aria-label': 'Add tab',
+            // 在 tablist 之外、自占一个 Tab 位：不写 tabindex、不对读屏隐藏
+            'tabindex': null,
+            'aria-hidden': null,
+            'data-orientation': 'horizontal',
+            // 与「更多」钮同一身份：Action Control icon 档、ghost 形态，档位随标签页 size 走
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-variant': 'ghost',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'md',
+          },
+        },
+      },
+      steps: [
+        // Enter / Space 走原生按钮的激活：jsdom 不翻译按键，该守的是它确实是原生按钮
+        nativeActivation('tabs', 'add-trigger'),
+        {
+          kind: 'click',
+          part: 'add-trigger',
+          expect: {
+            activeElement: { part: 'add-trigger', exact: true },
+            parts: { 'trigger[0]': { 'aria-selected': 'true' } },
+            events: [{ type: 'tab-add', detail: null }],
+          },
+        },
+        { kind: 'focus', part: 'trigger[0]' },
+        { kind: 'key', key: 'End', expect: { activeElement: { part: 'trigger[2]', exact: true } } },
+        // 尽头回绕到首个标签，新增钮不在方向键的走位里
+        { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'trigger[0]', exact: true } } },
+      ],
+    },
+    {
+      name: '新增钮：Space / Enter 按住与触屏按下投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['tabs.kbd.add-press'],
+      fixture: withAddTrigger,
+      props: { addable: true, defaultValue: 'one' },
+      steps: [heldPress('tabs', 'add-trigger')],
+    },
+    {
+      name: '落位与平分：placement / fullWidth 只是 root 上的版面事实，标签带在 DOM 里照旧排在面板之前',
+      spec: { apg: APG },
+      props: { placement: 'end', fullWidth: true, defaultValue: 'one' },
+      initial: {
+        parts: {
+          root: { 'data-placement': 'end', 'data-full-width': '' },
+          list: { 'role': 'tablist', 'aria-orientation': 'horizontal' },
+        },
+      },
+      steps: [
+        { kind: 'setProps', props: { placement: 'start', fullWidth: false }, expect: { parts: { root: { 'data-placement': 'start', 'data-full-width': null } } } },
       ],
     },
     {
@@ -1058,6 +1189,73 @@ export const tabsSuite: ConformanceSuite = {
         },
         { kind: 'raw', why: '标签文字是子节点，快照不收子节点', run: expectPartText('tabs', 'trigger', 1, '四') },
         { kind: 'setProps', props: { closable: false }, expect: { counts: { 'trigger': 2, 'close-trigger': 0 } } },
+      ],
+    },
+    {
+      name: '作者不写结构：条目的图标铺在文字之前、逐条的可关闭决定铺不铺关闭钮，addable 时标签带之后铺新增钮；新建的标签写回为选中值后接过 Tab 停靠点，焦点留在新增钮上',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: {
+        collection: [{ value: 'one', label: '一', icon: DOT_ICON, closable: false }, { value: 'two', label: '二' }, { value: 'three', label: '三' }],
+        closable: true,
+        addable: true,
+        value: 'one',
+      },
+      initial: {
+        order: [
+          'root',
+          'list',
+          'trigger[0]',
+          'trigger[1]',
+          'close-trigger[0]',
+          'trigger[2]',
+          'close-trigger[1]',
+          'add-trigger',
+          'content[0]',
+          'content[1]',
+          'content[2]',
+        ],
+        parts: {
+          // 首条写了 closable: false，结构不给它铺关闭钮：第一枚关闭钮归第二条
+          'trigger[0]': { 'data-closable': null },
+          'trigger[1]': { 'data-closable': '' },
+          'close-trigger[0]': { hidden: null },
+          'add-trigger': { 'hidden': null, 'type': 'button', 'aria-label': 'Add tab' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '图标与文字是标签的子节点，快照不收子节点',
+          run: ({ doc }) => {
+            const ICON = '[data-scope="icon"][data-part="root"]'
+            const [first, second] = doc.querySelectorAll<HTMLElement>('[data-scope="tabs"][data-part="trigger"]')
+            const lead = first?.firstElementChild
+            if (!lead || !(lead.matches(ICON) || lead.querySelector(ICON)))
+              throw new Error('给了 icon 的标签：图标应当排在第一位')
+            if (first!.lastElementChild?.textContent !== '一' || first!.textContent?.trim() !== '一')
+              throw new Error('给了 icon 的标签：文字排在图标之后，标签文字只有 label')
+            if (second?.querySelector(ICON) || second?.textContent !== '二')
+              throw new Error('没给 icon 的标签只有文字')
+          },
+        },
+        { kind: 'click', part: 'add-trigger', expect: { events: [{ type: 'tab-add', detail: null }], activeElement: { part: 'add-trigger', exact: true } } },
+        {
+          kind: 'setProps',
+          props: {
+            collection: [{ value: 'one', label: '一', icon: DOT_ICON, closable: false }, { value: 'two', label: '二' }, { value: 'three', label: '三' }, { value: 'four', label: '四' }],
+            value: 'four',
+          },
+          expect: {
+            parts: {
+              'trigger[0]': { 'aria-selected': 'false', 'tabindex': '-1' },
+              'trigger[3]': { 'data-value': 'four', 'aria-selected': 'true', 'tabindex': '0' },
+              'content[3]': { hidden: null },
+            },
+            activeElement: { part: 'add-trigger', exact: true },
+          },
+        },
+        { kind: 'setProps', props: { addable: false }, expect: { counts: { 'add-trigger': 0, 'trigger': 4 } } },
       ],
     },
   ],

@@ -683,7 +683,7 @@ const translations = {
     empty: 'Nenhum dado',
     loading: 'Carregando',
   },
-  'tabs': { ...drag, overflowTrigger: 'Mais guias' },
+  'tabs': { ...drag, overflowTrigger: 'Mais guias', addTrigger: 'Adicionar guia' },
   'tag': { close: 'Remover' },
   'tag-group': { deleteItem: label => `Remover ${label}`, list: 'Tags' },
   'tags-input': { deleteItem: value => `Remover ${value}`, editTagInput: value => `Editar ${value}`, clearTrigger: 'Limpar' },

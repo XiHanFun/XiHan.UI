@@ -1,0 +1,15 @@
+<!-- 标签带在下方 | placement 设为 end 时标签带排到面板之后，读屏与 Tab 序照旧先到标签带 -->
+<xh-tabs default-value="preview" placement="end">
+  <div data-xh-part="root" style="inline-size: 360px; max-inline-size: 100%">
+    <div data-xh-part="list" aria-label="查看方式">
+      <button data-xh-part="trigger" value="preview">预览</button>
+      <button data-xh-part="trigger" value="source">源码</button>
+      <button data-xh-part="trigger" value="history">历史</button>
+      <div data-xh-part="indicator"></div>
+    </div>
+
+    <div data-xh-part="content" value="preview">页面渲染后的样子。</div>
+    <div data-xh-part="content" value="source">页面的源码。</div>
+    <div data-xh-part="content" value="history">页面的修改记录。</div>
+  </div>
+</xh-tabs>
