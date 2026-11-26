@@ -1037,7 +1037,7 @@ interface FieldArrayControl extends HTMLElement {
   readonly updateComplete?: Promise<unknown>
   createItem?: () => unknown
   layout?: string
-  movable?: boolean
+  reorderable?: boolean
   stickyActions?: boolean
   readOnly?: boolean
   columns?: readonly { readonly id: string, readonly label?: string, readonly width?: string | number, readonly minWidth?: string | number }[]
@@ -1127,7 +1127,7 @@ function optionsEditor(initial: FieldContext): FieldInstance {
   const array: FieldArrayControl = createAuthoredElement(doc, 'xh-field-array', { 'data-xh-part': 'control' })
   array.layout = 'table'
   // 布尔的两行不换序：拖动与上移下移把手收起
-  array.movable = !fixed
+  array.reorderable = !fixed
   // 行尾把手随行一起横向滚动，只钉行号
   array.stickyActions = false
   array.createItem = () => ({})

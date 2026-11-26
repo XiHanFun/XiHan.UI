@@ -991,8 +991,8 @@ describe('<xh-designer-properties> 选项表', () => {
       element.targets = [typed('boolean', undefined)]
     })
     await settle(panel)
-    const array = tableOf(panel) as FieldArray & { readOnly?: boolean, movable?: boolean }
-    expect([array.items.length, array.readOnly, array.movable]).toEqual([2, true, false])
+    const array = tableOf(panel) as FieldArray & { readOnly?: boolean, reorderable?: boolean }
+    expect([array.items.length, array.readOnly, array.reorderable]).toEqual([2, true, false])
     const values = [0, 1].map(index => valueControl(panel, index, 'xh-text-field'))
     expect(values.map(item => [item.value, item.hasAttribute('read-only')])).toEqual([['Yes', true], ['No', true]])
     expect(control(panel, 0, 'label').hasAttribute('read-only')).toBe(false)
