@@ -29,7 +29,7 @@ beforeAll(async () => {
   vue = await import('../../../packages/adapters/vue/dist/index.js')
 }, 60_000)
 
-const template = (nuxt, suffix) => nuxt.options.build.templates.find(t => t.fileName.endsWith(suffix))?.getContents() ?? ''
+const template = (nuxt, suffix) => nuxt.options.build.templates.find(t => t.filename.endsWith(suffix))?.getContents() ?? ''
 
 describe('nuxt 模块', () => {
   it('元信息：配置键 xihanUI', async () => {
