@@ -129,7 +129,9 @@ export function dateSegmentGroupChildren(
  * 日期输入框在 root 里的标准结构，次序是标题、盒、表单影子。
  * 盒里是段组与清空按钮（清不了时由组件收起）；段组里按当前段序铺段，段与段之间是按 locale 取的分隔符文字。
  */
-export function dateFieldStructure(model: Pick<DateFieldApi, 'segments' | 'locale'>, options: DateFieldStructureOptions = {}): DateFieldNode[] {
+export function dateFieldStructure(model: Pick<DateFieldApi, 'segments' | 'locale' | 'clearable'>, options: DateFieldStructureOptions = {}): DateFieldNode[] {
+  // 关掉 clearable 就不铺清空钮
+  const clearTrigger: DateFieldNode[] = model.clearable ? [{ key: 'clear-trigger', tag: 'button', part: 'clear-trigger' }] : []
   const group: StructureChild<DateFieldStructurePart>[] = dateSegmentGroupChildren(model)
   const nodes: DateFieldNode[] = []
   if (options.slotted?.('label'))
@@ -143,7 +145,7 @@ export function dateFieldStructure(model: Pick<DateFieldApi, 'segments' | 'local
       part: 'control',
       children: [
         { key: 'segment-group', tag: 'div', part: 'segment-group', children: group },
-        { key: 'clear-trigger', tag: 'button', part: 'clear-trigger' },
+        ...clearTrigger,
       ],
     },
     { key: 'hidden-input', tag: 'input', part: 'hidden-input' },

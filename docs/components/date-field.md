@@ -78,6 +78,7 @@ hourCycle=12 时小时段收 1-12，分钟段之后多出上下午段（按 a / 
 - 标准组合包含标签、输入框、日期段和隐藏表单输入；支持受控值与原生表单提交。
 - 聚焦只强调正在编辑的日期段，错误段使用独立的危险色反馈。
 - 清空按钮默认收起，输入任一段后出现；点按后回到第一段，聚焦边界平滑过渡。
+- `clearable` 缺省开启；写 false 即关掉清空能力：有值也不露清空按钮、标准结构不再铺它，`api.clear()` 也被拦下；段位上按退格逐段清值照旧。必选的字段用它去掉清空钮。
 
 ### 组合
 
@@ -125,6 +126,7 @@ hourCycle=12 时小时段收 1-12，分钟段之后多出上下午段（按 a / 
 | `segments` | `DateSegmentSet` |  | 段集：该控件由哪几段组成，提供后以它为准，granularity 让位。写 `['year', 'quarter']` 得到「2026 Q2」、`['year', 'week']` 得到「2026 33」。归一后为空（如 `[]`）视同未提供。 值仍是 ISO 日期（时间）串，因此段集中必须有 year，否则段位可编辑但无法拼出值。 |
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  |  |
+| `clearable` | `boolean` |  | 清空能力，默认开启：有值且改得动时露出清空按钮。 写 false 即关掉：清空按钮恒带 hidden 收起、标准结构不再铺它，api.clear() 也被拦下；段位上按退格逐段清值照旧。 |
 | `invalid` | `boolean` |  |  |
 | `required` | `boolean` |  |  |
 | `name` | `string` |  | 表单字段名；提供后隐藏输入才带 name，ISO 串随表单一并提交。 |
@@ -196,8 +198,9 @@ hourCycle=12 时小时段收 1-12，分钟段之后多出上下午段（按 a / 
 | `locale` | `string` |  |
 | `granularity` | `DateGranularity` |  |
 | `setValue` | `(next: string \| null) => void` | 直接写整份值；传 null 等于清空。 |
-| `clear` | `() => void` | 清空全部段位；disabled / readOnly 下不生效。 |
+| `clear` | `() => void` | 清空全部段位；disabled / readOnly 或关掉 clearable 时不生效，无条件清空用 setValue(null)。 |
 | `canClear` | `boolean` | 清空按钮当前是否可用：有段已填值、且可编辑。 |
+| `clearable` | `boolean` | 清空能力是否开启（clearable 没写成 false）。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` | 标题不是原生 label（段位是 div，不可被 label 标注），点击它由连接层代为把焦点送进首段。 |
 | `getControlProps` | `() => T['element']` | role=group 的分段容器。 |

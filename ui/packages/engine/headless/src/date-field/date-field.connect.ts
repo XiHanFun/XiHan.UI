@@ -85,7 +85,9 @@ export function connectDateField<T extends PropTypes>(
   const labelOf = (type: DateSegmentType): string => translations[type]
   const clearLabel = translations.clearTrigger
   // 填了哪怕一段就能清；禁用与只读下清空钮收起
-  const canClear = editable && !empty
+  // 清空钮缺省开着；写 false 即收起、标准结构不铺，clear() 一并拦下
+  const clearable = prop('clearable') !== false
+  const canClear = clearable && editable && !empty
   // 清空按钮的按压通道：键盘 / 触屏按住期间的按压面，指针按住由 :active 表出，皮肤两者同一档
   const press = pressHandlers(service)
   // 形态默认落 outline：不写时 root 如实投影，皮肤不再依赖缺省档
@@ -161,8 +163,12 @@ export function connectDateField<T extends PropTypes>(
     locale,
     granularity,
     canClear,
+    clearable,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
-    clear: () => send({ type: 'VALUE.CLEAR' }),
+    clear: () => {
+      if (clearable)
+        send({ type: 'VALUE.CLEAR' })
+    },
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,

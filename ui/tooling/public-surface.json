@@ -15245,6 +15245,7 @@
     ],
     "date-field": [
       "ariaLabel",
+      "clearable",
       "defaultValue",
       "disabled",
       "granularity",
@@ -24118,6 +24119,7 @@
     },
     "xh-date-field": {
       "attributes": [
+        "clearable",
         "default-value",
         "disabled",
         "granularity",

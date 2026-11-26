@@ -571,7 +571,8 @@ function setOf(params: Params<DateFieldSchema>): DateSegmentType[] {
 
 /** 清空按钮此刻可用：可编辑，且在用的段里填了哪怕一段（与 connect 里按钮的显隐同一口径）。 */
 function canClear(params: Params<DateFieldSchema>): boolean {
-  if (params.prop('disabled') || params.prop('readOnly'))
+  // 关掉 clearable 时清空钮恒藏着，与 connect 的 canClear 同口径
+  if (params.prop('disabled') || params.prop('readOnly') || params.prop('clearable') === false)
     return false
   const segments = params.context.get('segments')
   return setOf(params).some(type => segments[type] != null)
@@ -658,13 +659,13 @@ export const dateFieldMachine = createMachine({
     // 小时制换了同理：小时段收的数从 0-23 换成 1-12，上下午段随之出现或收起
     track([() => setKeyOf(prop('segments')), () => prop('hourCycle')], () => action(['syncSegmentsFromSet']))
     // 按住途中转入禁用 / 只读或段位被清空：清空按钮随即藏起，不会再来 keyup，按压面由机器自己收
-    track([() => prop('disabled'), () => prop('readOnly'), context.dep('segments')], () => action(['releaseWhenInert']))
+    track([() => prop('disabled'), () => prop('readOnly'), () => prop('clearable'), context.dep('segments')], () => action(['releaseWhenInert']))
   },
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue'] },
     'VALUE.CLEAR': { guard: 'canEdit', actions: ['clearValue'] },
-    // 清空按钮的按压：清不了（禁用、只读或一段都没填）的按钮已经藏起，不该有按下的回执
+    // 清空按钮的按压：清不了（关掉了 clearable、禁用、只读或一段都没填）的按钮已经藏起，不该有按下的回执
     'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
     'PRESS.END': { actions: ['endPress'] },
     'SEGMENT.STEP': { guard: 'canEdit', actions: ['stepSegment'] },

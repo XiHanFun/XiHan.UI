@@ -928,6 +928,16 @@ export const dateFieldSuite: ConformanceSuite = {
       steps: [heldPressIgnored('date-field', 'clear-trigger', '一段都没填时清空钮藏着，不接受按压')],
     },
     {
+      name: 'clearable 写 false：有值也不露清空钮、标准结构不铺；改回 true 即铺出并露面',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { locale: 'zh-CN', defaultValue: '2026-07-28', clearable: false },
+      initial: { counts: { 'clear-trigger': 0 } },
+      steps: [
+        { kind: 'setProps', props: { clearable: true }, expect: { parts: { 'clear-trigger': { hidden: null } } } },
+      ],
+    },
+    {
       name: '作者不写结构：三端都照 dateFieldStructure 铺出标题、按段序的段与 locale 的分隔符、清空钮与表单影子',
       spec: { apg: APG },
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),

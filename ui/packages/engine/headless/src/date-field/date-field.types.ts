@@ -147,6 +147,11 @@ export interface DateFieldSchema extends MachineSchema {
     segments?: DateSegmentSet
     disabled?: boolean
     readOnly?: boolean
+    /**
+     * 清空能力，默认开启：有值且改得动时露出清空按钮。
+     * 写 false 即关掉：清空按钮恒带 hidden 收起、标准结构不再铺它，api.clear() 也被拦下；段位上按退格逐段清值照旧。
+     */
+    clearable?: boolean
     invalid?: boolean
     required?: boolean
     /** 表单字段名；提供后隐藏输入才带 name，ISO 串随表单一并提交。 */
@@ -207,7 +212,7 @@ export interface DateFieldSchema extends MachineSchema {
     | { type: 'SEGMENT.FOCUS', segment: DateSegmentType }
     | { type: 'SEGMENT.BLUR' }
     | { type: 'FORM.RESET' }
-    /** 清空按钮被 Space / Enter 或触屏按住；清不了（禁用、只读或一段都没填）时被守卫拦截。 */
+    /** 清空按钮被 Space / Enter 或触屏按住；清不了（关掉了 clearable、禁用、只读或一段都没填）时被守卫拦截。 */
     | { type: 'PRESS.START' }
     /** 按住的清空按钮抬起、失焦或指针取消。 */
     | { type: 'PRESS.END' }
@@ -254,10 +259,12 @@ export interface DateFieldApi<T extends PropTypes = PropTypes> {
   granularity: DateGranularity
   /** 直接写整份值；传 null 等于清空。 */
   setValue: (next: string | null) => void
-  /** 清空全部段位；disabled / readOnly 下不生效。 */
+  /** 清空全部段位；disabled / readOnly 或关掉 clearable 时不生效，无条件清空用 setValue(null)。 */
   clear: () => void
   /** 清空按钮当前是否可用：有段已填值、且可编辑。 */
   canClear: boolean
+  /** 清空能力是否开启（clearable 没写成 false）。 */
+  clearable: boolean
   getRootProps: () => T['element']
   /** 标题不是原生 label（段位是 div，不可被 label 标注），点击它由连接层代为把焦点送进首段。 */
   getLabelProps: () => T['element']

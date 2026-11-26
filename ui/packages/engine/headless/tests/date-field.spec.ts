@@ -10,6 +10,7 @@ import {
   connectDateField,
   constrainSegments,
   dateFieldMachine,
+  dateFieldStructure,
   dateSegmentOrder,
   dateSegmentRange,
   dateSegmentText,
@@ -1518,5 +1519,28 @@ describe('清空按钮的按压通道：Space / Enter 与触屏按住投影 data
       m.setProps(inert)
       expect(pressed(m)).toBe(false)
     }
+  })
+})
+
+describe('clearable', () => {
+  const partsOf = (nodes: readonly unknown[]): string[] => nodes.map(node => (node && typeof node === 'object' && 'part' in node ? String(node.part) : ''))
+  const controlParts = (nodes: readonly unknown[]): string[] => {
+    const control = nodes.find(node => node && typeof node === 'object' && 'part' in node && node.part === 'control') as { children?: readonly unknown[] } | undefined
+    return partsOf(control?.children ?? [])
+  }
+
+  it('写 false：有值也收起清空钮、clear() 拦下、标准结构不铺；退格逐段清值照旧', () => {
+    const m = open({ locale: 'zh-CN', defaultValue: '2026-07-28', clearable: false })
+    expect(m.clear.hasAttribute('hidden')).toBe(true)
+    expect([m.api().clearable, m.api().canClear]).toEqual([false, false])
+    m.api().clear()
+    expect(m.api().value).toBe('2026-07-28')
+    expect(controlParts(dateFieldStructure(m.api()))).toEqual(['segment-group'])
+  })
+
+  it('缺省开着', () => {
+    const m = open({ locale: 'zh-CN', defaultValue: '2026-07-28' })
+    expect(m.clear.hasAttribute('hidden')).toBe(false)
+    expect(controlParts(dateFieldStructure(m.api()))).toEqual(['segment-group', 'clear-trigger'])
   })
 })

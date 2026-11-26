@@ -97,6 +97,7 @@ function declaredSegment(el: HTMLElement, position: number): DateFieldSegmentPro
  *   季度与月、周与日两两互斥，都写时以较细的粒度为准
  * @attr {boolean} disabled - 禁用：整组退出 Tab 序列，隐藏输入不参与提交
  * @attr {boolean} read-only - 只读：可聚焦、可换段，但不可修改
+ * @attr {boolean} clearable - 清空能力，默认开启；写 "false" 关掉：不铺清空按钮，连接层的 clear() 也不生效
  * @attr {boolean} invalid - 校验失败标注
  * @attr {boolean} required - 必填标注，写入每段的 aria-required
  * @attr {string} name - 表单字段名；提供后隐藏输入才带 name
@@ -137,6 +138,7 @@ export class XhDateFieldElement extends XhElement {
     segments: { converter: SEGMENT_SET_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    clearable: { converter: BOOLEAN_CONVERTER },
     invalid: { converter: BOOLEAN_CONVERTER },
     required: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
@@ -160,6 +162,7 @@ export class XhDateFieldElement extends XhElement {
   declare segments?: DateSegmentSet
   declare disabled?: boolean
   declare readOnly?: boolean
+  declare clearable?: boolean
   declare invalid?: boolean
   declare required?: boolean
   declare name?: string
@@ -203,6 +206,7 @@ export class XhDateFieldElement extends XhElement {
       segments: this.segments,
       disabled: control.disabled,
       readOnly: control.readOnly,
+      clearable: this.clearable,
       invalid: control.invalid,
       required: control.required,
       name: this.name,
