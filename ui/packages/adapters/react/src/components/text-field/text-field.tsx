@@ -54,12 +54,16 @@ export interface XhTextFieldRootProps extends Omit<ComponentPropsWithRef<'div'>,
   mask?: string
   clearable?: boolean
   showCount?: boolean
+  /** 在途：输入框报告 aria-busy，盒里露出一枚加载环；输入照常可用。 */
+  loading?: boolean
   autoSize?: TextFieldProps['autoSize']
   variant?: ControlVariant
   tone?: Tone
   size?: Size
   translations?: TextFieldProps['translations']
   onValueChange?: TextFieldProps['onValueChange']
+  /** 单行输入框里按下回车，带当前值；输入法组合期间的回车不算。 */
+  onValueCommit?: TextFieldProps['onValueCommit']
   /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
   onClear?: () => void
   children?: SlotChildren<TextFieldRootSlotProps>
@@ -82,12 +86,14 @@ export function XhTextFieldRoot({
   mask,
   clearable,
   showCount,
+  loading,
   autoSize,
   variant,
   tone,
   size,
   translations,
   onValueChange,
+  onValueCommit,
   onClear,
   children,
   ...rest
@@ -107,12 +113,14 @@ export function XhTextFieldRoot({
     mask,
     clearable,
     showCount,
+    loading,
     autoSize,
     variant,
     tone,
     size,
     translations,
     onValueChange,
+    onValueCommit,
     onClear,
   })) as TextFieldProps)
   const api = ctx.api
@@ -141,7 +149,7 @@ export function XhTextFieldRoot({
   )
 }
 
-XhTextFieldRoot.xhEvents = ['clear', 'value-change'] as const
+XhTextFieldRoot.xhEvents = ['clear', 'value-change', 'value-commit'] as const
 
 export interface XhTextFieldLabelProps extends ComponentPropsWithRef<'label'> {}
 /** 必须是原生 label，connect 把 for 指向 input。 */
@@ -243,6 +251,17 @@ export function XhTextFieldSuffix({ children, ...rest }: XhTextFieldSuffixProps)
   )
 }
 
+export interface XhTextFieldLoadingProps extends ComponentPropsWithRef<'span'> {}
+/** 在途指示：盒里输入框之后的一枚加载环，未开启 loading 时收起；对读屏隐藏，在途经输入框的 aria-busy 上报。 */
+export function XhTextFieldLoading({ children, ...rest }: XhTextFieldLoadingProps): ReactNode {
+  const ctx = useTextFieldContext()
+  return (
+    <span {...mergeReactProps(ctx.api.getLoadingProps(), rest)}>
+      {children}
+    </span>
+  )
+}
+
 export interface XhTextFieldClearTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhTextFieldClearTrigger({ children, ...rest }: XhTextFieldClearTriggerProps): ReactNode {
   const ctx = useTextFieldContext()
@@ -277,6 +296,7 @@ const TEXT_FIELD_PARTS = {
   'label': XhTextFieldLabel,
   'control': XhTextFieldControl,
   'input': XhTextFieldInput,
+  'loading': XhTextFieldLoading,
   'clear-trigger': XhTextFieldClearTrigger,
   'count': XhTextFieldCount,
 }

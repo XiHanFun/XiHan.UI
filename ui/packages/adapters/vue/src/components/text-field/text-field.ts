@@ -56,6 +56,8 @@ export const XhTextFieldRoot = defineComponent({
     mask: { type: String },
     clearable: Boolean,
     showCount: Boolean,
+    /** 在途：输入框报告 aria-busy，盒里露出一枚加载环；输入照常可用。 */
+    loading: Boolean,
     autoSize: { type: [Boolean, Object] as PropType<TextFieldProps['autoSize']>, default: undefined },
     variant: { type: String as PropType<ControlVariant> },
     tone: { type: String as PropType<Tone> },
@@ -66,6 +68,8 @@ export const XhTextFieldRoot = defineComponent({
   emits: {
     'clear': () => true,
     'value-change': (_details: PayloadOf<TextFieldProps, 'onValueChange'>) => true,
+    /** 单行输入框里按下回车，带当前值；输入法组合期间的回车不算。 */
+    'value-commit': (_details: PayloadOf<TextFieldProps, 'onValueCommit'>) => true,
     'update:value': (_value: PayloadOf<TextFieldProps, 'onValueChange'>['value']) => true,
   },
   slots: Object as SlotsType<{
@@ -77,7 +81,7 @@ export const XhTextFieldRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useTextField(withHandlers(withXhConfig('text-field', useFormControlProps(props)), { onClear: () => emit('clear') }) as TextFieldProps, notify)
+    const ctx = useTextField(withHandlers(withXhConfig('text-field', useFormControlProps(props)), { onClear: () => emit('clear'), onValueCommit: (details: PayloadOf<TextFieldProps, 'onValueCommit'>) => emit('value-commit', details) }) as TextFieldProps, notify)
     provideTextField(ctx)
     return () => {
       const api = ctx.api.value
@@ -175,6 +179,15 @@ export const XhTextFieldSuffix = defineComponent({
   },
 })
 
+/** 在途指示：盒里输入框之后的一枚加载环，未开启 loading 时收起；对读屏隐藏，在途经输入框的 aria-busy 上报。 */
+export const XhTextFieldLoading = defineComponent({
+  name: 'XhTextFieldLoading',
+  setup(_, { slots }) {
+    const ctx = useTextFieldContext()
+    return () => h('span', ctx.api.value.getLoadingProps(), slots.default?.())
+  },
+})
+
 export const XhTextFieldClearTrigger = defineComponent({
   name: 'XhTextFieldClearTrigger',
   setup(_, { slots }) {
@@ -208,6 +221,7 @@ const TEXT_FIELD_PARTS = {
   'label': XhTextFieldLabel,
   'control': XhTextFieldControl,
   'input': XhTextFieldInput,
+  'loading': XhTextFieldLoading,
   'clear-trigger': XhTextFieldClearTrigger,
   'count': XhTextFieldCount,
 }
@@ -237,6 +251,7 @@ export type XhTextFieldControlProps = PropsOf<typeof XhTextFieldControl>
 export type XhTextFieldCountProps = PropsOf<typeof XhTextFieldCount>
 export type XhTextFieldInputProps = PropsOf<typeof XhTextFieldInput>
 export type XhTextFieldLabelProps = PropsOf<typeof XhTextFieldLabel>
+export type XhTextFieldLoadingProps = PropsOf<typeof XhTextFieldLoading>
 export type XhTextFieldPrefixProps = PropsOf<typeof XhTextFieldPrefix>
 export type XhTextFieldRootProps = PropsOf<typeof XhTextFieldRoot>
 export type XhTextFieldSuffixProps = PropsOf<typeof XhTextFieldSuffix>

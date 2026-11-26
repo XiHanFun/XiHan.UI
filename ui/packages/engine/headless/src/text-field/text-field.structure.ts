@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 文本框的标准结构：标题、盒里的单行输入框与清空按钮、字数。
+// 文本框的标准结构：标题、盒里的单行输入框、在途指示与清空按钮、字数。
 // Vue / React 不写默认插槽时的缺省树、Web Components 不写部件（或只写 root）时元素生成的节点，都照这一份渲。
 
 import type { StructureNode, StructureSlotted } from '../shared/structure'
@@ -17,6 +17,7 @@ export const TEXT_FIELD_STRUCTURE_PARTS = [
   'label',
   'control',
   'input',
+  'loading',
   'clear-trigger',
   'count',
 ] as const satisfies readonly TextFieldPart[]
@@ -41,15 +42,17 @@ export interface TextFieldStructureOptions {
 
 /**
  * 文本框在 root 里的标准结构，次序是标题、盒、字数。输入框缺省是单行的 input，开了 multiline 是 textarea。
- * 开了 clearable 才在盒里铺清空按钮，开了 showCount 才铺字数（文字由组件按「已用 / 上限」填）。
+ * 开了 loading 才在盒里输入框之后铺在途指示，开了 clearable 才铺清空按钮，开了 showCount 才铺字数（文字由组件按「已用 / 上限」填）。
  */
-export function textFieldStructure(model: Pick<TextFieldApi, 'clearable' | 'showCount'>, options: TextFieldStructureOptions = {}): TextFieldNode[] {
+export function textFieldStructure(model: Pick<TextFieldApi, 'clearable' | 'showCount' | 'loading'>, options: TextFieldStructureOptions = {}): TextFieldNode[] {
   const nodes: TextFieldNode[] = []
   if (options.slotted?.('label'))
     nodes.push({ key: 'label', tag: 'label', part: 'label', slot: { name: 'label' } })
   else if (options.label != null)
     nodes.push({ key: 'label', tag: 'label', part: 'label', text: options.label })
   const control: TextFieldNode[] = [{ key: 'input', tag: options.multiline ? 'textarea' : 'input', part: 'input' }]
+  if (model.loading)
+    control.push({ key: 'loading', tag: 'span', part: 'loading' })
   if (model.clearable)
     control.push({ key: 'clear-trigger', tag: 'button', part: 'clear-trigger' })
   nodes.push({ key: 'control', tag: 'div', part: 'control', children: control })

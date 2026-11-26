@@ -72578,7 +72578,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-text-field>`：Light-DOM 行为宿主：作者写 root / label / input / clear-trigger 四类角色节点，\n元素运行 text-field 状态机并把 connect 产出接上。\n\nlabel 的 `for` 恒指向 input 的 id，因此 label 角色节点必须是原生 `<label>`、\ninput 角色节点必须是原生 `<input>`：任一边换为 `<div>`，点击标题不聚焦、读屏也无法朗读名字。\n\n键盘只额外接管一个 Escape（clearable 且有值时清空），其余光标与选区行为全部归浏览器。\n清空按钮对读屏隐藏、不占 Tab 位：它只是指针用户的快捷方式，键盘路径使用 Escape。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label）、盒里的输入框（开了 multiline 是 textarea，否则是单行 input）\n与清空按钮（开了 clearable）、字数（开了 show-count）；标题可以由宿主直接子节点 `slot=\"label\"` 接管。",
+          "description": "`<xh-text-field>`：Light-DOM 行为宿主：作者写 root / label / input / clear-trigger 四类角色节点，\n元素运行 text-field 状态机并把 connect 产出接上。\n\nlabel 的 `for` 恒指向 input 的 id，因此 label 角色节点必须是原生 `<label>`、\ninput 角色节点必须是原生 `<input>`：任一边换为 `<div>`，点击标题不聚焦、读屏也无法朗读名字。\n\n键盘只额外接管 Escape（clearable 且有值时清空）与单行输入框里的回车（派发 value-commit，不拦缺省行为），\n其余光标与选区行为全部归浏览器。\n清空按钮对读屏隐藏、不占 Tab 位：它只是指针用户的快捷方式，键盘路径使用 Escape。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label）、盒里的输入框（开了 multiline 是 textarea，否则是单行 input）、\n在途指示（开了 loading）与清空按钮（开了 clearable）、字数（开了 show-count）；标题可以由宿主直接子节点 `slot=\"label\"` 接管。",
           "name": "XhTextFieldElement",
           "cssParts": [
             {
@@ -72604,6 +72604,10 @@
             {
               "description": "输入框后的装饰段；对读屏隐藏",
               "name": "suffix"
+            },
+            {
+              "description": "在途指示，盒里输入框之后的一枚加载环；对读屏隐藏，未开启 loading 时收起",
+              "name": "loading"
             },
             {
               "description": "清空按钮，须是原生 button；不占 Tab 位，名字取 translations.clearTrigger；无法清空时收起",
@@ -72779,6 +72783,15 @@
             },
             {
               "kind": "field",
+              "name": "loading",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loading"
+            },
+            {
+              "kind": "field",
               "name": "autoSize",
               "privacy": "public",
               "type": {
@@ -72833,6 +72846,12 @@
             {
               "kind": "field",
               "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyCommit",
               "privacy": "private",
               "readonly": true
             },
@@ -72962,6 +72981,13 @@
             {
               "description": "用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。",
               "name": "clear"
+            },
+            {
+              "description": "单行输入框里按下回车；detail 为 `{ value: string, unmaskedValue?: string }`。输入法组合期间、多行宿主、禁用与只读时不发",
+              "name": "value-commit",
+              "type": {
+                "text": "TextFieldValueChangeDetails"
+              }
             }
           ],
           "attributes": [
@@ -73084,6 +73110,14 @@
               "description": "显示字数部件；关闭时该部件收起",
               "name": "show-count",
               "fieldName": "showCount"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "在途：输入框报告 aria-busy，盒里露出一枚加载环；输入照常可用",
+              "name": "loading",
+              "fieldName": "loading"
             },
             {
               "type": {
@@ -73256,6 +73290,12 @@
             },
             {
               "name": "--xh-text-field-label-gap"
+            },
+            {
+              "name": "--xh-text-field-loading-duration"
+            },
+            {
+              "name": "--xh-text-field-loading-fg"
             },
             {
               "name": "--xh-text-field-placeholder-fg"

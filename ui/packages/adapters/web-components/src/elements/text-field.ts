@@ -25,11 +25,12 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * label 的 `for` 恒指向 input 的 id，因此 label 角色节点必须是原生 `<label>`、
  * input 角色节点必须是原生 `<input>`：任一边换为 `<div>`，点击标题不聚焦、读屏也无法朗读名字。
  *
- * 键盘只额外接管一个 Escape（clearable 且有值时清空），其余光标与选区行为全部归浏览器。
+ * 键盘只额外接管 Escape（clearable 且有值时清空）与单行输入框里的回车（派发 value-commit，不拦缺省行为），
+ * 其余光标与选区行为全部归浏览器。
  * 清空按钮对读屏隐藏、不占 Tab 位：它只是指针用户的快捷方式，键盘路径使用 Escape。
  *
- * 不写部件（或只写 root）时元素按标准结构生成：标题（label）、盒里的输入框（开了 multiline 是 textarea，否则是单行 input）
- * 与清空按钮（开了 clearable）、字数（开了 show-count）；标题可以由宿主直接子节点 `slot="label"` 接管。
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label）、盒里的输入框（开了 multiline 是 textarea，否则是单行 input）、
+ * 在途指示（开了 loading）与清空按钮（开了 clearable）、字数（开了 show-count）；标题可以由宿主直接子节点 `slot="label"` 接管。
  *
  * @customElement xh-text-field
  * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
@@ -47,6 +48,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {string} mask - 掩码：9 收数字、a 收字母、* 收字母或数字，其余字符是按到那一位时自动补上的分隔符；值是排好的串
  * @attr {boolean} clearable - 开启清空：有值时显示清空按钮，Escape 接管
  * @attr {boolean} show-count - 显示字数部件；关闭时该部件收起
+ * @attr {boolean} loading - 在途：输入框报告 aria-busy，盒里露出一枚加载环；输入照常可用
  * @attr {boolean} auto-size - 多行宿主（input 部件写为 textarea）的自动高度；行数界限对象经 autoSize property 赋值
  * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
@@ -54,12 +56,14 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @prop {object} translations - 读屏文案（只能通过 property 设置）：clearTrigger 是清空按钮的名字
  * @fires value-change - 值变化；detail 为 `{ value: string, unmaskedValue?: string }`，写了 mask 时带去掉分隔符的值
  * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
+ * @fires value-commit - 单行输入框里按下回车；detail 为 `{ value: string, unmaskedValue?: string }`。输入法组合期间、多行宿主、禁用与只读时不发
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-at-max 的容器
  * @csspart control - 视觉盒；提供后由它绘制描边、底色与聚焦环，输入框与清空按钮排列在其中
  * @csspart label - 标题；`for` 恒指向 input，因此须是原生 `<label>` 才可点击
  * @csspart input - 实际的输入框，须是原生 `<input>`；键盘交互全部在它身上
  * @csspart prefix - 输入框前的装饰段（货币符、单位、图标）；对读屏隐藏
  * @csspart suffix - 输入框后的装饰段；对读屏隐藏
+ * @csspart loading - 在途指示，盒里输入框之后的一枚加载环；对读屏隐藏，未开启 loading 时收起
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，名字取 translations.clearTrigger；无法清空时收起
  * @csspart count - 字数；文本由元素按 `已用 / 上限` 填入，作者写了自己的内容即不覆盖；未开启 show-count 时收起
  */
@@ -95,6 +99,7 @@ export class XhTextFieldElement extends XhElement {
     mask: { converter: STRING_CONVERTER },
     clearable: { converter: BOOLEAN_CONVERTER },
     showCount: { converter: BOOLEAN_CONVERTER, attribute: 'show-count' },
+    loading: { converter: BOOLEAN_CONVERTER },
     autoSize: { converter: BOOLEAN_CONVERTER, attribute: 'auto-size' },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
@@ -117,6 +122,7 @@ export class XhTextFieldElement extends XhElement {
   declare mask?: string
   declare clearable?: boolean
   declare showCount?: boolean
+  declare loading?: boolean
   /** 布尔值使用 auto-size 属性；行数界限对象无法表达为属性，只作为 property 赋值。 */
   declare autoSize?: TextFieldSchema['props']['autoSize']
   declare variant?: ControlVariant
@@ -131,6 +137,10 @@ export class XhTextFieldElement extends XhElement {
 
   private readonly notify = (details: TextFieldValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyCommit = (details: TextFieldValueChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('value-commit', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<TextFieldSchema>(this, textFieldMachine, () => this.machineProps())
@@ -159,12 +169,14 @@ export class XhTextFieldElement extends XhElement {
       mask: this.mask,
       clearable: this.clearable ?? false,
       showCount: this.showCount ?? false,
+      loading: this.loading ?? false,
       autoSize: this.autoSize,
       variant: this.variant,
       tone: this.tone,
       size: this.size,
       translations: this.translations,
       onValueChange: this.notify,
+      onValueCommit: this.notifyCommit,
       onClear: this.notifyClear,
     }
   }
@@ -239,6 +251,7 @@ export class XhTextFieldElement extends XhElement {
       autoSizeTextarea(this.autoSizeEl, api.autoSize)
     put('prefix', api.getPrefixProps())
     put('suffix', api.getSuffixProps())
+    put('loading', api.getLoadingProps())
     put('clear-trigger', api.getClearTriggerProps())
     put('count', api.getCountProps())
     // 字数的数字由元素填；作者第一次就写了内容的节点判为归作者，之后一概不碰
@@ -251,6 +264,7 @@ export class XhTextFieldElement extends XhElement {
     // 收起清空按钮只写 hidden 属性是不够的：作者层给这个 part 声明的任何一条 display
     // 都会盖过 UA 的 [hidden]{display:none}，只有内联 style.display 压得住
     this.setPartHidden(this.getPart('clear-trigger'), !api.canClear)
+    this.setPartHidden(this.getPart('loading'), !api.loading)
   }
 
   override disconnectedCallback(): void {

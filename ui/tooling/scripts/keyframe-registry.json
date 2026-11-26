@@ -619,6 +619,7 @@
         "spinner",
         "switch",
         "table",
+        "text-field",
         "transfer",
         "tree",
         "tree-select"

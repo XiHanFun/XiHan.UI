@@ -14,6 +14,14 @@ export interface TextFieldValueChangeDetails {
   unmaskedValue?: string
 }
 
+/** 回车提交时带出的值，与值变化同一形状。 */
+export interface TextFieldValueCommitDetails {
+  /** 按下回车那一刻输入框里的值；写了 mask 时是排好的值，含分隔符。 */
+  value: string
+  /** 写了 mask 时才有：去掉分隔符、只剩填进占位符的字符。 */
+  unmaskedValue?: string
+}
+
 /** 输入框渲染的标签：单行 input（默认）或多行 textarea。 */
 export type TextFieldInputHost = 'input' | 'textarea'
 
@@ -78,6 +86,11 @@ export interface TextFieldSchema extends MachineSchema {
     clearable?: boolean
     /** 显示字数部件：关闭时 count 部件带 hidden 收起。 */
     showCount?: boolean
+    /**
+     * 在途：远程搜索、远程校验进行中。输入框报告 aria-busy，根与盒带 data-loading，loading 部件露出一枚加载环；
+     * 输入照常可用，不算禁用也不拦回车。关闭时 loading 部件带 hidden 收起。
+     */
+    loading?: boolean
     /** 多行宿主的自动高度：按横向书写的真实行盒随内容增高，顶到上限后在 textarea 内部滚动；对象形态固定行数上下限。 */
     autoSize?: boolean | TextFieldAutoSize
     /** 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 */
@@ -89,6 +102,12 @@ export interface TextFieldSchema extends MachineSchema {
     /** 读屏文案；默认英文。 */
     translations?: Partial<TextFieldTranslations>
     onValueChange?: (details: TextFieldValueChangeDetails) => void
+    /**
+     * 单行输入框里按下回车时发出，带当前值：搜索框据此发起查询。输入法组合期间的回车是在选字，不算；
+     * 多行宿主里回车是换行，也不发；禁用、只读与按住不放的连发都不发。
+     * 回车的缺省行为照旧：放在表单里仍会触发表单的隐式提交，不想提交时由宿主拦下。
+     */
+    onValueCommit?: (details: TextFieldValueCommitDetails) => void
     /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
     onClear?: () => void
   }
@@ -133,6 +152,8 @@ export interface TextFieldApi<T extends PropTypes = PropTypes> {
   maxLength: number | undefined
   /** 字数部件当前是否显示（开启了 showCount）。 */
   showCount: boolean
+  /** 在途（开启了 loading）。 */
+  loading: boolean
   /** 写了 mask 时去掉分隔符的值；没写 mask 时与 value 相同。 */
   unmaskedValue: string
   /** 写了 mask 且每个占位符都填上了；没写 mask 时为 false。 */
@@ -156,6 +177,8 @@ export interface TextFieldApi<T extends PropTypes = PropTypes> {
   /** 输入框后的装饰段；对读屏隐藏，不参与名字链。 */
   getSuffixProps: () => T['element']
   getClearTriggerProps: () => T['button']
+  /** 在途指示：盒里输入框之后的一枚加载环，对读屏隐藏（在途经输入框的 aria-busy 上报）；未开启 loading 时带 hidden 收起。 */
+  getLoadingProps: () => T['element']
   /** 字数部件：承载 count / maxLength 两个数字，未开启 showCount 时带 hidden 收起。 */
   getCountProps: () => T['element']
 }

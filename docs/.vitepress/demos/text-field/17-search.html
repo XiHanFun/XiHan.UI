@@ -1,0 +1,27 @@
+<!-- 回车搜索与在途 | onValueCommit 在回车时带出当前值，输入法选字的回车不算；loading 让输入框报告 aria-busy、盒里转一枚加载环，输入照常可用 -->
+<xh-text-field
+  id="text-field-search"
+  label="搜索成员"
+  type="search"
+  placeholder="输入姓名后按回车"
+  clearable
+></xh-text-field>
+<span data-demo-output id="text-field-search-output">（还没查询）</span>
+
+<script type="module">
+  const field = document.getElementById("text-field-search");
+  const output = document.getElementById("text-field-search-output");
+  let timer = 0;
+
+  // 模拟一次远程查询：回车即发起，上一轮没落地的先撤掉
+  field.addEventListener("value-commit", (event) => {
+    window.clearTimeout(timer);
+    field.loading = true;
+    output.textContent = "查询中…";
+    const query = event.detail.value.trim() || "全部成员";
+    timer = window.setTimeout(() => {
+      field.loading = false;
+      output.textContent = `已查询：${query}`;
+    }, 800);
+  });
+</script>

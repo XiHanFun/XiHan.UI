@@ -4046,6 +4046,8 @@ export type ComponentTokenName
     | '--xh-text-field-label-font-size'
     | '--xh-text-field-label-font-weight'
     | '--xh-text-field-label-gap'
+    | '--xh-text-field-loading-duration'
+    | '--xh-text-field-loading-fg'
     | '--xh-text-field-placeholder-fg'
     | '--xh-text-field-textarea-py'
     | '--xh-time-field-action-bg'

@@ -20,7 +20,7 @@ root 持有状态，label 与 control 中的 input 各自向它取属性；不�
 
 加粗的是必需部件。
 
-`data-scope="text-field"`：**`root`** · `label` · `control` · `prefix` · **`input`** · `suffix` · `clear-trigger` · `count`
+`data-scope="text-field"`：**`root`** · `label` · `control` · `prefix` · **`input`** · `suffix` · `loading` · `clear-trigger` · `count`
 
 ## 示例
 
@@ -84,6 +84,12 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 
 <XhDemo src="text-field/16-multiline" />
 
+### 回车搜索与在途
+
+onValueCommit 在回车时带出当前值，输入法选字的回车不算；loading 让输入框报告 aria-busy、盒里转一枚加载环，输入照常可用
+
+<XhDemo src="text-field/17-search" />
+
 ## 设计指引
 
 ### 何时使用
@@ -100,7 +106,9 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 
 - `type` 覆盖 `text` / `password` / `email` / `tel` / `url` / `search`。
 - `clearable` 显示清空按钮，`maxLength` 设置字数上限。
-- 不写结构时按标准结构铺出标题、盒里的输入框与清空按钮、字数（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，开了 `multiline` 输入框铺 textarea（否则是单行 input），开了 `clearable` 才铺清空按钮，开了 `showCount` 才铺字数。前后缀照旧手写部件。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。
+- 单行输入框里按回车发出 `onValueCommit`，带当前值（写了 `mask` 时另带 `unmaskedValue`），搜索框据此发起查询。输入法组合期间的回车是在选字，不算；多行宿主里回车是换行，不发；禁用、只读与按住不放的连发都不发。回车的缺省行为照旧：放在表单里仍会触发表单的隐式提交。
+- `loading` 表示在途（远程搜索、远程校验）：输入框报告 `aria-busy`，根与盒带 `data-loading`，盒里输入框之后的 `loading` 部件露出一枚加载环（与加载指示器同一副画法，直径取控件内图标档，缺省品牌色），对读屏隐藏。在途不算禁用，照常输入与回车。不写结构时开了 `loading` 才铺这个部件，排在清空按钮之前。
+- 不写结构时按标准结构铺出标题、盒里的输入框与清空按钮、字数（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，开了 `multiline` 输入框铺 textarea（否则是单行 input），开了 `loading` 才铺在途指示，开了 `clearable` 才铺清空按钮，开了 `showCount` 才铺字数。前后缀照旧手写部件。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。
 - 输入部件用 `as="textarea"` 切换到多行；`autoSize` 为 `true` 时随内容增高，也可用 `{ minRows, maxRows }` 限定行数。两个边界必须是大于等于 1 的有限整数，且 `minRows` 不得大于 `maxRows`；无效配置会明确失败，不夹取也不沿用旧配置。
 - 自动高度只有一层滚动：顶到上限后由 textarea 自己滚，控件外壳只包住它，不设上限也不滚。给了 `maxRows` 时上限就是 `maxRows`；没给时上限取 textarea 的 `max-block-size` 计算值，默认皮肤为 `--xh-text-field-input-max-h`（缺省退到 `--xh-viewport-h-sm`）。两种情况都不低于 `minRows`。没给 `maxRows` 时 `max-block-size` 的计算值只接受 `none` 或 px，百分比等要等布局才知道多高的取值会明确失败。
 - 自动高度跟随输入、程序化写值与运行期配置变化重新测量。量高结果写进 `block-size`，`max-block-size` 由自动高度接管为 `none`，`overflow-y` 按是否顶到上限切换。关闭 `autoSize`、换回单行、替换输入节点或卸载组件时，归还启用前的这三项内联声明及其 priority；只移除作者原本没有写的声明。
@@ -138,7 +146,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-text-field>` |
-| Vue 组件 | `XhTextFieldClearTrigger` `XhTextFieldControl` `XhTextFieldCount` `XhTextFieldInput` `XhTextFieldLabel` `XhTextFieldPrefix` `XhTextFieldRoot` `XhTextFieldSuffix` |
+| Vue 组件 | `XhTextFieldClearTrigger` `XhTextFieldControl` `XhTextFieldCount` `XhTextFieldInput` `XhTextFieldLabel` `XhTextFieldLoading` `XhTextFieldPrefix` `XhTextFieldRoot` `XhTextFieldSuffix` |
 | 组合式函数 | `useTextField` |
 | 状态机 | `textFieldMachine` |
 | 皮肤 | `@xihan-ui/styles/text-field.css` |
@@ -162,12 +170,14 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | `mask` | `string` |  | 掩码：`9` 收数字，`a` 收字母，`*` 收字母或数字，其余字符是分隔符、按到那一位时自动补上； 在 9 / a / * / \ 前面写 `\` 即当分隔符原样写出。例如手机号 `999 9999 9999`。 值是排好的串（含分隔符）；非受控初值按它排一遍，受控值按原样显示。 |
 | `clearable` | `boolean` |  | 开启清空能力：有值时显示清空按钮、Escape 接管。关闭时按钮带 hidden 收起。 |
 | `showCount` | `boolean` |  | 显示字数部件：关闭时 count 部件带 hidden 收起。 |
+| `loading` | `boolean` |  | 在途：远程搜索、远程校验进行中。输入框报告 aria-busy，根与盒带 data-loading，loading 部件露出一枚加载环； 输入照常可用，不算禁用也不拦回车。关闭时 loading 部件带 hidden 收起。 |
 | `autoSize` | `boolean \| TextFieldAutoSize` |  | 多行宿主的自动高度：按横向书写的真实行盒随内容增高，顶到上限后在 textarea 内部滚动；对象形态固定行数上下限。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框与清空按钮的几何档位。 |
 | `translations` | `Partial<TextFieldTranslations>` |  | 读屏文案；默认英文。 |
 | `onValueChange` | `(details: TextFieldValueChangeDetails) => void` |  |  |
+| `onValueCommit` | `(details: TextFieldValueCommitDetails) => void` |  | 单行输入框里按下回车时发出，带当前值：搜索框据此发起查询。输入法组合期间的回车是在选字，不算； 多行宿主里回车是换行，也不发；禁用、只读与按住不放的连发都不发。 回车的缺省行为照旧：放在表单里仍会触发表单的隐式提交，不想提交时由宿主拦下。 |
 | `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 事件
@@ -178,6 +188,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | --- | --- | --- |
 | `value-change` | `TextFieldValueChangeDetails` | 值变化；detail 为 `{ value: string, unmaskedValue?: string }`，写了 mask 时带去掉分隔符的值 |
 | `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
+| `value-commit` | `TextFieldValueChangeDetails` | 单行输入框里按下回车；detail 为 `{ value: string, unmaskedValue?: string }`。输入法组合期间、多行宿主、禁用与只读时不发 |
 
 ### 插槽
 
@@ -227,6 +238,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | `count` | `number` | 当前字数，按字素计（一个组合 emoji 算一个）。作者用它渲染 count 部件中的数字。 |
 | `maxLength` | `number \| undefined` | 字数上限的原样透传；未设上限时为 undefined，此时只渲染当前字数。 |
 | `showCount` | `boolean` | 字数部件当前是否显示（开启了 showCount）。 |
+| `loading` | `boolean` | 在途（开启了 loading）。 |
 | `unmaskedValue` | `string` | 写了 mask 时去掉分隔符的值；没写 mask 时与 value 相同。 |
 | `maskComplete` | `boolean` | 写了 mask 且每个占位符都填上了；没写 mask 时为 false。 |
 | `canClear` | `boolean` | 清空按钮当前是否可用（开启 clearable、可编辑、且有值）。 |
@@ -240,6 +252,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | `getPrefixProps` | `() => T['element']` | 输入框前的装饰段（货币符、单位、图标）；对读屏隐藏，不参与名字链。 |
 | `getSuffixProps` | `() => T['element']` | 输入框后的装饰段；对读屏隐藏，不参与名字链。 |
 | `getClearTriggerProps` | `() => T['button']` |  |
+| `getLoadingProps` | `() => T['element']` | 在途指示：盒里输入框之后的一枚加载环，对读屏隐藏（在途经输入框的 aria-busy 上报）；未开启 loading 时带 hidden 收起。 |
 | `getCountProps` | `() => T['element']` | 字数部件：承载 count / maxLength 两个数字，未开启 showCount 时带 hidden 收起。 |
 
 ## 无障碍
@@ -251,6 +264,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Escape` | focus in input, clearable 且值非空, not disabled/readOnly | 清空值；三个条件缺一即不接管该键，交回给外层与浏览器 |
+| `Enter` | focus in 单行 input, not disabled/readOnly, 不在输入法组合中 | 发出 onValueCommit，带当前值；不拦回车的缺省行为，放在表单里照常触发隐式提交。多行宿主里回车是换行，不发；按住不放的连发也不发 |
 | `Enter` / `Space` | held in clear-trigger, clearable 且值非空, not disabled/readOnly | 按住期间清空按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，值清空后按钮藏起一并撤下。清空按钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面 |
 
 ### ARIA
@@ -260,12 +274,14 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `prefix` | `aria-hidden` | 'true' |
+| `input` | `aria-busy` | 'true' \| undefined |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-label` | props.ariaLabel |
 | `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `input` | `aria-readonly` | 'true' \| 'false' |
 | `input` | `aria-required` | 'true' \| 'false' |
 | `suffix` | `aria-hidden` | 'true' |
+| `loading` | `aria-hidden` | 'true' |
 | `clear-trigger` | `aria-label` | label.clearTrigger |
 | `count` | `aria-hidden` | 'true' |
 
@@ -287,6 +303,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-empty` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
@@ -296,6 +313,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-empty` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
+| `control` | `data-loading` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-variant` | props.variant |
 | `control` | `data-xh-action-owner` | '' |
@@ -312,6 +330,8 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | `input` | `data-xh-field-layout` | 'textarea' \| 'single-line' |
 | `suffix` | `data-disabled` | ''（条件成立时才出现） |
 | `suffix` | `data-xh-field-affix` | 'suffix' |
+| `loading` | `data-loading` | ''（条件成立时才出现） |
+| `loading` | `data-xh-loading-ring` | '' |
 | `clear-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-xh-action-control` | '' |
 | `clear-trigger` | `data-xh-action-display` | 'has-value' |
@@ -373,13 +393,17 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | `--xh-text-field-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | text-field 的 label 部件 font-size 覆盖槽。 |
 | `--xh-text-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | text-field 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-text-field-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | text-field 的 label 部件 margin-block-end 覆盖槽。 |
+| `--xh-text-field-loading-duration` | `loading` | `animation` | `xh-loading-ring` | `--xh-motion-loop-spin` | text-field 的 loading 部件 animation 覆盖槽。 |
+| `--xh-text-field-loading-fg` | `loading` | `border`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`motion=reduce`<br>`where([data-motion='reduce'])`<br>`xh-loading-ring`<br>`xh-loading-ring=overlay` | `--xh-fg-brand` | text-field 的 loading 部件 border、border-color 覆盖槽。 |
 | `--xh-text-field-placeholder-fg` | `input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | text-field 的 input 部件 color 覆盖槽。 |
 | `--xh-text-field-textarea-py` | `input` | `padding-block` | `xh-field-input`<br>`xh-field-layout=textarea` | `--xh-space-1` | text-field 的 input 部件 padding-block 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现 · 循环（见[动效规范](../design/motion#角色)）。
+
+可覆盖的动效槽：`--xh-text-field-loading-duration`。
 
 共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

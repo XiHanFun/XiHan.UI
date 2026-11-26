@@ -41,6 +41,7 @@ export function connectTextField<T extends PropTypes>(
   const atLimit = isAtLimit(value, maxLength)
   const autoSize = prop('autoSize') ?? false
   const showCount = !!prop('showCount')
+  const loading = !!prop('loading')
   // 形态默认落 outline：不写时 root 与 control 都如实投影，皮肤不再依赖缺省档
   const variant = prop('variant') ?? 'outline'
   const count = graphemeLength(value)
@@ -82,6 +83,7 @@ export function connectTextField<T extends PropTypes>(
     count,
     maxLength,
     showCount,
+    loading,
     unmaskedValue: masked ? masked.unmasked : value,
     maskComplete: masked ? masked.complete : false,
     canClear,
@@ -100,6 +102,7 @@ export function connectTextField<T extends PropTypes>(
       'data-invalid': dataAttr(invalid),
       'data-empty': dataAttr(empty),
       'data-at-max': dataAttr(atLimit),
+      'data-loading': dataAttr(loading),
     }),
 
     // 视觉盒：描边、底色与聚焦环画在这个节点上，输入框与清空按钮排在它里面
@@ -115,6 +118,7 @@ export function connectTextField<T extends PropTypes>(
       'data-invalid': dataAttr(invalid),
       'data-empty': dataAttr(empty),
       'data-at-max': dataAttr(atLimit),
+      'data-loading': dataAttr(loading),
     }),
 
     getLabelProps: () => normalize.label({
@@ -147,6 +151,8 @@ export function connectTextField<T extends PropTypes>(
       'aria-invalid': invalid ? 'true' : 'false',
       'aria-readonly': readOnly ? 'true' : 'false',
       'aria-required': prop('required') ? 'true' : 'false',
+      // 在途不算禁用：仍可输入，读屏经 aria-busy 知道这块还在更新
+      'aria-busy': loading ? 'true' : undefined,
       // Field Chrome 不读取 text-field anatomy；布局与原生输入角色由 Headless 明确投影。
       'data-xh-field-input': '',
       'data-xh-field-layout': (input.as ?? 'input') === 'textarea' ? 'textarea' : 'single-line',
@@ -179,10 +185,23 @@ export function connectTextField<T extends PropTypes>(
         send({ type: 'VALUE.SET', value: el.value })
       },
       'onKeyDown': (event: KeyboardEvent) => {
-        // 组合期间的按键属于输入法候选框，组件一律不接
+        // 组合期间的按键属于输入法候选框，组件一律不接：选字时按的回车不是提交
         if (isComposingEvent(event))
           return
-        if (event.key !== 'Escape' || event.ctrlKey || event.metaKey || event.altKey)
+        if (event.ctrlKey || event.metaKey || event.altKey)
+          return
+        if (event.key === 'Enter') {
+          // 多行宿主里回车是换行；禁用与只读没有可提交的编辑；按住不放的连发不是又一次提交；
+          // 组合起止之间的回车同样是在选字（React 的合成键盘事件不带 isComposing，靠组合事件记下的这一段兜住）。
+          // 不拦缺省行为：放在表单里照常触发隐式提交
+          if ((input.as ?? 'input') === 'textarea' || !editable || event.repeat || composeBase.has(event.currentTarget as Element))
+            return
+          // 现读机器里的值：这一下按键与上一次渲染之间可能还隔着没刷新的输入
+          const current = context.get('value')
+          prop('onValueCommit')?.(mask ? { value: current, unmaskedValue: applyTextFieldMask(mask, current).unmasked } : { value: current })
+          return
+        }
+        if (event.key !== 'Escape')
           return
         // 不可清空时不吞键：Escape 在输入框里还有外层浮层消解、输入法候选框收起等去处
         if (!canClear)
@@ -245,6 +264,17 @@ export function connectTextField<T extends PropTypes>(
         // 清完把焦点送回输入框，接着打字不用再点一次
         scope.getById(ids.input)?.focus()
       },
+    }),
+
+    // 在途指示：盒里输入框之后的一枚加载环，由加载环配方画在 ::before 上，随 data-loading 转起来。
+    // 对读屏隐藏：在途由输入框的 aria-busy 上报，环本身不说话
+    getLoadingProps: () => normalize.element({
+      ...parts.loading.attrs,
+      'aria-hidden': true,
+      'data-xh-loading-ring': '',
+      'data-loading': dataAttr(loading),
+      // 没在途时收起而不是卸载，节点是作者写的
+      'hidden': !loading || undefined,
     }),
 
     // 字数：数字由作者用 count / maxLength 渲。对读屏隐藏——它是上限的视觉镜像，

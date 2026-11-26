@@ -415,6 +415,72 @@ export const textFieldSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '回车：单行输入框发出 value-commit，带当前值；输入法组合期间的回车是在选字，不算',
+      spec: { apg: HTML_SPEC },
+      covers: ['text-field.kbd.commit'],
+      props: { defaultValue: '曦寒' },
+      steps: [
+        { kind: 'focus', part: 'input' },
+        { kind: 'key', key: 'Enter', composing: true, expect: { events: [] } },
+        { kind: 'key', key: 'Enter', expect: { events: [{ type: 'value-commit', detail: { value: '曦寒' } }] } },
+        // 只读时没有可提交的编辑
+        { kind: 'setProps', props: { readOnly: true } },
+        { kind: 'key', key: 'Enter', expect: { events: [] } },
+      ],
+    },
+    {
+      name: '在途：输入框报 aria-busy，根与盒带 data-loading，loading 部件露出；撤掉在途即收起，输入照常可用',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({
+        part: 'root',
+        children: [
+          { part: 'label', tag: 'label', text: '搜索' },
+          {
+            part: 'control',
+            children: [
+              { part: 'input', tag: 'input' },
+              { part: 'loading', tag: 'span' },
+            ],
+          },
+        ],
+      }),
+      props: { loading: true },
+      initial: {
+        order: ['root', 'label', 'control', 'input', 'loading'],
+        parts: {
+          root: { 'data-loading': '' },
+          control: { 'data-loading': '' },
+          // 在途不算禁用：仍可聚焦与输入
+          input: { 'aria-busy': 'true', 'disabled': null },
+          loading: { 'hidden': null, 'aria-hidden': 'true', 'data-loading': '' },
+        },
+      },
+      steps: [
+        {
+          kind: 'setProps',
+          props: { loading: false },
+          expect: {
+            parts: {
+              root: { 'data-loading': null },
+              control: { 'data-loading': null },
+              input: { 'aria-busy': null },
+              loading: { 'hidden': '', 'data-loading': null },
+            },
+          },
+        },
+      ],
+    },
+    {
+      name: '作者不写结构、开着 loading：盒里输入框之后铺在途指示，排在清空钮之前',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { label: '搜索', loading: true, clearable: true, defaultValue: '曦寒' },
+      initial: {
+        order: ['root', 'label', 'control', 'input', 'loading', 'clear-trigger'],
+        parts: { loading: { hidden: null }, input: { 'aria-busy': 'true' } },
+      },
+    },
+    {
       name: '作者不写结构：三端都照 textFieldStructure 铺出标题、盒里的输入框与清空钮、字数',
       spec: { apg: APG },
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),

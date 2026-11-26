@@ -1261,6 +1261,7 @@
       "mention",
       "select",
       "table",
+      "text-field",
       "transfer",
       "tree",
       "tree-select"

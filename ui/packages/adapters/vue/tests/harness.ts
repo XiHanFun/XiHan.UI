@@ -53,6 +53,7 @@ const PUBLIC_EVENTS = {
   'reach-end': 'onReachEnd',
   'tab-move': 'onTabMove',
   'value-change': 'onValueChange',
+  'value-commit': 'onValueCommit',
   'hidden-series-change': 'onHiddenSeriesChange',
   'active-key-change': 'onActiveKeyChange',
   'datum-active': 'onDatumActive',

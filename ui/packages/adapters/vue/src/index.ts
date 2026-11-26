@@ -1383,11 +1383,12 @@ export {
   XhTextFieldCount,
   XhTextFieldInput,
   XhTextFieldLabel,
+  XhTextFieldLoading,
   XhTextFieldPrefix,
   XhTextFieldRoot,
   XhTextFieldSuffix,
 } from './components/text-field/text-field'
-export type { TextFieldCountSlotProps, TextFieldRootSlotProps, XhTextFieldClearTriggerProps, XhTextFieldControlProps, XhTextFieldCountProps, XhTextFieldInputProps, XhTextFieldLabelProps, XhTextFieldPrefixProps, XhTextFieldRootProps, XhTextFieldSuffixProps } from './components/text-field/text-field'
+export type { TextFieldCountSlotProps, TextFieldRootSlotProps, XhTextFieldClearTriggerProps, XhTextFieldControlProps, XhTextFieldCountProps, XhTextFieldInputProps, XhTextFieldLabelProps, XhTextFieldLoadingProps, XhTextFieldPrefixProps, XhTextFieldRootProps, XhTextFieldSuffixProps } from './components/text-field/text-field'
 export { useTextField } from './components/text-field/use-text-field'
 export type { TextFieldContext } from './components/text-field/use-text-field'
 export { useTimeFieldContext } from './components/time-field/context'

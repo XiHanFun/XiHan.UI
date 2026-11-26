@@ -49760,7 +49760,8 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 
 /* styles/text-field.css */
 /* TextField 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
-/* 清空钮露面的淡入关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+/* 在途指示的那枚环由加载环配方画。 */
+/* 清空钮露面的淡入、加载环的转圈关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
 .xh-scope-text-field {
   --xh-text-field-skin: 1;
@@ -49921,6 +49922,34 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+}
+
+/* 在途指示：盒里输入框之后的一枚加载环，直径取控件内图标档（16 / 18 / 20），不接指针。
+   环由加载环配方画在 ::before 上，随 data-loading 转起来；弧色缺省取品牌色，转速认使用者槽 */
+.xh-scope-text-field[data-part='loading'] {
+  --xh-_loading-ring-fg: var(--xh-text-field-loading-fg, var(--xh-fg-brand));
+  --xh-_loading-ring-duration: var(--xh-text-field-loading-duration, var(--xh-motion-loop-spin));
+
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.xh-scope-text-field[data-part='loading'][hidden] {
+  display: none;
+}
+
+/* 进入在途时整枚淡入（节点重新得到盒时起播），不当帧蹦出来 */
+.xh-scope-text-field[data-part='loading']:not([hidden]) {
+  animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+.xh-scope-text-field[data-part='loading']::before {
+  content: '';
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
 }
 
 .xh-scope-text-field[data-part='count'] {

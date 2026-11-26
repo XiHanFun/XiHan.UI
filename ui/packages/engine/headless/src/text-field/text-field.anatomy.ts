@@ -14,6 +14,7 @@ export const textFieldAnatomy = createAnatomy('text-field', [
   'prefix',
   'input',
   'suffix',
+  'loading',
   'clear-trigger',
   'count',
 ])

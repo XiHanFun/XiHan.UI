@@ -58,8 +58,8 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | --- | --- | --- |
 | 包名 | 23 | 把代码从一个包移到另一个包 = major |
 | `exports` 子路径 | 70 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）会被 Node 与打包器拒绝，这些路径不是 API |
-| Vue 组件导出 `Xh*` | 1267（148 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
-| Vue 组件 props 类型 `Xh*Props` | 1263 | `XhSelectRootProps`、`XhDialogContentProps`。每个组件一个，名字与 React 一一对应，内容随下方 prop 名与 emit 名两行走；带类型参数的几个根组件，参数的个数与缺省同样受约束 |
+| Vue 组件导出 `Xh*` | 1268（148 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
+| Vue 组件 props 类型 `Xh*Props` | 1264 | `XhSelectRootProps`、`XhDialogContentProps`。每个组件一个，名字与 React 一一对应，内容随下方 prop 名与 emit 名两行走；带类型参数的几个根组件，参数的个数与缺省同样受约束 |
 | Vue 组合式函数 `use<家族>` | 114 | `useSelect`、`useCombobox`。不使用库内部件、自行编写标记时的唯一入口 |
 | Vue 上下文读钩子 `use*Context` | 205 | `useSelectContext`、`useAccordionItemContext`。供自行编写的部件放进现成组件后读取同一份 `api` 与部件身份，名字与 React 一一对应，只能在对应部件之内调用。上下文只由库内部件提供，提供方不导出 |
 | Vue 指令 | 2 | `vBackground`（`@xihan-ui/vue/backgrounds`）、`vSound`（`@xihan-ui/vue/sound`），两个子入口各依赖一个可选 peer |
@@ -104,7 +104,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | 类别 | 数量 | 档位 |
 | --- | --- | --- |
 | `data-scope` 取值（组件身份） | 148 | **受约束**（新增第 149 个组件是 minor） |
-| `data-part` 取值（部件名） | 398 个不同名字 / 1437 条「组件 × 部件」配对 | **受约束** |
+| `data-part` 取值（部件名） | 398 个不同名字 / 1438 条「组件 × 部件」配对 | **受约束** |
 | `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 398 个 | **受约束** |
 | `meta.requiredParts`（必备部件） | 318 条 | **受约束**（加条目 = major），方向见下 |
 
@@ -125,7 +125,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 三、`data-*` 状态属性
 
-`connect` 一共产出 325 个不同的 `data-*` 属性名、2177 条「组件 × 属性」配对。分两类。
+`connect` 一共产出 325 个不同的 `data-*` 属性名、2179 条「组件 × 属性」配对。分两类。
 
 ### 受约束
 
@@ -189,7 +189,7 @@ brand  neutral  success  warning  danger  info
 | `@layer` 名与声明顺序 | 5 | `xihan.reset` → `xihan.tokens` → `xihan.motion` → `xihan.components` → `xihan.overrides`。改名、调序、增删中间层均为 major。`xihan.overrides` 刻意留空，专供使用方覆盖，不会作为未使用的层被清理 |
 | 全局令牌 · 原语层 | 115 | `--xh-color-brand-500`、`--xh-space-4`、`--xh-radius-md`。皮肤中不应直接使用它们，但接入品牌轴必须写 `--xh-color-brand-*`，因此它们是公开的 |
 | 全局令牌 · 语义层 | 302 | `--xh-bg-brand`、`--xh-fg-on-brand`、`--xh-control-h-md`、`--xh-shape-control`。主题定制的正门，见 [设计令牌与主题](./theme) |
-| 组件覆盖槽 | 4841（覆盖 146 个组件） | `--xh-button-bg`、`--xh-button-h`、`--xh-dialog-max-w`。全部写成 `var(--xh-x-y, 默认值)` 形态，在 `:root` 中设置即可修改该组件 |
+| 组件覆盖槽 | 4843（覆盖 146 个组件） | `--xh-button-bg`、`--xh-button-h`、`--xh-dialog-max-w`。全部写成 `var(--xh-x-y, 默认值)` 形态，在 `:root` 中设置即可修改该组件 |
 | 语气轴槽 | 13 | `--xh-_tone`、`--xh-_tone-on`、`--xh-_tone-hover`、`--xh-_tone-subtle`、`--xh-_tone-border` 等。这是自定义语气的唯一机制：写入 `[data-tone='premium'] { --xh-_tone: gold; --xh-_tone-on: #000 }`，读取这批槽的 64 份皮肤随之生效。虽然带下划线前缀，但按受约束处理 |
 | 关键帧名 | 46 | `xh-pop-in`、`xh-fade-out`、`xh-spin`。共享关键帧住在 `family/motion.css`（子入口 `@xihan-ui/styles/motion.css`），皮肤 `@import` 它；组件专属关键帧仍在各皮肤。在 `xihan.overrides` 层中重定义同名关键帧即可替换该段动画（关键帧名因此是公开面），所以改名与删名同样是 major |
 | 跨包内联属性 | 151 | 浮层定位共用的 `--xh-_<组件>-available-w` / `-available-h` / `-anchor-w` / `-arrow-x` / `-arrow-y`，指示条与滑块的几何 `--xh-_tabs-indicator-x`、`--xh-_radio-group-thumb-w`，值类比例 `--xh-_progress-value`、`--xh-_loading-bar-value`，浮动按钮的贴边与停点 `--xh-_float-button-offset`、`--xh-_float-button-ratio`、`--xh-_float-button-x`，图表提示框坐标 `--xh-_chart-tip-x`、`--xh-_chart-tip-y`，表格两侧冻结列的总宽 `--xh-_table-frozen-start`、`--xh-_table-frozen-end`，以及 `--xh-_truncate-lines`、`--xh-_color-picker-tag-color`、`--xh-_carousel-autoplay-duration` 等。由 headless 写入内联 `style`，皮肤必须读取。整套更换皮肤时若不读取这些值，浮层限高与箭头、选中指示、进度、文本截断、浮动按钮贴边、图表提示框或表格冻结列的滚动让位会失效，且不报任何错误。core 写入的层级、动效与液态材质取值不在此列，见下方「排除」 |
@@ -217,11 +217,11 @@ brand  neutral  success  warning  danger  info
 | --- | --- | --- |
 | 自定义元素标签 `xh-*` | 153（`defineXhElements()` 注册 152 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 1748 条声明 / 513 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| observed attribute | 1749 条声明 / 513 个不同名字 | **受约束**（具体元素上的具体属性名） |
 | attribute 名词汇表本身 | 513 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
-| `CustomEvent` 名 | 123 个名字 / 305 条「元素 × 事件」 | **受约束** |
-| 事件传播语义 | `bubbles: true, composed: true`（295 处中 293 处） | **受约束**。取消冒泡会使祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，避免被祖先 `<form>` 视为自身的提交 |
-| 事件 `detail` 形状 | 245 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
+| `CustomEvent` 名 | 123 个名字 / 306 条「元素 × 事件」 | **受约束** |
+| 事件传播语义 | `bubbles: true, composed: true`（296 处中 294 处） | **受约束**。取消冒泡会使祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，避免被祖先 `<form>` 视为自身的提交 |
+| 事件 `detail` 形状 | 246 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
 | `attribute: false` 的 JS 字段 | 349 条（涉及 122 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 等只能通过 JS 赋值，HTML 中无法表达：不是每个 property 都有对应 attribute |
 | 命令式方法 | 152（分布在 43 个元素） | **受约束**，含参数与返回类型 |
 
@@ -393,7 +393,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 
 | 包 | 说明 |
 | --- | --- |
-| `@xihan-ui/vue` | 1267 个组件、114 个组合式函数 |
+| `@xihan-ui/vue` | 1268 个组件、114 个组合式函数 |
 | `@xihan-ui/react` | 组件与 hooks（铺开中，公开面随批次增长） |
 | `@xihan-ui/web-components` | 153 个自定义元素 |
 | `@xihan-ui/headless` | `connect*` / `*Machine` / 各类公开类型；内部算子在排除清单里 |
@@ -431,12 +431,12 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，22358 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，22368 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 250 条子入口、12557 个导出名、148 个 `data-scope` 与 1437 条部件配对、
-148 个组件的 2384 个 prop 名、327 种 `data-*`、33 个 `data-state` 取值、812 个令牌、
-5 个 `@layer` 名、4841 个组件覆盖槽、152 个自定义元素及其 attribute 与事件。
+覆盖：包名与 250 条子入口、12562 个导出名、148 个 `data-scope` 与 1438 条部件配对、
+148 个组件的 2386 个 prop 名、327 种 `data-*`、33 个 `data-state` 取值、812 个令牌、
+5 个 `@layer` 名、4843 个组件覆盖槽、152 个自定义元素及其 attribute 与事件。
 
 prop 名一维是后补的：在它加入之前，修改一个 prop 名（实测 `transfer` 的 `items` 改
 `collection`、`splitter` 的 `size` 改 `sizes`）其余门禁全程沉默。它的事实源是无头内核的
