@@ -61,9 +61,9 @@ const RE_ENUM_VALUE = /^(?:'[a-z][a-z0-9-]*'|.*\?\s*'[a-z][a-z0-9-]*'\s*:\s*'[a-
 /** 值表达式里的取值字面量，判据⑨拿它当取值域。 */
 const RE_VALUE_LITERAL = /'([a-z][a-z0-9-]*)'/g
 /** 值是一个变量或成员访问（side、props.trend、ref?.side）：取最后那个名字。 */
-const RE_VALUE_NAME = /^(?:[A-Za-z_$][\w$]*(?:\??\.))*([A-Za-z_$][\w$]*)$/
+const RE_VALUE_NAME = /^(?:[a-z_$][\w$]*\??\.)*([a-z_$][\w$]*)$/i
 /** 组件目录里的字面量联合类型：export type DiffSide = 'old' | 'new'。 */
-const RE_UNION_TYPE = /export type (\w+) = ((?:\s*\|?\s*'[a-z][a-z0-9-]*')+)\s*(?:\n|$)/g
+const RE_UNION_TYPE = /export type (\w+) = (\s*(?:\|\s*)?'[a-z][a-z0-9-]*'(?:\s*\|\s*'[a-z][a-z0-9-]*')*)\s*(?:\n|$)/g
 /** 选择器里按出现顺序扫 scope 限定与带值的属性，用来把取值归到组件名下。 */
 const RE_SCOPE_OR_VALUE = /\[data-scope=['"]([a-z0-9-]+)['"]\]|\[(data-[a-z0-9-]+)=['"]([a-z0-9-]+)['"]\]/g
 
