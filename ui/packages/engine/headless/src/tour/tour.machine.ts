@@ -13,7 +13,7 @@ import { animate, readMotion } from '@xihan-ui/motion'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
-import { createLayerReleaseGate, createOverlayKitGate, setupLayerTransaction, trackOverlayPosition } from '../shared/overlay-shell'
+import { setupLayerTransaction, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { sameTourSpotlight, tourSpotlightBox } from './tour.spotlight'
 
 const { createMachine } = setup<TourSchema>()
@@ -558,79 +558,25 @@ export const tourMachine = createMachine({
           })
         }, { registry: config.layerRegistry, flush })
 
-        const presence = refs.get('presence')
-        let disposed = false
-        let release: OverlayRelease | undefined
-        let lastOpen = false
-        // 消解层与焦点域在浮层按需块里：展开时还没到就等它，到了按那一刻的展开态重走一遍
-        const gate = createOverlayKitGate(scope.getDoc())
-        // 退场播完后等开在本层里的层（比如内容里一颗按钮的提示）先退栈再释放
-        const releaseGate = createLayerReleaseGate()
-
-        const finish = (): void => {
-          if (disposed || state.get() === 'open' || !release)
-            return
-          if (!releaseGate.ready(release, finish))
-            return
-          const cleanup = release
-          release = undefined
-          cleanup()
-        }
-        const offExit = presence?.onExitComplete(finish)
-        const sync = (): void => {
-          if (disposed)
-            return
-          const open = state.get() === 'open'
-          const reopening = open && !lastOpen && release !== undefined
-          const closing = !open && lastOpen
-          lastOpen = open
-          if (open) {
-            releaseGate.cancel()
-            // 按需块没到：资源等它到了再建，视觉 Presence 照常跟着展开
-            if (!release && !gate.ready(sync)) {
-              presence?.update(true)
-              return
-            }
-            // 退场中重开沿用原 Layer；Presence 会结清旧视觉租约。
-            release ??= acquire()
-            presence?.update(true)
-            if (reopening) {
-              const activate = reactivateFocus
-              flush(() => scope.getWin().requestAnimationFrame(() => {
-                if (!disposed && state.get() === 'open' && release && reactivateFocus === activate)
-                  activate?.()
-              }))
-            }
-          }
-          else {
-            // 关闭那一刻归还焦点：内容随即 inert，资源要留到退场播完，焦点不能跟着等
-            if (closing)
-              returnFocusNow?.()
-            if (!presence || !presence.rendered)
-              finish()
-          }
-        }
-        try {
-          track([() => state.get()], sync)
-          sync()
-        }
-        catch (error) {
-          disposed = true
-          gate.dispose()
-          releaseGate.cancel()
-          offExit?.()
-          release?.()
-          throw error
-        }
-        return () => {
-          disposed = true
-          gate.dispose()
-          releaseGate.cancel()
-          offExit?.()
-          const cleanup = release
-          release = undefined
-          cleanup?.()
-        }
+        // 层、消解层、焦点域与模态资源共用一份租约：展开时至多建一次，退场播完才释放，退场途中重开原样复用
+        return trackPresenceResources({
+          presence: refs.get('presence'),
+          open: () => state.get() === 'open',
+          track,
+          acquire: () => {
+            const release = acquire()
+            return Object.assign(() => release(), {
+              // 关闭那一刻归还焦点：内容随即 inert，资源要留到退场播完，焦点不能跟着等
+              returnFocus: () => returnFocusNow?.(),
+              reactivate: () => reactivateFocus?.(),
+              // 退场播完后等开在本层里的层（比如内容里一颗按钮的提示）先退栈再释放
+              nested: release.nested,
+            })
+          },
+          doc: scope.getDoc(),
+          flush,
+          scope,
+        })
       },
     },
   },

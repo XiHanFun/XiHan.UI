@@ -16,7 +16,7 @@ import { createMultiPointerSession, pinchChange, pinchSnapshot, resolveSessionDo
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { trackLiquidPart } from '../shared/liquid'
-import { createLayerReleaseGate, createModalLayerResources, createOverlayKitGate, overlayCloseOnDismiss, setupLayerTransaction } from '../shared/overlay-shell'
+import { createModalLayerResources, overlayCloseOnDismiss, setupLayerTransaction, trackPresenceResources } from '../shared/overlay-shell'
 
 const { createMachine } = setup<ImageViewerSchema>()
 
@@ -602,82 +602,33 @@ export const imageViewerMachine = createMachine({
           modalResources.sync()
         }, { registry: config.layerRegistry, flush })
 
-        const presence = refs.get('presence')
-        let disposed = false
-        let release: OverlayRelease | undefined
-        let lastOpen = false
-        // 消解层、焦点域与模态资源在浮层按需块里：展开时还没到就等它，到了按那一刻的展开态重走一遍
-        const gate = createOverlayKitGate(scope.getDoc())
-        // 退场播完后等开在本层里的层（比如内容里一颗按钮的提示）先退栈再释放
-        const releaseGate = createLayerReleaseGate()
-
-        const finish = (): void => {
-          if (disposed || state.get() === 'open' || !release)
-            return
-          if (!releaseGate.ready(release, finish))
-            return
-          const cleanup = release
-          release = undefined
-          cleanup()
-        }
-        const offExit = presence?.onExitComplete(finish)
-        const sync = (): void => {
-          if (disposed)
-            return
-          const open = state.get() === 'open'
-          const reopening = open && !lastOpen && release !== undefined
-          const closing = !open && lastOpen
-          lastOpen = open
-          if (open) {
-            releaseGate.cancel()
-            if (!release && !gate.ready(sync))
-              return
-            // 重开沿用原 layer/focus scope；Presence 会撤销旧视觉租约。
-            release ??= acquire()
-            if (reopening) {
-              // 关闭时撤下的背景失活在重开时补回
-              resyncModalNow?.()
-              const activate = reactivateFocus
-              flush(() => scope.getWin().requestAnimationFrame(() => {
-                if (!disposed && state.get() === 'open' && release && reactivateFocus === activate)
-                  activate?.()
-              }))
-            }
-          }
-          else {
-            // 关闭时交接焦点：内容随即 inert，资源要留到退场播完，焦点不能跟着等。先撤下背景失活再归还，
-            // 焦点不落进还对读屏藏着的背景（见 createModalLayerResources.reveal）
-            if (closing) {
-              if (revealBackgroundNow)
-                revealBackgroundNow(returnFocusNow)
-              else
-                returnFocusNow?.()
-            }
-            if (!presence || !presence.rendered)
-              finish()
-          }
-        }
-        try {
-          track([() => state.get()], sync)
-          sync()
-        }
-        catch (error) {
-          disposed = true
-          gate.dispose()
-          releaseGate.cancel()
-          offExit?.()
-          release?.()
-          throw error
-        }
-        return () => {
-          disposed = true
-          gate.dispose()
-          releaseGate.cancel()
-          offExit?.()
-          const cleanup = release
-          release = undefined
-          cleanup?.()
-        }
+        // 层、消解层、焦点域与模态资源共用一份租约：展开时至多建一次，退场播完才释放，退场途中重开原样复用
+        return trackPresenceResources({
+          presence: refs.get('presence'),
+          open: () => state.get() === 'open',
+          track,
+          acquire: () => {
+            const release = acquire()
+            return Object.assign(() => release(), {
+              // 关闭时交接焦点：内容随即 inert，资源要留到退场播完，焦点不能跟着等。先撤下背景失活再归还，
+              // 焦点不落进还对读屏藏着的背景（见 createModalLayerResources.reveal）
+              returnFocus: () => {
+                if (revealBackgroundNow)
+                  revealBackgroundNow(returnFocusNow)
+                else
+                  returnFocusNow?.()
+              },
+              reactivate: () => reactivateFocus?.(),
+              // 退场播完后等开在本层里的层（比如内容里一颗按钮的提示）先退栈再释放
+              nested: release.nested,
+            })
+          },
+          // 关闭时撤下的背景失活在重开时补回
+          onReopen: () => resyncModalNow?.(),
+          doc: scope.getDoc(),
+          flush,
+          scope,
+        })
       },
     },
   },

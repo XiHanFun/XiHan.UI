@@ -548,6 +548,12 @@ export interface PresenceResourceOptions {
   flush?: (fn: () => void) => void
   /** 取下一帧的窗口，取机器的 scope。 */
   scope?: { getWin: () => Window }
+  /** 退场播完、资源释放之后通知（逻辑仍关着才通知）：Dialog 的 onExitComplete 在这里发。 */
+  onReleased?: () => void
+  /** 退场途中重开时是否丢掉原资源重建：资源建立时依据的策略变了（Dialog 的 role）就要重建。 */
+  shouldRebuildOnReopen?: () => boolean
+  /** 浮层按需块的预取挂在哪个文档上；缺省挂在页面文档上。 */
+  doc?: Document | null
   /** 退出完成后是否可以立即释放；多层菜单用它等待本层重新成为栈顶。 */
   canRelease?: () => boolean
   /** canRelease 为 false 时订阅释放条件变化。 */
@@ -571,7 +577,7 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
   let presence: PresenceHandle | null = null
   let offExit: Cleanup | undefined
   let offReleaseReady: Cleanup | undefined
-  const gate = typeof document === 'undefined' ? null : createOverlayKitGate()
+  const gate = typeof document === 'undefined' ? null : createOverlayKitGate(o.doc)
   const releaseGate = createLayerReleaseGate()
 
   const finish = (): void => {
@@ -589,6 +595,8 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
     const cleanup = release
     release = undefined
     cleanup()
+    if (!disposed && !o.open() && !release)
+      o.onReleased?.()
   }
   const syncPresence = (): PresenceHandle | null => {
     const next = typeof o.presence === 'function' ? o.presence() : o.presence
@@ -615,7 +623,7 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
       return
     const open = Boolean(o.open())
     const currentPresence = syncPresence()
-    const reopening = open && !lastOpen && release !== undefined
+    let reopening = open && !lastOpen && release !== undefined
     const closing = !open && lastOpen
     lastOpen = open
     if (open) {
@@ -623,6 +631,13 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
       offReleaseReady = undefined
       stopWaiting?.()
       releaseGate.cancel()
+      // 资源依据的策略在退场途中变了：丢掉原资源，按这一次重新建
+      if (reopening && o.shouldRebuildOnReopen?.()) {
+        const cleanup = release
+        release = undefined
+        cleanup?.()
+        reopening = false
+      }
       currentPresence?.update(true)
       if (!release && gate && !gate.ready(sync))
         return
