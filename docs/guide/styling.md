@@ -91,12 +91,14 @@ reset 层的每条选择器都由 `:where()` 包住，特指度为 (0,0,0)（伪
 
 ## 组件内滚动
 
-组件内的滚动条形态只有两档，按滚动面的身份固定：
+组件内的滚动条形态只有两档，按滚动面的身份固定，不按组件各自决定：
 
 | 档 | 适用面 | 表达 |
 | --- | --- | --- |
-| 自绘条 | Overlay 家族 positioner 下的 content / list / column，以及定高小列表（Listbox、Transfer、时间列、Cascader column） | Scrollbar 组件接线，`type` 默认 `scroll-hover`，浮层 4px、页内 6px，壳上 `--xh-scrollbar-track-bg: transparent` |
-| 原生细条 | 页内结构容器（Table、Tree、Virtualizer viewport、Dialog / Drawer body、Layout sider、Log / MessageFeed 视口、Typography `pre`……）与作者自建滚动容器 | reset 层统一给：`scrollbar-width: thin` + `scrollbar-color: var(--xh-fg-scrollbar-thumb) var(--xh-bg-scrollbar-track)` |
+| 自绘条 | Overlay 家族 positioner 下的 content / list / column，以及定高小列表（Listbox content、Transfer list、时间列、Cascader column） | Scrollbar 组件接线，`type` 默认 `scroll-hover`；厚度浮层 `--xh-scrollbar-thickness-sm`（4px）、页内 `--xh-scrollbar-thickness-md`（6px）；壳上 `--xh-scrollbar-track-bg: transparent` |
+| 原生细条 | 页内结构容器（Table、Tree、Transfer 面板、Virtualizer viewport、Dialog / Drawer / FloatingPanel body、Layout sider / content、SideNav popout、Log / MessageFeed 视口、日历年网格、Typography `pre`）与作者自建滚动容器 | reset 层统一给：`scrollbar-width: thin` + `scrollbar-color: var(--xh-fg-scrollbar-thumb) var(--xh-bg-scrollbar-track)` |
+
+滑块色阶两档共用三级：`--xh-fg-scrollbar-thumb` / `-hover` / `-active` 分别是前景色 15% / 25% / 35%。边缘渐隐只在 ScrollArea 的 fade 变体与 Marquee 提供。文档站页面滚动条与组件滚动条同一 `type`，不另写覆写。
 
 原生细条住在 reset 层，选择器是 `:where([data-scope][data-part], [data-xh-scroll], [data-scope='typography'][data-part='prose'] pre)`。库节点自动命中；作者自己的滚动容器与文档示例加 `data-xh-scroll` 即得同一套细条，不必引任何组件：
 
@@ -298,45 +300,9 @@ Action Control 家族在打了 `data-xh-ink-surface` 的实心面上自动打开
 
 改环色按求值判定：`--xh-_ring-color`、`outline-color`、键盘聚焦规则中的 `outline` 简写，值只能解到库环两支（`--xh-ring-focus`、`--xh-ring-invalid`），可以经组件覆盖槽或本份皮肤的私有槽转一道；`currentColor`、前景色与底色令牌、`transparent` 都判红。`--xh-_ring-gap` 只能赋 `var(--xh-ring-gap)`。`@media` 只有打印、高对比、减弱动效、粗指针、断点这几种真实媒体条件才算条件块，块里的系统色不受这条约束。库环令牌与它们解析链上经过的名称（如 `--xh-color-brand-600`）在皮肤内一律不允许赋值。
 
-## 切换品牌色
+## 品牌色与对比度
 
-品牌色的唯一真源是原语梯度 `--xh-color-brand-50…950`：语义令牌（`--xh-bg-brand` 等）与语气层（`data-tone='brand'`）都从它取值。切换品牌色要替换整套原语，而不是只改 `--xh-bg-brand`：后者只影响未写 `data-tone` 的默认路径，写了 `data-tone='brand'` 的组件（实心按钮、开关、进度条等）不会随之变化。
-
-提供一枚种子色即可，运行时派生整套梯度：
-
-```ts
-import { brandId, createVisualEnvironmentController, registerBrand } from "@xihan-ui/tokens";
-
-// 注册：从种子色派生 11 档原语，注入 [data-brand='acme'] 取值块
-registerBrand("acme", "#16a34a");
-
-// 切换：品牌是八轴视觉环境之一
-const visual = createVisualEnvironmentController({ root: document.documentElement });
-visual.setPreference({ brand: brandId("acme") });
-```
-
-派生只取种子的色相与彩度，明度曲线沿用基线，库内所有建立在明度上的对比度保证（如实心底白字 4.5:1）对任何种子色都继续成立。种子会被锚定到 600 档（实心底与强调文字的档位），因此种子必须完全不透明；透明品牌色依赖宿主背景，运行时会拒绝。
-
-需要逐档手动调整时，把整套梯度直接交给 `registerBrand('acme', { 50: '...', ..., 950: '...' })`。SSR 场景用 `brandScaleCss(id, seed)` 获得取值块字符串，随首屏 HTML 下发，客户端不需要再注册。
-
-## 透明颜色与对比度
-
-颜色运行时把 alpha 作为 `Oklch.a` 的必填通道保留。`compositeColors(foreground, backdrop)` 按 CSS source-over 在 sRGB 编码通道合成；WCAG 相对亮度在得到最终像素后再线性化。
-
-```ts
-import { compositeColors, contrastRatio } from "@xihan-ui/tokens";
-
-const page = "oklch(0.97 0.01 250)";
-const frosted = "oklch(0.98 0.01 250 / 88%)";
-const renderedFrosted = compositeColors(frosted, page);
-
-// 背景本身透明时，第三个参数必须给出最终底色。
-const ratio = contrastRatio("oklch(0.2 0.02 250)", frosted, page);
-```
-
-`relativeLuminance(transparentColor)` 和缺少最终底色的 `contrastRatio(foreground, transparentBackground)` 会直接抛错，不假设白底。磨砂面位于图片、品牌色或多层 surface 上时，应分别传入实际像素或逐层合成；平均色不能证明每一处文字都满足对比度。
-
-`pickOnColor` 与 `pickAwayColor` 可通过 `{ backdrop: actualBackdrop }` 处理半透明背景，并比较自定义 light/dark 候选的真实对比度。没有最终底色时同样抛错，运行时不推测页面背景。
+切换品牌色要替换整套原语梯度 `--xh-color-brand-50…950`，不是只改 `--xh-bg-brand`；预设品牌、`registerBrand` 注册自定义品牌与半透明颜色的对比度计算见[设计令牌与主题 · 切换品牌色](./theme#切换品牌色)。
 
 ## 动画与进出场
 
@@ -397,5 +363,5 @@ const ratio = contrastRatio("oklch(0.2 0.02 250)", frosted, page);
 
 ## 相关
 
-- [设计令牌与主题](./theme)：令牌的来源与形状、材质、动效的语义阶梯
+- [设计令牌与主题](./theme)：令牌的两层、视觉环境控制器、品牌色与材质接线
 - [解剖与部件契约](./anatomy)：`data-scope` / `data-part` 的约定

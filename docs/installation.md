@@ -30,10 +30,7 @@ pnpm add @xihan-ui/code-highlight
 
 `backgrounds` / `sound` / `code-highlight` 是可选 peer，按需安装。未安装 `code-highlight` 时，代码视图渲染纯文本，不报错。
 
-除了从 npm 安装，还有两条本地路径：
-
-1. 克隆仓库直接开发：构建库包后运行文档站，全部组件的示例都是真实组件；
-2. 本地构建后链接进项目：适合跟随仓库最新改动。
+除了从 npm 安装，也可以在本地构建后[链接进现有项目](#链接进现有项目)，适合跟随仓库最新改动。参与本仓库开发（克隆、构建、跑文档站与门禁）见[贡献指南](https://github.com/XiHanFun/XiHan.UI/blob/dev/CONTRIBUTING_cn.md)。
 
 ::: warning
 `@xihan-ui/icons` 只收录自研的一等图标集，覆盖组件与常见界面所需，不追求完整。
@@ -42,50 +39,9 @@ pnpm add @xihan-ui/code-highlight
 
 ## 环境要求
 
-| 项 | 要求 |
-| --- | --- |
-| Node（安装使用） | ≥ 18，与包的 `engines` 声明一致 |
-| Node / pnpm（参与本仓库开发） | ≥ 24.0.0 / ≥ 11.0.0 |
-| 模块格式 | ESM only，不提供 CJS |
-| 浏览器 | 支持 `oklch()`、`@layer`、`:where()` 的现代浏览器 |
+安装使用的 Node 版本、模块格式与浏览器硬底线见[版本与兼容性政策 · 支持面](./guide/versioning#八、支持面)，那里同时写明哪些变化算破坏性变更。
 
-## 路径一：克隆仓库开发
-
-```bash
-git clone https://github.com/XiHanFun/XiHan.UI.git
-cd XiHan.UI/ui
-pnpm install --frozen-lockfile
-pnpm build
-```
-
-在浏览器中查看组件请运行文档站：它通过 `link:` 指向本仓库的库包，示例渲染的是真实组件，Vue 与自定义元素两套写法并排，因此需要先 `pnpm build`。
-
-```bash
-cd ../docs
-pnpm install
-pnpm dev
-```
-
-回到 `ui/` 的常用命令：
-
-```bash
-pnpm build        # 全部库包出 dist
-pnpm typecheck    # 类型检查
-pnpm lint         # oxlint + eslint + stylelint
-pnpm test         # 单元测试与跨适配器一致性测试（jsdom）
-pnpm test:browser # 真实 Chromium 里的无障碍扫描与浮层定位契约
-pnpm boundaries   # 分层依赖门禁
-pnpm gate         # 结构门禁
-pnpm size         # 产物体积棘轮
-```
-
-首次运行 `pnpm test:browser` 前需要安装浏览器：
-
-```bash
-pnpm exec playwright install chromium
-```
-
-## 路径二：链接进现有项目
+## 链接进现有项目
 
 先在 XiHan.UI 仓库中构建：
 
@@ -111,23 +67,16 @@ cd XiHan.UI/ui && pnpm build
 
 ```ts
 // main.ts
-import { createVisualEnvironmentController } from "@xihan-ui/tokens/runtime";
 import { createApp } from "vue";
 import App from "./App.vue";
 
 // 皮肤入口自带层序声明与令牌，只引这一行；单独引 tokens.css 是只要令牌不要皮肤的路径
 import "@xihan-ui/styles";
 
-// 把八轴视觉环境写到 <html> 上，并显式处理持久化失败
-createVisualEnvironmentController({
-  root: document.documentElement,
-  storageKey: "app-visual-environment",
-  onStorageError: detail => console.error("视觉偏好持久化失败", detail),
-  initial: { mode: "system", motion: "system", transparency: "system" },
-});
-
 createApp(App).mount("#app");
 ```
+
+明暗、密度等八轴视觉环境由 `@xihan-ui/tokens/runtime` 的 `createVisualEnvironmentController` 写到 `<html>` 上，应用入口建一台即可，写法见[设计令牌与主题 · 八轴视觉环境运行时](./guide/theme#八轴视觉环境运行时)。
 
 组件按需从主入口取，不需要注册插件（也可以自动引入或全量注册，见 [Vue 适配器 · 注册方式](./adapters/vue#注册方式)）：
 
@@ -161,23 +110,16 @@ export default defineNuxtConfig({
 
 ```tsx
 // main.tsx
-import { createVisualEnvironmentController } from "@xihan-ui/tokens/runtime";
 import { createRoot } from "react-dom/client";
 import { App } from "./App";
 
 // 皮肤入口自带层序声明与令牌，只引这一行
 import "@xihan-ui/styles";
 
-// 把八轴视觉环境写到 <html> 上，并显式处理持久化失败
-createVisualEnvironmentController({
-  root: document.documentElement,
-  storageKey: "app-visual-environment",
-  onStorageError: detail => console.error("视觉偏好持久化失败", detail),
-  initial: { mode: "system", motion: "system", transparency: "system" },
-});
-
 createRoot(document.getElementById("root")!).render(<App />);
 ```
+
+视觉环境控制器的接法与 Vue 项目相同。
 
 组件按名称从主入口取，没有必须安装的 provider：
 
@@ -190,20 +132,15 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from "@
 ## 接入原生或其它框架的项目
 
 ```ts
-import { createVisualEnvironmentController } from "@xihan-ui/tokens/runtime";
 import { defineXhElements } from "@xihan-ui/web-components/define";
 
 import "@xihan-ui/styles";
 
 // 注册全部 xh-* 元素。主入口 import 本身不注册，必须显式调用这一行
 defineXhElements();
-createVisualEnvironmentController({
-  root: document.documentElement,
-  storageKey: "app-visual-environment",
-  onStorageError: detail => console.error("视觉偏好持久化失败", detail),
-  initial: { mode: "system", motion: "system", transparency: "system" },
-});
 ```
+
+视觉环境控制器的接法与 Vue 项目相同。
 
 之后在 HTML 中直接写标签，结构由作者编写，用 `data-xh-part` 标出角色节点：
 
@@ -342,9 +279,7 @@ import "@xihan-ui/styles/index.unlayered.css";
 
 转换是单向的：`@import url('...') layer(x)` 可以给无层样式套一层，但无法给已层化的样式脱层，因此无层产物由库提供。
 
-本文档站使用的就是无层版：VitePress 自带无层的 `button` 重置，使用 `index.css` 时所有示例都会渲染为纯文本。
-
-因此本站的示例全部运行在无层版本上，层序在这里不成立。上表、`@layer xihan.overrides` 的覆盖写法，以及任何与层序有关的表现，本站示例都无法演示与验证；请在自己的项目中引入 `index.css` 后验证。
+本文档站用的就是无层版（VitePress 自带无层的 `button` 重置），层序在本站示例里不成立，见[皮肤与样式分层 · 层序](./guide/styling#层序)。
 
 ## 服务端渲染
 
@@ -353,5 +288,5 @@ import "@xihan-ui/styles/index.unlayered.css";
 
 ## 下一步
 
-- [快速上手](./quickstart)：三种用法的最小示例
+- [快速上手](./quickstart)：四种写法的最小示例
 - [包与依赖关系](./npm-package-dependency)：各包的依赖关系

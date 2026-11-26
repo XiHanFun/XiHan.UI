@@ -1,12 +1,14 @@
 # Vue 适配器
 
-`@xihan-ui/vue` 是无头内核的 Vue 3 外壳。它负责三件事：把状态机接入 Vue 的响应式、把部件封装为组件、把 `connect` 产出的 props 展开到 vnode 上。它不实现任何组件逻辑。
+`@xihan-ui/vue` 是无头内核的 Vue 3 外壳。三端共用的约定（同一份行为、命名、受控与非受控、asChild、全局配置、子入口、服务端渲染）见[三端共同约定](./)，本页只写 Vue 的接法与独有部分。
 
-依赖：`vue` 是 peer 依赖（由项目提供）；`@xihan-ui/backgrounds` 与 `@xihan-ui/sound` 是可选 peer，不使用视觉效果或音效时不需要安装。
+## 依赖
 
-## 组件命名
+`vue` 是 peer 依赖（`^3.5.0`，由项目提供）；`@xihan-ui/backgrounds`、`@xihan-ui/sound` 与 `@xihan-ui/code-highlight` 是可选 peer，不使用视觉效果、音效与代码着色时不需要安装。
 
-每个部件一个组件，一律 `Xh` 前缀 + 组件名 + 部件名：
+## 引入与注册
+
+每个部件一个组件，命名规则见[三端共同约定 · 组件命名](./#组件命名)：
 
 ```ts
 import {
@@ -19,11 +21,11 @@ import {
 } from "@xihan-ui/vue";
 ```
 
-只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部导出组件按组件分组列在[组件参考](../components/)。
+全部导出组件按组件分组列在[组件参考](../components/)。
 
 默认按名称 import，`sideEffects: false` 让打包器移除未使用的部分；也可以交给 unplugin-vue-components 按需自动引入，或用插件全量注册，见[注册方式](#注册方式)。
 
-## 注册方式
+### 注册方式
 
 四种写法，产物里的组件从少到多：
 
@@ -34,7 +36,7 @@ import {
 | Nuxt 项目装 [`@xihan-ui/vue/nuxt`](#nuxt) | 只有用到的 | Nuxt 生成的组件声明 |
 | `@xihan-ui/vue/plugin` 全量注册 | 全部组件 | 引入插件模块即生效 |
 
-### 自动引入
+#### 自动引入
 
 ```ts
 // vite.config.ts
@@ -50,7 +52,7 @@ export default defineConfig({
 
 解析器只认 `Xh` 前缀，`<XhButton>` 与 `<xh-button>` 都解析到 `@xihan-ui/vue` 的同名导出；名字拼错时打包器会报主入口没有这个导出，不会静默忽略。皮肤不随组件引入：入口处引一次 `@xihan-ui/styles`，或者交给 `@xihan-ui/styles/vite` 按用到的组件注入，见[按用到的组件自动注入](../installation#按用到的组件自动注入)。
 
-### 全量注册
+#### 全量注册
 
 ```ts
 // main.ts
@@ -63,35 +65,6 @@ createApp(App).use(XiHanUI).mount("#app");
 ```
 
 插件引用全部组件，产物不再摇树，适合原型、内部后台这类不在意首包体积的场景。引入插件模块的同时就给 `GlobalComponents` 补上了全部组件的类型，Volar 与 vue-tsc 在模板里直接校验 props，不需要另配 `types`。
-
-## 配置与视觉环境
-
-`provideXhConfig` 接收响应式配置。八轴视觉环境必须显式给出对应 DOM 根；嵌套 provide 自动接父控制器，局部 motion 不改全局 JS override：
-
-```ts
-provideXhConfig({
-  locale: "zh-CN",
-  visualEnvironment: {
-    root: workspaceElement,
-    initial: { mode: "dark", density: "compact", motion: "reduce" },
-  },
-});
-```
-
-物理 Portal 会由 Core 从该根桥接已解析八轴到实例壳，Vue 适配器不复制视觉状态。
-
-组件级缺省写在 `defaults` 里，按组件名分桶。实例没写的 prop 取这里的值，优先于应用级的 `size` 与 `locale`；嵌套 provide 按组件逐键合并，内层胜出。没在模板上写的布尔 prop 同样取得到缺省，不会被裸 `Boolean` 的 `false` 挡住：
-
-```ts
-provideXhConfig({
-  defaults: {
-    "text-field": { variant: "subtle", clearable: true },
-    "button": { tone: "neutral" },
-  },
-});
-```
-
-只收外观与行为开关：`value`、`default*` 初值、`on*` 回调与 `translations` 写在这里不生效（文案走 `translations`）。
 
 ## 事件与 v-model
 
@@ -123,52 +96,7 @@ emits: {
 
 具体的绑定名按组件而定：开关是 `v-model:checked`，浮层是 `v-model:open`，输入框是 `v-model:value`。
 
-## 原生属性透传与严格模板检查
-
-组件上没声明成 prop 的属性按 Vue 的属性透传落到根元素上：给 `XhFormRoot` 写 `id`，外部的提交按钮就能用 `form="…"` 关联到这张表单；`class`、`style`、`aria-*`、`data-*` 同理。组件的类型只列出自己的 prop，没有把根元素的原生属性并进来——把几百个原生属性并进每个组件，会让 prop 表与类型提示都淹没在里面。
-
-开启 vue-tsc 的 `strictTemplates`（或单开 `checkUnknownProps`）后，这类透传属性会被报成未知属性。在项目的 `env.d.ts` 里扩一次 `ComponentCustomProps` 即可，组件自己的 prop 照常受检，拼错的属性名仍然会报：
-
-<!-- eslint-skip -->
-
-```ts
-// env.d.ts
-import type { HTMLAttributes } from 'vue'
-
-declare module 'vue' {
-  interface ComponentCustomProps extends Omit<HTMLAttributes, 'class' | 'style'> {}
-}
-```
-
-这条扩充对项目里所有组件生效（第三方组件同样放行原生属性），由项目自己决定是否开启。表单、按钮等元素专有的属性（`novalidate`、`form`）不在通用原生属性里，需要时把对应的 `FormHTMLAttributes`、`ButtonHTMLAttributes` 一并并进去。
-
-升级时同样建议开启 `checkUnknownProps` 与 `checkUnknownEvents`：移除或改名的属性不会报错，只会被当成原生属性透传到根元素上而静默失效，这两项检查能把它们一次扫出来。
-
-## 组件的 props 类型
-
-每个组件的 props 类型以 `Xh<组件名>Props` 从主入口导出，名字与 React 一一对应。它就是组件在模板与 `h()` 里接受的 props：声明的 prop、`emits` 对应的 `on*` 监听，以及 `class`、`style`、`key`、`ref`；上一节扩进 `ComponentCustomProps` 的原生属性也在其中。选中值随类型收窄的根组件（Select、Combobox、Listbox、CheckboxGroup、RadioGroup、ToggleGroup、Table、Form）带类型参数，缺省与 React 相同：
-
-```ts
-import type { XhSelectRootProps } from "@xihan-ui/vue";
-
-// 值类型是 number：defaultValue 与 collection 里的 value 都按 number 检查
-const selectProps: XhSelectRootProps<number> = {
-  defaultValue: 1,
-  collection: [{ value: 1, label: "一" }, { value: 2, label: "二" }],
-};
-```
-
-这些类型由组件定义推导而来，SFC 的 `defineProps<…>()` 解析不了推导出的类型。封装组件时用它标注 `h()` 的参数、算好的 props 对象或配置项。
-
-## asChild 与事件取消
-
-支持 `asChild` 的部件可以把行为接到作者提供的单个子节点上。Fragment 会展开后检查，仅忽略空白、注释和条件占位；零个或多个可挂载子节点、元素旁并列的非空文本或数字都会明确报错，不会生成默认按钮或丢弃可见内容。需要默认按钮时移除 `asChild`，组合多个内容时提供一个实际宿主节点。
-
-作者写在部件或子节点上的事件处理器先执行；调用 `preventDefault()` 后，部件内部动作不再执行。作者的处理器数组仍按原顺序运行，`stopImmediatePropagation()` 仍可停止同节点后续处理器。普通回调保留全部参数，ref 的登记和清理不受事件取消影响。
-
-## 受控与非受控
-
-传受控属性即受控，只传 `default*` 即非受控：
+受控与非受控的规则见[三端共同约定 · 受控与非受控](./#受控与非受控)：
 
 ```vue
 <template>
@@ -177,11 +105,11 @@ const selectProps: XhSelectRootProps<number> = {
 </template>
 ```
 
-受控时组件不会自行改变：它只发出变更意图，由使用者写回新值后才真正改变。这条语义收在状态机的 `cell` 与 `watch` 中，不由各组件自行判断。详见[状态机运行时](../guide/machine#受控与非受控-cell)。
+`default*` 只在 setup 时读取一次。
 
-`default*` 只在 setup 时读取一次，之后修改不影响当前值，只改变表单重置的落点；要换初值就换 `key`。三端的取法见[初值的读取时机](../guide/machine#初值的读取时机)。
+## 插槽与组合式函数
 
-## 作用域插槽
+### 作用域插槽
 
 根组件通过作用域插槽提供命令式方法：
 
@@ -196,7 +124,7 @@ const selectProps: XhSelectRootProps<number> = {
 </template>
 ```
 
-### 载荷有类型
+#### 载荷有类型
 
 插槽载荷都写进了组件的 `SlotsType`，`vue-tsc` 可以捕获两类拼写错误：
 
@@ -229,6 +157,8 @@ const selectProps: XhSelectRootProps<number> = {
 
 插槽键在类型上一律可选：组件内部按作者是否编写该插槽决定是否按 `collection` 铺开默认结构，键若非可选，该判断在类型上恒为真。
 
+### 组合式函数
+
 不使用现成 DOM 结构时，直接使用 `api` 自行渲染：
 
 ```vue
@@ -259,54 +189,27 @@ const { api } = useAccordion(
 
 自行编写的部件放进现成组件时，用读钩子取所在组件的上下文：`useAccordionContext()` 取整个组件的 `api`，`useAccordionItemContext()` 取所在条目的身份。每个部件的上下文都有对应的读钩子，名字与 React 一一对应，只在对应部件之内取得到。上下文只由库内部件提供，提供方（provide）不导出；完全自定义结构时用组合式函数获取 `api`。
 
-## 状态机接入 Vue 响应式
+## asChild
 
-内部只有一层薄适配。`createVueRuntime()` 实现 `ReactiveRuntime` 的五个接口：
+规则见[三端共同约定 · asChild 与事件取消](./#aschild-与事件取消)。Vue 侧另有两点：作者的处理器数组仍按原顺序运行，`stopImmediatePropagation()` 仍可停止同节点后续处理器。
 
-| 接口 | Vue 实现 |
+## 子入口一览
+
+| 子入口 | 内容 |
 | --- | --- |
-| `cell` | `shallowRef` + 受控语义（受控时值从 `prop()` 读，内部 ref 不写） |
-| `track` | `watch(deps, fn, { flush: 'pre' })` |
-| `flush` | `nextTick` |
-| `onMount` / `onCleanup` | `onMounted` / `onBeforeUnmount`（不在组件内则立即执行 / 忽略） |
-
-`useMachine(machine, props, scope)` 封装了它。props 传的是 getter 而不是对象，因此在模板中原地修改某个 prop 也能生效。
-
-getter 的求值放在一个 `computed` 里：连接层每读一个 prop 都会经过它，依赖没动时复用同一份展开结果（状态机的身份缓存跟着命中），依赖一动就产出新对象，身份缓存照旧失效。失效面与组件自己的重渲一致，getter 因此必须只读响应式来源——组件 props、`attrs`、ref、注入的上下文、全局配置。读普通变量或普通数组的长度不会让它重算；那类来源本来也驱动不了 `computed(() => connectX(...))` 的重算，只是以前靠每次重新展开碰巧读到过新值。
-
-## 行为原语
-
-`@xihan-ui/vue/behavior` 单独提供滚动锁、悬停意图、滚动观察、贴底、连敲检索与当前断点的 Vue 包装。`useHoverIntent` 到 mounted 后才读取模板 ref，并持续观察 trigger 与三个计时参数；trigger 暂时为 `null` 时释放旧绑定，节点重新出现后再建立。content getter 与回调现读当前响应式选项，不会因浮层内容挂载或普通闭包换代重启安全三角。选项对象本身也可传 ref 或 getter；显式类型使用该子入口的 `UseHoverIntentOptions`。
-
-`useScrollLock` 在组件 mounted 后才读取模板 ref，并以 post watcher 跟随 active；释放时先清本地句柄，清理抛错后再次激活仍可建立。active 为真期间不因配置对象更新重锁，关闭再开启才读取新配置。
-
-## 背景层
-
-Vue 侧的视觉适配位于单独的子入口，不引入就不会把 WebGL 引擎打进包：
-
-```ts
-import { useBackground, vBackground, XhBackground } from "@xihan-ui/vue/backgrounds";
-```
-
-三种用法见[背景层](../guide/backgrounds#在-vue-里用)。
-
-## 声音层
-
-同样是单独的子入口。`withNotificationSound` / `withDialogSound` 为命令式反馈服务配置声音，调用点不需要修改；`v-sound` 为单个元素配置声音：
-
-```ts
-import { setSoundPlayer, vSound, withNotificationSound } from "@xihan-ui/vue/sound";
-```
-
-默认映射与开关见[声音层](../guide/sound#在-vue-中使用)。
+| `@xihan-ui/vue/behavior` | 滚动锁、悬停意图、滚动观察、贴底、连敲检索与当前断点的 Vue 包装，见[行为原语](../guide/behavior#在-vue-react-中使用) |
+| `@xihan-ui/vue/backgrounds` | `useBackground`、`vBackground`、`XhBackground` 三种用法，不引入就不会把 WebGL 引擎打进包，见[背景层](../guide/backgrounds#在-vue-里用) |
+| `@xihan-ui/vue/sound` | `withNotificationSound` / `withDialogSound` 给命令式服务配声，`v-sound` 给单个元素配声，见[声音层](../guide/sound#在-vue-中使用) |
+| `@xihan-ui/vue/locale` | 十份内建语言包，见[国际化](../guide/i18n#内建语言包) |
+| `@xihan-ui/vue/resolver` | unplugin-vue-components 的组件解析器，见[自动引入](#自动引入) |
+| `@xihan-ui/vue/plugin` | 全量注册与全局组件类型，见[全量注册](#全量注册) |
+| `@xihan-ui/vue/nuxt` | Nuxt 模块，见下文 [Nuxt](#nuxt) |
 
 ## 服务端渲染
 
-- `createVueRuntime()` 的 `isServer` 由 `typeof window === 'undefined'` 判定，服务端不挂事件、不读媒体查询；
-- id 由 `createVueIdGenerator()` 生成，同一棵树两端一致，不会 hydration 不匹配；
-- 视觉环境属性建议在服务端就渲染到 `<html>` 上，见[安装与接入 · 服务端渲染](../installation#服务端渲染)；Nuxt 项目交给 [Nuxt 模块](#nuxt)。
+共同的几条见[三端共同约定 · 服务端渲染](./#服务端渲染)；Nuxt 项目交给下面的模块。
 
-## Nuxt
+### Nuxt
 
 `@xihan-ui/vue/nuxt` 是 Nuxt 模块。装上 `@xihan-ui/vue` 与 `@xihan-ui/styles` 后只写一行：
 
@@ -353,14 +256,47 @@ function toggleDark() {
 
 服务端没有媒体查询与存储：那一端的 `$xhVisual` 按 `initial` 解出，`system` 轴取基线。按明暗分支渲染的内容放到 `onMounted` 之后，免得水合对不上。完整示例在仓库的 [`examples/nuxt`](https://github.com/XiHanFun/XiHan.UI/tree/dev/examples/nuxt)，CI 每轮都对着本仓刚构建的包装一遍，类型检查、构建并检查首屏。
 
-## 与 Web Components 适配器的关系
+## 本端独有
 
-两者运行同一个状态机、同一份 `connect`，输出的 DOM 属性完全一致：跨适配器一致性测试逐帧比对归一化快照，无法消除的差异即判失败。
+### 原生属性透传与严格模板检查
 
-Vue 项目使用本适配器；需要在多个框架或无框架页面中复用同一套组件时使用[自定义元素](./web-components)。两者可以在同一页面共存。
+组件上没声明成 prop 的属性按 Vue 的属性透传落到根元素上：给 `XhFormRoot` 写 `id`，外部的提交按钮就能用 `form="…"` 关联到这张表单；`class`、`style`、`aria-*`、`data-*` 同理。组件的类型只列出自己的 prop，没有把根元素的原生属性并进来——把几百个原生属性并进每个组件，会让 prop 表与类型提示都淹没在里面。
+
+开启 vue-tsc 的 `strictTemplates`（或单开 `checkUnknownProps`）后，这类透传属性会被报成未知属性。在项目的 `env.d.ts` 里扩一次 `ComponentCustomProps` 即可，组件自己的 prop 照常受检，拼错的属性名仍然会报：
+
+<!-- eslint-skip -->
+
+```ts
+// env.d.ts
+import type { HTMLAttributes } from 'vue'
+
+declare module 'vue' {
+  interface ComponentCustomProps extends Omit<HTMLAttributes, 'class' | 'style'> {}
+}
+```
+
+这条扩充对项目里所有组件生效（第三方组件同样放行原生属性），由项目自己决定是否开启。表单、按钮等元素专有的属性（`novalidate`、`form`）不在通用原生属性里，需要时把对应的 `FormHTMLAttributes`、`ButtonHTMLAttributes` 一并并进去。
+
+升级时同样建议开启 `checkUnknownProps` 与 `checkUnknownEvents`：移除或改名的属性不会报错，只会被当成原生属性透传到根元素上而静默失效，这两项检查能把它们一次扫出来。
+
+### 组件的 props 类型
+
+每个组件的 props 类型以 `Xh<组件名>Props` 从主入口导出，名字与 React 一一对应。它就是组件在模板与 `h()` 里接受的 props：声明的 prop、`emits` 对应的 `on*` 监听，以及 `class`、`style`、`key`、`ref`；上一节扩进 `ComponentCustomProps` 的原生属性也在其中。选中值随类型收窄的根组件（Select、Combobox、Listbox、CheckboxGroup、RadioGroup、ToggleGroup、Table、Form）带类型参数，缺省与 React 相同：
+
+```ts
+import type { XhSelectRootProps } from "@xihan-ui/vue";
+
+// 值类型是 number：defaultValue 与 collection 里的 value 都按 number 检查
+const selectProps: XhSelectRootProps<number> = {
+  defaultValue: 1,
+  collection: [{ value: 1, label: "一" }, { value: 2, label: "二" }],
+};
+```
+
+这些类型由组件定义推导而来，SFC 的 `defineProps<…>()` 解析不了推导出的类型。封装组件时用它标注 `h()` 的参数、算好的 props 对象或配置项。
 
 ## 相关
 
+- [三端共同约定](./)
 - [组件参考](../components/)：全部组件与部件
 - [connect 与属性产出](../guide/connect)
-- [Web Components 适配器](./web-components)

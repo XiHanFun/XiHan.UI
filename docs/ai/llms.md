@@ -18,6 +18,8 @@
 
 `llms-full.txt` 体积较大，多数场景读 `llms.txt` 索引后按需取单页，或只取 `llms-components.txt` 中用到的组件。
 
+**仓库技能**：在本仓库里改代码的 AI 工具，支持 Agent Skills 的可以直接读取仓库根的 `.agents/skills/`，站点也发布了一份：[`component-design`](https://ui.docs.xihanfun.com/skills/component-design/SKILL.md) 负责设计与视觉，[`component-development`](https://ui.docs.xihanfun.com/skills/component-development/SKILL.md) 负责实现与仓库流程，[`framework-adapters`](https://ui.docs.xihanfun.com/skills/framework-adapters/SKILL.md) 负责三端接法。开发技能提供四个只读脚本；脚本严格读取当前检出，找不到仓库时直接报错，不使用已发布站点的内容代替本地事实。
+
 ## 在 AI 工具中使用
 
 所有工具都可以用同一段提示词：

@@ -87,7 +87,7 @@
 | [Masonry](/components/masonry) | 瀑布流 |
 | [Splitter](/components/splitter) / [Resizable](/components/resizable) | 可拖动分栏与可拖动尺寸 |
 | [Separator](/components/separator) | 分隔线，缺省取 `--xh-border-default` 并自带留白（横线上下各 20px、竖线左右各 12px） |
-| [ScrollArea](/components/scroll-area) | 组件内滚动面，自绘条或原生细条按 [组件内滚动](/guide/theme#组件内滚动) 归档 |
+| [ScrollArea](/components/scroll-area) | 组件内滚动面，自绘条或原生细条按 [组件内滚动](/guide/styling#组件内滚动) 归档 |
 
 ## 表单排布
 

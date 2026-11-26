@@ -184,9 +184,11 @@ const adaptersSidebar: DefaultTheme.SidebarItem[] = [
     text: "适配器",
     collapsed: false,
     items: [
+      { text: "三端共同约定", link: "/adapters/" },
       { text: "Vue 适配器", link: "/adapters/vue" },
       { text: "React 适配器", link: "/adapters/react" },
       { text: "Web Components 适配器", link: "/adapters/web-components" },
+      { text: "编写自己的元素", link: "/adapters/authoring" },
     ],
   },
 ];
@@ -306,7 +308,7 @@ const nav: DefaultTheme.NavItem[] = [
         text: "深入",
         items: [
           { text: "核心概念", link: "/guide/anatomy" },
-          { text: "适配器", link: "/adapters/vue" },
+          { text: "适配器", link: "/adapters/" },
           { text: "服务与运行时", link: "/runtime/" },
           { text: "场景示例", link: "/examples/" },
         ],

@@ -22,7 +22,7 @@ resolveEasing(t => t * t)(0.5); // 0.25
 
 十条命名缓动：与令牌原语同值的 `standard` `easeIn` `easeOut` `outStrong` `outFluid` `easeInOut` `outBack` `sineInOut` `emphasized`（表现性进场，语义令牌 `--xh-motion-ease-emphasis`，`@xihan-ui/animations` 的预设使用），以及 CSS 关键字 `linear`。
 
-三档时长（毫秒）：`durations.fast` 150、`durations.normal` 200、`durations.slow` 320：换色取 fast、几何取 normal，slow 只给整幅位移。`animate()` 默认取 `durations.normal`，`@xihan-ui/animations` 的配方默认取 `motionDurations.slide`（320ms）。语义层在此之上定义统一点击触感：按下走 `--xh-motion-duration-press`（150ms）与 `--xh-motion-ease-press`，释放走 `--xh-motion-duration-release`（200ms）与 `--xh-motion-ease-release`，见[设计令牌与主题](/guide/theme#点击触感)。
+三档时长（毫秒）：`durations.fast` 150、`durations.normal` 200、`durations.slow` 320：换色取 fast、几何取 normal，slow 只给整幅位移。`animate()` 默认取 `durations.normal`，`@xihan-ui/animations` 的配方默认取 `motionDurations.slide`（320ms）。语义层在此之上定义统一点击触感：按下走 `--xh-motion-duration-press`（150ms）与 `--xh-motion-ease-press`，释放走 `--xh-motion-duration-release`（200ms）与 `--xh-motion-ease-release`，见[动效 · 按压触感](/design/motion#按压触感)。
 
 字符串先查命名缓动，查不到再按 CSS 缓动函数的语法解释：`linear`、`ease` / `ease-in` / `ease-out` / `ease-in-out`、`step-start` / `step-end`、`cubic-bezier()`、`steps()`、`linear()`，取值与浏览器一致，所以 `readMotion` 读到样式里改写成任何合法缓动都能换成函数。CSS 关键字 `ease-out` 与命名缓动 `easeOut` 是两条曲线。认不出的写法抛 `TypeError`，消息里列出可用写法：写法可能来自 DOM 特性或后端配置，拼错的名字若悄悄按匀速播放，比报错更难察觉。`cubicBezier` 用牛顿迭代反解参数，导数过小时退回二分。
 
@@ -162,23 +162,7 @@ JS 侧统一经 `resolveMotionPreference` 读取，并传入动效作用的元�
 
 ### 八轴控制器统一入口
 
-应用根只设置一次视觉环境，解析后的 motion 会同时投影到 DOM，并经显式 sink 驱动 JS 动画与平滑滚动：
-
-```ts
-import { setMotionOverride } from "@xihan-ui/motion";
-import {
-  createMotionOverrideSink,
-  createVisualEnvironmentController,
-} from "@xihan-ui/tokens/runtime";
-
-const visual = createVisualEnvironmentController({
-  root: document.documentElement,
-  motionSink: createMotionOverrideSink(setMotionOverride),
-  initial: { motion: "system" },
-});
-
-visual.setPreference({ motion: "reduce" });
-```
+应用根只设置一次视觉环境，解析后的 motion 会同时投影到 DOM，并经显式 sink（`motionSink: createMotionOverrideSink(setMotionOverride)`）驱动 JS 动画与平滑滚动，控制器的完整写法见[设计令牌与主题 · 八轴视觉环境运行时](/guide/theme#八轴视觉环境运行时)。
 
 `motionSink` 只允许绑定 `documentElement` 根作用域。局部 VisualEnvironment 仍会写 `data-motion="reduce"`，让该子树的 CSS 令牌降级；它不会改全局 JS override，也不会影响兄弟树。需要直接控制全局 JS 且不使用视觉环境时，仍可显式调用 `setMotionOverride`。
 

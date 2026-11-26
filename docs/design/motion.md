@@ -243,4 +243,4 @@ transition 列表写长名：`background-color`、`border-color`、`outline-colo
 ## 相关
 
 - [停留时长](/design/dwell) · [阴影与材质](/design/shadow) · [组件家族与模式](/design/patterns)
-- 指南：[动效原语](/guide/motion) · [动画层](/guide/animations) · [设计令牌与主题 · 点击触感](/guide/theme#点击触感)
+- 指南：[动效原语](/guide/motion) · [动画层](/guide/animations) · [设计令牌与主题](/guide/theme)

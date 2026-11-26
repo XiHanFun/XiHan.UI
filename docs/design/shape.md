@@ -103,4 +103,4 @@
 ## 相关
 
 - [色彩](/design/colors) · [阴影与材质](/design/shadow)
-- 指南：[设计令牌与主题 · 形状阶梯](/guide/theme#形状阶梯)
+- 指南：[设计令牌与主题](/guide/theme)

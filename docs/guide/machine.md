@@ -52,11 +52,7 @@ export const accordionMachine = createMachine({
 | `watch` | 追踪外部值变化并触发动作，受控回写走这里 |
 | `implementations` | `actions` / `guards` / `effects` 的具名实现 |
 
-具名实现是硬约束。`states` 中只能出现动作名、守卫名、副作用名的字符串；裸内联函数会在 `createMachine` 时直接抛出 `MachineError`（守卫只放行 `and` / `or` / `not` 组合子的产物）。`createMachine` 在开发与生产模式都会检查静态列表并递归审计组合 guard：转移表中引用了 `implementations` 中不存在的名字同样报错。实现必须是对应分组自身的数据属性函数；原型链成员、访问器和非函数值都不构成实现，审计也不会为了检查而调用 getter。这条约束的收益是状态图成为可静态分析的数据，测试可以计算转移覆盖率，而不是一组闭包。
-
-函数形态的 `entry`、`exit`、`effects` 以及实现内部调用的 `action()`、`guard()` 只能在运行时得知名字。运行时会先解析整份 action 或 effect 列表，再通过自有数据属性一次取得全部函数快照，之后才执行 action 或初始化 effect；任一名字缺失都会用 `MISSING_ACTION`、`MISSING_GUARD` 或 `MISSING_EFFECT` 上报、停止服务并抛出原错误，开发与生产行为一致。缺失 guard 不会按 `false` 继续选择分支，缺失 action 不会被跳过，列表后部缺失 effect 也不会让前部 effect 先取得资源。缺项发生在 effect 初始化中且 cleanup 也失败时，抛出的 `AggregateError` 同时保留缺项错误与全部回滚异常。
-
-`inspect` 只观察这些运行事件，不参与错误决策；观察器自身抛错会被隔离，不能遮蔽 `MISSING_*`、阻止停机或替换诊断中的原错误对象。
+具名实现是硬约束。`states` 中只能出现动作名、守卫名、副作用名的字符串；裸内联函数会在 `createMachine` 时直接抛出 `MachineError`（守卫只放行 `and` / `or` / `not` 组合子的产物）。`createMachine` 在开发与生产模式都会检查静态列表并递归审计组合 guard：转移表中引用了 `implementations` 中不存在的名字同样报错。实现必须是对应分组自身的数据属性函数；原型链成员、访问器和非函数值都不构成实现，审计也不会为了检查而调用 getter。这条约束的收益是状态图成为可静态分析的数据，测试可以计算转移覆盖率，而不是一组闭包。运行时得知名字的那部分（函数形态的 `entry` / `exit` / `effects` 与 `action()` / `guard()`）缺项时怎么处理，见下文[运行时不变式](#运行时不变式)。
 
 ## 受控与非受控：`cell`
 
@@ -135,19 +131,13 @@ states: {
 
 副作用可以获取 `refs`（宿主注入的 DOM 取值器与运行时配置）、`send`、`flush`，返回一个清理函数。`setTimeoutEffect` / `setIntervalEffect` 是两个现成的定时器 effect 工厂。
 
-同一状态节点的一批 effect 在执行前会先建立在途路径登记，整批成功后才保留为活动批次。如果后一项初始化抛错或挂载期间丢失路径所有权，在途登记会被摘除，本批已取得的 cleanup 会立即按资源取得逆序全部回滚；某项 cleanup 抛错不会阻断其余回滚。无回滚异常时保留原初初始化异常；回滚也失败时通过 `AggregateError` 同时携带初始化异常和全部回滚异常。最外层的 `MachineError` 会把这份原始异常链保留在 `cause` 中。
+### 运行时不变式
 
-事务只能回滚 effect 已经返回给服务的 cleanup。单个 effect 如果在返回前已取得多项资源，它自身必须在内部初始化抛错时逆序回滚；服务无法释放从未交出的句柄。
-
-成功挂载的 cleanup 同样按资源取得逆序执行。每条状态路径只能存在一份活动 effect 登记，返回 `void` 的 effect 也会占用该路径；重复挂载会抛出 `DUPLICATE_EFFECT_PATH` 不变式错误，而不是把两批 cleanup 隐式合并。退出状态时，服务会先从清理表摘除该路径，再调用 cleanup，因此 cleanup 抛错也不会在崩溃停机时被重复执行。
-
-停机一开始就进入 `Stopped`、关闭事件入口并清空待处理事件与 tracker，然后继续清完所有 effect 并运行 machine exit。清理、exit 与原始崩溃同时抛错时，抛出和诊断通道都收到同一份完整聚合异常；正常停机只有 cleanup 或 exit 失败时也遵守同一规则。cleanup 或 exit 里同步调用 `send` 不会再推进机器；服务停止后宿主重复触发 mount 也不会把它复活。
-
-effect 执行前路径就已处于“挂载中”。setup 里同步重入宿主 mount 会在服务边界命中 `DUPLICATE_SERVICE_MOUNT`，并按崩溃停机释放当前全部资源；同一状态路径在机器内部非法重复挂载时才报告 `DUPLICATE_EFFECT_PATH`。setup 里同步停机后，该 effect 迟到返回的 cleanup 会当场按逆序释放，当次 choreography 立即终止，不会再运行后续 entry 或根 effect；这次紧急清理的异常仍会暴露。
-
-首次 mount 的完整 choreography 是一个不可重入的初始化边界，顺序固定为 state effect → machine entry → state entry → 根 effect：根 effect 是整个生命周期的资源（层、焦点域、观察器），建起那一刻读到的是进入完毕的初态，初态 entry 挑好的锚点（高亮项、焦点格）对它可见。这四步全部提交前，其中的 `send` 只会按调用顺序进入 FIFO；提交后先处理挂载前累积的 tracker，再统一消费事件队列。初始化失败或停机会清空该队列，不会用半提交的状态继续转移。初始化来源和根 effect 使用与用户状态路径不相交的内部标识，因此 `__init__` 是合法的用户状态名，也可以与根 effect 同时使用。
-
-状态机允许 JavaScript 抛出任意值。`null`、`undefined` 和其他非 `Error` 值会使用安全格式化的崩溃信息，并在 `MachineError.cause` 中保留原值；即使单个 cleanup 或 exit 抛出 `undefined`，也会被记录为真实异常并向外抛出。抛出值自身无法转为文本时，诊断使用稳定的“无法格式化的异常”文案。
+- **名字缺失即停机。** 函数形态的 `entry`、`exit`、`effects` 与实现里调用的 `action()`、`guard()` 只能在运行时得知名字：运行时先解析整份列表、经自有数据属性一次取得全部函数快照再执行，任一名字缺失都以 `MISSING_ACTION`、`MISSING_GUARD` 或 `MISSING_EFFECT` 上报、停止服务并抛出原错误，开发与生产一致。缺失 guard 不按 `false` 继续选分支，缺失 action 不被跳过，列表后部缺失 effect 也不会让前部 effect 先取得资源。`inspect` 只观察、不参与错误决策，观察器自身抛错被隔离，不能遮蔽 `MISSING_*`、阻止停机或替换原错误对象。
+- **一批 effect 是一个事务。** 同一状态节点的一批 effect 先建在途路径登记，整批成功才保留为活动批次；后一项初始化抛错或挂载期间丢失路径所有权时，在途登记被摘除，已交出的 cleanup 立即按资源取得逆序全部回滚，某项 cleanup 抛错不阻断其余回滚。事务只能回滚已经返回给服务的 cleanup：单个 effect 在返回前取得了多项资源，要在自己的初始化抛错时逆序回滚。成功挂载的 cleanup 同样逆序执行；每条状态路径只有一份活动登记（返回 `void` 的也占位），机器内部重复挂载抛 `DUPLICATE_EFFECT_PATH`，不把两批 cleanup 隐式合并；退出状态时先从清理表摘除该路径再调 cleanup，崩溃停机时不会重复执行。
+- **停机不可逆。** 停机一开始就进入 `Stopped`、关闭事件入口并清空待处理事件与 tracker，然后清完所有 effect 并运行 machine exit；cleanup 或 exit 里同步 `send` 不再推进机器，服务停止后重复 mount 也不会复活。effect 执行前路径就已处于「挂载中」：setup 里同步重入宿主 mount 在服务边界命中 `DUPLICATE_SERVICE_MOUNT`，按崩溃停机释放全部资源；setup 里同步停机时，迟到返回的 cleanup 当场逆序释放，当次 choreography 立即终止，不再运行后续 entry 或根 effect，这次紧急清理的异常仍会暴露。
+- **首次挂载的顺序固定。** 首次 mount 是不可重入的初始化边界：state effect → machine entry → state entry → 根 effect。根 effect 是整个生命周期的资源（层、焦点域、观察器），建起时读到的是进入完毕的初态，初态 entry 挑好的锚点（高亮项、焦点格）对它可见。四步全部提交前 `send` 按调用顺序进 FIFO，提交后先处理挂载前累积的 tracker 再统一消费队列；初始化失败或停机清空队列，不用半提交的状态继续转移。初始化来源与根 effect 用与用户状态路径不相交的内部标识，`__init__` 是合法的用户状态名，也可以与根 effect 同时使用。
+- **异常一个不丢。** 无回滚异常时保留原初始化异常；回滚也失败（含 effect 初始化中缺项且 cleanup 失败）时以 `AggregateError` 同时携带原异常与全部回滚异常，最外层 `MachineError` 把这条异常链留在 `cause`。清理、exit 与原始崩溃同时抛错时，抛出与诊断通道收到同一份完整聚合异常，正常停机只有 cleanup 或 exit 失败时同理。可以抛出任意值：`null`、`undefined` 等非 `Error` 值用安全格式化的崩溃信息并在 `MachineError.cause` 保留原值，单个 cleanup 或 exit 抛出 `undefined` 也记为真实异常；抛出值无法转为文本时诊断使用稳定的「无法格式化的异常」文案。
 
 ## 服务与响应式运行时
 
@@ -168,9 +158,28 @@ const service = createService(accordionMachine, {
 | 运行时 | 来源 | 用途 |
 | --- | --- | --- |
 | Vue | `@xihan-ui/vue` 内部的 `createVueRuntime()` | Vue 适配器 |
+| React | `@xihan-ui/react` 内部的 `createReactRuntime()` | React 适配器 |
 | vanilla | `@xihan-ui/core/vanilla` 的 `createVanillaRuntime()` | Web Components 适配器、测试、benchmark |
 
 vanilla 运行时是一个同步 dirty 循环的微 signal 实现，也是这套契约的参考实现：接入新框架时按它实现一份即可。
+
+### 适配器里的运行时
+
+Vue 与 React 适配器各有一层薄适配，实现同样的五个接口：
+
+| 接口 | Vue（`createVueRuntime()`） | React（`createReactRuntime()`） |
+| --- | --- | --- |
+| `cell` | `shallowRef` + 受控语义（受控时值从 `prop()` 读，内部 ref 不写） | 闭包存值 + 受控语义（受控时值从 `prop()` 读取，内部值不写）；写入递增版本号，经 `useSyncExternalStore` 触发重渲染 |
+| `track` | `watch(deps, fn, { flush: 'pre' })` | 拉式：每次提交后逐项比对依赖，变化时才触发 |
+| `flush` | `nextTick` | `flushSync` 强制一次提交，回调在 DOM 落定之后运行 |
+| `onMount` / `onCleanup` | `onMounted` / `onBeforeUnmount`（不在组件内则立即执行 / 忽略） | `useLayoutEffect` 的挂载与清理 |
+
+React 的 `track` 是拉式的，与 Vue 不同。Vue 的 `watch` 挂在响应式源上，源变化即通知；React 中 props 的变化不经过任何可订阅的源，它是下一次渲染函数的入参。推式实现在这里永远收不到 props 变化：106 个状态机中的 `track` 与 102 个 `watch` 块会全部静默失效且不报错。
+
+两端都由 `useMachine` 封装，props 传的是 getter 而不是对象：
+
+- Vue 的 `useMachine(machine, props, scope)`：在模板中原地修改某个 prop 也能生效。getter 的求值放在一个 `computed` 里：连接层每读一个 prop 都会经过它，依赖没动时复用同一份展开结果（状态机的身份缓存跟着命中），依赖一动就产出新对象，身份缓存照旧失效。失效面与组件自己的重渲一致，getter 因此必须只读响应式来源——组件 props、`attrs`、ref、注入的上下文、全局配置。读普通变量或普通数组的长度不会让它重算；那类来源本来也驱动不了 `computed(() => connectX(...))` 的重算。
+- React 的 `useMachine(machine, getProps, options)`：每次渲染读取，状态机读到的始终是当前帧的值。getter 的求值带一份记忆，钥匙有两把：渲染轮次与机器版本号。前者盖住组件 props 与渲染期赋值的 ref，后者是「任意一台机器的 cell 变过一次」的全局计数，盖住那些从别的机器现读的派生 props（取色器里内嵌的滑杆、分页里内嵌的页长下拉）。连接层一趟要读十几个 prop，两把钥匙都没动时它们共用同一份展开结果；任一动了当场作废。因此 getter 应当只读这两类来源。确实要在同一拍生效、等不到下一轮渲染的状态（气泡确认的挂起态就是一例）落 ref 之后调一次 `invalidateMachineProps()` 让记忆作废，别默默地读。
 
 ## 服务的对外接口
 
@@ -204,5 +213,4 @@ createService(dialogMachine, {
 
 - [connect 与属性产出](./connect)：从服务到 DOM 属性
 - [行为原语](./behavior)：effects 中调用的原语
-
 - [测试与质量门禁](./testing)：转移覆盖率与一致性判据

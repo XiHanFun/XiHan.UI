@@ -37,73 +37,9 @@ primitive  ──►  semantic  ──►  组件私有槽
 --xh-overlay-max-w: 20rem;
 ```
 
-语义层按角色分组：`bg-*` 背景、`fg-*` 前景、`border-*` 描边、`control-*` 控件尺寸、`shape-*` 形状、`ring-*` 焦点环、`elevation-*` 海拔、`motion-*` 时长与缓动、`layer-*` 层级、`overlay-*` 浮层尺寸、`text-*` 排版。
+语义层按角色分组：`bg-*` 背景、`fg-*` 前景、`border-*` 描边、`control-*` 控件尺寸、`shape-*` 形状、`ring-*` 焦点环、`elevation-*` 海拔、`motion-*` 时长与缓动、`layer-*` 层级、`overlay-*` 浮层尺寸、`text-*` 排版。各组取什么值、给谁用在设计一册里逐表列出：圆角见[形状与边界](/design/shape)，按压时间线见[动效 · 按压触感](/design/motion#按压触感)，排版角色见[字体 · 排版角色](/design/typography#排版角色)，海拔与材质见[阴影与材质](/design/shadow)；组件内的两档滚动条见[皮肤与样式分层 · 组件内滚动](./styling#组件内滚动)。
 
 令牌源是 DTCG 格式的 JSON（`packages/design/tokens/tokens/`），产物由构建脚本生成，`tokens.css` / `tokens.json` / `src/generated/tokens.ts` 三份都入库。CI 会重新生成并比对产物，源与产物不同步时构建失败。
-
-## 形状阶梯
-
-圆角只有一套语义阶梯，由一颗种子 `--xh-radius-seed`（缺省 8px）派生，组件不写独立圆角值：
-
-- `--xh-shape-inset` 4px：嵌在控件、面与浮层里的小块，如勾选方框、集合行、轨道里的段与滑块。
-- `--xh-shape-control`、`--xh-shape-surface`、`--xh-shape-overlay` 8px：控件本体、成面的静态容器与弹层；overlay 引用 surface。
-- `--xh-shape-sheet` 10px：Dialog、Notification 卡片与 Drawer 朝向页面的两个角。
-- `--xh-shape-circle` 给宽高相等的圆，`--xh-shape-pill` 只给状态 chip 与轨道、指示条这类一维对象。
-
-改种子，各档按比例一起变。各档的完整用途、内外层圆角怎么换算与登记的例外见[形状与边界](/design/shape)。
-
-## 点击触感
-
-离散操作控件（Button、Toggle、图标按钮、分页按钮、工具栏按钮）共用一套按压时间线：
-
-| 阶段 | 时长 | 缓动 | 结果 |
-| --- | ---: | --- | --- |
-| 按下 | `--xh-motion-duration-press`（150ms） | `--xh-motion-ease-press` | 背景进入 active；scale 1 → `--xh-motion-scale-press`（缺省 1，只换面） |
-| 释放 | `--xh-motion-duration-release`（200ms） | `--xh-motion-ease-release` | scale 回到 1；背景、描边、字色按 `--xh-motion-duration-micro` 回到 hover / rest |
-
-缺省只换面不缩放；要按下回弹，在根上把 `--xh-motion-scale-press` 写回 0.97，时间线不用改。
-
-Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Collapsible 等 disclosure trigger 使用同一节奏（按下 150ms 换到 active 面，松开按 micro 回到 hover / rest），但只切换表面，不缩放整条，也不允许零反馈。减少动效时 `--xh-motion-scale-press` 归 1、两段时长归 1ms，颜色反馈保留。
-
-## 组件内滚动
-
-滚动条形态只有两档，按滚动面的身份固定，不按组件各自决定：
-
-| 档 | 适用面 | 令牌 |
-| --- | --- | --- |
-| 自绘条（Scrollbar 组件接线） | Overlay 家族 positioner 下的 content / list / column；定高小列表（Listbox content、Transfer list、时间列、Cascader column） | `type` 默认 `scroll-hover`；厚度浮层 `--xh-scrollbar-thickness-sm`（4px）、页内 `--xh-scrollbar-thickness-md`（6px）；壳上 `--xh-scrollbar-track-bg: transparent` |
-| 原生细条 | 页内结构容器（Table、Tree、Transfer 面板、Virtualizer viewport、Dialog / Drawer / FloatingPanel body、Layout sider / content、SideNav popout、Log / MessageFeed 视口、日历年网格、Typography `pre`）与作者自建滚动容器 | reset 层 `:where([data-scope][data-part], [data-xh-scroll])` 统一给 `scrollbar-width: thin` + `scrollbar-color: var(--xh-fg-scrollbar-thumb) var(--xh-bg-scrollbar-track)` |
-
-滑块色阶维持三级：`--xh-fg-scrollbar-thumb` / `-hover` / `-active` 分别是前景色 15% / 25% / 35%，两档共用。作者自己的滚动容器加 `data-xh-scroll` 即得同一套细条，写法与边界见[皮肤与样式分层](./styling#组件内滚动)。
-
-边界行为按身份给：`overscroll-behavior: contain` 只给浮层滚动面、模态 body 与粘底视口，页内结构容器保持 `auto`；`scrollbar-gutter: stable` 只给内容高度动态变化的容器（Log、MessageFeed、Dialog / Drawer body），并带 `:not([data-xh-scrollbar])` 守卫；边缘渐隐只在 ScrollArea 的 fade 变体与 Marquee 提供。文档站页面滚动条与组件滚动条同一 `type`，不另写覆写。
-
-## 排版角色
-
-`text-*` 排版令牌按角色取用，层级由字号、字重、行高和间距共同表达，不能只调颜色：
-
-| 角色 | 字号 / 字重 / 颜色 | 与相邻元素的间距 |
-| --- | --- | --- |
-| 字段标签（单字段与 Slider、Rating、Signature、Color* 等复合单字段） | `--xh-text-label-size` 14 / `--xh-text-label-weight` 400 / `--xh-fg-muted` | 竖排与控件 `--xh-space-2`；Form 横排时标签列占一行的 5 / 24、与控件 `--xh-space-4` |
-| 集合标题（RadioGroup、CheckboxGroup、Listbox、Tree、TagGroup、Descriptions） | 14 / `--xh-text-label-weight` 400 / `--xh-fg-muted` | 与集合 `--xh-space-2` |
-| 字段说明 / helper（Field、Fieldset） | `--xh-text-caption-size` 12 / `--xh-fg-subtle` / `--xh-leading-normal`；禁用不另变色 | 紧贴控件，辅助行最小高 `--xh-space-5` |
-| 其余说明（Card、Alert、Dialog 等面内的 description） | `--xh-text-secondary-size` 13 / `--xh-fg-muted` / `--xh-leading-normal`；Steps 的步骤说明取次级标注 12 / `--xh-fg-subtle` | — |
-| 错误文案 | 12 / `--xh-fg-danger` | 与说明共用控件下方那一行辅助行 |
-| 浮层内与小面标题（Popover、HoverCard、Popconfirm、FloatingPanel、Approval、EmptyState、Citation） | 14 / `--xh-font-weight-medium` | — |
-| 区块与面板标题（Card、Descriptions、Alert、Notification、Steps；Dialog、Drawer、Tour） | heading-3（`--xh-text-heading-3-*`）：16 / 500 | — |
-| 页面标题（PageHeader） | heading-2（`--xh-text-heading-2-*`）：20 / 500 | — |
-| 大号数值（Statistic、Timer、NumberAnimation） | sm / md / lg 依次取 heading-2 / heading-1 / display（`--xh-text-display-size`）：20 / 24 / 28 | — |
-| 次级标注（计数、快捷键、时间戳、序号） | `--xh-text-caption-size` 12 | — |
-
-必填星号与错误文案是公共层规则：星号 `--xh-glyph-mark-required` 排在标签文字之前，取 `--xh-text-caption-size` + `--xh-fg-danger`、与文字隔 `--xh-space-1`，自带标签的字段不各画一套；字段标签与字段说明禁用不另变色，其余标签禁用取 `--xh-fg-subtle`，单行标签 `--xh-leading-none`。控件内图标随 size 档取 `--xh-glyph-size-sm / md / lg`（16 / 18 / 20）；`--xh-glyph-size-text`（随文 1em）只给 Tag、Kbd、Breadcrumb、Typography、Highlight 这类纯行内文字组件。
-
-组件不定字体，`font-family` 照常继承宿主。库的缺省无衬线栈收在 `--xh-font-family-sans`（系统界面字体打头，再给苹方、冬青黑、微软雅黑与思源黑体兜中文），只在引入可选入口时落到页面根上：
-
-```ts
-import "@xihan-ui/styles/global.css";
-```
-
-这份入口不在 `@xihan-ui/styles` 主入口里；规则放在最低的 `xihan.reset` 层、选择器包在 `:where()` 里，宿主自己写的字体照样压得住。代码与等宽数字取 `--xh-font-family-mono`。
 
 ## 八轴视觉环境运行时
 
@@ -183,18 +119,6 @@ brand、density、dir、material 没有平台媒体查询，因此不接受伪�
 
 浅色系统下它与 `light` 同一套取值；系统切到深色，令牌的深色取值、`color-scheme` 与皮肤里只在深色下成立的几条规则（语气、按钮实底等）由 `prefers-color-scheme` 一并切过去，不经任何脚本，系统随时切换随时跟上。`system` 只是写在 DOM 上的一档，控制器照旧只投影 `light` / `dark`：之后若在同一个根上建控制器，它会把属性改成解出的具体值。
 
-## 预设品牌
-
-`@xihan-ui/tokens` 自带几档有名字的品牌，清单是 `BRAND_PRESETS`（如 `blue`、`green`、`orange`、`pink`），类型是 `BrandPreset`；`BRAND_PRESET_COLORS` 给每档一个代表色（那一档的品牌 600），画色板格子、预设清单时用。每档在 `tokens.css` 里是一个 `[data-brand='<id>']` 取值块，只换品牌原语，不必 `registerBrand`：
-
-```ts
-visual.setPreference({ brand: brandId("green") });
-```
-
-各档取基础色板里同名的色相，每一级按缺省品牌那一级的相对亮度派生；`indigo` 是原来的缺省品牌（色相 258），缺省换成色相 277 的靛蓝后留作预设。品牌参与的对比度（实心底上的字、品牌字色、品牌淡底与上面的字、聚焦环）因此与缺省品牌同样达标，浅色、深色与两档高对比都由门禁逐档核对。`registerBrand` 注入的同名取值块不在层里，压过预设。
-
-`data-brand` 要与 `data-theme` 落在同一个元素上才换得动品牌：语义令牌在主题边界上声明，只在子元素上换品牌原语，语义令牌仍是外层解好的值。可视环境控制器的根总是同时写这两个属性；手写时在同一个元素上一并写 `data-theme`。
-
 ## 父作用域、Portal 与回收
 
 局部控制器通过 `parent` 明确继承。父状态变化时，子控制器只重算没有本地偏好的轴；`setPreference({ motion: undefined })` 会删除本层覆盖，立即恢复继承。dispose 会退订父作用域和系统媒体，并把根元素八个属性精确还原到接管前。
@@ -211,7 +135,7 @@ const editor = createVisualEnvironmentController({
 });
 ```
 
-React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvironment` 接受带显式 root 的控制器选项；嵌套 Provider 自动接父控制器。Web Components 的 `<xh-config>` 自身就是局部 scope，可直接设置 `mode`、`brand`、`density`、`direction`、`contrast`、`motion`、`transparency`、`material`。物理 Portal 仍由 Core 的 VisualBridge 桥接已解析八轴，适配器不另存一份视觉状态。
+React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvironment` 接受带显式 root 的控制器选项；嵌套 Provider 自动接父控制器。Web Components 的 `<xh-config>` 自身就是局部 scope，可直接设置 `mode`、`brand`、`density`、`direction`、`contrast`、`motion`、`transparency`、`material`。三端写法见[全局配置 · 视觉环境](../runtime/config#视觉环境)。物理 Portal 仍由 Core 的 VisualBridge 桥接已解析八轴，适配器不另存一份视觉状态。
 
 ## 五轴旧视图
 
@@ -219,57 +143,73 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 
 `color-scheme` 声明写在深色取值块里，所以嵌套深色区域的原生控件也会跟随。SSR 首屏应直接输出八个已解析属性，避免客户端接管前闪烁。
 
+## 切换品牌色
+
+品牌色的唯一真源是原语梯度 `--xh-color-brand-50…950`：语义令牌（`--xh-bg-brand` 等）与语气层（`data-tone='brand'`）都从它取值。切换品牌色要替换整套原语，而不是只改 `--xh-bg-brand`：后者只影响未写 `data-tone` 的默认路径，写了 `data-tone='brand'` 的组件（实心按钮、开关、进度条等）不会随之变化。
+
+### 预设品牌
+
+`@xihan-ui/tokens` 自带几档有名字的品牌，清单是 `BRAND_PRESETS`（如 `blue`、`green`、`orange`、`pink`），类型是 `BrandPreset`；`BRAND_PRESET_COLORS` 给每档一个代表色（那一档的品牌 600），画色板格子、预设清单时用。每档在 `tokens.css` 里是一个 `[data-brand='<id>']` 取值块，只换品牌原语，不必 `registerBrand`：
+
+```ts
+visual.setPreference({ brand: brandId("green") });
+```
+
+各档取基础色板里同名的色相，每一级按缺省品牌那一级的相对亮度派生；`indigo` 是原来的缺省品牌（色相 258），缺省换成色相 277 的靛蓝后留作预设。品牌参与的对比度（实心底上的字、品牌字色、品牌淡底与上面的字、聚焦环）因此与缺省品牌同样达标，浅色、深色与两档高对比都由门禁逐档核对。
+
+### 注册自定义品牌
+
+提供一枚种子色即可，运行时派生整套梯度：
+
+```ts
+import { brandId, createVisualEnvironmentController, registerBrand } from "@xihan-ui/tokens";
+
+// 注册：从种子色派生 11 档原语，注入 [data-brand='acme'] 取值块
+registerBrand("acme", "#16a34a");
+
+// 切换：品牌是八轴视觉环境之一
+const visual = createVisualEnvironmentController({ root: document.documentElement });
+visual.setPreference({ brand: brandId("acme") });
+```
+
+派生只取种子的色相与彩度，明度曲线沿用基线，库内所有建立在明度上的对比度保证（如实心底白字 4.5:1）对任何种子色都继续成立。种子会被锚定到 600 档（实心底与强调文字的档位），因此种子必须完全不透明；透明品牌色依赖宿主背景，运行时会拒绝。`registerBrand` 注入的取值块不在层里，与预设同名时压过预设。
+
+需要逐档手动调整时，把整套梯度直接交给 `registerBrand('acme', { 50: '...', ..., 950: '...' })`。SSR 场景用 `brandScaleCss(id, seed)` 获得取值块字符串，随首屏 HTML 下发，客户端不需要再注册。
+
+`data-brand` 要与 `data-theme` 落在同一个元素上才换得动品牌：语义令牌在主题边界上声明，只在子元素上换品牌原语，语义令牌仍是外层解好的值。可视环境控制器的根总是同时写这两个属性；手写时在同一个元素上一并写 `data-theme`。
+
+## 透明颜色与对比度
+
+颜色运行时把 alpha 作为 `Oklch.a` 的必填通道保留。`compositeColors(foreground, backdrop)` 按 CSS source-over 在 sRGB 编码通道合成；WCAG 相对亮度在得到最终像素后再线性化。
+
+```ts
+import { compositeColors, contrastRatio } from "@xihan-ui/tokens";
+
+const page = "oklch(0.97 0.01 250)";
+const frosted = "oklch(0.98 0.01 250 / 88%)";
+const renderedFrosted = compositeColors(frosted, page);
+
+// 背景本身透明时，第三个参数必须给出最终底色。
+const ratio = contrastRatio("oklch(0.2 0.02 250)", frosted, page);
+```
+
+`relativeLuminance(transparentColor)` 和缺少最终底色的 `contrastRatio(foreground, transparentBackground)` 会直接抛错，不假设白底。磨砂面位于图片、品牌色或多层 surface 上时，应分别传入实际像素或逐层合成；平均色不能证明每一处文字都满足对比度。
+
+`pickOnColor` 与 `pickAwayColor` 可通过 `{ backdrop: actualBackdrop }` 处理半透明背景，并比较自定义 light/dark 候选的真实对比度。没有最终底色时同样抛错，运行时不推测页面背景。
+
 ## 材质配方
 
-令牌配方五档，每档都提供同名九项令牌：`bg`、`backdrop`、`border`、`highlight`、`shadow`、`separator`、`fg`、`fg-muted`、`focus-surface`；M5 liquid 另有五项专用令牌。缺省各档都是实体面；透景（半透明底 + 背景滤镜）只允许主题给瞬态浮层开；不提供玻璃材质，也不提供任何兼容别名。另有 raised / floating 两个由海拔令牌组成的叠加档：它们没有 `--xh-material-*` 令牌，只能写成 solid 描边 + solid 底 + 对应海拔的组合。
+材质配方有 solid、soft、frosted、elevated 四档与只在 liquid 档出现的液态面，各档给谁、光学取值、每档九项令牌的后缀含义与环境轴上的降级见[阴影与材质](/design/shadow)。这里只讲两处要自己接线的地方。
 
-| 编号 | 令牌 | 用途 | 光学 |
-| --- | --- | --- | --- |
-| M0 solid | `--xh-material-solid-*` | 静态内容面缺省：border-default 描边 + surface 底 + 无影；字段静息同为描边式，铺 `--xh-bg-field`（缺省白底） | 实体底色，无高光、无投影 |
-| M1 soft | `--xh-material-soft-*` | 柔和淡底的次级面；不用于 Card 与字段。Button 与 Tag 是平面面，不取它的顶光与投影 | 实体底色，细微顶光与两段接触投影，无背景模糊 |
-| M2 frosted | `--xh-material-frosted-*` | 短列表、菜单、tooltip、气泡等锚定瞬态浮层；含网格或多列的锚定面板改用 solid + border-default + `--xh-elevation-floating` | 实体 surface 底，无背景模糊，1px border-default 描边，md 档投影，无顶光 |
-| M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Notification 等模态与强反馈面（sheet），必有 1px 描边 | 实体 surface 底，无背景模糊，lg 档投影 |
-| M5 liquid | `--xh-material-liquid-*` | 只在 `data-material="liquid"` 下出现：浮在内容之上的导航层——浮动钮（FloatButton、BackTop、MessageFeed / Log 的回到底部）、媒体控制（Carousel 控制钮与分页条、ImageViewer 控制层）、吸顶的 Layout 顶栏 | 可读下限浅 0.48 / 深 0.61 不透明度，8px 模糊，140% 饱和度，墨色细线 + 1px 边缘光，Chromium 下边缘折射 |
-| raised（叠加档） | solid 描边 + solid 底 + `--xh-elevation-raised` | Card 与可抬起 / 可拖起部件（Tabs segment 的滑块、开关拇指等），逐部件登记；描边必须在，影只是加成，只有可交互时允许 hover 抬升 | 实体底色；`--xh-elevation-raised` 取 sm 档 |
-| floating（叠加档） | solid 底 + `--xh-border-default` + `--xh-elevation-floating` | 含网格或多列的锚定面板：NavigationMenu content、Date / Time / DateRange / TimeRange picker content | 实体底色，不透景，md 档投影 |
-
-| 后缀 | 用途 |
-| --- | --- |
-| `bg` / `backdrop` | 底色 / 背景滤镜 |
-| `border` / `highlight` / `shadow` | 外边界、顶部高光与投影 |
-| `separator` | 内部分段线 |
-| `fg` / `fg-muted` | 正文与次要文字，始终不透明 |
-| `focus-surface` | 键盘聚焦时铺在焦点环内侧的实体隔离底 |
+### 接入 frosted 浮层面
 
 M2 frosted 在库里只有一份实现：材质家族配方 `@xihan-ui/styles/material.css`。组件在部件上投影 `data-xh-material="frosted"`，锚定浮层的内容面由配方画描边、底、前景与投影，背景滤镜与 1px 顶光两条通道缺省为空、留给要透景的主题；浮动钮的面归 Action Control，由配方给交互阶梯（悬停 / 按下换不透明淡底一档、二档，键盘聚焦铺 `focus-surface`）。自定义的浮层面写同一个属性即可接入，用 `--xh-frosted-bg`、`--xh-frosted-border`、`--xh-frosted-fg`、`--xh-frosted-shadow`、`--xh-frosted-backdrop`、`--xh-frosted-highlight` 覆盖。
 
-Card 只有三档形态：`outline`（缺省，solid 描边 + surface 底 + `--xh-elevation-raised`，sm 档）、`subtle`（`--xh-bg-subtle` + 透明占位边 + 无影）、`ghost`（不写边、底与影，只允许分隔线）。边界只由描边承担，阴影与淡底都不作为边界。
-
-环境轴在同一令牌名上原位降级：高对比档加强边界；减少透明度与打印强制实体底、关闭背景滤镜（主题开了透景也一样）；强制色改由 `Canvas` / `CanvasText` 表达。四档在浅色、深色两套主题下都按黑、白、中灰、页面与品牌背景验证正文至少 4.5:1、焦点环对隔离底至少 3:1。
-
-主题与对比度可以分别声明在不同层级：每一层采用最近的 `data-theme` 和 `data-contrast`。子主题不撤销祖先的高对比度，`data-contrast="default"` 可以局部恢复常规档；兄弟区域互不影响。
-
-### frosted 浮层面的使用范围
-
-- 名字沿用 frosted，缺省取值是实体弹出层：不采样背后内容，没有顶部边界光，1px 描边承担可见边界，不能只靠投影分层。
-- 只用于锚定瞬态浮层，正文、表单主体、Card、Table、Notification 与 Dialog 主阅读面不使用。
-- 主题要磨砂透景时，给 `--xh-material-frosted-bg` 半透明底、给 backdrop 一档 blur（不高于 16px，saturate 不高于 1.08）、给 highlight 不超过 1px 的内侧顶光；开了透景就不把 `backdrop-filter` 放在页面根、大滚动区或重叠的多层表面，不对模糊半径做动画，焦点环搭配 `focus-surface` 对应的实体隔离面。
-
-### 紧凑配方（Tooltip）
-
-Tooltip 不反白，与 Popover 同一副浮层面：底、字、边取 frosted 材质（M2），再用三支 compact 配方组合；写了 `tone` 才换语气实底，那时边改取 on 色 20% 拼色承担 1px 可见边界（中性描边压在彩色底上看不见）：
-
-| 配方 | 常规值 |
-| --- | --- |
-| `--xh-material-frosted-compact-alpha` | 不透明（`--xh-alpha-opaque`） |
-| `--xh-material-frosted-compact-backdrop` | none，无模糊 |
-| `--xh-material-frosted-compact-shadow` | md 档投影（浅色引 `--xh-shadow-md`，深色是同样三层的深色投影） |
-
-高对比、强制颜色和打印去掉投影；减少透明时保留小投影表达浮层位置。组件只经这三支配方消费光学参数，不直接选择 alpha 或 blur 原语。
+主题要磨砂透景时怎么给值、哪些面不许透景见[阴影与材质 · frosted 浮层面](/design/shadow#frosted-浮层面)；开了透景时焦点环搭配 `focus-surface` 对应的实体隔离面。
 
 ### 液态材质
 
-`data-material` 是应用级材质轴，缺省 `standard`，取 `liquid` 时浮在内容之上的导航层部件换成液态面。它写在任意祖先上，最近的一层生效，Portal 视觉桥会把它带到实例壳；standard 档下同一部件保持原材质。用了视觉环境控制器时，经它的 `material` 偏好设置（控制器始终维护根上的这个属性）。
+`data-material` 是应用级材质轴，缺省 `standard`，取 `liquid` 时浮在内容之上的导航层部件换成液态面（M5 liquid，`--xh-material-liquid-*`）。它写在任意祖先上，最近的一层生效，Portal 视觉桥会把它带到实例壳；standard 档下同一部件保持原材质。用了视觉环境控制器时，经它的 `material` 偏好设置（控制器始终维护根上的这个属性）。液态面的光学：可读下限浅 0.48 / 深 0.61 不透明度，8px 模糊，140% 饱和度，墨色细线加 1px 边缘光，Chromium 下边缘折射。
 
 现有的液态部件：FloatButton 触发器与展开的动作、BackTop、MessageFeed / Log 的回到底部、Carousel 的翻页与播放钮和分页条（托在一条液态胶囊上）、ImageViewer 的工具条、计数、翻页与关闭钮，以及 Layout 固定时的顶栏。瞬态浮层、模态、Notification、Card、Table、表单与正文容器不用液态，由门禁 `check-material-scope` 守住。
 
@@ -308,7 +248,18 @@ import { tokens } from "@xihan-ui/tokens";
 import tokens from "@xihan-ui/tokens/tokens.json" with { type: "json" };
 ```
 
+### 缺省字族
+
+组件不定字体，`font-family` 照常继承宿主。库的缺省无衬线栈收在 `--xh-font-family-sans`（系统界面字体打头，再给苹方、冬青黑、微软雅黑与思源黑体兜中文），只在引入可选入口时落到页面根上：
+
+```ts
+import "@xihan-ui/styles/global.css";
+```
+
+这份入口不在 `@xihan-ui/styles` 主入口里；规则放在最低的 `xihan.reset` 层、选择器包在 `:where()` 里，宿主自己写的字体照样压得住。代码与等宽数字取 `--xh-font-family-mono`。
+
 ## 相关
 
 - [皮肤与样式分层](./styling)：皮肤怎么消费这些令牌
+- [设计一册](/design/)：各组令牌的取值、用途与取舍
 - [安装与接入](../installation)：令牌与皮肤的引入顺序

@@ -1,11 +1,5 @@
 # 常见问题
 
-## 与 XiHan.BasicApp 的前端是什么关系
-
-BasicApp 的前端构建于 XiHan.UI 之上：自 BasicApp v4.0.0 起，它的前端整体使用本库重建。了解组件库在真实业务中的用法，可以阅读 BasicApp 前端的源码。
-
-BasicApp 的前端约定见[基础应用前端手册](https://basicapp.docs.xihanfun.com/frontend/introduction)。
-
 ## 有哪些组件
 
 [组件总览](./components/)按分类列出全部组件，每个组件一页。每个组件同时有无头内核、Vue / React 组件、自定义元素与默认皮肤。
@@ -91,18 +85,7 @@ BasicApp 的前端约定见[基础应用前端手册](https://basicapp.docs.xiha
 
 ## 如何让 AI 正确编写本库的代码
 
-模型没有见过这套契约，凭印象编写的代码多数是 React 生态的写法：给组件传 `class`、用 `color` 作为形态 prop、样式中写死颜色与时长。提供以下文件即可，它们由文档站构建期生成，与库同源：
-
-| 地址 | 内容 |
-| --- | --- |
-| [`/llms.txt`](https://ui.docs.xihanfun.com/llms.txt) | 全站索引，每行一页 |
-| [`/llms-components.txt`](https://ui.docs.xihanfun.com/llms-components.txt) | 全部组件参考页 |
-| [`/llms-guide.txt`](https://ui.docs.xihanfun.com/llms-guide.txt) | 核心概念、适配器与运行时 |
-| [`/llms-tokens.txt`](https://ui.docs.xihanfun.com/llms-tokens.txt) | 令牌全表：名称、类型、默认取值 |
-
-只需要一页时，把地址后缀改为 `.md`：`https://ui.docs.xihanfun.com/components/button.md` 即按钮页，示例已内联为代码块。每页正文右上角的“取本页 Markdown”指向的也是它。
-
-支持 Agent Skills 的工具可以直接读取仓库根的 `.agents/skills/`：[`component-design`](https://ui.docs.xihanfun.com/skills/component-design/SKILL.md) 负责设计与视觉，[`component-development`](https://ui.docs.xihanfun.com/skills/component-development/SKILL.md) 负责实现与仓库流程，[`framework-adapters`](https://ui.docs.xihanfun.com/skills/framework-adapters/SKILL.md) 负责三端接法。开发技能提供四个只读脚本；脚本严格读取当前检出，找不到仓库时直接报错，不使用已发布站点的内容代替本地事实。
+模型没有见过这套契约，凭印象编写的代码多数是 React 生态的写法：给组件传 `class`、用 `color` 作为形态 prop、样式中写死颜色与时长。把文档站构建期生成、与库同源的机读资产交给它即可：资产清单与单页 Markdown 的取法见 [LLMs.txt](./ai/llms)，MCP、CLI 与使用规范见 [For Agents](./ai/agents)。
 
 ## 其他问题
 

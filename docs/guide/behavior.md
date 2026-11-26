@@ -2,13 +2,7 @@
 
 `@xihan-ui/core` 中的行为原语收纳跨组件复用的交互机制：对话框、抽屉、气泡、菜单、上下文菜单、悬浮卡片等的差别在触发方式和视觉，但点击外部关闭、焦点陷入、背景禁止滚动是同一套机制。在这里实现一次，组件只负责调用。
 
-配套的层栈与背景失活也在 `@xihan-ui/core` 中（它们是结构原语，比行为更底层）。
-
-`createScope(node, idGenerator)` 从节点自己的 realm 解析 Document、Window、Element 与 ShadowRoot。传入 iframe 或画中画窗口中的节点时，`getRootNode/getDoc/getWin` 不会因当前页面的 `instanceof` 失败而回落到主文档。把这份显式 Scope 传给 `createRuntimeConfig({ scope })` 后，默认 locale、LayerRegistry、PortalRoot 与 reduced-motion 都从该 Scope 的 document/window 派生；显式传入的配置仍然优先，其中 `layerRegistry.ownerDocument` 必须与 Scope Document 相同。
-
-无全局 DOM 时必须提供有效 Scope；只提供 layer registry 不会得到一个伪造的空 Scope。Scope 的 root、document、window 必须互相归属，离线 Document 没有活动 Window 时直接报错。默认 PortalRoot 保持惰性创建，但 Document 没有 body 时会给出明确错误；需要其他容器就显式传 `portalContainer`。
-
-`createScope(null, ...)` 本身保持惰性，便于在 CSR 中先建立机器再挂载组件节点；这份 Scope 始终表示 ambient Document，不会在之后改绑节点。真正读取 root/document 时若宿主没有有效全局 Document，会抛出稳定错误。传入离线 Document 的节点时 `getDoc()` 仍返回该 Document，但 `getWin()` 明确失败，不会借用主页面 Window 伪造一组混合 realm。
+配套的层栈与背景失活也在 `@xihan-ui/core` 中（它们是结构原语，比行为更底层）。每个原语都按节点所属的 Document 与 Window 工作，iframe 与画中画窗口里的接法见文末[跨 realm 的 Scope](#跨-realm-的-scope)。各节先写 API 与使用者要守的约束，实现细则收在可展开的「内部细则」里，自建浮层或排查问题时再看。
 
 ## 浮层第一次打开时才加载
 
@@ -42,11 +36,9 @@ Vue 浮层与 React `XhPortal` 为每个实例建立独立的 `display: contents
 
 自定义属性只带属于视觉环境的那部分。作者自己的属性（不以 `--xh-` 开头）照投；`--xh-` 命名空间只投文档根上有声明的名字，即令牌与按[覆盖样式的三种粒度](./styling#覆盖样式的三种粒度)写在 `:root` 上的组件槽覆盖。皮肤写在组件或家族元素上的公开槽（`--xh-<组件>-*`、`--xh-collection-*` 等）、私有槽 `--xh-_*` 与挂在 `[data-tone]` 上的 `--xh-tone-*` 是组件内部级联，不跨 Portal：斑马行改写的行底不会顺着行内的触发器进到菜单项，列表项里的下拉、卡片里的提示同理。判定按每次同步时的文档根计算样式做，不维护名单。
 
-实例壳自己就能解析出来的那些不复制。只由文档根（`:root`、`html`）或桥复制过去的那些属性选中的声明——令牌层的 `:where(:root)`、`:where([data-density='compact'])`、`:where([data-theme='dark'])`，以及作者按同样形状写的规则——在壳上会被同一条规则再命中一次，壳因此只拿属性、不拿逐条 inline 声明；祖先上密度或主题的局部切换仍然完整生效，浮层内解析到的令牌与来源处一致。来源没有显式声明该轴时壳也不写该属性，按既有语义继续继承落点容器。
+桥接的属性为 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion`、`data-transparency`、`data-material` 与 `dir`；语气 `data-tone` 不在其列。三端物理 Portal 都从逻辑来源的 composed 祖先逐项取最近显式声明，并把它们与上述自定义属性投影到实例壳；来源变化、跨 realm 与退场回收均由 Core 桥接生命周期处理。
 
 框架外可使用 `createPortalVisualBridge({ source, shell })`：`source` 是逻辑来源元素，`shell` 是该实例独占的容器，两者必须属于同一 Document。返回的 `sync()` 可立即重读，`dispose()` 停止观察并恢复接管前的容器属性与自定义属性。普通属性、`style` 改动、祖先移动及 Shadow DOM 插槽重新分配会在 MutationObserver 或 slotchange 通知后同步；需要同一调用栈内更新时显式调用 `sync()`。普通计算样式不会复制。
-
-`class` 改动只在增删的名字出现在「声明了自定义属性的选择器」里时才重算：页面级过渡类、展开态与加载态每帧都在祖先链上增删 class，它们与自定义属性无关，链下每个浮层不必为此各读一遍整张令牌表。判定来自一份按文档缓存的样式表索引，样式表增删或整段替换会让它失效；通过 CSSOM 往已有分组规则内部插入声明自定义属性的规则不改变索引指纹，这种改动后需要显式 `sync()`。样式表跨域读不到规则、或选择器里出现 `[class]` 时，索引整体让位，按原来的方式重算。
 
 ```ts
 import { createPortalVisualBridge } from "@xihan-ui/core";
@@ -56,7 +48,13 @@ const bridge = createPortalVisualBridge({ source, shell });
 bridge.dispose();
 ```
 
-桥接的属性为 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion`、`data-transparency`、`data-material` 与 `dir`；语气 `data-tone` 不在其列。三端物理 Portal 都从逻辑来源的 composed 祖先逐项取最近显式声明，并把它们与上述自定义属性投影到实例壳；来源变化、跨 realm 与退场回收均由 Core 桥接生命周期处理。
+::: details 内部细则：实例壳复制哪些声明、何时重算
+
+实例壳自己就能解析出来的那些不复制。只由文档根（`:root`、`html`）或桥复制过去的那些属性选中的声明——令牌层的 `:where(:root)`、`:where([data-density='compact'])`、`:where([data-theme='dark'])`，以及作者按同样形状写的规则——在壳上会被同一条规则再命中一次，壳因此只拿属性、不拿逐条 inline 声明；祖先上密度或主题的局部切换仍然完整生效，浮层内解析到的令牌与来源处一致。来源没有显式声明该轴时壳也不写该属性，按既有语义继续继承落点容器。
+
+`class` 改动只在增删的名字出现在「声明了自定义属性的选择器」里时才重算：页面级过渡类、展开态与加载态每帧都在祖先链上增删 class，它们与自定义属性无关，链下每个浮层不必为此各读一遍整张令牌表。判定来自一份按文档缓存的样式表索引，样式表增删或整段替换会让它失效；通过 CSSOM 往已有分组规则内部插入声明自定义属性的规则不改变索引指纹，这种改动后需要显式 `sync()`。样式表跨域读不到规则、或选择器里出现 `[class]` 时，索引整体让位，按原来的方式重算。
+
+:::
 
 ### 逻辑父子
 
@@ -88,9 +86,9 @@ for (const [listener, host] of subscribers) {
 
 登记挂在 Document 上，页面上装了几份 core 时读到的是同一份。
 
-## 在 Vue 中使用
+## 在 Vue / React 中使用
 
-原语都是框架无关的：接收一份配置与几个元素 getter，返回一个需要自行释放的句柄。接入 Vue 只是把释放挂到作用域结束，这层包装位于 `@xihan-ui/vue/behavior`：
+原语都是框架无关的：接收一份配置与几个元素 getter，返回一个需要自行释放的句柄。接入框架只是把释放挂到组件的生命周期上，这层包装位于 `@xihan-ui/vue/behavior` 与 `@xihan-ui/react/behavior`，两端导出同名的 `useScrollLock`、`useHoverIntent`、`useScrollTracker`、`useStickToBottom`、`useTypeahead` 与 `useBreakpoint`（见[当前断点](#当前断点)）：
 
 ```ts
 import { useHoverIntent, useScrollLock } from "@xihan-ui/vue/behavior";
@@ -105,11 +103,22 @@ useHoverIntent({
 });
 ```
 
+```tsx
+import { useHoverIntent, useScrollLock } from "@xihan-ui/react/behavior";
+
+useScrollLock(open, config);
+
+useHoverIntent({
+  getTriggerEl: () => triggerRef.current,
+  getContentEl: () => (open ? contentRef.current : null),
+  onOpenIntent: () => setOpen(true),
+  onCloseIntent: () => setOpen(false),
+});
+```
+
 Vue 与 React 包装在 DOM 提交后解析 `getTriggerEl()`：节点为 `null` 时表示这一帧没有绑定目标，旧绑定会立即释放；节点重新出现、换代或三个计时参数变化时自动重建。Vue 的 `getContentEl` 与意图回调读取当前响应式选项，React 读取最近一次已提交选项；浮层内容或普通回调换代都不会取消正在进行的安全三角会话。
 
-直接使用 core 的 `trackHoverIntent()` 时传入创建时已经在场的 `trigger` 元素。该元素是明确的创建快照，订阅期间不得跨 Document 移动；需要换触发器时先调用 cleanup 再重建。浮层 content 可以动态换代，但必须始终与 trigger 属于同一 Document；安全三角会按原离开点和新面板位置重算。多级浮层经 Portal 分离时，用 `getHoverBranches` 显式返回属于同一悬停树的后代区域；它们必须是同一 Document 的原生 `HTMLElement`，不会按全局浮层顺序猜测归属。所有计时器与文档监听都取自 trigger 创建时所属的活动 Window；非法数值、离线 Document、跨 Document content 或 branch 会直接报错。
-
-另有 `useScrollTracker` / `useStickToBottom` / `useTypeahead`，接法相同。`useStickToBottom` 除状态外还返回句柄上的两个动作，回到底部按钮使用的是前者：
+`useStickToBottom` 除状态外还返回句柄上的两个动作，回到底部按钮使用的是前者：
 
 ```ts
 const { state, scrollToBottom } = useStickToBottom({
@@ -121,7 +130,22 @@ const { state, scrollToBottom } = useStickToBottom({
 // state.value?.atBottom 为假时显示回到底部按钮，点击调用 scrollToBottom()
 ```
 
-两个 getter 中读取的是 ref 时不必自行 `retarget`：节点更换后这层包装会重新绑定。
+Vue 的 `state` 是 ref，React 直接给值（`state?.atBottom`）。两个 getter 读到的节点更换后包装会重新绑定，不必自行 `retarget`。
+
+::: details 内部细则：两端包装各在什么时机读节点
+
+- Vue 的 `useHoverIntent` 到 mounted 后才读取模板 ref，并持续观察 trigger 与三个计时参数；trigger 暂时为 `null` 时释放旧绑定，节点重新出现后再建立。选项对象本身也可传 ref 或 getter；显式类型使用该子入口的 `UseHoverIntentOptions`。
+- Vue 的 `useScrollLock` 在组件 mounted 后才读取模板 ref，并以 post watcher 跟随 active；释放时先清本地句柄，清理抛错后再次激活仍可建立。active 为真期间不因配置对象更新重锁，关闭再开启才读取新配置。
+- React 的 `useHoverIntent` 在布局提交期读取 `getTriggerEl()`，因此已渲染元素的 ref 已就位，下一次指针输入不会落在旧节点上；本次提交未渲染 trigger 时释放绑定，节点更替或 `openDelay`、`closeDelay`、`buffer` 改变时重建。content getter 和两个意图回调只更新已提交引用，不会因普通闭包更替取消挂起的计时。需要显式标注选项时，从这个子入口导入 `UseHoverIntentOptions`，不借用 core 的元素快照类型。
+- React 的 `useScrollLock` 在布局 effect 中加锁，首帧绘制前就生效，服务端不执行 DOM 副作用。锁跟随 active 而不是配置对象身份；关闭再开启时读取最新配置，StrictMode 清理与重建保持一致。
+
+:::
+
+::: details 内部细则：直接使用 core 的 `trackHoverIntent()`
+
+传入创建时已经在场的 `trigger` 元素。该元素是明确的创建快照，订阅期间不得跨 Document 移动；需要换触发器时先调用 cleanup 再重建。浮层 content 可以动态换代，但必须始终与 trigger 属于同一 Document；安全三角会按原离开点和新面板位置重算。多级浮层经 Portal 分离时，用 `getHoverBranches` 显式返回属于同一悬停树的后代区域；它们必须是同一 Document 的原生 `HTMLElement`，不会按全局浮层顺序猜测归属。所有计时器与文档监听都取自 trigger 创建时所属的活动 Window；非法数值、离线 Document、跨 Document content 或 branch 会直接报错。
+
+:::
 
 需要层栈流程的原语不在这里：消隐层、焦点域、背景失活要按顺序接入多个部分，接错的表现是点击子菜单导致父层关闭这类不报错的异常。该场景直接使用库内的浮层组件；确需自建时按下文各节的顺序接入。
 
@@ -165,16 +189,21 @@ export interface LayerRegistry {
 
 栈的先后缺省按登记先后排；新登记的层如果开在另一层的内容里（它的根节点或某个分支，比如触发器、输入框，落在那一层的根节点之内），就排在那一层之上，不管谁先登记：对话框和里面缺省展开的下拉同一刻打开、下拉先登记时，下拉照样在上，Esc 先关它。
 
-层可以从栈中间释放。浮层逻辑收起之后还要播退场，层留在栈里直到退场播完；这期间打开的新层（比如点在下拉外面的那一下正好打开了抽屉）压在它上面，它播完退场就从新层下面释放，这是正常的先后。真正乱序的是父层先走：开在它内容里的层还压在上面时就释放它，注册表报 `core.layer.dispose-not-top`，明细里的 `nested` 列出还压着的那几层。谁开在谁里面按登记那一刻的 DOM 记下，释放时节点已经卸掉也照样判得出。
+层可以从栈中间释放。浮层逻辑收起之后还要播退场，层留在栈里直到退场播完；这期间打开的新层（比如点在下拉外面的那一下正好打开了抽屉）压在它上面，它播完退场就从新层下面释放，这是正常的先后。真正乱序的是父层先走：开在它内容里的层还压在上面时就释放它，注册表报 `core.layer.dispose-not-top`，明细里的 `nested` 列出还压着的那几层。
 
-库内的浮层在退场播完要释放时，会等开在它里面的层先走。一次层外按下可以把提示和它所在的弹出层一并收起（见[消隐层](#消隐层)），两层各播各的退场，谁先播完不一定；弹出层播完退场时，先用 `nestedAbove(layer)` 问开在它里面的层走了没有，还压着就留在栈里等，层栈每变一次复查一次，都走了才释放层、消隐层、焦点域与滚动锁，Dialog / Drawer 的 `onExitComplete` 也在这之后发出。等的这一小段里它已经关闭、内容已经失活，只占栈位，这时重开沿用原资源，与退场中重开一样。只等开在它里面的层：与它无关的层压在上面时照常从中间释放。组件卸载不等，资源立即释放。自建浮层按同一做法：退场结束后 `registry.nestedAbove?.(layer)` 非空就订阅 `subscribe`，在通知之后的微任务里复查（通知期间不能改栈）。
+库内的浮层在退场播完要释放时，会等开在它里面的层先走，都走了才释放层、消隐层、焦点域与滚动锁，Dialog / Drawer 的 `onExitComplete` 也在这之后发出；组件卸载不等，资源立即释放。自建浮层按同一做法：退场结束后 `registry.nestedAbove?.(layer)` 非空就订阅 `subscribe`，在通知之后的微任务里复查（通知期间不能改栈）。
 
-视觉层级不再由各组件各自拿静态 `z-index` 猜。注册表按当前 Document 的逻辑栈派生
-`visualIndex`，再让 `kind` 与实时 `isModal()` 占用该序号内的 `visualLane`；后登记层的序号
-权重大于 lane，所以嵌套 popover 一定高于所属 modal，后来打开的 modal 也能压住更早的
-popover。公共绑定把 `visualLayer` 写入私有 `--xh-_layer`，皮肤仍以公开
-`--xh-<component>-layer` 为第一优先级，再回落这份私有值和旧全局令牌。动态 modal 通过
-`sync(layer)` 发布同一冻结快照，不改写 Layer，也不在适配器保留 `setModal` 空实现。
+注册表还给出 `elementsAbove(layer)`：栈中位于该层之上的各层的全部节点（`node` + `branches` + `surfaces`）。背景失活要用它把上层排除在自己的管辖之外。
+
+`nestedAbove(layer)` 给出栈中位于该层之上、开在它内容里的层，按登记时记下的嵌套判，与乱序诊断同一份记录；返回冻结数组，层未登记或已释放时为空。这个方法在类型上是可选的：注册表是页面级共享的，页面上先装的那份 `@xihan-ui/core` 早于它时，取到的实例没有这个方法，调用方按没有这样的层处理。
+
+视觉层级由注册表按逻辑栈派生（`visualOf`），公共绑定写进私有 `--xh-_layer`；皮肤以公开的 `--xh-<component>-layer` 为第一优先级，再回落这份私有值和全局层级令牌。
+
+::: details 内部细则：嵌套释放、视觉层级与通知的提交点
+
+谁开在谁里面按登记那一刻的 DOM 记下，释放时节点已经卸掉也照样判得出。一次层外按下可以把提示和它所在的弹出层一并收起（见[消隐层](#消隐层)），两层各播各的退场，谁先播完不一定；弹出层播完退场时，先用 `nestedAbove(layer)` 问开在它里面的层走了没有，还压着就留在栈里等，层栈每变一次复查一次。等的这一小段里它已经关闭、内容已经失活，只占栈位，这时重开沿用原资源，与退场中重开一样。只等开在它里面的层：与它无关的层压在上面时照常从中间释放。
+
+视觉层级不再由各组件各自拿静态 `z-index` 猜。注册表按当前 Document 的逻辑栈派生 `visualIndex`，再让 `kind` 与实时 `isModal()` 占用该序号内的 `visualLane`；后登记层的序号权重大于 lane，所以嵌套 popover 一定高于所属 modal，后来打开的 modal 也能压住更早的 popover。动态 modal 通过 `sync(layer)` 发布同一冻结快照，不改写 Layer，也不在适配器保留 `setModal` 空实现。
 
 `list()` 与订阅回调拿到的都是冻结状态快照，Layer 记录本身也被冻结；节点、分支和模态性仍由记录里的 getter 返回当前值。注册与释放会固定这一轮的订阅者名单并通知完所有人，单个订阅者抛错不会截断后续通知，多项异常会按订阅顺序聚合。
 
@@ -182,11 +211,9 @@ popover。公共绑定把 `visualLayer` 写入私有 `--xh-_layer`，皮肤仍�
 
 订阅回调可以读取当前快照、订阅或退订，但不能同步嵌套调用 `register()`，也不能释放仍在注册表里的 Layer。嵌套状态变更会明确抛错，避免外层通知观察到一半又被另一轮变更改写；已经成功终结的 cleanup 仍可重复调用并保持无操作。
 
-注册表还给出 `elementsAbove(layer)`：栈中位于该层之上的各层的全部节点（`node` + `branches` + `surfaces`）。背景失活要用它把上层排除在自己的管辖之外。
-
-`nestedAbove(layer)` 给出栈中位于该层之上、开在它内容里的层，按登记时记下的嵌套判，与乱序诊断同一份记录；返回冻结数组，层未登记或已释放时为空。这个方法在类型上是可选的：注册表是页面级共享的，页面上先装的那份 `@xihan-ui/core` 早于它时，取到的实例没有这个方法，调用方按没有这样的层处理。
-
 单个 Headless 浮层 layer effect 会把“登记 layer → 建消解层 → 建焦点域 → 加滚动锁/背景失活”放在同一初始化事务里。同步步骤与宿主 `flush` 后才执行的背景失活都经过事务守卫；任一步抛错都会把已经取得的资源按逆序全部释放，最后移除 layer。effect 成功后交给机器的也是同一份幂等逆序 cleanup。单项清理失败原样抛出，多项失败则聚合报告，且两者都会继续清完其余项，避免错误层永久占着栈顶。
+
+:::
 
 ## 窗口叠放序
 
@@ -235,7 +262,19 @@ const fallback = createEscapeFallback({
 - 只有栈顶层响应 `Escape`。否则一次按键会关闭整个栈。
 - 四个回调都是可取消的表决票。它们收到的是 `cancelable` 的 `CustomEvent`，`preventDefault()` 即否决本次关闭。四种票均通过 `detail.originalEvent` 保留同一原生事件对象：Escape 为 KeyboardEvent，Pointer 为 PointerEvent，Focus 为 FocusEvent，Interact 为 PointerEvent 或 FocusEvent。DOM 监听与选项回调收到同一张可取消票；specific 与 interact 两票送达后统一检查取消结果。这使表单未填完时按 Esc 先弹出确认这类需求不必绕开组件实现。
 
-DismissableLayer 的监听 Document、`CustomEvent`、微任务与动画帧均取自 `config.scope` 的同一个 Window，`config.layerRegistry.ownerDocument` 也必须逐字指向该 Document。传入的 layer 必须已经登记在这份注册表里；动态 `layer.node()` 可以暂时为 `null`，非空时必须是真实 HTMLElement 且属于该 Document。从其他窗口返回节点会立即报错，不会把一张文档里的交互票派到另一张文档。所属 Window 缺少 `CustomEvent`、`queueMicrotask` 或动画帧能力时创建即失败，不借 ambient 全局。
+传入的 layer 必须已经登记在 `config.layerRegistry` 里，该注册表的 `ownerDocument` 必须就是 `config.scope` 的 Document；动态 `layer.node()` 可以暂时为 `null`，非空时必须是属于该 Document 的真实 HTMLElement。
+
+悬停就出现的层不按栈序挡住下面的层：内联层（`kind: 'inline'`，提示与导航面板）都是这样，别的层悬停就出现时在登记时写 `opensOnHover: true`，库内是悬停卡片、引用的悬停预览、悬停展开的菜单（`openOnHover`，子菜单缺省如此）、悬停展开的浮动按钮（`expandOnHover`）和侧边导航图标栏的浮出面板；点击展开的菜单与浮动按钮不写，照旧按栈序。交互落在这样的层里面时，它只护着它开在其内容里的那一层不消解；落在它外面时它谁也不护，下面的层照常收起。所以下拉开着时按带提示的按钮、按空白处、提示正在播退场，下拉都照常收起；对话框、弹出层里一颗按钮的提示被按中时，外面那层不收，按在层外时提示可见也好、正在播退场也好，提示和它所在的那一层在这一下一并收起，那一层等提示的层先释放（见[层栈](#层栈)）。
+
+Escape 不分层的种类，交给收 Escape 的层里的栈顶，提示在场时先收提示。登记了 `passesEscape` 的层不收 Escape：Escape 越过它交给下面最近一个收 Escape 的层，栈里只剩这类层时照常落到页面的 Escape 兜底。它给只管焦点、自己不消解的层用，库内是[焦点圈定](/components/focus-trap)：放进对话框里时 Escape 仍然关掉对话框。
+
+`createEscapeFallback()` 给空层栈提供 Escape 后备出口，适合覆盖侧栏这类不登记为 Layer 的界面：按键那一刻栈里只要有任意层，这次按键就归层栈，不再调后备出口；同一层栈每次只调最新登记、且 `isEnabled()` 为真的那一个；目标节点在事件到达 Document bubble 前调用 `preventDefault()` 或阻止传播时，全部后备出口都不执行。
+
+触摸在 pointerdown 时只建立关闭候选，随后同目标的 click 才提交层外关闭；滚动、指针取消、长按菜单、新指针、窗口失焦、文档可见性变化或新的键盘交互会取消候选。鼠标与笔仍在 pointerdown 时处理。
+
+::: details 内部细则：派发 Hub、逐层计划与后备出口
+
+DismissableLayer 的监听 Document、`CustomEvent`、微任务与动画帧均取自 `config.scope` 的同一个 Window，`config.layerRegistry.ownerDocument` 也必须逐字指向该 Document。从其他窗口返回节点会立即报错，不会把一张文档里的交互票派到另一张文档。所属 Window 缺少 `CustomEvent`、`queueMicrotask` 或动画帧能力时创建即失败，不借 ambient 全局。
 
 同一 Document 的 DismissableLayer 与 EscapeFallback 共用一套 Hub；每一份显式 LayerRegistry 按对象身份形成独立 lane，不同应用或子树的自定义层栈互不干扰。同一 lane 的同一 Layer 只能有一个消解参与者，重复创建会明确失败。首个租约同步事务化安装四个监听：keydown capture、pointerdown capture、focusin capture、keydown bubble；最后一个租约释放时按 keydown bubble、focus、pointer、keydown capture 的严格逆序完整卸载。DismissableLayer 参与者仍延后一枚所属 Window 的微任务武装，以避开打开浮层的同一次 pointerdown；EscapeFallback 注册后同步生效。派发处理期间最后一个租约离场时，Hub 把卸载延到当前处理阶段的 `finally`，回调里同步建立的新租约会复用原 Hub，不会出现两套 Document 监听。
 
@@ -243,17 +282,17 @@ pointer 与 focus 先为本次事件冻结一份 composed path，并在执行任
 
 `onDismiss` 完整返回后，只有候选 Layer 确实退栈、当前栈严格变成原计划去掉已退栈各层之后剩下的那几层时，pointer/focus 才继续处理下一层。受控组件只发关闭意图却未退栈、关闭开关让 `onDismiss` 原地返回、额外移除旧层或登记新层都会形成屏障。正常逐层退栈产生的新冻结 snapshot 会成为下一候选的 stage token；成功变更后再恢复相同内容仍不能冒充原 snapshot，失败登记由 LayerRegistry 补偿回原对象则保持有效。Escape 每条 lane 只处理事件开始时的原始栈顶，一次按键不会沿栈连续关闭。
 
-上面的屏障按栈序挡住下面每一层：经按下、聚焦打开的层，打开它的那次交互没有收掉下面的层，说明它开在里面，栈序即嵌套。悬停就出现的层不在此列：内联层（`kind: 'inline'`，提示与导航面板）都是这样，别的层悬停就出现时在登记时写 `opensOnHover: true`，库内是悬停卡片、引用的悬停预览、悬停展开的菜单（`openOnHover`，子菜单缺省如此）、悬停展开的浮动按钮（`expandOnHover`）和侧边导航图标栏的浮出面板；点击展开的菜单与浮动按钮不写，照旧按栈序。这样的层压在别的层上面不代表开在那一层里，所以它留在栈里时不按栈序挡住下面每一层。交互落在它里面，或者它还判不了这次交互（没有参与者、尚未武装、节点不在场）时，它只护着它开在其内容里的层：那一层的根节点装着它的根节点或某个分支，按事件那一刻的 DOM 判；被护住的层不消解，被护住的层若经按下、聚焦打开，照旧挡住自己下面每一层，若也是悬停就出现的，把保护再往上传。交互落在它外面时它谁也不护：它否决了层外票、收到关闭意图却没退栈（多半正在播退场），下面的层连同它开在其内容里的那一层照常求值、照常消解，执行时它留在候选之上也不算栈变了。下拉开着时指针移到带提示的按钮上，提示压在下拉上面：按这颗按钮、按空白处、提示正在播退场，下拉都照常收起。对话框、弹出层里一颗按钮的提示被按中时，外面那层不收；按在层外时，提示可见也好、正在播退场也好，提示和它所在的那一层在这一下一并收起，那一层等提示的层先释放（见[层栈](#层栈)）。悬停卡片、悬停展开的菜单与浮动按钮、图标栏的浮出面板同理：下拉开着时它们压在上面，按它们的触发器、按在它们里面、按空白处，下拉都照常收起；它们开在弹出层、对话框里时，按在它们里面外面那层不收。悬停展开的菜单还会把焦点拿进自己的内容里，下面与它无关的下拉在它出现后随即因失焦收起，不用等按下。Escape 不分层的种类，交给收 Escape 的层里的栈顶，提示在场时先收提示。登记了 `passesEscape` 的层不收 Escape：Escape 越过它交给下面最近一个收 Escape 的层，栈里只剩这类层时照常落到页面的 Escape 兜底。它给只管焦点、自己不消解的层用，库内是[焦点圈定](/components/focus-trap)：放进对话框里时 Escape 仍然关掉对话框。
+上面的屏障按栈序挡住下面每一层：经按下、聚焦打开的层，打开它的那次交互没有收掉下面的层，说明它开在里面，栈序即嵌套。悬停就出现的层压在别的层上面不代表开在那一层里，所以它留在栈里时不按栈序挡住下面每一层。交互落在它里面，或者它还判不了这次交互（没有参与者、尚未武装、节点不在场）时，它只护着它开在其内容里的层：那一层的根节点装着它的根节点或某个分支，按事件那一刻的 DOM 判；被护住的层不消解，被护住的层若经按下、聚焦打开，照旧挡住自己下面每一层，若也是悬停就出现的，把保护再往上传。交互落在它外面时它谁也不护：它否决了层外票、收到关闭意图却没退栈（多半正在播退场），下面的层连同它开在其内容里的那一层照常求值、照常消解，执行时它留在候选之上也不算栈变了。悬停卡片、悬停展开的菜单与浮动按钮、图标栏的浮出面板同理：下拉开着时它们压在上面，按它们的触发器、按在它们里面、按空白处，下拉都照常收起；它们开在弹出层、对话框里时，按在它们里面外面那层不收。悬停展开的菜单还会把焦点拿进自己的内容里，下面与它无关的下拉在它出现后随即因失焦收起，不用等按下。
 
-`createEscapeFallback()` 给同一 lane 的空层栈提供 Escape 后备出口，适合覆盖侧栏这类不登记为 Layer 的界面。keydown capture 会在任何 Layer getter、表决或业务回调前冻结全部 lane 的 registry snapshot 与 fallback token snapshot；当时只要 lane 存在任意 Layer，该 lane 的本次按键就已消费，即使 Layer 没有消解参与者、尚未武装、否决关闭或同步退栈，bubble 也不会接着调用 fallback。空栈 lane 从最新 token 反向查找第一个 `isEnabled()` 为真的出口，最新出口已启用后不会再读取更早 getter。
+后备出口的 keydown capture 会在任何 Layer getter、表决或业务回调前冻结全部 lane 的 registry snapshot 与 fallback token snapshot；当时只要 lane 存在任意 Layer，该 lane 的本次按键就已消费，即使 Layer 没有消解参与者、尚未武装、否决关闭或同步退栈，bubble 也不会接着调用 fallback。空栈 lane 从最新 token 反向查找第一个 `isEnabled()` 为真的出口，最新出口已启用后不会再读取更早 getter。
 
-原生事件到达 Document bubble 且在进入 Hub 前尚未 `defaultPrevented` 时，Hub 才复核 capture 计划。registry 必须仍是原来的空快照，fallback 列表、所选 token 以及为选出它而读过的启用状态也必须逐项相同；capture 后新注册或新启用出口、dispose 后重建、Layer 空栈成功经历非空再回空，都会让旧计划失效。失败 Layer 登记补偿回同一 snapshot 则保持有效。同一 lane 每次只调最新的一个出口；它不释放时会持续占位，释放发生在 capture 之后时本键也不会降级到旧出口。不同 registry lane 各自执行一个，某个 fallback 收到同一原生 `KeyboardEvent` 后调用 `preventDefault()` 不会反向否决其他 lane。目标节点在事件到达 Document bubble 前调用 `preventDefault()` 或阻止传播，则全部 fallback 都不执行。
+原生事件到达 Document bubble 且在进入 Hub 前尚未 `defaultPrevented` 时，Hub 才复核 capture 计划。registry 必须仍是原来的空快照，fallback 列表、所选 token 以及为选出它而读过的启用状态也必须逐项相同；capture 后新注册或新启用出口、dispose 后重建、Layer 空栈成功经历非空再回空，都会让旧计划失效。失败 Layer 登记补偿回同一 snapshot 则保持有效。同一 lane 每次只调最新的一个出口；它不释放时会持续占位，释放发生在 capture 之后时本键也不会降级到旧出口。不同 registry lane 各自执行一个，某个 fallback 收到同一原生 `KeyboardEvent` 后调用 `preventDefault()` 不会反向否决其他 lane。
 
-触摸在 pointerdown 时只建立关闭候选，不立即派发层外票；匹配 pointerup 仅标记触摸完成，随后同目标的 click 才提交原计划。鼠标与笔仍在 pointerdown 时处理。触摸提交的 `detail.originalEvent` 仍为最初的 PointerEvent，click 只作为内部完成证据。
-
-滚动、指针取消、长按菜单、新指针、窗口失焦、文档可见性变化或新的键盘交互会取消候选。参与者、节点或 Layer 快照失效也不会提交；等待期间焦点事件不抢先关闭浮层。这条路径没有固定超时或 pointerup 自动关闭，某一 registry lane 校验抛错只剔除该 lane，其余有效 lane 仍可完成 click。
+触摸的 pointerdown 不立即派发层外票，匹配的 pointerup 仅标记触摸完成，click 只作为内部完成证据；提交时 `detail.originalEvent` 仍为最初的 PointerEvent。参与者、节点或 Layer 快照失效也不会提交；等待期间焦点事件不抢先关闭浮层。这条路径没有固定超时或 pointerup 自动关闭，某一 registry lane 校验抛错只剔除该 lane，其余有效 lane 仍可完成 click。
 
 Hub 在每个 capture 或 bubble 处理阶段持有重入锁，getter、表决、关闭或 fallback 回调同步派出的事件不会嵌套进入该阶段；原事件的 target 阶段仍按浏览器传播模型正常运行。某条 registry lane 的 getter、表决或关闭回调抛错时，其他 lane 仍照常执行；末尾单错原样抛出，多错按 lane 与清理的发生顺序聚合，首错保留为 `cause`。Hub 的 add、queue、动画帧和 remove 都使用所属 Window/Document，并遵守先终态、LIFO、全量尝试的清理规则。
+
+:::
 
 ## 焦点域
 
@@ -284,11 +323,15 @@ const scope = createFocusScope({
 
 非栈顶的焦点域自动暂停：上方新开一层时，下层不再争抢焦点。暂停只是把焦点让给上面那些层：焦点进到它们的节点、分支或表面里时下层不拉回；焦点还在本域里（上面只压着一层提示）时，Tab 走到边界照样由本域回绕；落到既不在本域、也不在上面那些层里的地方，陷焦点的域照样拉回。对话框或焦点圈定里最后一个控件带提示时，键盘 Tab 过去提示随聚焦打开，再按 Tab 仍回到第一个，不会走到外面。
 
+公开 `FocusableElement` 统一表示 `Element & HTMLOrSVGElement`，即具备浏览器原生焦点能力的 Element。`getTabbables`、`focusSafely`、`focusFirst`、`focusItem`、Scope 活动元素和 FocusScope 的显式焦点目标都使用这份合同；带 `tabindex` 的 SVG/MathML 不会再被类型系统遗漏。
+
+::: details 内部细则：焦点是否落下、焦点节点被移除后怎么补
+
 `focusSafely` 与 `focusFirst` 按候选节点所属的 Document/ShadowRoot 判断焦点是否真正落下；可选中文本控件通过严格 HTMLElement 身份与 HTML 节点名识别，不依赖可能因 `adoptNode` 改变的 owner realm 构造器。Shadow DOM 中 `document.activeElement` 只指向 host，不能拿它判断内部候选失败或重复聚焦。
 
 陷焦点域会精确观察最后一个域内焦点的 DOM/ShadowRoot 祖先路径。该路径被移除后，FocusScope 等到所属 Window 的下一动画帧再确认最终焦点；只有域仍在场、仍为活动层、`trapped` 仍开启且业务没有把焦点交给其他有效节点时，才恢复到重新插回的原节点、主容器首个有效项或容器。暂停中的域保留待复核资格，重新取得同一 Document 的焦点所有权后再继续；每次尝试候选后都会重新仲裁，候选的 focus 回调同步打开新层时不会再触碰后续节点。动态 `branches`、closed ShadowRoot 与容器替换走同一判据，普通 DOM 删除不会触发补焦。
 
-公开 `FocusableElement` 统一表示 `Element & HTMLOrSVGElement`，即具备浏览器原生焦点能力的 Element。`getTabbables`、`focusSafely`、`focusFirst`、`focusItem`、Scope 活动元素和 FocusScope 的显式焦点目标都使用这份合同；带 `tabindex` 的 SVG/MathML 不会再被类型系统遗漏。
+:::
 
 ## 滚动锁
 
@@ -303,7 +346,7 @@ lock.dispose();
 
 锁定的元素由 `config.scrollRoot()` 明确决定。返回 `null`、`body`、`documentElement` 或 `scrollingElement` 都锁定页面；返回其他节点则锁定该容器，节点必须是所属 Scope Document 内已连接的原生 HTMLElement。内容容器承担滚动时应显式返回它，滚动锁不扫描页面猜测目标。
 
-同一 Document 里同一个规范化目标的并行锁共用一把锁、按句柄计数，最后一个句柄释放时才还原；不同目标各锁各的，比如外层对话框锁着布局里的滚动容器、里层对话框（另一份配置没给 `scrollRoot`）锁页面，两处都锁住，谁先释放都只还原自己那处。每轮保存双轴滚动位置、内联样式值与优先级及原 gutter 变量。初始化失败逆序回滚，最终释放先终结状态再尝试全部恢复；业务期间主动改写的样式不会被旧锁覆盖。页面位置按 instant 行为恢复，避免受 smooth 滚动影响。
+同一 Document 里同一个规范化目标的并行锁共用一把锁、按句柄计数，最后一个句柄释放时才还原；不同目标各锁各的，比如外层对话框锁着布局里的滚动容器、里层对话框（另一份配置没给 `scrollRoot`）锁页面，两处都锁住，谁先释放都只还原自己那处。每轮保存双轴滚动位置、内联样式值与优先级及原 gutter 变量；初始化失败逆序回滚，最终释放先终结状态再尝试全部恢复，业务期间主动改写的样式不会被旧锁覆盖；页面位置按 instant 行为恢复，不受 smooth 滚动影响。
 
 加锁期间让出来的滚动条宽度写在文档根的 `--xh-scroll-lock-gutter` 上，供 `fixed` 定位的元素让位。没让出宽度（页面没有滚动条、或已用 `scrollbar-gutter: stable` 预留）且根上原本没有这个变量时不写——根上的自定义属性一变整份文档都要重算样式，所以消费时总要带 `0px` 回退值：
 
@@ -339,7 +382,11 @@ const restore = hideOutside(() => [
 
 带 `data-xh-inert-exempt` 的元素默认豁免。
 
+::: details 内部细则：跨 Document 的归属
+
 `hideOutside` 的目标、`body`、层栈、`MutationObserver` 与 `aria-hidden` 引用计数严格属于 Scope 的同一 Document。iframe 与画中画窗口中的后挂节点会由各自 Window 的观察器重新计算；从其他窗口 adopt 进来的豁免节点也按当前所属 Document 生效。注册表或目标来自其他 Document、Document 没有活动 Window 或宿主缺少 `MutationObserver` 时会明确报错，初始化失败不会留下半施加的 `aria-hidden`。
+
+:::
 
 ## 页面级播报
 
@@ -359,7 +406,15 @@ announce("属性面板已移到左栏第 2 位");
 
 ## 进出场
 
-退场动画与何时可以从 DOM 移除是一对常见问题。`presence` 用租约解决：
+退场动画与何时可以从 DOM 移除是一对常见问题。`presence` 用租约解决。工厂 `createPresence` 不在主入口里，从子入口 `@xihan-ui/core/presence` 引入（CSS 退场探测 `attachCssExit` 也在这里）：
+
+```ts
+import { createPresence } from "@xihan-ui/core/presence";
+
+const presence = createPresence({ open: false, onRenderedChange: rendered => render(rendered) });
+```
+
+返回的句柄：
 
 ```ts
 export interface PresenceHandle {
@@ -369,6 +424,7 @@ export interface PresenceHandle {
 
   claimExit: (reason: string) => ExitLease;
   onBeforeExit: (fn: () => void) => Cleanup;
+  onReenter: (fn: () => void) => Cleanup; // 退场中途重开时，把进场起点接到退场的当前值上
   onExitComplete: (fn: () => void) => Cleanup;
   update: (open: boolean) => void;
 }
@@ -482,6 +538,14 @@ const anchor = {
 
 矩形是视口坐标，宽度为 0，纵向是光标所在那一行，已经扣掉输入框自己的滚动。`<textarea>` 按当前内容宽度软换行，`<input>` 取内容区里居中的那一行。元素不在文档里或没有布局时返回 `null`。
 
+## 跨 realm 的 Scope
+
+- `createScope(node, idGenerator)` 从节点自己的 realm 解析 Document、Window、Element 与 ShadowRoot：iframe 或画中画窗口里的节点，`getRootNode/getDoc/getWin` 不会因当前页面的 `instanceof` 失败而回落到主文档。`createScope(null, ...)` 保持惰性，便于在 CSR 中先建机器再挂载节点；它始终表示 ambient Document，之后不改绑节点。
+- 把这份 Scope 传给 `createRuntimeConfig({ scope })`，缺省 locale、LayerRegistry、PortalRoot 与 reduced-motion 都从它的 document / window 派生；显式传入的配置仍然优先，其中 `layerRegistry.ownerDocument` 必须与 Scope Document 相同。
+- 没有全局 DOM 时必须提供有效 Scope，只给 layer registry 不会得到伪造的空 Scope；Scope 的 root、document、window 必须互相归属。惰性 Scope 真正读取 root / document 时宿主没有有效全局 Document，抛出稳定错误。
+- 离线 Document 的节点：`getDoc()` 返回该 Document，`getWin()` 明确失败，不借用主页面 Window 伪造混合 realm；离线 Document 没有活动 Window 时直接报错。
+- 缺省 PortalRoot 惰性创建，Document 没有 body 时给出明确错误；要别的容器就显式传 `portalContainer`。
+
 ## 其他
 
 | 导出 | 用途 |
@@ -495,5 +559,4 @@ const anchor = {
 
 - [浮层定位](./position)：坐标的计算方式
 - [状态机运行时](./machine)：这些原语在 effects 中装配
-
 - [无障碍与键盘规格](./a11y)：焦点与按键的规格出处

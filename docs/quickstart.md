@@ -39,42 +39,7 @@ import {
 
 ### 受控与非受控
 
-值类组件一律受控优先：传入受控属性时以外部为准，只传 `default*` 时由组件自行持有。
-
-```vue
-<script setup lang="ts">
-import { XhAccordionContent, XhAccordionHeader, XhAccordionItem, XhAccordionRoot, XhAccordionTrigger, XhSwitch } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const panels = ref<string[]>(["a"]);
-const wifi = ref(true);
-</script>
-
-<template>
-  <!-- 受控：v-model 双向绑定 -->
-  <XhSwitch v-model:checked="wifi" aria-label="Wi-Fi" />
-
-  <!-- 非受控：只给初值，之后由组件持有 -->
-  <XhSwitch :default-checked="false" aria-label="非受控开关" />
-
-  <XhAccordionRoot v-model:value="panels" multiple>
-    <XhAccordionItem value="a">
-      <XhAccordionHeader>
-        <XhAccordionTrigger>第一节</XhAccordionTrigger>
-      </XhAccordionHeader>
-      <XhAccordionContent>展开集合是 string[]，multiple 时可并存。</XhAccordionContent>
-    </XhAccordionItem>
-    <XhAccordionItem value="b">
-      <XhAccordionHeader>
-        <XhAccordionTrigger>第二节</XhAccordionTrigger>
-      </XhAccordionHeader>
-      <XhAccordionContent>方向键只在标题间移动焦点，不进入内容区。</XhAccordionContent>
-    </XhAccordionItem>
-  </XhAccordionRoot>
-</template>
-```
-
-每个值类组件同时发出两个事件：`value-change` 携带完整明细对象（如 `{ value }`），`update:value` 携带裸值供 `v-model` 使用。
+传入受控属性（如 `v-model:checked`）时以外部为准，只传 `default*` 时由组件自行持有；值类组件同时发出携带明细对象的 `value-change` 与供 `v-model` 使用的 `update:value`。规则见[三端共同约定 · 受控与非受控](./adapters/#受控与非受控)，Vue 的写法见 [Vue 适配器 · 事件与 v-model](./adapters/vue#事件与-v-model)。
 
 ## 用法二：React 组件
 
@@ -173,29 +138,7 @@ defineXhElements();
 
 ## 接入主题
 
-四种用法共用同一套八轴视觉环境运行时，皮肤与 Portal 都消费同一组已解析属性：
-
-```ts
-import { createVisualEnvironmentController } from "@xihan-ui/tokens/runtime";
-
-const visual = createVisualEnvironmentController({
-  root: document.documentElement,
-  storageKey: "app-visual-environment",
-  onStorageError: detail => console.error("视觉偏好持久化失败", detail),
-  initial: { mode: "system", density: "comfortable", motion: "system", transparency: "system" },
-});
-
-// 切到深色
-visual.setPreference({ mode: "dark" });
-
-// 跟随系统
-visual.setPreference({ mode: "system" });
-
-// 订阅已定型的状态
-visual.subscribe(state => console.log(state.mode, state.density, state.motion, state.transparency));
-```
-
-八个维度分别是色彩模式、品牌、密度、书写方向、对比度、动效、透明度与材质，详见[设计令牌与主题](./guide/theme)。
+四种用法共用同一套八轴视觉环境运行时（色彩模式、品牌、密度、书写方向、对比度、动效、透明度与材质），皮肤与 Portal 都消费同一组已解析属性。在应用入口建一台 `createVisualEnvironmentController`，之后用 `setPreference` 切换、`subscribe` 订阅，完整写法见[设计令牌与主题 · 八轴视觉环境运行时](./guide/theme#八轴视觉环境运行时)。
 
 ## 延伸阅读
 
@@ -205,4 +148,4 @@ visual.subscribe(state => console.log(state.mode, state.density, state.motion, s
 2. [状态机运行时](./guide/machine)：组件行为的定义方式与受控值的接入；
 3. [connect 与属性产出](./guide/connect)：从状态机状态到 DOM 属性。
 
-按需求继续阅读：[Vue 适配器](./adapters/vue)、[React 适配器](./adapters/react)、[Web Components 适配器](./adapters/web-components)、[皮肤与样式分层](./guide/styling)、[无障碍与键盘规格](./guide/a11y)。
+按需求继续阅读：[三端共同约定](./adapters/)、[Vue 适配器](./adapters/vue)、[React 适配器](./adapters/react)、[Web Components 适配器](./adapters/web-components)、[皮肤与样式分层](./guide/styling)、[无障碍与键盘规格](./guide/a11y)。

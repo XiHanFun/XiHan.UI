@@ -19,7 +19,15 @@
 
 ## 四档材质
 
-每档提供同名九项令牌：`bg`、`backdrop`、`border`、`highlight`、`shadow`、`separator`、`fg`、`fg-muted`、`focus-surface`。
+每档提供同名九项令牌：
+
+| 后缀 | 用途 |
+| --- | --- |
+| `bg` / `backdrop` | 底色 / 背景滤镜 |
+| `border` / `highlight` / `shadow` | 外边界、顶部高光与投影 |
+| `separator` | 内部分段线 |
+| `fg` / `fg-muted` | 正文与次要文字，始终不透明 |
+| `focus-surface` | 键盘聚焦时铺在焦点环内侧的实体隔离底 |
 
 | 档 | 令牌 | 给谁 | 光学 |
 | --- | --- | --- | --- |
@@ -28,7 +36,7 @@
 | M2 frosted | `--xh-material-frosted-*` | 短列表、菜单、tooltip、气泡等锚定瞬态浮层 | 实体 surface 底，无背景模糊，1px border-default 描边，md 档投影，无顶光 |
 | M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Notification 等模态与强反馈面，必有 1px 描边 | 实体 surface 底，无背景模糊，lg 档投影 |
 
-另有两个由海拔组成的叠加档：raised = solid 描边 + solid 底 + `--xh-elevation-raised`（Card 与可抬起 / 可拖起部件）；floating = solid 底 + `--xh-border-default` + `--xh-elevation-floating`（含网格或多列的锚定面板）。它们没有 `--xh-material-*` 令牌。
+另有两个由海拔组成的叠加档：raised = solid 描边 + solid 底 + `--xh-elevation-raised`（Card 与可抬起 / 可拖起部件）；floating = solid 底 + `--xh-border-default` + `--xh-elevation-floating`（含网格或多列的锚定面板）。它们没有 `--xh-material-*` 令牌。M5 liquid（`--xh-material-liquid-*`）只在 `data-material="liquid"` 下出现，给浮在内容之上的导航层，取值与接法见[设计令牌与主题 · 液态材质](/guide/theme#液态材质)。
 
 ## frosted 浮层面
 
@@ -39,7 +47,7 @@
 - 背景滤镜与顶光两条通道保留给主题：要磨砂透景时，给 `--xh-material-frosted-bg` 半透明底、给 backdrop 一档 blur（不高于 16px，saturate 不高于 1.08）、给 highlight 不超过 1px 的内侧顶光；减少透明度、强制色与打印下这些通道一律退回实体面。开了透景的主题不把 `backdrop-filter` 放在页面根、大滚动区或重叠的多层表面，不对模糊半径做动画。
 - 没有 glass 材质，也没有任何兼容别名。
 
-Tooltip 不反白，与 Popover 同一副浮层面：底、字、边取 frosted 材质，再用三支 compact 配方（`--xh-material-frosted-compact-alpha / -backdrop / -shadow`，缺省不透明、无模糊、md 档投影）组合；写了 `tone` 才换语气实底，边改取 on 色 20% 拼色承担 1px 可见边界。
+Tooltip 不反白，与 Popover 同一副浮层面：底、字、边取 frosted 材质，再用三支 compact 配方（`--xh-material-frosted-compact-alpha / -backdrop / -shadow`，缺省不透明、无模糊、md 档投影）组合；写了 `tone` 才换语气实底，边改取 on 色 20% 拼色承担 1px 可见边界（中性描边压在彩色底上看不见）。高对比、强制颜色和打印去掉投影；减少透明时保留小投影表达浮层位置。组件只经这三支配方消费光学参数，不直接选择 alpha 或 blur 原语。
 
 ## 深色档的投影
 
@@ -52,4 +60,4 @@ Tooltip 不反白，与 Popover 同一副浮层面：底、字、边取 frosted 
 ## 相关
 
 - [形状与边界](/design/shape) · [暗黑模式](/design/dark)
-- 指南：[设计令牌与主题 · 材质配方](/guide/theme#材质配方)
+- 指南：[设计令牌与主题 · 材质配方](/guide/theme#材质配方)：frosted 覆盖槽与液态材质的接线

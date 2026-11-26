@@ -118,9 +118,8 @@ XiHan.UI/
 
 | 位置 | 选型 |
 | --- | --- |
-| 语言 | TypeScript，ESM only（不提供 CJS） |
-| 运行时要求（消费端） | Node ≥ 18；浏览器为 2024 年常青版（皮肤用了 `@layer`、`color-mix`、`oklch`） |
-| 运行时要求（开发本仓） | Node ≥ 24、pnpm ≥ 11 |
+| 语言 | TypeScript |
+| 支持面 | Node、模块格式与浏览器硬底线见[版本与兼容性政策 · 支持面](./guide/versioning#八、支持面) |
 | 构建 | tsdown（库包）+ turbo（任务编排） |
 | 样式 | 原生 CSS，`@layer` 分层，`oklch` 色彩空间，无预处理器 |
 | 测试 | vitest（jsdom）+ Playwright（真实 Chromium） |
@@ -129,5 +128,5 @@ XiHan.UI/
 ## 下一步
 
 - [安装与接入](./installation)：完成接入并运行
-- [快速上手](./quickstart)：三种用法的最小示例
+- [快速上手](./quickstart)：四种写法的最小示例
 - [解剖与部件契约](./guide/anatomy)：`data-scope` / `data-part` 约定

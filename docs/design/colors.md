@@ -65,7 +65,7 @@ const dispose = registerBrand("ocean", "oklch(0.546 0.16 215)");
 document.documentElement.dataset.brand = "ocean";
 ```
 
-`registerBrand` 把 `[data-brand='ocean']` 取值块注进文档；不透明的任何 CSS 颜色都能当种子，落在 sRGB 色域外的彩度逐档收进来。切换品牌只换 `data-brand`，品牌淡底（12% / 20% / 28% 拼色）、焦点环、指示条全部跟着走。运行时 API 见 [皮肤与样式分层 · 切换品牌色](/guide/styling#切换品牌色)。
+`registerBrand` 把 `[data-brand='ocean']` 取值块注进文档；不透明的任何 CSS 颜色都能当种子，落在 sRGB 色域外的彩度逐档收进来。切换品牌只换 `data-brand`，品牌淡底（12% / 20% / 28% 拼色）、焦点环、指示条全部跟着走。运行时 API 见 [设计令牌与主题 · 切换品牌色](/guide/theme#切换品牌色)。
 
 ## 功能色
 

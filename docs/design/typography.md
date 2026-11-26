@@ -9,7 +9,7 @@
   :notes="{ '--xh-font-family-mono': '代码、密钥、哈希、快捷键：Kbd、Clipboard、CodeView、JsonViewer、Typography 的 code' }"
 />
 
-正文字族由宿主决定。文档站用的是 Inter 与系统无衬线字，那是文档站的选择，不是库的默认。中后台产品建议用系统字栈（`-apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif` 一类），数字密集的表格与统计面板打开 `font-variant-numeric: tabular-nums`——NumberField、Statistic、Timer、Timestamp、Clipboard、分段日期与时间框已自带。
+正文字族由宿主决定。文档站用的是 Inter 与系统无衬线字，那是文档站的选择，不是库的默认；库备的缺省无衬线栈 `--xh-font-family-sans` 只经可选入口落到页面根上，见[缺省字族](/guide/theme#缺省字族)。中后台产品建议用系统字栈（`-apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif` 一类），数字密集的表格与统计面板打开 `font-variant-numeric: tabular-nums`——NumberField、Statistic、Timer、Timestamp、Clipboard、分段日期与时间框已自带。
 
 ## 字号阶梯
 
@@ -80,4 +80,4 @@
 ## 相关
 
 - [布局](/design/layout) · [图标](/design/icons)
-- 指南：[设计令牌与主题 · 排版角色](/guide/theme#排版角色) · [国际化](/guide/i18n)
+- 指南：[设计令牌与主题 · 缺省字族](/guide/theme#缺省字族) · [国际化](/guide/i18n)

@@ -36,7 +36,6 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 
 依赖只从高层指向低层，层号见上表。同层之间只有 `core → motion` 一条横向依赖；三个适配器（`vue`、`react`、`web-components`）同在第 4 层，依赖完全相同，互不依赖；`designer-shell` 在第 5 层，只建在 `web-components` 之上。
 
-
 五个包可以单独使用，不必装适配器：
 
 - `@xihan-ui/tokens`：只需要设计令牌与主题运行时，不需要组件（它只带上 `core`）；
@@ -89,12 +88,11 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 
 | 项 | 值 |
 | --- | --- |
-| 模块格式 | ESM only，不提供 CJS |
-| Node | `>= 18` |
+| 支持面 | Node、模块格式与浏览器硬底线见[版本与兼容性政策 · 支持面](./guide/versioning#八、支持面) |
 | 类型 | 每个入口一份 `.d.ts` |
 | 副作用 | 全部 `sideEffects: false`，`styles`、`tokens/tokens.css` 与 `designer-shell/style.css` 除外 |
 
-`pnpm gate:publish` 逐包运行 publint 与 attw，按 ESM-only 的支持面校验 exports 条件与类型解析（`node16-from-ESM` 与 `bundler` 两列）。
+发布前逐包按同一支持面校验 exports 条件与类型解析（`node16-from-ESM` 与 `bundler` 两列）。
 
 ## 子路径导出
 
@@ -102,22 +100,21 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 
 | 包 | 子路径 |
 | --- | --- |
-| `@xihan-ui/core` | 运行时底座：anatomy、`mergeProps`、`normalizeProps`、Scope、id；`createMachine` 状态机运行时；dismissable layer、焦点域、滚动锁、进出场、集合、typeahead | `./metadata` `./skin-check` `./vite` `./vanilla` `./presence` `./json`（JSON 值的类型与纯函数，零依赖） `./options`（选项与选项树的结构校验，零依赖） `./hotkey`（快捷键的平台写法与按键命中，零依赖） `./url`（图片与链接地址的安全判定，零依赖） `./clipboard`（往系统剪贴板写文本，零依赖） `./template`（文本模板，占位只写数据路径） `./rich-text`（富文本模型、HTML 白名单解析与检查，零依赖） `./rich-text-dom`（按富文本模型生成 DOM） `./svg-export`（SVG 克隆成独立文件、序列化与栅格化成 PNG，只在浏览器里用） `./color`（颜色换算：十六进制、RGB、HSV、HSL、OKLCH 互转，CSS 颜色写法的解析与写出，零依赖） `./date`（不带时区的日期值、公历运算、按时区读写时刻与按地区的周） `./visual-environment`（八轴视觉环境的类型与解析） |
-| `@xihan-ui/designer-kit` | 画布式设计器的内核：撤销重做历史栈、按路径的编辑操作、视口平移缩放、对齐吸附与参考线、对齐分布与框选、文档内唯一 id，见[设计器内核](/runtime/designer-kit) | `./field-inference`（从 JSON 样例与 JSON Schema 推断字段树、合并字段） `./properties`（属性描述、显示条件、取值检查与自定义编辑器接口） `./schema`（结构校验的问题形状与读取器） |
-| `@xihan-ui/designer-shell` | 画布式设计器共用的界面零件，只出 Web Components：属性面板、标尺与参考线、变换覆盖层、物料面板与拖放、问题列表、小地图与外框，见[设计器零件](/runtime/designer-shell) | `./locale`（零件的中文文案） `./language`（按语言取组件库与零件的同语言包并成一份配置） `./style.css`（零件的样式） `./style.unlayered.css`（无层版样式） |
-| `@xihan-ui/tokens` | 设计令牌（源自 DTCG）与主题运行时（明暗 / 品牌 / 密度 / 对比度 / 书写方向） | `./runtime` `./tokens.css` `./tokens.json` |
-| `@xihan-ui/icons` | 首方图标集：`IconRecord` 结构化记录，渲染端逐节点建元素，运行期不解析 SVG 字符串 | `./codegen` |
-| `@xihan-ui/viz` | 图表引擎：比例尺、刻度、形状、坐标轴布局、拾取与降采样，全部是纯函数，自研，零依赖 | `./hierarchy`（层级布局：层级节点、组树、矩形树图、分区与圆堆积） `./sankey`（桑基布局） `./graph`（关系图布局） `./columns`（列式数据仓、降采样与流式追加） `./canvas`（画布绘制的原语） |
-| `@xihan-ui/headless` | 全部组件的 anatomy + machine + `connect`，无样式、无框架 | `./locale`（内建语言包） |
-| `@xihan-ui/vue` | Vue 适配器 | `./backgrounds` `./behavior` `./locale` `./plugin`（全量注册与全局组件类型） `./resolver`（unplugin-vue-components 的组件解析器） `./sound` `./nuxt`（Nuxt 模块） |
-| `@xihan-ui/react` | React 适配器 | `./backgrounds` `./behavior` `./locale` `./sound` |
-| `@xihan-ui/web-components` | Web Components 适配器（自研响应式基类，无第三方运行时依赖） | `./define` `./backgrounds` `./locale` `./services` `./authoring`（第三方编写元素用的基类与辅助件） `./custom-elements.json` |
-| `@xihan-ui/styles` | 默认皮肤，按 `@layer` 分层的 CSS | 每份皮肤一条 CSS，共 160 条（148 份组件皮肤 + 12 份共享层），另有 `./index.css`（主入口，生成的扁平有层文件，家族只内联一次）与 `./index.unlayered.css` 两个整包入口、`./global.css`（可选的全局入口）、`./vite`（按用到的组件自动注入皮肤的 Vite 插件）、`./component-tokens` 与 `./components.tokens.json`（组件覆盖槽的清单） |
+| `@xihan-ui/core` | `./metadata` `./skin-check` `./vite` `./vanilla` `./presence` `./json`（JSON 值的类型与纯函数，零依赖） `./options`（选项与选项树的结构校验，零依赖） `./hotkey`（快捷键的平台写法与按键命中，零依赖） `./url`（图片与链接地址的安全判定，零依赖） `./clipboard`（往系统剪贴板写文本，零依赖） `./template`（文本模板，占位只写数据路径） `./rich-text`（富文本模型、HTML 白名单解析与检查，零依赖） `./rich-text-dom`（按富文本模型生成 DOM） `./svg-export`（SVG 克隆成独立文件、序列化与栅格化成 PNG，只在浏览器里用） `./color`（颜色换算：十六进制、RGB、HSV、HSL、OKLCH 互转，CSS 颜色写法的解析与写出，零依赖） `./date`（不带时区的日期值、公历运算、按时区读写时刻与按地区的周） `./visual-environment`（八轴视觉环境的类型与解析） |
+| `@xihan-ui/designer-kit` | `./field-inference`（从 JSON 样例与 JSON Schema 推断字段树、合并字段） `./properties`（属性描述、显示条件、取值检查与自定义编辑器接口） `./schema`（结构校验的问题形状与读取器） |
+| `@xihan-ui/designer-shell` | `./locale`（零件的中文文案） `./language`（按语言取组件库与零件的同语言包并成一份配置） `./style.css`（零件的样式） `./style.unlayered.css`（无层版样式） |
+| `@xihan-ui/tokens` | `./runtime` `./tokens.css` `./tokens.json` |
+| `@xihan-ui/icons` | `./codegen` |
+| `@xihan-ui/viz` | `./hierarchy`（层级布局：层级节点、组树、矩形树图、分区与圆堆积） `./sankey`（桑基布局） `./graph`（关系图布局） `./columns`（列式数据仓、降采样与流式追加） `./canvas`（画布绘制的原语） |
+| `@xihan-ui/headless` | `./locale`（内建语言包） |
+| `@xihan-ui/vue` | `./backgrounds` `./behavior` `./locale` `./plugin`（全量注册与全局组件类型） `./resolver`（unplugin-vue-components 的组件解析器） `./sound` `./nuxt`（Nuxt 模块） |
+| `@xihan-ui/react` | `./backgrounds` `./behavior` `./locale` `./sound` |
+| `@xihan-ui/web-components` | `./define` `./backgrounds` `./locale` `./services` `./authoring`（第三方编写元素用的基类与辅助件） `./custom-elements.json` |
+| `@xihan-ui/styles` | 每份皮肤一条 CSS，共 160 条（148 份组件皮肤 + 12 份共享层），另有 `./index.css`（主入口，生成的扁平有层文件，家族只内联一次）与 `./index.unlayered.css` 两个整包入口、`./global.css`（可选的全局入口）、`./vite`（按用到的组件自动注入皮肤的 Vite 插件）、`./component-tokens` 与 `./components.tokens.json`（组件覆盖槽的清单） |
 
 其余十二个包（`motion` / `pointer` / `position` / `code-highlight` / `animations` / `backgrounds` / `chat-stream` / `markdown` / `sound` / `cli` / `expression` / `xlsx`）只有主入口。
 
 组件没有单独的子路径导出：按需引入依靠 tree-shaking，不依靠手写路径。
-
 
 ## 相关
 

@@ -40,5 +40,5 @@ XiHan.UI 是一套框架无关的组件库：状态机与无障碍逻辑位于�
 - 同生态的另外两个仓库：[XiHan.Framework 开发框架](https://framework.docs.xihanfun.com/)、[XiHan.BasicApp 基础应用](https://basicapp.docs.xihanfun.com/)
 
 ::: tip 与 XiHan.BasicApp 的关系
-XiHan.BasicApp 的前端构建于 XiHan.UI 之上：自 BasicApp v4.0.0 起整体使用本库重建，是组件库在真实业务中的第一个大体量消费方。BasicApp 的前端约定见[基础应用前端手册](https://basicapp.docs.xihanfun.com/frontend/introduction)。
+XiHan.BasicApp 的前端构建于 XiHan.UI 之上：自 BasicApp v4.0.0 起整体使用本库重建，是组件库在真实业务中的第一个大体量消费方，要看组件库在真实业务里怎么用，可以读它的前端源码。BasicApp 的前端约定见[基础应用前端手册](https://basicapp.docs.xihanfun.com/frontend/introduction)。
 :::
