@@ -46,7 +46,7 @@
               "name": "exits",
               "privacy": "private",
               "readonly": true,
-              "default": "new Map<string, OverlayExit>()"
+              "default": "new Map<string, ExitGate>()"
             },
             {
               "kind": "field",
@@ -8123,7 +8123,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
@@ -11992,7 +11992,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null"
@@ -13339,7 +13339,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
@@ -16116,7 +16116,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
@@ -17269,7 +17269,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
@@ -18615,7 +18615,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
@@ -20345,7 +20345,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
@@ -22040,7 +22040,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
@@ -23686,7 +23686,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null"
@@ -23752,7 +23752,7 @@
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "OverlayExit"
+                  "text": "ExitGate"
                 }
               },
               "parameters": [
@@ -25426,7 +25426,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null"
@@ -25492,7 +25492,7 @@
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "OverlayExit"
+                  "text": "ExitGate"
                 }
               },
               "parameters": [
@@ -27239,7 +27239,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null"
@@ -32029,7 +32029,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
@@ -38441,7 +38441,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
@@ -40122,7 +40122,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null"
@@ -40197,7 +40197,7 @@
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "OverlayExit"
+                  "text": "ExitGate"
                 }
               },
               "description": "退场闸门建一次；presence 不是响应式 cell，退场结束要显式排一次更新才轮得到收起。"
@@ -45785,7 +45785,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
@@ -46789,7 +46789,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
@@ -47414,7 +47414,7 @@
               "name": "exits",
               "privacy": "private",
               "readonly": true,
-              "default": "new Map<HTMLElement, { value: string, gate: OverlayExit }>()",
+              "default": "new Map<HTMLElement, { value: string, gate: ExitGate }>()",
               "description": "逐个 content 一份退场闸门：一个菜单一份，它们各开各的。"
             },
             {
@@ -48761,7 +48761,7 @@
               "name": "exits",
               "privacy": "private",
               "readonly": true,
-              "default": "new Map<HTMLElement, { value: string, gate: OverlayExit }>()",
+              "default": "new Map<HTMLElement, { value: string, gate: ExitGate }>()",
               "description": "逐个 content 一份退场闸门：一个菜单一份，它们各开各的。"
             },
             {
@@ -49024,7 +49024,7 @@
                 {
                   "name": "presence",
                   "type": {
-                    "text": "OverlayExit['presence']"
+                    "text": "ExitGate['presence']"
                   }
                 },
                 {
@@ -49055,7 +49055,7 @@
                 {
                   "name": "entry",
                   "type": {
-                    "text": "{ value: string, gate: OverlayExit }"
+                    "text": "{ value: string, gate: ExitGate }"
                   }
                 }
               ]
@@ -51635,7 +51635,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
@@ -51706,7 +51706,7 @@
               "kind": "field",
               "name": "pageSizeExit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
@@ -51742,7 +51742,7 @@
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "OverlayExit"
+                  "text": "ExitGate"
                 }
               },
               "parameters": [
@@ -51761,7 +51761,7 @@
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "OverlayExit"
+                  "text": "ExitGate"
                 }
               },
               "parameters": [
@@ -54586,7 +54586,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
@@ -54730,7 +54730,7 @@
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "OverlayExit"
+                  "text": "ExitGate"
                 }
               },
               "parameters": [
@@ -55374,7 +55374,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
@@ -55451,7 +55451,7 @@
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "OverlayExit"
+                  "text": "ExitGate"
                 }
               },
               "parameters": [
@@ -55803,7 +55803,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null"
@@ -59978,7 +59978,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null"
@@ -62736,7 +62736,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
@@ -62901,7 +62901,7 @@
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "OverlayExit"
+                  "text": "ExitGate"
                 }
               },
               "parameters": [
@@ -64163,7 +64163,7 @@
               "name": "exits",
               "privacy": "private",
               "readonly": true,
-              "default": "new Map<HTMLElement, { value: string, gate: OverlayExit }>()",
+              "default": "new Map<HTMLElement, { value: string, gate: ExitGate }>()",
               "description": "每个弹出面板的定位层一份退场闸门：退场动画播完才真收。"
             },
             {
@@ -64201,7 +64201,7 @@
               "kind": "field",
               "name": "hintExit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
@@ -64415,7 +64415,7 @@
                 {
                   "name": "presence",
                   "type": {
-                    "text": "OverlayExit['presence']"
+                    "text": "ExitGate['presence']"
                   }
                 },
                 {
@@ -64446,7 +64446,7 @@
                 {
                   "name": "entry",
                   "type": {
-                    "text": "{ value: string, gate: OverlayExit }"
+                    "text": "{ value: string, gate: ExitGate }"
                   }
                 }
               ]
@@ -74950,7 +74950,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
@@ -76201,7 +76201,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
@@ -78832,7 +78832,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null"
@@ -79695,7 +79695,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
@@ -80708,7 +80708,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
@@ -80801,7 +80801,7 @@
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "OverlayExit"
+                  "text": "ExitGate"
                 }
               },
               "description": "退场闸门建立一次，并在状态机挂载前把同一份 Presence 交给 Headless。"
@@ -82647,7 +82647,7 @@
               "kind": "field",
               "name": "exit",
               "type": {
-                "text": "OverlayExit | null"
+                "text": "ExitGate | null"
               },
               "privacy": "private",
               "default": "null",
