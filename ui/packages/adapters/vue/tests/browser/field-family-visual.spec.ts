@@ -119,8 +119,14 @@ function resolveColor(expression: string): string {
   return value
 }
 
-async function settle(): Promise<void> {
+/**
+ * 等换面过渡播完：先等一拍让过渡起来，再等元素上还在跑的动画结束。
+ * 只靠固定时长不够：CI 负载重时会量到过渡中途的颜色（oklab 记法的中间值）。
+ */
+async function settle(el?: Element): Promise<void> {
   await new Promise<void>(resolve => setTimeout(resolve, 180))
+  if (el)
+    await Promise.allSettled(el.getAnimations().map(animation => animation.finished))
 }
 
 afterEach(async () => {
@@ -155,7 +161,7 @@ describe('字段族默认视觉盒', () => {
     mount()
     for (const family of FAMILIES) {
       await userEvent.hover(control(family))
-      await settle()
+      await settle(control(family))
       const value = exterior(control(family))
       expect(value.background, family).toBe(resolveColor('var(--xh-bg-field)'))
       expect(value.borderColor, family).toBe(resolveColor('var(--xh-border-strong)'))
@@ -170,7 +176,7 @@ describe('字段族默认视觉盒', () => {
     for (const family of FAMILIES) {
       focusTarget(family).focus()
       animated.push(control(family).getAnimations().some(animation => animation.playState === 'running'))
-      await settle()
+      await settle(control(family))
       const style = getComputedStyle(control(family))
       // 焦点由描边换色与底色差标出：两样都在过渡清单里，换面照常淡变
       expect(style.transitionProperty).toContain('border-color')
