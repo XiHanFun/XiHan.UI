@@ -180,6 +180,8 @@ export interface PaginationApi<T extends PropTypes = PropTypes> {
   pageSize: number
   /** 可选的每页条数档位，默认 [10, 20, 50, 100]；已按升序去重并夹到至少 1。 */
   pageSizeOptions: number[]
+  /** 作者显式给了 pageSizeOptions：标准结构据此铺每页条数控制器，没给就只用缺省档位、不铺。 */
+  pageSizeSelectable: boolean
   count: number
   totalPages: number
   /** 页码序列，作者按它渲染 item 与 ellipsis-trigger。 */

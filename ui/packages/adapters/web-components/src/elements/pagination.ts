@@ -97,7 +97,8 @@ export class XhPaginationElement extends XhPortalHostElement {
   static override partContract = { anatomy: paginationAnatomy, meta: paginationMeta }
 
   // 不写部件（或只写 root）时照 paginationStructure 生成上一页、页码序列与下一页，翻页后按值复用节点；
-  // 首末页钮、跳页框、每页条数与省略位的展开面板不在标准结构里，要用时整棵手写
+  // 给了 pageSizeOptions 时最前面再铺每页条数的挂载点，里头的下拉照旧由元素自己建；
+  // 首末页钮、跳页框与省略位的展开面板不在标准结构里，要用时整棵手写
   static override structure: ElementStructure<XhPaginationElement> = {
     rootTag: 'nav',
     build: (host) => {

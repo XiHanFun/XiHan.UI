@@ -102,6 +102,7 @@ export function connectPagination<T extends PropTypes>(
     page,
     pageSize,
     pageSizeOptions,
+    pageSizeSelectable: prop('pageSizeOptions') !== undefined,
     count,
     totalPages,
     pages: buildPageSequence(page, totalPages, siblingCount),

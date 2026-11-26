@@ -83,10 +83,10 @@ size 适配不同的界面密度；disabled 让数据加载期间整组不可操
 
 ### 组合
 
-- 不写结构时照标准结构铺：上一页、按当前页折叠后的页码序列（被折叠的一段是省略位）、下一页，翻页后按页码复用节点。Vue / React 不写默认插槽与 Web Components 不写部件（或只写 root）时生成的节点出自同一个结构函数；翻页钮与省略位不放内容，字形由皮肤画。下面这些按需部件不在标准结构里，要用时整棵手写。
+- 不写结构时照标准结构铺：给了 `pageSizeOptions` 时最前面先铺每页条数控制器，然后是上一页、按当前页折叠后的页码序列（被折叠的一段是省略位）、下一页，翻页后按页码复用节点。只用缺省档位、没写 `pageSizeOptions` 时不铺它。Vue / React 不写默认插槽与 Web Components 不写部件（或只写 root）时生成的节点出自同一个结构函数；翻页钮与省略位不放内容，字形由皮肤画。下面这些按需部件不在标准结构里，要用时整棵手写。
 - `summary` 显示当前结果范围。
 - `jumper` 用于输入页码并按 Enter 跳转。
-- `page-size-select` 提供每页数量选择。
+- 手写结构时 `page-size-select` 提供每页数量选择，放在哪由作者定。
 - `first-trigger` / `last-trigger` 按需放在 `prev-trigger` 之前、`next-trigger` 之后，一步跳到首页 / 末页；到头那一侧原生 disabled。不写内容时皮肤画双箭头。
 
 ### 最佳实践
@@ -194,6 +194,7 @@ size 适配不同的界面密度；disabled 让数据加载期间整组不可操
 | `page` | `number` | 当前页，恒在 [1, max(totalPages, 1)] 内。 |
 | `pageSize` | `number` |  |
 | `pageSizeOptions` | `number[]` | 可选的每页条数档位，默认 [10, 20, 50, 100]；已按升序去重并夹到至少 1。 |
+| `pageSizeSelectable` | `boolean` | 作者显式给了 pageSizeOptions：标准结构据此铺每页条数控制器，没给就只用缺省档位、不铺。 |
 | `count` | `number` |  |
 | `totalPages` | `number` |  |
 | `pages` | `PaginationPage[]` | 页码序列，作者按它渲染 item 与 ellipsis-trigger。 |

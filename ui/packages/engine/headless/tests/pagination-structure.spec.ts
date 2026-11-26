@@ -4,8 +4,8 @@ import { buildPageItems, paginationStructure } from '../src/pagination'
 
 // 结构只取 pageItems：页码序列本身（哪几页该出、省略位落在哪）由 pagination.spec 按不变量守，
 // 这里核的是「给定序列，铺出来的部件、key 与身份属性对不对」。
-function nodesOf(page: number, totalPages: number): StructureNode[] {
-  return paginationStructure({ pageItems: buildPageItems(page, totalPages, 1) }) as StructureNode[]
+function nodesOf(page: number, totalPages: number, pageSizeSelectable = false): StructureNode[] {
+  return paginationStructure({ pageItems: buildPageItems(page, totalPages, 1), pageSizeSelectable }) as StructureNode[]
 }
 const parts = (nodes: readonly StructureChild[]): string[] => nodes.map(node => ('part' in node ? node.part : 'other'))
 
@@ -16,6 +16,13 @@ describe('paginationStructure', () => {
     expect(nodes[1]).toEqual({ key: 'item:1', tag: 'button', part: 'item', attrs: { value: '1' }, text: '1' })
     expect(nodes[6]).toEqual({ key: 'ellipsis:end', tag: 'button', part: 'ellipsis-trigger', attrs: { side: 'end' } })
     expect(nodes[7]).toMatchObject({ key: 'item:10', attrs: { value: '10' }, text: '10' })
+  })
+
+  it('作者给了 pageSizeOptions 时最前面铺每页条数的挂载点，没给不铺', () => {
+    const nodes = nodesOf(1, 3, true)
+    expect(nodes[0]).toEqual({ key: 'page-size', tag: 'div', part: 'page-size-select' })
+    expect(parts(nodes).slice(1)).toEqual(parts(nodesOf(1, 3)))
+    expect(parts(nodesOf(1, 3))).not.toContain('page-size-select')
   })
 
   it('翻页钮与省略位不放内容：字形由皮肤在空按钮上画', () => {

@@ -261,6 +261,13 @@ describe('paginationMachine', () => {
 })
 
 describe('connectPagination', () => {
+  it('作者显式给了 pageSizeOptions 才算可选每页条数：缺省档位照旧有，只是不铺控制器', () => {
+    const fallback = api(makeService({ count: 100 }))
+    expect(fallback.pageSizeSelectable).toBe(false)
+    expect(fallback.pageSizeOptions).toEqual([10, 20, 50, 100])
+    expect(api(makeService({ count: 100, pageSizeOptions: [10, 20] })).pageSizeSelectable).toBe(true)
+  })
+
   it('root 是带名字的 nav 地标；dir 未给时不写，免得切断继承', () => {
     const root = api(makeService({ count: 100 })).getRootProps() as Props
     expect(root['data-scope']).toBe('pagination')

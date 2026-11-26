@@ -333,6 +333,7 @@ export const XhPaginationContent = defineComponent({
 
 /** 标准结构里各部件对应的组件。 */
 const PAGINATION_PARTS = {
+  'page-size-select': XhPaginationPageSizeSelect,
   'prev-trigger': XhPaginationPrevTrigger,
   'item': XhPaginationItem,
   'ellipsis-trigger': XhPaginationEllipsisTrigger,
@@ -340,7 +341,7 @@ const PAGINATION_PARTS = {
 }
 
 /**
- * 未写默认插槽时照 paginationStructure 铺开的整套结构：上一页、折叠后的页码序列与下一页，
+ * 未写默认插槽时照 paginationStructure 铺开的整套结构：给了 pageSizeOptions 时的每页条数控制器、上一页、折叠后的页码序列与下一页，
  * 与 Web Components 不写部件时元素生成的节点出自同一份。
  */
 function renderDefaultStructure(api: PaginationApi): VNode[] {
