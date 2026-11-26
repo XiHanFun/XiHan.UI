@@ -10,7 +10,7 @@ import type { TooltipApi, TooltipSchema } from './tooltip.types'
 import { dataAttr } from '@xihan-ui/core'
 import { formatHotkeyLabel, HOTKEY_TEXT_EN_US } from '@xihan-ui/core/hotkey'
 import { TOOLTIP_EN_US } from '../locale/en-US'
-import { disclosureContentMounted } from '../shared/disclosure-mount'
+import { overlayContentMounted } from '../shared/disclosure-mount'
 import { overlayArrowVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { resolveTranslations } from '../shared/translations'
 import { tooltipAnatomy } from './tooltip.anatomy'
@@ -65,12 +65,7 @@ export function connectTooltip<T extends PropTypes>(
     text: anchor?.text ?? '',
     shortcut,
     // 挂卸只管 content 里的内容：positioner 与 content 节点常驻，定位引擎总有节点可量
-    isContentMounted: present => disclosureContentMounted({
-      lazyMount: prop('lazyMount') ?? false,
-      unmountOnExit: prop('unmountOnExit') ?? false,
-      opened: context.get('opened'),
-      present,
-    }),
+    isContentMounted: overlayContentMounted(prop, context.get('opened')),
     getTriggerProps: () => delegate !== undefined
       ? normalize.element({
           ...parts.trigger.attrs,

@@ -10,6 +10,7 @@ import type { SelectFocusIntent, SelectNode, SelectSchema } from './select.types
 import { createTypeahead, focusFirst, getTabbables, isItemDisabled, itemQuerySelector, itemValue, navigateItems, queryItems, removeLinks, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
+import { markOpened, openedCell } from '../shared/disclosure-mount'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { trackOverlayLoadMore } from '../shared/load-more'
 import { resolveMaxSelected } from '../shared/max-selected'
@@ -64,7 +65,7 @@ export const selectMachine = createMachine({
     // 首帧标记：挂载时开着、还没收起过
     openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
     // 首帧即展开也算展开过：lazyMount 下列表内容照常首屏就在
-    opened: cell<boolean>(() => ({ defaultValue: openAtMount(prop) })),
+    opened: openedCell(cell, openAtMount(prop)),
     // 位置结果由 trackPosition 里的引擎回填；connect 只读这里，不碰 DOM
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     // 值住在 cell 里，受控/非受控在此收口，不需要影子事件
@@ -196,10 +197,7 @@ export const selectMachine = createMachine({
       ...controlledOpenActions<SelectSchema>({ reason: true }),
       markTagListTracked: ({ context }) => context.set('tagListTracked', true),
       clearOpenedAtMount,
-      markOpened: ({ context }) => {
-        if (!context.get('opened'))
-          context.set('opened', true)
-      },
+      markOpened,
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'PRESS.START')

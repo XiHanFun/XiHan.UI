@@ -9,6 +9,7 @@ import type { OverlayRelease } from '../shared/overlay-shell'
 import type { DialogGesture, DialogOffset, DialogPressedPart, DialogSchema } from './dialog.types'
 import { getTabbables, removeLinks, requireOverlayKit, setup, warn } from '@xihan-ui/core'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
+import { markOpened, openedCell } from '../shared/disclosure-mount'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { createModalLayerResources, overlayCloseOnDismiss, setupLayerTransaction, trackPresenceResources } from '../shared/overlay-shell'
 import { clampDialogOffset, dialogDragBounds, startGesturePointer } from './dialog.gesture'
@@ -40,7 +41,7 @@ export const dialogMachine = createMachine({
     gesture: cell<DialogGesture | null>(() => ({ defaultValue: null })),
     openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
     // 首帧即打开也算打开过：内容照常首屏就在
-    opened: cell<boolean>(() => ({ defaultValue: openAtMount(prop) })),
+    opened: openedCell(cell, openAtMount(prop)),
   }),
   refs: () => ({
     config: null,
@@ -194,10 +195,7 @@ export const dialogMachine = createMachine({
           context.set('gesture', null)
       },
       clearOpenedAtMount,
-      markOpened: ({ context }) => {
-        if (!context.get('opened'))
-          context.set('opened', true)
-      },
+      markOpened,
       syncModalResources: ({ refs }) => refs.get('syncModalResources')?.(),
     },
     effects: {

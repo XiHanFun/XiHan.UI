@@ -9,6 +9,7 @@ import type { PositionResult, Transition } from '@xihan-ui/core'
 import type { HoverCardSchema } from './hover-card.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
+import { markOpened, openedCell } from '../shared/disclosure-mount'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED, overlayPositioningOptions } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
@@ -68,7 +69,7 @@ export const hoverCardMachine = createMachine({
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     focusHeld: cell<boolean>(() => ({ defaultValue: false })),
     // 首帧即展开也算展开过：lazyMount 下内容照常首屏就在
-    opened: cell<boolean>(() => ({ defaultValue: openAtMount(prop) })),
+    opened: openedCell(cell, openAtMount(prop)),
   }),
   refs: () => ({
     config: null,
@@ -168,10 +169,7 @@ export const hoverCardMachine = createMachine({
         extra: event => event.type === 'after.closeDelay' ? 'hover' : event.type === 'BLUR' ? 'interact-outside' : undefined,
       }),
       clearOpenedAtMount,
-      markOpened: ({ context }) => {
-        if (!context.get('opened'))
-          context.set('opened', true)
-      },
+      markOpened,
       markFocusHeld: ({ context }) => context.set('focusHeld', true),
       clearFocusHeld: ({ context }) => context.set('focusHeld', false),
     },

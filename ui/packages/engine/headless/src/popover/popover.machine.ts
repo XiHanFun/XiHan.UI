@@ -10,6 +10,7 @@ import type { OverlayRelease } from '../shared/overlay-shell'
 import type { PopoverPressedPart, PopoverSchema } from './popover.types'
 import { DIAGNOSTIC_CODES, reportDiagnostic, requireOverlayKit, setup, warn } from '@xihan-ui/core'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
+import { markOpened, openedCell } from '../shared/disclosure-mount'
 import { trackExternalAnchorAria } from '../shared/external-anchor'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED, overlayAnchorElement, overlayPositioningOptions } from '../shared/overlay'
@@ -45,7 +46,7 @@ export const popoverMachine = createMachine({
     pressed: cell<PopoverPressedPart | null>(() => ({ defaultValue: null })),
     openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
     // 首帧即展开也算打开过：lazyMount 下内容照常首屏就在
-    opened: cell<boolean>(() => ({ defaultValue: openAtMount(prop) })),
+    opened: openedCell(cell, openAtMount(prop)),
   }),
   refs: () => ({
     config: null,
@@ -136,10 +137,7 @@ export const popoverMachine = createMachine({
       },
       releasePress: ({ context }) => context.set('pressed', null),
       clearOpenedAtMount,
-      markOpened: ({ context }) => {
-        if (!context.get('opened'))
-          context.set('opened', true)
-      },
+      markOpened,
       // Tab 与层外交互是「焦点已经去别处了」，再抢回触发器会把用户拽回来；其余出口一律归还
       setReturnFocus: ({ context, event }) => {
         const e = event.current()

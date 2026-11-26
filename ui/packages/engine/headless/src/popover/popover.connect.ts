@@ -9,7 +9,7 @@ import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-u
 import type { PopoverApi, PopoverPressedPart, PopoverSchema } from './popover.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
 import { POPOVER_EN_US } from '../locale/en-US'
-import { disclosureContentMounted } from '../shared/disclosure-mount'
+import { overlayContentMounted } from '../shared/disclosure-mount'
 import { overlayArrowVars, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { resolveTranslations } from '../shared/translations'
 import { popoverAnatomy } from './popover.anatomy'
@@ -63,12 +63,7 @@ export function connectPopover<T extends PropTypes>(
     open,
     setOpen,
     // 挂卸只管 content 里的内容：positioner 与 content 节点常驻，aria-controls 始终指得到它，定位引擎也总有节点可量
-    isContentMounted: present => disclosureContentMounted({
-      lazyMount: prop('lazyMount') ?? false,
-      unmountOnExit: prop('unmountOnExit') ?? false,
-      opened: context.get('opened'),
-      present,
-    }),
+    isContentMounted: overlayContentMounted(prop, context.get('opened')),
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
       'id': ids.trigger,

@@ -9,6 +9,8 @@ import type { CollapsibleSchema } from './collapsible.types'
 import { isSSR, setup } from '@xihan-ui/core'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { retainDisclosureHandoff } from '../shared/disclosure-handoff'
+import { markOpened, openedCell } from '../shared/disclosure-mount'
+import { openAtMount } from '../shared/first-frame'
 
 const { createMachine } = setup<CollapsibleSchema>()
 
@@ -20,10 +22,10 @@ export const collapsibleMachine = createMachine({
     pressed: cell<boolean>(() => ({ defaultValue: false })),
     moved: cell<boolean>(() => ({ defaultValue: false })),
     // 首帧即展开也算展开过：lazyMount 下它的内容照常首屏就在
-    opened: cell<boolean>(() => ({ defaultValue: !!(prop('open') ?? prop('defaultOpen')) })),
+    opened: openedCell(cell, openAtMount(prop)),
   }),
   effects: ['trackDisclosureHandoff'],
-  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   watch: ({ track, prop, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
     // 按住途中转禁用：trigger 随即原生 disabled、不会再来 keyup，按压面由机器自己收
@@ -89,7 +91,7 @@ export const collapsibleMachine = createMachine({
       ...controlledOpenActions<CollapsibleSchema>(),
       // 第一次开合（用户操作或受控改写）起，内容与箭头按动效走
       markMoved: ({ context }) => context.set('moved', true),
-      markOpened: ({ context }) => context.set('opened', true),
+      markOpened,
       startPress: ({ context }) => context.set('pressed', true),
       endPress: ({ context }) => context.set('pressed', false),
       releaseWhenInert: ({ context, prop }) => {
