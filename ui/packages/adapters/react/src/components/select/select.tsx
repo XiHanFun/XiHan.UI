@@ -104,6 +104,8 @@ export interface XhSelectRootProps<V = string> extends RootElementProps {
   onOpenChange?: SelectProps['onOpenChange']
   /** 整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space。 */
   onRetry?: () => void
+  /** 浮层里的列表滚到末端时请求下一页：只在跨进末端那一下派发；在途、禁用时不派发，没有下一页时不给它。 */
+  onLoadMore?: () => void
   /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: SelectNodeMeta<V>) => ReactNode
   /** 只接管条目行首那一格；其余槽仍由数据铺。 */
@@ -171,6 +173,7 @@ export function XhSelectRoot<V = string>({
   onClear,
   onOpenChange,
   onRetry,
+  onLoadMore,
   renderItem,
   renderItemPrefix,
   renderItemSuffix,
@@ -215,6 +218,7 @@ export function XhSelectRoot<V = string>({
     onClear,
     onOpenChange,
     onRetry,
+    onLoadMore,
   })) as SelectProps)
   const api = ctx.api
 
@@ -260,7 +264,7 @@ export function XhSelectRoot<V = string>({
   )
 }
 
-XhSelectRoot.xhEvents = ['clear', 'value-change', 'open-change', 'retry'] as const
+XhSelectRoot.xhEvents = ['clear', 'value-change', 'open-change', 'retry', 'load-more'] as const
 
 export interface XhSelectLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhSelectLabel({ children, ...rest }: XhSelectLabelProps): ReactNode {

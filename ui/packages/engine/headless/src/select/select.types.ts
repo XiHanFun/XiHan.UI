@@ -232,6 +232,11 @@ export interface SelectSchema<V = string> extends MachineSchema {
     onOpenChange?: (details: SelectOpenChangeDetails) => void
     /** 整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space。 */
     onRetry?: () => void
+    /**
+     * 浮层里的列表滚到末端时请求下一页：只在跨进末端的那一下派发，停在末端不重复；内容不溢出、滚不动时不派发，第一页要多到能填满浮层。
+     * loading、error 或 disabled 为真时不派发，宿主收到后置上 loading、把新一页接到 collection 末尾再撤掉。取数期间照旧只报 aria-busy、已有候选原样留着；新一页接到 collection 末尾后再滚到底才派发下一次。没有下一页时不给它。
+     */
+    onLoadMore?: () => void
   }
   context: {
     /**
@@ -312,7 +317,7 @@ export interface SelectSchema<V = string> extends MachineSchema {
     | 'releaseWhenInert'
     | 'markTagListTracked'
     | 'clearOpenedAtMount'
-  effect: 'trackPosition' | 'trackLayer' | 'trackTagListMotion'
+  effect: 'trackPosition' | 'trackLoadMore' | 'trackLayer' | 'trackTagListMotion'
 }
 
 /** V 是选中值的类型：value、tags、collection 与高亮交出原值，收值的 getter 与动作也收原值。 */

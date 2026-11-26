@@ -115,6 +115,8 @@ const XhSelectRootImpl = /* @__PURE__ */ defineComponent({
     'clear': () => true,
     // 整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space
     'retry': () => true,
+    // 浮层里的列表滚到末端时请求下一页：只在跨进末端那一下派发；在途、取数失败、禁用时不派发
+    'load-more': () => true,
     'value-change': (_details: SelectValueChangeDetails<unknown>) => true,
     'open-change': (_details: SelectOpenChangeDetails) => true,
     'update:value': (_value: unknown[]) => true,
@@ -147,7 +149,7 @@ const XhSelectRootImpl = /* @__PURE__ */ defineComponent({
     const virtual: StructureVirtualSlot | undefined = props.virtual
       ? { count: () => props.collection?.length ?? 0, estimateSize: () => props.estimateSize ?? SELECT_VIRTUAL_ESTIMATE, scrollContainer: 'viewport', estimateFromMeasured: false, view: shallowRef(null) }
       : undefined
-    const handlers: Record<string, unknown> = { onClear: () => emit('clear'), onRetry: () => emit('retry') }
+    const handlers: Record<string, unknown> = { onClear: () => emit('clear'), onRetry: () => emit('retry'), onLoadMore: () => emit('load-more') }
     // 桥随 Virtualizer 的状态换身份，用取值器现取，机器每次读 prop 都拿到当下这一份
     if (virtual)
       Object.defineProperty(handlers, 'virtualizer', { enumerable: true, get: () => virtual.view.value?.api.value.collectionVirtualizer })

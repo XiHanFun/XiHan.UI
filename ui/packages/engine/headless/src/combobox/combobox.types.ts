@@ -248,6 +248,11 @@ export interface ComboboxSchema<V = string> extends MachineSchema {
     onInputValueChange?: (details: ComboboxInputValueChangeDetails) => void
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: ComboboxOpenChangeDetails) => void
+    /**
+     * 浮层里的列表滚到末端时请求下一页：只在跨进末端的那一下派发，停在末端不重复；内容不溢出、滚不动时不派发，第一页要多到能填满浮层。
+     * loading 或 disabled 为真时不派发，宿主收到后置上 loading、把新一页接到 collection 末尾再撤掉；输入串一变，宿主照常从第一页重取。取数期间照旧只报 aria-busy、已有候选原样留着；新一页接到 collection 末尾后再滚到底才派发下一次。没有下一页时不给它。
+     */
+    onLoadMore?: () => void
   }
   context: {
     /**
@@ -357,7 +362,7 @@ export interface ComboboxSchema<V = string> extends MachineSchema {
     | 'releasePress'
     | 'releaseWhenInert'
     | 'clearOpenedAtMount'
-  effect: 'trackPosition' | 'trackLayer' | 'trackTagListMotion'
+  effect: 'trackPosition' | 'trackLoadMore' | 'trackLayer' | 'trackTagListMotion'
 }
 
 /** 标签声明的身份：代表哪个选中值。 */

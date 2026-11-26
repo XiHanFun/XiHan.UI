@@ -11,6 +11,7 @@ import { isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValu
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
+import { trackOverlayLoadMore } from '../shared/load-more'
 import { resolveMaxSelected } from '../shared/max-selected'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
@@ -148,8 +149,8 @@ export const comboboxMachine = createMachine({
       entry: ['syncItems', 'setInitialHighlightedValue'],
       // 收起即松开：按住 Enter 选中候选后浮层收起，候选随内容一起藏起，不会再来 keyup
       exit: ['clearHighlightedValue', 'releasePress'],
-      // 定位只服务逻辑展开；Layer 与消解资源由顶层 effect 延后到真实退场释放。
-      effects: ['trackPosition'],
+      // 定位与触底取数只服务逻辑展开；Layer 与消解资源由顶层 effect 延后到真实退场释放。
+      effects: ['trackPosition', 'trackLoadMore'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
@@ -619,6 +620,14 @@ export const comboboxMachine = createMachine({
         flush,
         list: () => refs.get('getAnchorEl')()?.querySelector<HTMLElement>(COMBOBOX_TAG_LIST_SELECTOR),
         onTracked: () => send({ type: 'TAG_LIST.TRACKED' }),
+      }),
+
+      // 列表滚到末端时请求下一页；回调与在途、禁用都在跨进末端那一下现读
+      trackLoadMore: ({ refs, prop, flush }) => trackOverlayLoadMore({
+        flush,
+        getContainer: () => refs.get('getFloatingEl')(),
+        enabled: () => !!prop('onLoadMore') && !prop('loading') && !prop('disabled'),
+        onLoadMore: () => prop('onLoadMore')?.(),
       }),
 
       // Layer 与 DismissableLayer 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。

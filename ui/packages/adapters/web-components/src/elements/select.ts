@@ -86,6 +86,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires retry - 整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space
+ * @fires load-more - 浮层里的列表滚到末端时请求下一页：只在跨进末端那一下派发；loading、error、disabled 时不派发
  * @csspart root - 组件根容器（承载 data-state / data-disabled，也是表单影子的定位基准）
  * @csspart label - 组标题（aria-labelledby 目标）
  * @csspart trigger - 触发按钮（aria-haspopup=listbox / aria-expanded / aria-controls 所在），同时是定位锚点，须是原生 button
@@ -255,6 +256,11 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
   }
 
+  /** 浮层里的列表滚到末端，请求下一页。 */
+  private readonly notifyLoadMore = (): void => {
+    this.dispatchEvent(new CustomEvent('load-more', { bubbles: true, composed: true }))
+  }
+
   /** 整表取数失败后请求重试。 */
   private readonly notifyRetry = (): void => {
     this.dispatchEvent(new CustomEvent('retry', { bubbles: true, composed: true }))
@@ -342,6 +348,7 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
       onClear: this.notifyClear,
       onOpenChange: this.notifyOpen,
       onRetry: this.notifyRetry,
+      onLoadMore: this.notifyLoadMore,
     }
   }
 

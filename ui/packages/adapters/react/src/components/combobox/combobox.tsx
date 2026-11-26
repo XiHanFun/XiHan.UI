@@ -100,6 +100,8 @@ export interface XhComboboxRootProps<V = string> extends RootElementProps {
   onClear?: () => void
   onInputValueChange?: ComboboxProps['onInputValueChange']
   onOpenChange?: ComboboxProps['onOpenChange']
+  /** 浮层里的列表滚到末端时请求下一页：只在跨进末端那一下派发；在途、禁用时不派发，没有下一页时不给它。 */
+  onLoadMore?: () => void
   /** 每个候选的自定义内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: ComboboxNodeMeta<V>) => ReactNode
   /** 只接管条目行首那一格；其余槽仍由数据铺。 */
@@ -149,6 +151,7 @@ export function XhComboboxRoot<V = string>({
   onClear,
   onInputValueChange,
   onOpenChange,
+  onLoadMore,
   renderItem,
   renderItemPrefix,
   renderItemSuffix,
@@ -193,6 +196,7 @@ export function XhComboboxRoot<V = string>({
     onClear,
     onInputValueChange,
     onOpenChange,
+    onLoadMore,
   })) as ComboboxProps)
   const api = ctx.api
 
@@ -235,7 +239,7 @@ export function XhComboboxRoot<V = string>({
   )
 }
 
-XhComboboxRoot.xhEvents = ['clear', 'value-change', 'input-value-change', 'open-change'] as const
+XhComboboxRoot.xhEvents = ['clear', 'value-change', 'input-value-change', 'open-change', 'load-more'] as const
 
 export interface XhComboboxLabelProps extends ComponentPropsWithRef<'label'> {}
 /** 使用原生 label，connect 给出的 for 指向输入框。 */

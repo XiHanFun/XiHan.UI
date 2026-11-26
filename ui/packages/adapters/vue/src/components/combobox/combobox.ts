@@ -96,6 +96,8 @@ const XhComboboxRootImpl = defineComponent({
   // *-change 携带 details 对象，update:* 携带裸值
   emits: {
     'clear': () => true,
+    // 浮层里的列表滚到末端时请求下一页：只在跨进末端那一下派发；在途、禁用时不派发
+    'load-more': () => true,
     'value-change': (_details: ComboboxValueChangeDetails<unknown>) => true,
     'input-value-change': (_details: PayloadOf<ComboboxProps, 'onInputValueChange'>) => true,
     'open-change': (_details: PayloadOf<ComboboxProps, 'onOpenChange'>) => true,
@@ -127,7 +129,7 @@ const XhComboboxRootImpl = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useCombobox(withHandlers(withXhConfig('combobox', useFormControlProps(props)), { onClear: () => emit('clear') }) as unknown as ComboboxProps, {
+    const ctx = useCombobox(withHandlers(withXhConfig('combobox', useFormControlProps(props)), { onClear: () => emit('clear'), onLoadMore: () => emit('load-more') }) as unknown as ComboboxProps, {
       onValueChange: notifyValue,
       onInputValueChange: notifyInputValue,
       onOpenChange: notifyOpen,

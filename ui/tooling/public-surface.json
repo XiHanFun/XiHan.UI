@@ -15175,6 +15175,7 @@
       "offset",
       "onClear",
       "onInputValueChange",
+      "onLoadMore",
       "onOpenChange",
       "onValueChange",
       "open",
@@ -16612,6 +16613,7 @@
       "name",
       "offset",
       "onClear",
+      "onLoadMore",
       "onOpenChange",
       "onRetry",
       "onValueChange",
@@ -24041,6 +24043,7 @@
       "events": [
         "clear",
         "input-value-change",
+        "load-more",
         "open-change",
         "value-change"
       ]
@@ -25627,6 +25630,7 @@
       ],
       "events": [
         "clear",
+        "load-more",
         "open-change",
         "retry",
         "value-change"

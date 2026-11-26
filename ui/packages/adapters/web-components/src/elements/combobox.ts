@@ -96,6 +96,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
  * @fires input-value-change - 输入串变化；detail 为 `{ inputValue: string }`，作者据此过滤候选
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因
+ * @fires load-more - 浮层里的列表滚到末端时请求下一页：只在跨进末端那一下派发；loading、disabled 时不派发
  * @csspart root - 组件根容器（承载 data-state / data-disabled / data-readonly / data-invalid）
  * @csspart label - 标题，须是原生 label（connect 提供的 for 只在它身上生效）
  * @csspart control - 输入行容器，同时是浮层的定位锚点
@@ -248,6 +249,11 @@ export class XhComboboxElement<V = string> extends XhPortalHostElement {
     this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
   }
 
+  /** 浮层里的列表滚到末端，请求下一页。 */
+  private readonly notifyLoadMore = (): void => {
+    this.dispatchEvent(new CustomEvent('load-more', { bubbles: true, composed: true }))
+  }
+
   private readonly notifyValue = (details: ComboboxValueChangeDetails<unknown>): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
@@ -332,6 +338,7 @@ export class XhComboboxElement<V = string> extends XhPortalHostElement {
       tone: this.tone,
       size: this.size,
       onClear: this.notifyClear,
+      onLoadMore: this.notifyLoadMore,
       onInputValueChange: this.notifyInputValue,
       onOpenChange: this.notifyOpen,
     }

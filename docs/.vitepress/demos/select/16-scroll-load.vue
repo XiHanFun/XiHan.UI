@@ -1,20 +1,6 @@
-<!-- 滚动加载 | 到达列表底部加载下一页 -->
+<!-- 滚动加载 | 列表滚到底派发 load-more，宿主取下一页接到 collection 末尾 -->
 <script setup lang="ts">
-import {
-  XhSelectContent,
-  XhSelectControl,
-  XhSelectIndicator,
-  XhSelectItem,
-  XhSelectItemIndicator,
-  XhSelectItemText,
-  XhSelectLabel,
-  XhSelectList,
-  XhSelectLoading,
-  XhSelectPositioner,
-  XhSelectRoot,
-  XhSelectTrigger,
-  XhSelectValueText,
-} from "@xihan-ui/vue";
+import { XhSelectRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 interface Ticket {
@@ -36,12 +22,9 @@ const tickets = ref<Ticket[]>(makePage(0));
 const loading = ref(false);
 const picked = ref<string[]>([]);
 
-// 距底不足 8px 视为触底，取下一页
-function onScroll(event: Event): void {
-  const el = event.currentTarget as HTMLElement;
-  if (loading.value || tickets.value.length >= TOTAL)
-    return;
-  if (el.scrollTop + el.clientHeight < el.scrollHeight - 8)
+// 在途时不会再派发；取完了就不再取
+function loadMore(): void {
+  if (tickets.value.length >= TOTAL)
     return;
   loading.value = true;
   window.setTimeout(() => {
@@ -52,25 +35,13 @@ function onScroll(event: Event): void {
 </script>
 
 <template>
-  <XhSelectRoot v-model:value="picked" :loading="loading" placeholder="请选择">
-    <XhSelectLabel>工单</XhSelectLabel>
-    <XhSelectControl>
-      <XhSelectTrigger>
-        <XhSelectValueText />
-        <XhSelectIndicator />
-      </XhSelectTrigger>
-    </XhSelectControl>
-    <XhSelectPositioner>
-      <XhSelectContent>
-        <XhSelectList @scroll="onScroll">
-          <XhSelectItem v-for="t in tickets" :key="t.value" :value="t.value">
-            <XhSelectItemText>{{ t.label }}</XhSelectItemText>
-            <XhSelectItemIndicator />
-          </XhSelectItem>
-        </XhSelectList>
-        <XhSelectLoading>加载中…</XhSelectLoading>
-      </XhSelectContent>
-    </XhSelectPositioner>
-  </XhSelectRoot>
+  <XhSelectRoot
+    v-model:value="picked"
+    :collection="tickets"
+    :loading="loading"
+    label="工单"
+    placeholder="请选择"
+    @load-more="loadMore"
+  />
   <p data-demo-output>已加载 {{ tickets.length }} / {{ TOTAL }} 条</p>
 </template>

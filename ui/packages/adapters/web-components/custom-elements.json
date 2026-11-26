@@ -16120,6 +16120,13 @@
             },
             {
               "kind": "field",
+              "name": "notifyLoadMore",
+              "privacy": "private",
+              "readonly": true,
+              "description": "浮层里的列表滚到末端，请求下一页。"
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -16401,6 +16408,10 @@
               "type": {
                 "text": "ComboboxOpenChangeDetails"
               }
+            },
+            {
+              "description": "浮层里的列表滚到末端时请求下一页：只在跨进末端那一下派发；loading、disabled 时不派发",
+              "name": "load-more"
             }
           ],
           "attributes": [
@@ -62714,6 +62725,13 @@
             },
             {
               "kind": "field",
+              "name": "notifyLoadMore",
+              "privacy": "private",
+              "readonly": true,
+              "description": "浮层里的列表滚到末端，请求下一页。"
+            },
+            {
+              "kind": "field",
               "name": "notifyRetry",
               "privacy": "private",
               "readonly": true,
@@ -63047,6 +63065,10 @@
             {
               "description": "整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space",
               "name": "retry"
+            },
+            {
+              "description": "浮层里的列表滚到末端时请求下一页：只在跨进末端那一下派发；loading、error、disabled 时不派发",
+              "name": "load-more"
             }
           ],
           "attributes": [

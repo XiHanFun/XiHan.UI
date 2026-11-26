@@ -11,6 +11,7 @@ import { createTypeahead, focusFirst, getTabbables, isItemDisabled, itemQuerySel
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
+import { trackOverlayLoadMore } from '../shared/load-more'
 import { resolveMaxSelected } from '../shared/max-selected'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
@@ -151,8 +152,8 @@ export const selectMachine = createMachine({
       // 收起就丢缓冲，否则下次展开首字母会拼进上一轮查询串。
       // 收起即松开：按住 Enter 选中条目后浮层收起，条目随内容一起藏起，不会再来 keyup 或 blur
       exit: ['clearHighlightedValue', 'clearTypeahead', 'releasePress'],
-      // 定位只服务逻辑展开；Layer、消解与焦点资源由顶层 effect 延后到真实退场释放。
-      effects: ['trackPosition'],
+      // 定位与触底取数只服务逻辑展开；Layer、消解与焦点资源由顶层 effect 延后到真实退场释放。
+      effects: ['trackPosition', 'trackLoadMore'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnClose'] },
@@ -434,6 +435,13 @@ export const selectMachine = createMachine({
           size: true,
         }),
         onResult: result => context.set('position', result),
+      }),
+      // 列表滚到末端时请求下一页；回调与在途、失败、禁用都在跨进末端那一下现读
+      trackLoadMore: ({ refs, prop, flush }) => trackOverlayLoadMore({
+        flush,
+        getContainer: () => refs.get('getFloatingEl')(),
+        enabled: () => !!prop('onLoadMore') && !prop('loading') && !prop('error') && !prop('disabled'),
+        onLoadMore: () => prop('onLoadMore')?.(),
       }),
       // Layer、DismissableLayer、FocusScope 与视觉 Presence 共享同一租约：逻辑关闭后内容
       // 已 inert，但资源仍留在顶层，直到真实 CSS 退场结束才逆序释放。

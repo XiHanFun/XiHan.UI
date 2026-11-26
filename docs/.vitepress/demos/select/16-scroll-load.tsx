@@ -1,21 +1,7 @@
-// 滚动加载 | 到达列表底部加载下一页
-import type { ReactNode, UIEvent } from "react";
-import {
-  XhSelectContent,
-  XhSelectControl,
-  XhSelectIndicator,
-  XhSelectItem,
-  XhSelectItemIndicator,
-  XhSelectItemText,
-  XhSelectLabel,
-  XhSelectList,
-  XhSelectLoading,
-  XhSelectPositioner,
-  XhSelectRoot,
-  XhSelectTrigger,
-  XhSelectValueText,
-} from "@xihan-ui/react";
-import { useRef, useState } from "react";
+// 滚动加载 | 列表滚到底派发 load-more，宿主取下一页接到 collection 末尾
+import type { ReactNode } from "react";
+import { XhSelectRoot } from "@xihan-ui/react";
+import { useState } from "react";
 
 interface Ticket {
   value: string;
@@ -36,53 +22,29 @@ export default function Demo(): ReactNode {
   const [tickets, setTickets] = useState<Ticket[]>(() => makePage(0));
   const [loading, setLoading] = useState(false);
   const [picked, setPicked] = useState<string[]>([]);
-  const busy = useRef(false);
 
-  // 距底不足 8px 视为触底，取下一页
-  function onScroll(event: UIEvent<HTMLDivElement>): void {
-    const el = event.currentTarget;
-    if (busy.current || tickets.length >= TOTAL)
+  // 在途时不会再派发；取完了就不再取
+  function loadMore(): void {
+    if (tickets.length >= TOTAL)
       return;
-    if (el.scrollTop + el.clientHeight < el.scrollHeight - 8)
-      return;
-    busy.current = true;
     setLoading(true);
     window.setTimeout(() => {
       setTickets(prev => [...prev, ...makePage(prev.length)]);
       setLoading(false);
-      busy.current = false;
     }, 500);
   }
 
   return (
     <>
       <XhSelectRoot
+        collection={tickets}
         value={picked}
         loading={loading}
         onValueChange={details => setPicked(details.value)}
+        onLoadMore={loadMore}
+        label="工单"
         placeholder="请选择"
-      >
-        <XhSelectLabel>工单</XhSelectLabel>
-        <XhSelectControl>
-          <XhSelectTrigger>
-            <XhSelectValueText />
-            <XhSelectIndicator />
-          </XhSelectTrigger>
-        </XhSelectControl>
-        <XhSelectPositioner>
-          <XhSelectContent>
-            <XhSelectList onScroll={onScroll}>
-              {tickets.map(t => (
-                <XhSelectItem key={t.value} value={t.value}>
-                  <XhSelectItemText>{t.label}</XhSelectItemText>
-                  <XhSelectItemIndicator />
-                </XhSelectItem>
-              ))}
-            </XhSelectList>
-            <XhSelectLoading>加载中…</XhSelectLoading>
-          </XhSelectContent>
-        </XhSelectPositioner>
-      </XhSelectRoot>
+      />
       <p data-demo-output>{`已加载 ${tickets.length} / ${TOTAL} 条`}</p>
     </>
   );
