@@ -10,8 +10,12 @@ const SKINS = join(__dirname, '../../../design/styles/css')
 const ELEMENTS = join(__dirname, '../src/elements')
 const SIZED_BY_CONTROL_W = /^\s+inline-size: var\(--xh-[a-z-]+, var\(--xh-control-w\)\)/m
 
-/** 不按控件宽定宽、宿主同样不占盒子的皮肤：按钮直接参与外层的弹性 / 网格排布，不在宿主的一行里按基线排。 */
-const EXTRA_HOSTS = ['checkbox', 'switch']
+/**
+ * 不按控件宽定宽、宿主同样不占盒子的皮肤：
+ * 按钮直接参与外层的弹性 / 网格排布，不在宿主的一行里按基线排；
+ * 布局件（宽高比、版心、进出场）的 root 要直接排进外层的弹性 / 网格容器，宿主一占盒子就按内容收缩。
+ */
+const EXTRA_HOSTS = ['aspect-ratio', 'checkbox', 'container', 'presence', 'switch']
 
 function skins(test: (source: string, name: string) => boolean): string[] {
   return readdirSync(SKINS)
