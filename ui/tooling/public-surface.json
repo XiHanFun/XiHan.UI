@@ -15077,6 +15077,7 @@
     "color-picker": [
       "alpha",
       "ariaLabel",
+      "clearable",
       "defaultOpen",
       "defaultRecentColors",
       "defaultValue",
@@ -23931,6 +23932,7 @@
     "xh-color-picker": {
       "attributes": [
         "alpha",
+        "clearable",
         "default-open",
         "default-recent-colors",
         "default-value",

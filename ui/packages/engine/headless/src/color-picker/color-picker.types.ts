@@ -213,6 +213,11 @@ export interface ColorPickerSchema extends MachineSchema {
     disabled?: boolean
     /** 只读：浮层照常展开（可查看当前颜色），但任何改值的动作都不发生。 */
     readOnly?: boolean
+    /**
+     * 清空能力，默认开启：单选有值且改得动时露出清空按钮。
+     * 写 false 即关掉：清空按钮恒带 hidden 收起、标准结构不再铺它；setValue([]) 照旧能清回未选。
+     */
+    clearable?: boolean
     /** 校验失败标注：触发钮写 aria-invalid，各部件写 data-invalid，字段外壳按它描红。 */
     invalid?: boolean
     /** 必填：各部件写 data-required（标题据此画星号），表单影子写原生 required；触发钮是按钮，不收 aria-required。 */
@@ -428,6 +433,8 @@ export interface ColorPickerApi<T extends PropTypes = PropTypes> {
   swatches: string[]
   /** 常驻形态。 */
   inline: boolean
+  /** 清空能力是否开启（clearable 没写成 false）。 */
+  clearable: boolean
   /** 最近使用色，最新的在最前。 */
   recentColors: string[]
   /** 多选时「添加」此刻可按：工作色还没选过、也没到 maxSelected。 */

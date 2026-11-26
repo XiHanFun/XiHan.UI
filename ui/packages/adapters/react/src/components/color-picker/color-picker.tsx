@@ -69,6 +69,8 @@ export interface XhColorPickerRootProps extends RootElementProps {
   disabled?: boolean
   /** 只读：浮层照常展开（可查看当前颜色），但任何改值的动作都不发生。 */
   readOnly?: boolean
+  /** 清空能力，缺省开启；写 false 时不铺清空按钮，setValue([]) 照旧能清回未选。 */
+  clearable?: boolean
   /** 校验失败标注。 */
   invalid?: boolean
   /** 必填：表单影子写原生 required。 */
@@ -118,6 +120,7 @@ export function XhColorPickerRoot({
   defaultOpen,
   disabled,
   readOnly,
+  clearable,
   invalid,
   required,
   alpha,
@@ -154,6 +157,7 @@ export function XhColorPickerRoot({
     defaultOpen,
     disabled,
     readOnly,
+    clearable,
     invalid,
     required,
     alpha,

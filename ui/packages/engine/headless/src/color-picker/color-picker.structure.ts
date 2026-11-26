@@ -59,7 +59,7 @@ export interface ColorPickerStructureOptions {
   slotted?: StructureSlotted
 }
 
-type ColorPickerStructureModel = Pick<ColorPickerApi, 'inline' | 'multiple' | 'alpha' | 'tags' | 'swatchPicker' | 'recentSwatchPicker' | 'translations'>
+type ColorPickerStructureModel = Pick<ColorPickerApi, 'inline' | 'multiple' | 'clearable' | 'alpha' | 'tags' | 'swatchPicker' | 'recentSwatchPicker' | 'translations'>
 
 const NOTHING_SLOTTED: StructureSlotted = () => false
 
@@ -164,8 +164,8 @@ export function colorPickerStructure(model: ColorPickerStructureModel, options: 
         { key: 'value-text', tag: 'span', part: 'value-text' },
       ],
     })
-    // 单选才有清空钮：多选的值在标签里一枚枚删
-    if (!multiple)
+    // 单选才有清空钮：多选的值在标签里一枚枚删；关掉 clearable 就不铺
+    if (!multiple && model.clearable)
       control.push({ key: 'clear-trigger', tag: 'button', part: 'clear-trigger' })
     nodes.push({ key: 'control', tag: 'div', part: 'control', children: control })
   }

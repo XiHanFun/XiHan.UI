@@ -93,7 +93,9 @@ export function connectColorPicker<T extends PropTypes>(
   const interactive = !disabled && !readOnly
   const valueText = blank ? (prop('placeholder') ?? label.placeholder) : value
   // 清空钮：单选有值、改得动时才显示；常驻形态没有盒，不铺它
-  const canClear = !multiple && !inline && interactive && !blank
+  // 清空钮缺省开着；写 false 即收起、标准结构不铺
+  const clearable = prop('clearable') !== false
+  const canClear = clearable && !multiple && !inline && interactive && !blank
   const maxSelected = resolveMaxSelected(prop('maxSelected'))
   // 「添加」：工作色解析得出、还没选过、没到上限
   const canAdd = multiple && interactive && colorParse(value) != null && !colorPickerIncludes(selected, value)
@@ -194,6 +196,7 @@ export function connectColorPicker<T extends PropTypes>(
     errors,
     swatches,
     inline,
+    clearable,
     recentColors,
     hueSlider,
     alphaSlider,

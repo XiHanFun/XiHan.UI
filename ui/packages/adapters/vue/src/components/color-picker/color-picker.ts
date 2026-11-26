@@ -63,6 +63,8 @@ export const XhColorPickerRoot = defineComponent({
     defaultOpen: Boolean,
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
+    /** 清空能力，缺省开启；写 false 时不铺清空按钮，setValue([]) 照旧能清回未选。 */
+    clearable: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
     alpha: Boolean,

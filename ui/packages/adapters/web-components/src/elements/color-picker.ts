@@ -98,6 +98,7 @@ const STRING_LIST_CONVERTER = {
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {boolean} disabled - 禁用：触发器与按钮使用原生 disabled，取色区与滑杆退出 Tab 序列
  * @attr {boolean} read-only - 只读：浮层照常打开，其中内容不可修改
+ * @attr {boolean} clearable - 清空能力，默认开启；写 "false" 关掉：不铺清空按钮
  * @attr {boolean} invalid - 校验失败标注：触发钮写 aria-invalid，字段外壳按 data-invalid 描红
  * @attr {boolean} required - 必填：标题画星号，表单影子写原生 required
  * @attr {boolean} alpha - 带透明度，默认关闭；关闭时透明度滑杆与输入框整条禁用
@@ -186,6 +187,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
     defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    clearable: { converter: BOOLEAN_CONVERTER },
     invalid: { converter: BOOLEAN_CONVERTER },
     required: { converter: BOOLEAN_CONVERTER },
     alpha: { converter: BOOLEAN_CONVERTER },
@@ -216,6 +218,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
   declare defaultOpen?: boolean
   declare disabled?: boolean
   declare readOnly?: boolean
+  declare clearable?: boolean
   declare invalid?: boolean
   declare required?: boolean
   declare alpha?: boolean
@@ -358,6 +361,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
       defaultOpen: this.defaultOpen ?? false,
       disabled: control.disabled,
       readOnly: control.readOnly,
+      clearable: this.clearable,
       invalid: control.invalid,
       required: control.required,
       alpha: this.alpha ?? false,

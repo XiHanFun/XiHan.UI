@@ -275,6 +275,16 @@ export const colorPickerSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'clearable 写 false：单选有值也不露清空钮、标准结构不铺；改回 true 即铺出并露面',
+      spec: { apg: APG_DIALOG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { defaultValue: '#3b82f6', clearable: false },
+      initial: { counts: { 'clear-trigger': 0 } },
+      steps: [
+        { kind: 'setProps', props: { clearable: true }, expect: { parts: { 'clear-trigger': { hidden: null } } } },
+      ],
+    },
+    {
       name: '单选有值时清空钮露面、不占 Tab 位；按下清回未选，先派 value-change（空数组）再派 clear',
       spec: { apg: APG_DIALOG },
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),

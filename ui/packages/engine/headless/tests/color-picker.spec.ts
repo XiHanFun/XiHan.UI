@@ -9,7 +9,7 @@ import { createRuntimeConfig, createService, normalizeProps } from '@xihan-ui/co
 import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { colorPickerAlphaSliderProps, colorPickerHueSliderProps, colorPickerMachine, colorPickerMaxRecent, colorPickerPushRecent, colorPickerRecentSwatchPickerProps, colorPickerSwatchPickerProps, connectColorPicker } from '../src/color-picker'
+import { colorPickerAlphaSliderProps, colorPickerHueSliderProps, colorPickerMachine, colorPickerMaxRecent, colorPickerPushRecent, colorPickerRecentSwatchPickerProps, colorPickerStructure, colorPickerSwatchPickerProps, connectColorPicker } from '../src/color-picker'
 import { colorSliderMachine, colorSliderSliderProps } from '../src/color-slider'
 import { colorSwatchPickerMachine } from '../src/color-swatch-picker'
 import { colorParse } from '../src/shared/color'
@@ -1407,5 +1407,21 @@ describe('单选的未选与清空钮', () => {
     expect(api(s).empty).toBe(false)
     s.send({ type: 'FORM.RESET' })
     expect(api(s).empty).toBe(true)
+  })
+})
+
+describe('clearable', () => {
+  it('写 false：有值也收起清空钮、标准结构不铺；setValue([]) 照旧清回未选', () => {
+    const s = makeService({ defaultValue: '#3b82f6', clearable: false })
+    expect((api(s).getClearTriggerProps() as Dict).hidden).toBe(true)
+    expect(api(s).clearable).toBe(false)
+    const control = colorPickerStructure(api(s)).find(node => 'part' in node && node.part === 'control') as { children?: { part?: string }[] }
+    expect(control.children!.map(node => node.part)).not.toContain('clear-trigger')
+    api(s).setValue([])
+    expect(api(s).value).toEqual([])
+  })
+
+  it('缺省开着', () => {
+    expect((api(makeService({ defaultValue: '#3b82f6' })).getClearTriggerProps() as Dict).hidden).toBeUndefined()
   })
 })
