@@ -16,6 +16,7 @@ import { createExitGate } from '@xihan-ui/core/presence'
 import { connectTooltip, createTooltipGroup, tooltipAnatomy, tooltipMachine, tooltipMeta, tooltipStructure } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { createGeneratedElement, GEN_ATTR, reconcile, setText } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { withoutHidden } from '../overlay-exit'
@@ -170,7 +171,7 @@ export class XhTooltipElement extends XhPortalHostElement {
   })
 
   private readonly notify = (details: TooltipOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   private readonly ctrl = new MachineController<TooltipSchema>(

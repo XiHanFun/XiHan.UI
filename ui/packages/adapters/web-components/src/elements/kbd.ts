@@ -10,6 +10,7 @@ import type { KbdApi, KbdProps, KbdTarget, KbdTranslations, KbdTriggerDetails, K
 import { detectKbdPlatform } from '@xihan-ui/core/hotkey'
 import { connectKbd, kbdAnatomy, kbdMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -55,7 +56,7 @@ export class XhKbdElement extends XhElement {
   #bound: EventTarget | null = null
   #painted = ''
   #notify = (details: KbdTriggerDetails): void => {
-    this.dispatchEvent(new CustomEvent('hotkey', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'hotkey', details)
   }
 
   #api(): KbdApi {

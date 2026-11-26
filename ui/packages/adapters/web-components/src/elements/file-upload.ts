@@ -25,6 +25,7 @@ import type { ElementStructure } from '../element-base'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectFileUpload, fileUploadAnatomy, fileUploadMachine, fileUploadMeta, fileUploadStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -179,35 +180,35 @@ export class XhFileUploadElement extends XhElement {
 
   /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
   private readonly notifyClear = (): void => {
-    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+    emitEvent(this, 'clear')
   }
 
   private readonly notifyChange = (details: FileUploadFilesChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('files-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'files-change', details)
   }
 
   private readonly notifyAccept = (details: FileUploadFileAcceptDetails): void => {
-    this.dispatchEvent(new CustomEvent('file-accept', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'file-accept', details)
   }
 
   private readonly notifyReject = (details: FileUploadFileRejectDetails): void => {
-    this.dispatchEvent(new CustomEvent('file-reject', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'file-reject', details)
   }
 
   private readonly notifyRemoteChange = (details: FileUploadRemoteFilesChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('remote-files-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'remote-files-change', details)
   }
 
   private readonly notifyUploadComplete = (details: FileUploadCompleteDetails): void => {
-    this.dispatchEvent(new CustomEvent('upload-complete', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'upload-complete', details)
   }
 
   private readonly notifyUploadError = (details: FileUploadErrorDetails): void => {
-    this.dispatchEvent(new CustomEvent('upload-error', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'upload-error', details)
   }
 
   private readonly notifyUploadCancel = (details: FileUploadCancelDetails): void => {
-    this.dispatchEvent(new CustomEvent('upload-cancel', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'upload-cancel', details)
   }
 
   // file-upload 机器无常驻副作用，controller 只带 props 与 scope。

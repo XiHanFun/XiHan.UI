@@ -9,6 +9,7 @@ import type { ControlVariant, Direction, Size } from '@xihan-ui/core'
 import type { HighlightSegment, JsonViewerApi, JsonViewerCopyErrorDetails, JsonViewerExpandedValueChangeDetails, JsonViewerNode, JsonViewerSchema, JsonViewerTool, JsonViewerToolTrigger, JsonViewerTranslations, JsonViewerViewChangeDetails, JsonViewerWrapChangeDetails } from '@xihan-ui/headless'
 import { connectJsonViewer, groupJsonViewerNodesByParent, jsonViewerAnatomy, jsonViewerMachine, jsonViewerMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -227,19 +228,19 @@ export class XhJsonViewerElement extends XhElement {
   declare translations?: Partial<JsonViewerTranslations>
 
   private readonly notify = (details: JsonViewerExpandedValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('expanded-value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'expanded-value-change', details)
   }
 
   private readonly notifyView = (details: JsonViewerViewChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('view-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'view-change', details)
   }
 
   private readonly notifyWrap = (details: JsonViewerWrapChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('wrap-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'wrap-change', details)
   }
 
   private readonly notifyCopyError = (details: JsonViewerCopyErrorDetails): void => {
-    this.dispatchEvent(new CustomEvent('copy-error', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'copy-error', details)
   }
 
   // json-viewer 机器不需要 config/layer/refs，controller 只带 props。

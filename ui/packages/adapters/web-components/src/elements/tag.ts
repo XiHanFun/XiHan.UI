@@ -9,6 +9,7 @@ import type { Size, Tone } from '@xihan-ui/core'
 import type { TagOpenChangeDetails, TagSchema, TagVariant } from '@xihan-ui/headless'
 import { connectTag, tagAnatomy, tagMachine, tagMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -63,7 +64,7 @@ export class XhTagElement extends XhElement {
   declare translations?: TagSchema['props']['translations']
 
   private readonly notify = (details: TagOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   // tag 机器无副作用：不需要 config/layer/refs，controller 只带 props

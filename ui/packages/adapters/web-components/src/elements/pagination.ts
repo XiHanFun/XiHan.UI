@@ -14,6 +14,7 @@ import { createExitGate } from '@xihan-ui/core/presence'
 import { connectPagination, paginationAnatomy, paginationMachine, paginationMeta, paginationPageSizeSelectProps, paginationStructure, selectMachine } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
@@ -165,11 +166,11 @@ export class XhPaginationElement extends XhPortalHostElement {
   })
 
   private readonly notify = (details: PaginationPageChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('page-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'page-change', details)
   }
 
   private readonly notifyPageSize = (details: { pageSize: number, page: number }): void => {
-    this.dispatchEvent(new CustomEvent('page-size-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'page-size-change', details)
   }
 
   private readonly ctrl = new MachineController<PaginationSchema>(

@@ -13,6 +13,7 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisab
 import { createExitGate } from '@xihan-ui/core/presence'
 import { connectNavigationMenu, navigationMenuAnatomy, navigationMenuMachine, navigationMenuMeta, navigationMenuStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { withoutHidden } from '../overlay-exit'
@@ -155,7 +156,7 @@ export class XhNavigationMenuElement extends XhElement {
   private readonly menuScope = createScope(null, this.idGen)
 
   private readonly notify = (details: NavigationMenuValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly ctrl = new MachineController<NavigationMenuSchema>(

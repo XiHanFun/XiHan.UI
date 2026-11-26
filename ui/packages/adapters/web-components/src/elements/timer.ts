@@ -9,6 +9,7 @@ import type { Size } from '@xihan-ui/core'
 import type { TimerCompleteDetails, TimerLive, TimerSchema, TimerTickDetails, TimerUnit } from '@xihan-ui/headless'
 import { connectTimer, isTimerUnit, timerAnatomy, timerMachine, timerMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -90,11 +91,11 @@ export class XhTimerElement extends XhElement {
   declare translations?: TimerSchema['props']['translations']
 
   private readonly notifyTick = (details: TimerTickDetails): void => {
-    this.dispatchEvent(new CustomEvent('tick', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'tick', details)
   }
 
   private readonly notifyComplete = (details: TimerCompleteDetails): void => {
-    this.dispatchEvent(new CustomEvent('complete', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'complete', details)
   }
 
   // 机器的副作用只有自己的两个定时器：不需要 config/layer/refs，controller 只带 props。

@@ -10,6 +10,7 @@ import type { TruncateOpenChangeDetails, TruncateOverflowChangeDetails, Truncate
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectTruncate, truncateAnatomy, truncateMachine, truncateMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -73,11 +74,11 @@ export class XhTruncateElement extends XhElement {
   private readonly authoredTrigger = new WeakMap<HTMLElement, boolean>()
 
   private readonly notifyOpen = (details: TruncateOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   private readonly notifyOverflow = (details: TruncateOverflowChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('overflow-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'overflow-change', details)
   }
 
   private readonly ctrl = new MachineController<TruncateSchema>(

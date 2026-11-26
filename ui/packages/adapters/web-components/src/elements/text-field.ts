@@ -10,6 +10,7 @@ import type { TextFieldSchema, TextFieldType, TextFieldValueChangeDetails } from
 import type { ElementStructure } from '../element-base'
 import { autoSizeTextarea, connectTextField, textFieldAnatomy, textFieldMachine, textFieldMeta, textFieldStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -132,15 +133,15 @@ export class XhTextFieldElement extends XhElement {
 
   /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
   private readonly notifyClear = (): void => {
-    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+    emitEvent(this, 'clear')
   }
 
   private readonly notify = (details: TextFieldValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyCommit = (details: TextFieldValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-commit', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-commit', details)
   }
 
   private readonly ctrl = new MachineController<TextFieldSchema>(this, textFieldMachine, () => this.machineProps())

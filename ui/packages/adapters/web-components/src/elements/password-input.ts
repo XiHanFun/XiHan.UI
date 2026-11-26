@@ -10,6 +10,7 @@ import type { PasswordInputRevealedChangeDetails, PasswordInputSchema, PasswordI
 import type { ElementStructure } from '../element-base'
 import { connectPasswordInput, passwordInputAnatomy, passwordInputMachine, passwordInputMeta, passwordInputStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -115,11 +116,11 @@ export class XhPasswordInputElement extends XhElement {
   declare translations?: Partial<PasswordInputTranslations>
 
   private readonly notifyValue = (details: PasswordInputValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyRevealed = (details: PasswordInputRevealedChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('revealed-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'revealed-change', details)
   }
 
   private readonly ctrl = new MachineController<PasswordInputSchema>(this, passwordInputMachine, () => this.machineProps())

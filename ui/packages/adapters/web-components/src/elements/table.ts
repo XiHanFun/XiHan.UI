@@ -37,6 +37,7 @@ import type { StructureVirtualBinding } from '../runtime/structure-virtual'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTable, tableAnatomy, tableMachine, tableMeta, tablePaginationStructure, tableStructure, tableVisibleDataRowCount, VIRTUAL_STRUCTURE_DELEGATE } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { GEN_ATTR } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { placeAfterRoot, unwrapDelegated } from '../dom/structure'
@@ -290,39 +291,39 @@ export class XhTableElement<TRow extends object = TableRecord> extends XhElement
   declare translations?: TableSchema['props']['translations']
 
   private readonly notifyColumnPreference = (details: { value: TableColumnPreference }): void => {
-    this.dispatchEvent(new CustomEvent('column-preference-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'column-preference-change', details)
   }
 
   private readonly notifySort = (details: TableSortChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('sort-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'sort-change', details)
   }
 
   private readonly notifyFilterValue = (details: TableFilterValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('filter-value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'filter-value-change', details)
   }
 
   private readonly notifyPage = (details: TablePageChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('page-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'page-change', details)
   }
 
   private readonly notifyPageSize = (details: TablePageSizeChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('page-size-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'page-size-change', details)
   }
 
   private readonly notifySelection = (details: TableSelectionChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('selection-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'selection-change', details)
   }
 
   private readonly notifyExpanded = (details: TableExpandedValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('expanded-value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'expanded-value-change', details)
   }
 
   private readonly notifyRowMove = (details: TableRowMoveDetails): void => {
-    this.dispatchEvent(new CustomEvent('row-move', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'row-move', details)
   }
 
   private readonly notifyAction = (details: TableActionDetails): void => {
-    this.dispatchEvent(new CustomEvent('action', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'action', details)
   }
 
   // table 机器无副作用，controller 只带 props。

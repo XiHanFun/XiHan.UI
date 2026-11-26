@@ -9,6 +9,7 @@ import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { DownloadTriggerCompleteDetails, DownloadTriggerData, DownloadTriggerErrorDetails, DownloadTriggerSchema, DownloadTriggerTranslations } from '@xihan-ui/headless'
 import { connectDownloadTrigger, downloadTriggerAnatomy, downloadTriggerMachine, downloadTriggerMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -63,11 +64,11 @@ export class XhDownloadTriggerElement extends XhElement {
   declare translations?: Partial<DownloadTriggerTranslations>
 
   private readonly notifyComplete = (details: DownloadTriggerCompleteDetails): void => {
-    this.dispatchEvent(new CustomEvent('download-complete', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'download-complete', details)
   }
 
   private readonly notifyError = (details: DownloadTriggerErrorDetails): void => {
-    this.dispatchEvent(new CustomEvent('download-error', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'download-error', details)
   }
 
   private readonly ctrl = new MachineController<DownloadTriggerSchema>(this, downloadTriggerMachine, () => this.machineProps())

@@ -18,6 +18,7 @@ import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTagsInput, tagsInputAnatomy, tagsInputMachine, tagsInputMeta, tagsInputStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -167,19 +168,19 @@ export class XhTagsInputElement extends XhElement {
 
   /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
   private readonly notifyClear = (): void => {
-    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+    emitEvent(this, 'clear')
   }
 
   private readonly notifyValue = (details: TagsInputValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyTagReject = (details: TagsInputTagRejectDetails): void => {
-    this.dispatchEvent(new CustomEvent('tag-reject', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'tag-reject', details)
   }
 
   private readonly notifyInputValue = (details: TagsInputInputValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('input-value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'input-value-change', details)
   }
 
   // 机器的副作用只有聚焦（自己经 scope 取节点）与列表动效（经 getControlEl 取标签容器），

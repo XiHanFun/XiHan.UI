@@ -16,6 +16,7 @@ import { connectMenu, createMenuTreeNode, menuAnatomy, menuMachine, menuMeta, me
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
@@ -225,7 +226,7 @@ export class XhMenuElement extends XhPortalHostElement {
   private exit: ExitGate | null = null
 
   private readonly notifyOpen = (details: MenuOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   private readonly notifyItemSelect = (details: MenuItemSelectDetails): void => {
@@ -233,15 +234,15 @@ export class XhMenuElement extends XhPortalHostElement {
   }
 
   private readonly dispatchSelect = (details: MenuItemSelectDetails): void => {
-    this.dispatchEvent(new CustomEvent('item-select', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'item-select', details)
   }
 
   private readonly notifyCheckboxValue = (details: MenuCheckboxValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('checkbox-value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'checkbox-value-change', details)
   }
 
   private readonly notifyRadioValue = (details: MenuRadioValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('radio-value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'radio-value-change', details)
   }
 
   private readonly ctrl = new MachineController<MenuSchema>(

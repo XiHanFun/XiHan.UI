@@ -28,6 +28,7 @@ import type {
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { connectSankeyChart, sankeyChartAnatomy, sankeyChartMachine, sankeyChartMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { createGeneratedElement, GEN_ATTR, generatedChildren, hasAuthorContent, reconcile, SVG_NS } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -112,19 +113,19 @@ export class XhSankeyChartElement extends XhElement {
   declare locale?: string
 
   private readonly notifyHidden = (details: ChartHiddenSeriesChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('hidden-series-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'hidden-series-change', details)
   }
 
   private readonly notifyKey = (details: ChartActiveKeyChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('active-key-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'active-key-change', details)
   }
 
   private readonly notifyActive = (details: ChartDatumDetails | null): void => {
-    this.dispatchEvent(new CustomEvent('datum-active', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'datum-active', details)
   }
 
   private readonly notifyPress = (details: ChartDatumDetails): void => {
-    this.dispatchEvent(new CustomEvent('datum-press', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'datum-press', details)
   }
 
   private readonly ctrl = new MachineController<SankeyChartSchema>(

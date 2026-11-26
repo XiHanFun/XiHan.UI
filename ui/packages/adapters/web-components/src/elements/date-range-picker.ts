@@ -43,6 +43,7 @@ import { createExitGate } from '@xihan-ui/core/presence'
 import { calendarRangePickerAnatomy, calendarRangePickerMachine, connectDateRangePicker, dateFieldAnatomy, dateFieldMachine, dateRangePickerAnatomy, dateRangePickerCalendarProps, dateRangePickerFieldAt, dateRangePickerFieldEndProps, dateRangePickerFieldProps, dateRangePickerMachine, dateRangePickerMeta, dateRangePickerStructure, resolveDateRangePickerPanelIndex } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { END_INDEX_CONVERTER } from '../dom/end-index'
 import { HOUR_CYCLE_CONVERTER } from '../dom/hour-cycle'
 import { wcNormalize } from '../dom/normalize'
@@ -350,28 +351,28 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
 
   /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
   private readonly notifyClear = (): void => {
-    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+    emitEvent(this, 'clear')
   }
 
   private readonly notifyValue = (details: DateRangePickerValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyOpen = (details: DateRangePickerOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   // 网格由作者渲染，这条是「该重画了」的信号
   private readonly notifyActiveIndex = (details: DateRangePickerActiveIndexChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('active-index-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'active-index-change', details)
   }
 
   private readonly notifyActiveView = (details: CalendarViewChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('active-view-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'active-view-change', details)
   }
 
   private readonly notifyFocus = (details: DateRangePickerFocusChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('focused-value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'focused-value-change', details)
   }
 
   // 声明顺序即 controller 挂载顺序：三台内嵌机器的 props 从编排机现读，编排机须先建

@@ -160,12 +160,12 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `confirm` | `CustomEvent` | 点了确定钮；随后收起。异步门经 confirmAction 属性：事件拿不到监听函数的返回值， 给元素赋 `confirmAction = () =&gt; thenable` 即挂起确认门，confirm 事件照发只作通知 |
-| `confirm-error` | `CustomEvent` | 确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因 |
-| `cancel-press` | `CustomEvent` | 点了取消钮；随后收起。Escape、层外交互与关闭钮只发 open-change |
-| `exit-complete` | `CustomEvent` | 退出完成且本层资源已释放 |
-| `panel-size-change` | `CustomEvent` | 厚度变化意图；detail 为 `{ panelSize: number }` |
 | `open-change` | `DrawerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `confirm` | `` | 点了确定钮；随后收起。异步门经 confirmAction 属性：事件拿不到监听函数的返回值， 给元素赋 `confirmAction = () =&gt; thenable` 即挂起确认门，confirm 事件照发只作通知 |
+| `confirm-error` | `DrawerConfirmErrorDetails` | 确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因 |
+| `cancel-press` | `` | 点了取消钮；随后收起。Escape、层外交互与关闭钮只发 open-change |
+| `exit-complete` | `` | 退出完成且本层资源已释放 |
+| `panel-size-change` | `DrawerPanelSizeChangeDetails` | 厚度变化意图；detail 为 `{ panelSize: number }` |
 
 ### 插槽
 

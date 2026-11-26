@@ -163,8 +163,8 @@ block-folding 按缩进找出语法块，块头行首给一颗折叠钮；折叠
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `clamped-change` | `CustomEvent` | 折叠态切换的意图；detail 为 `{ clamped: boolean }` |
-| `folded-change` | `CustomEvent` | 语法块的折叠集合变化；detail 为 `{ folded: number[] }` |
+| `clamped-change` | `CodeViewClampedChangeDetails` | 折叠态切换的意图；detail 为 `{ clamped: boolean }` |
+| `folded-change` | `CodeViewFoldedChangeDetails` | 语法块的折叠集合变化；detail 为 `{ folded: number[] }` |
 
 ### 插槽
 

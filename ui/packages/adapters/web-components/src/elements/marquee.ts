@@ -8,6 +8,7 @@
 import type { MarqueeDirection, MarqueePausedChangeDetails, MarqueeSchema, MarqueeTranslations } from '@xihan-ui/headless'
 import { connectMarquee, marqueeAnatomy, marqueeMachine, marqueeMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -69,7 +70,7 @@ export class XhMarqueeElement extends XhElement {
   declare translations?: Partial<MarqueeTranslations>
 
   private readonly notify = (details: MarqueePausedChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('paused-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'paused-change', details)
   }
 
   private readonly ctrl = new MachineController<MarqueeSchema>(this, marqueeMachine, () => this.machineProps())

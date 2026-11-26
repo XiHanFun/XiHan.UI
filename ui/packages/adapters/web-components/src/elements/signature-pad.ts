@@ -19,6 +19,7 @@ import type {
 import type { ElementStructure } from '../element-base'
 import { connectSignaturePad, EMPTY_SIGNATURE, signaturePadAnatomy, signaturePadMachine, signaturePadMeta, signaturePadStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -111,19 +112,19 @@ export class XhSignaturePadElement extends XhElement {
 
   /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
   private readonly notifyClear = (): void => {
-    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+    emitEvent(this, 'clear')
   }
 
   private readonly notifyDraw = (details: SignaturePadDrawDetails): void => {
-    this.dispatchEvent(new CustomEvent('draw', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'draw', details)
   }
 
   private readonly notifyDrawEnd = (details: SignaturePadDrawEndDetails): void => {
-    this.dispatchEvent(new CustomEvent('draw-end', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'draw-end', details)
   }
 
   private readonly notifyValue = (details: SignaturePadValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly ctrl = new MachineController<SignaturePadSchema>(

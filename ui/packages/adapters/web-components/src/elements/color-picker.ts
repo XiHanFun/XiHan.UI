@@ -47,6 +47,7 @@ import {
 } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
 import { withoutHidden } from '../overlay-exit'
@@ -252,23 +253,23 @@ export class XhColorPickerElement extends XhPortalHostElement {
   })
 
   private readonly notifyValue = (details: ColorPickerValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyOpen = (details: ColorPickerOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   private readonly notifyColorError = (details: ColorPickerErrorDetails): void => {
-    this.dispatchEvent(new CustomEvent('color-error', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'color-error', details)
   }
 
   private readonly notifyRecent = (details: ColorPickerRecentColorsChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('recent-colors-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'recent-colors-change', details)
   }
 
   private readonly notifyClear = (): void => {
-    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+    emitEvent(this, 'clear')
   }
 
   private readonly ctrl = new MachineController<ColorPickerSchema>(

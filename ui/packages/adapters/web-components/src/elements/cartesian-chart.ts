@@ -38,6 +38,7 @@ import type {
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { cartesianChartAnatomy, cartesianChartMachine, cartesianChartMeta, connectCartesianChart } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { createGeneratedElement, GEN_ATTR, generatedChildren, hasAuthorContent, reconcile, SVG_NS } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -188,31 +189,31 @@ export class XhCartesianChartElement extends XhElement {
   declare locale?: string
 
   private readonly notifyHidden = (details: ChartHiddenSeriesChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('hidden-series-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'hidden-series-change', details)
   }
 
   private readonly notifyKey = (details: ChartActiveKeyChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('active-key-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'active-key-change', details)
   }
 
   private readonly notifyWindow = (details: CartesianWindowChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('window-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'window-change', details)
   }
 
   private readonly notifyFollow = (details: CartesianFollowChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('follow-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'follow-change', details)
   }
 
   private readonly notifyBrush = (details: CartesianBrushSelectionChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('brush-selection-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'brush-selection-change', details)
   }
 
   private readonly notifyActive = (details: ChartDatumDetails | null): void => {
-    this.dispatchEvent(new CustomEvent('datum-active', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'datum-active', details)
   }
 
   private readonly notifyPress = (details: ChartDatumDetails): void => {
-    this.dispatchEvent(new CustomEvent('datum-press', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'datum-press', details)
   }
 
   private readonly ctrl = new MachineController<CartesianChartSchema>(

@@ -24,6 +24,7 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { createExitGate } from '@xihan-ui/core/presence'
 import { connectFloatingPanel, floatingPanelAnatomy, floatingPanelMachine, floatingPanelMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { withoutHidden } from '../overlay-exit'
@@ -150,27 +151,27 @@ export class XhFloatingPanelElement extends XhElement {
   private exit: ExitGate | null = null
 
   private readonly notifyOpen = (details: FloatingPanelOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   private readonly notifyPosition = (details: FloatingPanelPositionChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('position-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'position-change', details)
   }
 
   private readonly notifyDimensions = (details: FloatingPanelDimensionsChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('dimensions-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'dimensions-change', details)
   }
 
   private readonly notifyWindowState = (details: FloatingPanelWindowStateChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('window-state-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'window-state-change', details)
   }
 
   private readonly notifyDragStart = (details: FloatingPanelDragStartDetails): void => {
-    this.dispatchEvent(new CustomEvent('drag-start', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'drag-start', details)
   }
 
   private readonly notifyDragEnd = (details: FloatingPanelDragEndDetails): void => {
-    this.dispatchEvent(new CustomEvent('drag-end', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'drag-end', details)
   }
 
   private readonly ctrl = new MachineController<FloatingPanelSchema>(

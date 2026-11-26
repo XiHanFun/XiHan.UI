@@ -11,6 +11,7 @@ import type { ElementStructure } from '../element-base'
 import { createCounterIdGenerator, createScope, normalizeItemIndex } from '@xihan-ui/core'
 import { connectSlider, sliderAnatomy, sliderMachine, sliderMeta, sliderStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -152,11 +153,11 @@ export class XhSliderElement extends XhElement {
   private readonly sliderScope = createScope(null, this.idGen)
 
   private readonly notifyValue = (details: SliderValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyValueEnd = (details: SliderValueChangeEndDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change-end', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change-end', details)
   }
 
   private readonly ctrl = new MachineController<SliderSchema>(

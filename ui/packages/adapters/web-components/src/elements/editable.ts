@@ -17,6 +17,7 @@ import type {
 } from '@xihan-ui/headless'
 import { connectEditable, editableAnatomy, editableMachine, editableMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -118,19 +119,19 @@ export class XhEditableElement extends XhElement {
   private readonly ownsPreviewText = new WeakMap<HTMLElement, boolean>()
 
   private readonly notifyValue = (details: EditableValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyCommit = (details: EditableValueCommitDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-commit', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-commit', details)
   }
 
   private readonly notifyRevert = (details: EditableValueRevertDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-revert', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-revert', details)
   }
 
   private readonly notifyEdit = (details: EditableEditChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('edit-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'edit-change', details)
   }
 
   private readonly ctrl = new MachineController<EditableSchema>(

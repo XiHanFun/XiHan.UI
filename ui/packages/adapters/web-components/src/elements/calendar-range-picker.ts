@@ -21,6 +21,7 @@ import type {
 } from '@xihan-ui/headless'
 import { calendarRangePickerAnatomy, calendarRangePickerMachine, calendarRangePickerMeta, connectCalendarRangePicker } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { END_INDEX_CONVERTER } from '../dom/end-index'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -142,15 +143,15 @@ export class XhCalendarRangePickerElement extends XhElement {
   declare translations?: Partial<CalendarRangePickerTranslations>
 
   private readonly notifyValue = (details: CalendarRangePickerValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyFocus = (details: CalendarFocusChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('focused-value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'focused-value-change', details)
   }
 
   private readonly notifyActiveView = (details: CalendarViewChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('active-view-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'active-view-change', details)
   }
 
   private readonly ctrl = new MachineController<CalendarRangePickerSchema>(

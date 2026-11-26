@@ -20,6 +20,7 @@ import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTransfer, transferAnatomy, transferFocusKey, transferMachine, transferMeta, transferStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -178,11 +179,11 @@ export class XhTransferElement extends XhElement {
   }
 
   private readonly notifyValue = (details: TransferValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifySelection = (details: TransferSelectionChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('selection-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'selection-change', details)
   }
 
   // transfer 机器无副作用、无 refs（两侧集合全部从 collection + value + 搜索串推导），

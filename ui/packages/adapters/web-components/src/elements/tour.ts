@@ -22,6 +22,7 @@ import { createExitGate } from '@xihan-ui/core/presence'
 import { connectTour, resolveTourBoundary, tourAnatomy, tourMachine, tourMeta } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
@@ -157,7 +158,7 @@ export class XhTourElement extends XhPortalHostElement {
   private readonly ownsText = new WeakMap<HTMLElement, boolean>()
 
   private readonly emit = (type: string, detail: unknown): void => {
-    this.dispatchEvent(new CustomEvent(type, { detail, bubbles: true, composed: true }))
+    emitEvent(this, type, detail)
   }
 
   private readonly notifyOpen = (details: TourOpenChangeDetails): void => this.emit('open-change', details)

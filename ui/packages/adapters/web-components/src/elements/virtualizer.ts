@@ -18,6 +18,7 @@ import type {
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectVirtualizer, virtualizerAnatomy, virtualizerMachine, virtualizerMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { virtualItemInWindow, VirtualizerWiring } from '../dom/virtualizer-wiring'
 import { XhElement } from '../element-base'
@@ -107,7 +108,7 @@ export class XhVirtualizerElement extends XhElement {
   })
 
   private readonly notify = (details: VirtualizerRangeChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('range-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'range-change', details)
   }
 
   private readonly ctrl = new MachineController<VirtualizerSchema>(

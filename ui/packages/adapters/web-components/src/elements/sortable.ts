@@ -11,6 +11,7 @@ import type { SortableAxis } from '@xihan-ui/pointer'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectSortable, sortableAnatomy, sortableMachine, sortableMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -105,19 +106,19 @@ export class XhSortableElement extends XhElement {
   private readonly sortableScope = createScope(null, this.idGen)
 
   private readonly notifySort = (details: SortableSortDetails): void => {
-    this.dispatchEvent(new CustomEvent('sort', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'sort', details)
   }
 
   private readonly notifyTransfer = (details: SortableTransferDetails): void => {
-    this.dispatchEvent(new CustomEvent('transfer', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'transfer', details)
   }
 
   private readonly notifyDragStart = (details: SortableDragStartDetails): void => {
-    this.dispatchEvent(new CustomEvent('drag-start', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'drag-start', details)
   }
 
   private readonly notifyDragEnd = (details: SortableDragEndDetails): void => {
-    this.dispatchEvent(new CustomEvent('drag-end', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'drag-end', details)
   }
 
   private readonly ctrl = new MachineController<SortableSchema>(

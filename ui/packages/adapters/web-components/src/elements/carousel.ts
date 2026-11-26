@@ -9,6 +9,7 @@ import type { Direction, Orientation, Size } from '@xihan-ui/core'
 import type { CarouselEffect, CarouselPageChangeDetails, CarouselSchema, CarouselTranslations } from '@xihan-ui/headless'
 import { carouselAnatomy, carouselMachine, carouselMeta, connectCarousel } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -115,7 +116,7 @@ export class XhCarouselElement extends XhElement {
   declare translations?: Partial<CarouselTranslations>
 
   private readonly notify = (details: CarouselPageChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('page-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'page-change', details)
   }
 
   // 机器只有计时器一个副作用，controller 只带 props。

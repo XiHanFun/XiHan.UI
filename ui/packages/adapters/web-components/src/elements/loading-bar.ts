@@ -9,6 +9,7 @@ import type { Tone } from '@xihan-ui/core'
 import type { LoadingBarSchema, LoadingBarTranslations, LoadingBarValueChangeDetails } from '@xihan-ui/headless'
 import { connectLoadingBar, loadingBarAnatomy, loadingBarMachine, loadingBarMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -84,7 +85,7 @@ export class XhLoadingBarElement extends XhElement {
   declare translations?: Partial<LoadingBarTranslations>
 
   private readonly notify = (details: LoadingBarValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   // loading-bar 机器的副作用只有两个计时器（自身自足）：不需要 config/layer/refs，controller 只带 props。

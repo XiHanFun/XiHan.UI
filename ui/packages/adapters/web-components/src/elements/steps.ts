@@ -11,6 +11,7 @@ import type { ElementStructure } from '../element-base'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectSteps, stepsAnatomy, stepsMachine, stepsMeta, stepsStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -118,7 +119,7 @@ export class XhStepsElement extends XhElement {
   declare percent?: number
 
   private readonly notify = (details: StepsValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   // steps 机器无副作用：不需要 config/layer/refs，controller 只带 props。

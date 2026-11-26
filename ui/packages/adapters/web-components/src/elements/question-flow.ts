@@ -22,6 +22,7 @@ import type {
 } from '@xihan-ui/headless'
 import { connectQuestionFlow, questionFlowAnatomy, questionFlowMachine, questionFlowMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -122,7 +123,7 @@ export class XhQuestionFlowElement extends XhElement {
   declare translations?: Partial<QuestionFlowTranslations>
 
   private readonly emit = (type: string, detail: unknown, bubbles = true): void => {
-    this.dispatchEvent(new CustomEvent(type, { detail, bubbles, composed: bubbles }))
+    emitEvent(this, type, detail, { bubbles })
   }
 
   private readonly notifyIndex = (details: QuestionFlowIndexChangeDetails): void => this.emit('index-change', details)

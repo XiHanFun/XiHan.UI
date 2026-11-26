@@ -32,6 +32,7 @@ import type {
 import type { FormControlHost } from '../runtime/form-control-host'
 import { connectForm, formAnatomy, formFieldModel, formMachine, formMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { FORM_CONTROL_HOST_SELECTOR, isComposedControl } from '../runtime/form-control-host'
@@ -187,22 +188,22 @@ export class XhFormElement<TValues extends object = FormValues> extends XhElemen
   declare readOnly?: boolean
 
   private readonly notifyValues = (details: FormValuesChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('values-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'values-change', details)
   }
 
   private readonly notifyErrors = (details: FormErrorsChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('errors-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'errors-change', details)
   }
 
   // 与原生 submit 撞不上：连接层已经把那条原生事件的冒泡掐断在 <form> 上，
   // 从本元素冒出去的 submit 只可能是这一条（且只在校验通过时才有）
   private readonly notifySubmit = (details: FormSubmitDetails): void | PromiseLike<unknown> => {
-    this.dispatchEvent(new CustomEvent('submit', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'submit', details)
     return this.submitAction?.(details as unknown as FormSubmitDetails<TValues>)
   }
 
   private readonly notifySubmitError = (details: FormSubmitErrorDetails): void => {
-    this.dispatchEvent(new CustomEvent('submit-error', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'submit-error', details)
   }
 
   /**
@@ -212,11 +213,11 @@ export class XhFormElement<TValues extends object = FormValues> extends XhElemen
   declare submitAction?: (details: FormSubmitDetails<TValues>) => void | PromiseLike<unknown>
 
   private readonly notifyInvalid = (details: FormInvalidDetails): void => {
-    this.dispatchEvent(new CustomEvent('invalid', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'invalid', details)
   }
 
   private readonly notifyValidationError = (details: FormValidationErrorDetails): void => {
-    this.dispatchEvent(new CustomEvent('validation-error', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'validation-error', details)
   }
 
   private readonly ctrl = new MachineController<FormSchema>(

@@ -10,6 +10,7 @@ import type { NumberFieldSchema, NumberFieldValueChangeDetails } from '@xihan-ui
 import type { ElementStructure } from '../element-base'
 import { connectNumberField, numberFieldAnatomy, numberFieldMachine, numberFieldMeta, numberFieldStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -136,7 +137,7 @@ export class XhNumberFieldElement extends XhElement {
   declare formatOptions?: Intl.NumberFormatOptions
 
   private readonly notify = (details: NumberFieldValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly ctrl = new MachineController<NumberFieldSchema>(this, numberFieldMachine, () => this.machineProps())

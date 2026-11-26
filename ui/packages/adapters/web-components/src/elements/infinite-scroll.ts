@@ -9,6 +9,7 @@ import type { Service } from '@xihan-ui/core'
 import type { InfiniteScrollEdge, InfiniteScrollSchema } from '@xihan-ui/headless'
 import { connectInfiniteScroll, infiniteScrollAnatomy, infiniteScrollMachine, infiniteScrollMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -55,7 +56,7 @@ export class XhInfiniteScrollElement extends XhElement {
   declare target?: HTMLElement | null
 
   private readonly notify = (): void => {
-    this.dispatchEvent(new CustomEvent('load-more', { bubbles: true, composed: true }))
+    emitEvent(this, 'load-more')
   }
 
   private readonly ctrl = new MachineController<InfiniteScrollSchema>(

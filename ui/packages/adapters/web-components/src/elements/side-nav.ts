@@ -14,6 +14,7 @@ import { createExitGate } from '@xihan-ui/core/presence'
 import { connectSideNav, findSideNavRowEl, sideNavAnatomy, sideNavMachine, sideNavMeta, sideNavStructure, sideNavTooltipProps, tooltipMachine } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
@@ -137,11 +138,11 @@ export class XhSideNavElement extends XhPortalHostElement {
   declare filter?: SideNavSchema['props']['filter']
 
   private readonly notifyValue = (details: SideNavValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyExpanded = (details: SideNavExpandedValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('expanded-value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'expanded-value-change', details)
   }
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()

@@ -9,6 +9,7 @@ import type { Size, Tone } from '@xihan-ui/core'
 import type { NumberAnimationCompleteDetails, NumberAnimationEasing, NumberAnimationFormatOptions, NumberAnimationLive, NumberAnimationSchema } from '@xihan-ui/headless'
 import { connectNumberAnimation, numberAnimationAnatomy, numberAnimationMachine, numberAnimationMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -78,7 +79,7 @@ export class XhNumberAnimationElement extends XhElement {
   declare live?: NumberAnimationLive
 
   private readonly notify = (details: NumberAnimationCompleteDetails): void => {
-    this.dispatchEvent(new CustomEvent('complete', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'complete', details)
   }
 
   // 机器的副作用只有一个逐帧循环（自身自足）：不需要 config/layer/refs，controller 只带 props。

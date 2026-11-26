@@ -739,18 +739,19 @@ const truth = {
       return new Set([...src.matchAll(/\b(\w+Details)\b/g)].map(m => m[1])).size
     },
   },
-  CustomEvent构造处数: {
-    how: 'web-components 的 src 下 new CustomEvent 的出现次数',
+  事件派发处数: {
+    how: 'web-components 的 src 下 emitEvent 的调用次数（不含它自己的定义）',
     async value() {
       const files = await readTree(join(uiRoot, 'packages/adapters/web-components/src'), '.ts')
-      return files.reduce((n, [, src]) => n + (src.match(/new CustomEvent/g) ?? []).length, 0)
+      return files.reduce((n, [, src]) => n + (src.match(/(?<!function )\bemitEvent(?:<[^>]+>)?\(/g) ?? []).length, 0)
     },
   },
-  冒泡的CustomEvent处数: {
-    how: '同一批文件里 bubbles: true 的出现次数',
+  冒泡的事件派发处数: {
+    how: '同一批调用里没传 bubbles 选项、按缺省冒泡的个数',
     async value() {
       const files = await readTree(join(uiRoot, 'packages/adapters/web-components/src'), '.ts')
-      return files.reduce((n, [, src]) => n + (src.match(/bubbles: true/g) ?? []).length, 0)
+      const calls = files.flatMap(([, src]) => src.match(/(?<!function )\bemitEvent(?:<[^>]+>)?\([^\n]*/g) ?? [])
+      return calls.filter(call => !/\bbubbles\b/.test(call)).length
     },
   },
   connect产出的属性名数: {
@@ -1381,8 +1382,8 @@ const TABLE = [
   ['docs/guide/versioning.md', /\| attribute 名词汇表本身 \| (\d+) \|/, 'CEM观察属性名数'],
   ['docs/guide/versioning.md', /\| `CustomEvent` 名 \| (\d+) 个名字 \/ \d+ 条/, 'CEM事件名数'],
   ['docs/guide/versioning.md', /\| `CustomEvent` 名 \| \d+ 个名字 \/ (\d+) 条/, 'CEM事件声明数'],
-  ['docs/guide/versioning.md', /（(\d+) 处中 \d+ 处）/, 'CustomEvent构造处数'],
-  ['docs/guide/versioning.md', /（\d+ 处中 (\d+) 处）/, '冒泡的CustomEvent处数'],
+  ['docs/guide/versioning.md', /（经 `emitEvent` 派发的 (\d+) 处中 \d+ 处）/, '事件派发处数'],
+  ['docs/guide/versioning.md', /（经 `emitEvent` 派发的 \d+ 处中 (\d+) 处）/, '冒泡的事件派发处数'],
   ['docs/guide/versioning.md', /\| (\d+) 个 `\*Details` 类型 \|/, 'Details类型数'],
   ['docs/guide/versioning.md', /\| (\d+) 条（涉及 \d+ 个字段名）/, 'CEM无attribute字段数'],
   ['docs/guide/versioning.md', /\| \d+ 条（涉及 (\d+) 个字段名）/, 'CEM无attribute字段名数'],

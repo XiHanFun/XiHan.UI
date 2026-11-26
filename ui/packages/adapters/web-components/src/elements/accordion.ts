@@ -13,6 +13,7 @@ import { isItemDisabled } from '@xihan-ui/core'
 import { createExitGate } from '@xihan-ui/core/presence'
 import { accordionAnatomy, accordionMachine, accordionMeta, accordionStructure, connectAccordion } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { GEN_ATTR } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { STRUCTURE_MARK } from '../dom/structure'
@@ -111,7 +112,7 @@ export class XhAccordionElement extends XhElement {
   declare contentRole?: AccordionSchema['props']['contentRole']
 
   private readonly notify = (details: AccordionValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly ctrl = new MachineController<AccordionSchema>(

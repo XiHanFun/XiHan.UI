@@ -11674,18 +11674,18 @@
           ],
           "events": [
             {
+              "description": "折叠态切换的意图；detail 为 `{ clamped: boolean }`",
               "name": "clamped-change",
               "type": {
-                "text": "CustomEvent"
-              },
-              "description": "折叠态切换的意图；detail 为 `{ clamped: boolean }`"
+                "text": "CodeViewClampedChangeDetails"
+              }
             },
             {
+              "description": "语法块的折叠集合变化；detail 为 `{ folded: number[] }`",
               "name": "folded-change",
               "type": {
-                "text": "CustomEvent"
-              },
-              "description": "语法块的折叠集合变化；detail 为 `{ folded: number[] }`"
+                "text": "CodeViewFoldedChangeDetails"
+              }
             }
           ],
           "attributes": [
@@ -23819,39 +23819,30 @@
           ],
           "events": [
             {
-              "name": "confirm",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "点了确定钮；随后收起。异步门经 confirmAction 属性：事件拿不到监听函数的返回值， 给元素赋 `confirmAction = () => thenable` 即挂起确认门，confirm 事件照发只作通知"
-            },
-            {
-              "name": "confirm-error",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因"
-            },
-            {
-              "name": "cancel-press",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "点了取消钮；随后收起。Escape、层外交互与关闭钮只发 open-change"
-            },
-            {
-              "name": "exit-complete",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "退出完成且本层资源已释放"
-            },
-            {
               "description": "open 状态变化；detail 为 `{ open: boolean }`",
               "name": "open-change",
               "type": {
                 "text": "DialogOpenChangeDetails"
               }
+            },
+            {
+              "description": "点了确定钮；随后收起。异步门经 confirmAction 属性：事件拿不到监听函数的返回值， 给元素赋 `confirmAction = () => thenable` 即挂起确认门，confirm 事件照发只作通知",
+              "name": "confirm"
+            },
+            {
+              "description": "确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因",
+              "name": "confirm-error",
+              "type": {
+                "text": "DialogConfirmErrorDetails"
+              }
+            },
+            {
+              "description": "点了取消钮；随后收起。Escape、层外交互与关闭钮只发 open-change",
+              "name": "cancel-press"
+            },
+            {
+              "description": "退出完成且本层资源已释放",
+              "name": "exit-complete"
             }
           ],
           "attributes": [
@@ -24503,13 +24494,6 @@
           ],
           "events": [
             {
-              "name": "comment-mount",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "新铺出一个评论容器；detail 为 `{ side, line, change, text, element }`"
-            },
-            {
               "description": "展开集合变化；detail 为 `{ value: string[] }`",
               "name": "expanded-value-change",
               "type": {
@@ -24521,6 +24505,13 @@
               "name": "comment-request",
               "type": {
                 "text": "DiffViewCommentRequestDetails"
+              }
+            },
+            {
+              "description": "新铺出一个评论容器；detail 为 `{ side, line, change, text, element }`",
+              "name": "comment-mount",
+              "type": {
+                "text": "DiffViewCommentMount"
               }
             }
           ],
@@ -25559,45 +25550,36 @@
           ],
           "events": [
             {
-              "name": "confirm",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "点了确定钮；随后收起。异步门经 confirmAction 属性：事件拿不到监听函数的返回值， 给元素赋 `confirmAction = () => thenable` 即挂起确认门，confirm 事件照发只作通知"
-            },
-            {
-              "name": "confirm-error",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因"
-            },
-            {
-              "name": "cancel-press",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "点了取消钮；随后收起。Escape、层外交互与关闭钮只发 open-change"
-            },
-            {
-              "name": "exit-complete",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "退出完成且本层资源已释放"
-            },
-            {
-              "name": "panel-size-change",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "厚度变化意图；detail 为 `{ panelSize: number }`"
-            },
-            {
               "description": "open 状态变化；detail 为 `{ open: boolean }`",
               "name": "open-change",
               "type": {
                 "text": "DrawerOpenChangeDetails"
+              }
+            },
+            {
+              "description": "点了确定钮；随后收起。异步门经 confirmAction 属性：事件拿不到监听函数的返回值， 给元素赋 `confirmAction = () => thenable` 即挂起确认门，confirm 事件照发只作通知",
+              "name": "confirm"
+            },
+            {
+              "description": "确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因",
+              "name": "confirm-error",
+              "type": {
+                "text": "DrawerConfirmErrorDetails"
+              }
+            },
+            {
+              "description": "点了取消钮；随后收起。Escape、层外交互与关闭钮只发 open-change",
+              "name": "cancel-press"
+            },
+            {
+              "description": "退出完成且本层资源已释放",
+              "name": "exit-complete"
+            },
+            {
+              "description": "厚度变化意图；detail 为 `{ panelSize: number }`",
+              "name": "panel-size-change",
+              "type": {
+                "text": "DrawerPanelSizeChangeDetails"
               }
             }
           ],
@@ -44575,11 +44557,11 @@
           ],
           "events": [
             {
+              "description": "新铺出一个行内挂点的占位节点；detail 为 `{ key, element, block, index, inline }`",
               "name": "inline-mount",
               "type": {
-                "text": "CustomEvent"
-              },
-              "description": "新铺出一个行内挂点的占位节点；detail 为 `{ key, element, block, index, inline }`"
+                "text": "MarkdownInlineMount"
+              }
             }
           ],
           "attributes": [
@@ -54674,7 +54656,7 @@
               },
               "privacy": "private",
               "readonly": true,
-              "default": "{ onConfirm: () => { this.dispatchEvent(new CustomEvent('confirm', { bubbles: true, composed: true })) return this.confirmAction?.() }, onConfirmError: (details) => { this.dispatchEvent(new CustomEvent<PopconfirmConfirmErrorDetails>('confirm-error', { detail: details, bubbles: true, composed: true })) }, onCancelPress: () => { this.dispatchEvent(new CustomEvent('cancel-press', { bubbles: true, composed: true })) }, onPendingChange: (next) => { this.pendingState = next this.requestUpdate() }, onActionErrorChange: (next) => { this.actionErrorState = next this.requestUpdate() }, }"
+              "default": "{ onConfirm: () => { emitEvent(this, 'confirm') return this.confirmAction?.() }, onConfirmError: (details) => { emitEvent<PopconfirmConfirmErrorDetails>(this, 'confirm-error', details) }, onCancelPress: () => { emitEvent(this, 'cancel-press') }, onPendingChange: (next) => { this.pendingState = next this.requestUpdate() }, onActionErrorChange: (next) => { this.actionErrorState = next this.requestUpdate() }, }"
             },
             {
               "kind": "field",
@@ -54787,13 +54769,6 @@
           ],
           "events": [
             {
-              "name": "exit-complete",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "退场动画播完、本层资源全部释放；卸载和退场途中重开不派发"
-            },
-            {
               "description": "open 状态变化；detail 为 `{ open: boolean }`",
               "name": "open-change",
               "type": {
@@ -54814,6 +54789,10 @@
             {
               "description": "点击了取消按钮；随后浮层收起。Escape 与层外交互只发 open-change",
               "name": "cancel-press"
+            },
+            {
+              "description": "退场动画播完、本层资源全部释放；卸载和退场途中重开不派发",
+              "name": "exit-complete"
             }
           ],
           "attributes": [
@@ -55508,18 +55487,15 @@
           ],
           "events": [
             {
-              "name": "exit-complete",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "退场动画播完、本层资源全部释放；卸载和退场途中重开不派发"
-            },
-            {
               "description": "open 状态变化；detail 为 `{ open: boolean }`",
               "name": "open-change",
               "type": {
                 "text": "PopoverOpenChangeDetails"
               }
+            },
+            {
+              "description": "退场动画播完、本层资源全部释放；卸载和退场途中重开不派发",
+              "name": "exit-complete"
             }
           ],
           "attributes": [
@@ -55868,11 +55844,8 @@
           ],
           "events": [
             {
-              "name": "exit-complete",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "退场动画播完、内容撤下之后派发，没有 detail；初始就不在场时不派发"
+              "description": "退场动画播完、内容撤下之后派发，没有 detail；初始就不在场时不派发",
+              "name": "exit-complete"
             }
           ],
           "attributes": [
@@ -62067,32 +62040,32 @@
           ],
           "events": [
             {
+              "description": "开始滚动；detail 为 `{ offset: number, max: number }`",
               "name": "scroll-start",
               "type": {
-                "text": "CustomEvent"
-              },
-              "description": "开始滚动；detail 为 `{ offset: number, max: number }`"
+                "text": "ScrollbarScrollDetails"
+              }
             },
             {
+              "description": "一段滚动结束（停止 120ms）；detail 同上",
               "name": "scroll-end",
               "type": {
-                "text": "CustomEvent"
-              },
-              "description": "一段滚动结束（停止 120ms）；detail 同上"
+                "text": "ScrollbarScrollDetails"
+              }
             },
             {
+              "description": "按住滑块；detail 同上",
               "name": "drag-start",
               "type": {
-                "text": "CustomEvent"
-              },
-              "description": "按住滑块；detail 同上"
+                "text": "ScrollbarScrollDetails"
+              }
             },
             {
+              "description": "松开滑块；detail 同上",
               "name": "drag-end",
               "type": {
-                "text": "CustomEvent"
-              },
-              "description": "松开滑块；detail 同上"
+                "text": "ScrollbarScrollDetails"
+              }
             }
           ],
           "attributes": [

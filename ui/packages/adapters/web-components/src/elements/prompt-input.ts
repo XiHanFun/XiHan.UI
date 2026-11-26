@@ -15,6 +15,7 @@ import type {
 } from '@xihan-ui/headless'
 import { connectPromptInput, promptInputAnatomy, promptInputMachine, promptInputMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -80,7 +81,7 @@ export class XhPromptInputElement extends XhElement {
   declare translations?: Partial<PromptInputTranslations>
 
   private readonly emit = (type: string, detail?: unknown, bubbles = true): void => {
-    this.dispatchEvent(new CustomEvent(type, { detail, bubbles, composed: bubbles }))
+    emitEvent(this, type, detail, { bubbles })
   }
 
   private readonly notifyValue = (details: PromptInputValueChangeDetails): void => this.emit('value-change', details)

@@ -8,6 +8,7 @@
 import type { MarkdownBlock, MarkdownInlineMount, MarkdownStreamApi, MarkdownStreamProps, MarkdownStreamTranslations } from '@xihan-ui/headless'
 import { connectMarkdownStream, markdownBlockHtml, markdownStreamAnatomy, markdownStreamMeta, queryMarkdownInlines, trackMarkdownStreamCaret } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -178,7 +179,7 @@ export class XhMarkdownStreamElement extends XhElement {
       queueMicrotask(() => {
         for (const mount of fresh) {
           if (mount.element.isConnected)
-            this.dispatchEvent(new CustomEvent<MarkdownInlineMount>('inline-mount', { detail: mount, bubbles: true, composed: true }))
+            emitEvent<MarkdownInlineMount>(this, 'inline-mount', mount)
         }
       })
     }

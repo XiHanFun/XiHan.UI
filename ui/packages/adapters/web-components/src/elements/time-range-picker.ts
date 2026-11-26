@@ -27,6 +27,7 @@ import { createExitGate } from '@xihan-ui/core/presence'
 import { connectTimeRangePicker, resolveTimeRangePickerEndIndex, timeRangePickerAnatomy, timeRangePickerMachine, timeRangePickerMeta, timeRangePickerStructure } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { TIME_STEP_CONVERTER } from '../dom/time-step'
 import { withoutHidden } from '../overlay-exit'
@@ -233,15 +234,15 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
 
   /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
   private readonly notifyClear = (): void => {
-    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+    emitEvent(this, 'clear')
   }
 
   private readonly notifyValue = (details: TimeRangePickerValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyOpen = (details: TimeRangePickerOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   private readonly ctrl = new MachineController<TimeRangePickerSchema>(

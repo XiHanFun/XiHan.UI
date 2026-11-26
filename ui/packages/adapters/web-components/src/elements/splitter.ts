@@ -10,6 +10,7 @@ import type { SplitterPanelProps, SplitterSchema, SplitterSizesChangeDetails, Sp
 import { createCounterIdGenerator, createScope, normalizeItemIndex } from '@xihan-ui/core'
 import { connectSplitter, splitterAnatomy, splitterMachine, splitterMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -114,11 +115,11 @@ export class XhSplitterElement extends XhElement {
   private readonly splitterScope = createScope(null, this.idGen)
 
   private readonly notifySize = (details: SplitterSizesChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('sizes-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'sizes-change', details)
   }
 
   private readonly notifySizeEnd = (details: SplitterSizesChangeEndDetails): void => {
-    this.dispatchEvent(new CustomEvent('sizes-change-end', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'sizes-change-end', details)
   }
 
   private readonly ctrl = new MachineController<SplitterSchema>(

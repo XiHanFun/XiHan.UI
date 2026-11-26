@@ -20,6 +20,7 @@ import type {
 } from '@xihan-ui/headless'
 import { connectDiffView, diffViewAnatomy, diffViewMachine, diffViewMeta, diffViewSides } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -118,11 +119,11 @@ export class XhDiffViewElement extends XhElement {
   declare translations?: Partial<DiffViewTranslations>
 
   private readonly notify = (details: DiffViewExpandedValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('expanded-value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'expanded-value-change', details)
   }
 
   private readonly requestComment = (details: DiffViewCommentRequestDetails): void => {
-    this.dispatchEvent(new CustomEvent('comment-request', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'comment-request', details)
   }
 
   private readonly ctrl = new MachineController<DiffViewSchema>(this, diffViewMachine, () => ({
@@ -324,7 +325,7 @@ export class XhDiffViewElement extends XhElement {
     queueMicrotask(() => {
       for (const mount of fresh) {
         if (mount.element.isConnected)
-          this.dispatchEvent(new CustomEvent<DiffViewCommentMount>('comment-mount', { detail: mount, bubbles: true, composed: true }))
+          emitEvent<DiffViewCommentMount>(this, 'comment-mount', mount)
       }
     })
   }

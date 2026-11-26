@@ -148,9 +148,9 @@ parseUnifiedPatch 把一份多文件补丁拆成每个文件一份模型；逐�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `comment-mount` | `CustomEvent` | 新铺出一个评论容器；detail 为 `{ side, line, change, text, element }` |
 | `expanded-value-change` | `DiffViewExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 | `comment-request` | `DiffViewCommentRequestDetails` | 在某一行上点了评论钮；detail 为 `{ side, line, change, text }` |
+| `comment-mount` | `DiffViewCommentMount` | 新铺出一个评论容器；detail 为 `{ side, line, change, text, element }` |
 
 ### 插槽
 

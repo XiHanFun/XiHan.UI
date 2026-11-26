@@ -13,6 +13,7 @@ import { createExitGate } from '@xihan-ui/core/presence'
 import { connectImageViewer, imageViewerAnatomy, imageViewerCounterText, imageViewerMachine, imageViewerMeta } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
@@ -127,11 +128,11 @@ export class XhImageViewerElement extends XhPortalHostElement {
   private counterOwned: boolean | null = null
 
   private readonly notifyOpen = (details: ImageViewerOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   private readonly notifyIndex = (details: ImageViewerIndexChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('index-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'index-change', details)
   }
 
   private readonly ctrl = new MachineController<ImageViewerSchema>(

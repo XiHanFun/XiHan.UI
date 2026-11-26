@@ -10,6 +10,7 @@ import type { LayoutBreakpoint, LayoutSchema, LayoutSiderBreakpointChangeDetails
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectLayout, layoutAnatomy, layoutMachine, layoutMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -90,11 +91,11 @@ export class XhLayoutElement extends XhElement {
   private config: RuntimeConfig | null = null
 
   private readonly notify = (details: LayoutSiderCollapsedChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('sider-collapsed-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'sider-collapsed-change', details)
   }
 
   private readonly notifyBreakpoint = (details: LayoutSiderBreakpointChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('sider-breakpoint-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'sider-breakpoint-change', details)
   }
 
   private readonly ctrl = new MachineController<LayoutSchema>(

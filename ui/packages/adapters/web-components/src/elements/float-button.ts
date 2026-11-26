@@ -19,6 +19,7 @@ import type {
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectFloatButton, floatButtonAnatomy, floatButtonMachine, floatButtonMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -105,11 +106,11 @@ export class XhFloatButtonElement extends XhElement {
   private config: RuntimeConfig | null = null
 
   private readonly notify = (details: CollapsibleOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   private readonly notifyPosition = (details: FloatButtonPositionChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('position-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'position-change', details)
   }
 
   private readonly ctrl = new MachineController<FloatButtonSchema>(

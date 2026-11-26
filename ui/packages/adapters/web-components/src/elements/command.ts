@@ -26,6 +26,7 @@ import { commandAnatomy, commandMachine, commandMeta, commandStructure, connectC
 import { resolveXhConfig } from '../config'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
@@ -181,15 +182,15 @@ export class XhCommandElement extends XhPortalHostElement {
   private readonly declaredDisabled = createDisabledDeclarations()
 
   private readonly notifyOpen = (details: CommandOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   private readonly notifyInputValue = (details: CommandInputValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('input-value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'input-value-change', details)
   }
 
   private readonly notifyItemSelect = (details: CommandItemSelectDetails): void => {
-    this.dispatchEvent(new CustomEvent('item-select', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'item-select', details)
   }
 
   private readonly ctrl = new MachineController<CommandSchema>(

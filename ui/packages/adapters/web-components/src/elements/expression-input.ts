@@ -35,6 +35,7 @@ import {
 } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
@@ -182,19 +183,19 @@ export class XhExpressionInputElement extends XhPortalHostElement {
   })
 
   private readonly notifyValue = (details: ExpressionInputValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyIssues = (details: ExpressionInputIssuesChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('issues-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'issues-change', details)
   }
 
   private readonly notifySelect = (details: ExpressionInputCompletionSelectDetails): void => {
-    this.dispatchEvent(new CustomEvent('completion-select', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'completion-select', details)
   }
 
   private readonly notifyOpen = (details: ExpressionInputOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   readonly ctrl = new MachineController<ExpressionInputSchema>(

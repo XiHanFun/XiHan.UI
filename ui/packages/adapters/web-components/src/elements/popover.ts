@@ -14,6 +14,7 @@ import { connectPopover, popoverAnatomy, popoverMachine, popoverMeta } from '@xi
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { resolveXhConfig } from '../config'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
@@ -136,7 +137,7 @@ export class XhPopoverElement extends XhPortalHostElement {
   })
 
   private readonly notify = (details: PopoverOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   private readonly ctrl = new MachineController<PopoverSchema>(
@@ -178,7 +179,7 @@ export class XhPopoverElement extends XhPortalHostElement {
       // content 只引用作者写了的标题与说明
       parts: renderedTitleDescription(this.getPart('title'), this.getPart('description')),
       onOpenChange: this.notify,
-      onExitComplete: () => this.dispatchEvent(new CustomEvent('exit-complete', { bubbles: true, composed: true })),
+      onExitComplete: () => emitEvent(this, 'exit-complete'),
     }
   }
 

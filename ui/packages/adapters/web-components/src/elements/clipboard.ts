@@ -9,6 +9,7 @@ import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { ClipboardCopyErrorDetails, ClipboardSchema, ClipboardStatusChangeDetails, ClipboardTranslations } from '@xihan-ui/headless'
 import { clipboardAnatomy, clipboardMachine, clipboardMeta, connectClipboard } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -69,11 +70,11 @@ export class XhClipboardElement extends XhElement {
   private readonly authoredStatus = new WeakMap<HTMLElement, boolean>()
 
   private readonly notifyStatus = (details: ClipboardStatusChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('status-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'status-change', details)
   }
 
   private readonly notifyError = (details: ClipboardCopyErrorDetails): void => {
-    this.dispatchEvent(new CustomEvent('copy-error', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'copy-error', details)
   }
 
   private readonly ctrl = new MachineController<ClipboardSchema>(this, clipboardMachine, () => this.machineProps())

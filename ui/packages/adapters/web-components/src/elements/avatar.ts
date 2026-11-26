@@ -8,6 +8,7 @@
 import type { Size, Tone } from '@xihan-ui/core'
 import type { AvatarSchema, AvatarStatus, AvatarStatusChangeDetails } from '@xihan-ui/headless'
 import { avatarAnatomy, avatarMachine, avatarMeta, connectAvatar } from '@xihan-ui/headless'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -49,7 +50,7 @@ export class XhAvatarElement extends XhElement {
   declare fallbackDelay?: number
 
   private readonly notify = (details: AvatarStatusChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('status-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'status-change', details)
   }
 
   private readonly ctrl = new MachineController<AvatarSchema>(this, avatarMachine, () => this.machineProps())

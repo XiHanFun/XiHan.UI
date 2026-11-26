@@ -14,6 +14,7 @@ import { createExitGate } from '@xihan-ui/core/presence'
 import { connectDialog, dialogAnatomy, dialogMachine, dialogMeta, dialogStructure } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
@@ -165,14 +166,14 @@ export class XhDialogElement extends XhPortalHostElement {
   private actionIntents(): DialogActionIntents {
     return {
       onConfirm: () => {
-        this.dispatchEvent(new CustomEvent('confirm', { bubbles: true, composed: true }))
+        emitEvent(this, 'confirm')
         return this.confirmAction?.()
       },
       onConfirmError: (details) => {
-        this.dispatchEvent(new CustomEvent<DialogConfirmErrorDetails>('confirm-error', { detail: details, bubbles: true, composed: true }))
+        emitEvent<DialogConfirmErrorDetails>(this, 'confirm-error', details)
       },
       onCancelPress: () => {
-        this.dispatchEvent(new CustomEvent('cancel-press', { bubbles: true, composed: true }))
+        emitEvent(this, 'cancel-press')
       },
       pending: this.pendingState,
       onPendingChange: (next) => {
@@ -207,7 +208,7 @@ export class XhDialogElement extends XhPortalHostElement {
   })
 
   private readonly notify = (details: DialogOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   private readonly ctrl = new MachineController<DialogSchema>(
@@ -237,7 +238,7 @@ export class XhDialogElement extends XhPortalHostElement {
       parts: renderedTitleDescription(this.getPart('title'), this.getPart('description')),
       translations: this.translations,
       onOpenChange: this.notify,
-      onExitComplete: () => this.dispatchEvent(new CustomEvent('exit-complete', { bubbles: true, composed: true })),
+      onExitComplete: () => emitEvent(this, 'exit-complete'),
     }
   }
 

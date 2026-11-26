@@ -107,7 +107,7 @@ exit-complete 在退场动画播完、内容撤下之后才发，「退场中」
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `exit-complete` | `CustomEvent` | 退场动画播完、内容撤下之后派发，没有 detail；初始就不在场时不派发 |
+| `exit-complete` | `` | 退场动画播完、内容撤下之后派发，没有 detail；初始就不在场时不派发 |
 
 ### React 适配器 props
 

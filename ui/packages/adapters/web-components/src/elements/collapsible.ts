@@ -12,6 +12,7 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { createExitGate } from '@xihan-ui/core/presence'
 import { collapsibleAnatomy, collapsibleMachine, collapsibleMeta, connectCollapsible } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { withoutHidden } from '../overlay-exit'
@@ -78,7 +79,7 @@ export class XhCollapsibleElement extends XhElement {
   private readonly lazyContent = new LazyContent()
 
   private readonly notify = (details: CollapsibleOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   private readonly ctrl = new MachineController<CollapsibleSchema>(

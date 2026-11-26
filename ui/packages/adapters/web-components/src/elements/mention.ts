@@ -26,6 +26,7 @@ import { connectMention, mentionAnatomy, mentionMachine, mentionMeta, mentionStr
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
@@ -176,19 +177,19 @@ export class XhMentionElement extends XhPortalHostElement {
   })
 
   private readonly notifyValue = (details: MentionValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyQuery = (details: MentionQueryChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('query-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'query-change', details)
   }
 
   private readonly notifyItemSelect = (details: MentionItemSelectDetails): void => {
-    this.dispatchEvent(new CustomEvent('item-select', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'item-select', details)
   }
 
   private readonly notifyOpen = (details: MentionOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   private readonly ctrl = new MachineController<MentionSchema>(

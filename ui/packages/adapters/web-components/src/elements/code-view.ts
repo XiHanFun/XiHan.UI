@@ -10,6 +10,7 @@ import type { CodeViewApi, CodeViewClampedChangeDetails, CodeViewFoldedChangeDet
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { codeViewAnatomy, codeViewMachine, codeViewMeta, connectCodeView, createCodeViewHighlighterResource } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -175,10 +176,10 @@ export class XhCodeViewElement extends XhElement {
       size: this.size,
       translations: this.translations,
       onClampedChange: (details: CodeViewClampedChangeDetails) => {
-        this.dispatchEvent(new CustomEvent('clamped-change', { detail: details, bubbles: true, composed: true }))
+        emitEvent(this, 'clamped-change', details)
       },
       onFoldedChange: (details: CodeViewFoldedChangeDetails) => {
-        this.dispatchEvent(new CustomEvent('folded-change', { detail: details, bubbles: true, composed: true }))
+        emitEvent(this, 'folded-change', details)
       },
     }
   }

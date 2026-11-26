@@ -26,6 +26,7 @@ import { createExitGate } from '@xihan-ui/core/presence'
 import { cascaderAnatomy, cascaderMachine, cascaderMeta, cascaderStructure, connectCascader } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { PART_ATTR } from '../dom/parts'
 import { withoutHidden } from '../overlay-exit'
@@ -324,23 +325,23 @@ export class XhCascaderElement extends XhPortalHostElement {
 
   /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
   private readonly notifyClear = (): void => {
-    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+    emitEvent(this, 'clear')
   }
 
   private readonly notifyValue = (details: CascaderValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyBranchLoadStart = (details: CascaderBranchLoadStartDetails): void => {
-    this.dispatchEvent(new CustomEvent('branch-load-start', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'branch-load-start', details)
   }
 
   private readonly notifyBranchLoad = (details: CascaderBranchLoadDetails): void => {
-    this.dispatchEvent(new CustomEvent('branch-load', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'branch-load', details)
   }
 
   private readonly notifyBranchLoadError = (details: CascaderBranchLoadErrorDetails): void => {
-    this.dispatchEvent(new CustomEvent('branch-load-error', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'branch-load-error', details)
   }
 
   /** 元素在懒分支那一列里补出来的三块状态节点。 */
@@ -359,7 +360,7 @@ export class XhCascaderElement extends XhPortalHostElement {
   }
 
   private readonly notifyOpen = (details: CascaderOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   private readonly ctrl = new MachineController<CascaderSchema>(

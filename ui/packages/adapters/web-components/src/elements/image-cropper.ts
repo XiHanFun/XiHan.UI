@@ -23,6 +23,7 @@ import type {
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 import { connectImageCropper, IMAGE_CROPPER_NO_FLIP, imageCropperAnatomy, imageCropperMachine, imageCropperMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -191,23 +192,23 @@ export class XhImageCropperElement extends XhElement {
   declare translations?: ImageCropperSchema['props']['translations']
 
   private readonly notifyValue = (details: ImageCropperValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyValueEnd = (details: ImageCropperValueChangeEndDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change-end', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change-end', details)
   }
 
   private readonly notifyZoom = (details: ImageCropperZoomChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('zoom-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'zoom-change', details)
   }
 
   private readonly notifyRotation = (details: ImageCropperRotationChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('rotation-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'rotation-change', details)
   }
 
   private readonly notifyFlip = (details: ImageCropperFlipChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('flip-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'flip-change', details)
   }
 
   private readonly ctrl = new MachineController<ImageCropperSchema>(

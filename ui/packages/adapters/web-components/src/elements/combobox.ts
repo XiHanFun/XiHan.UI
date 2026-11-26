@@ -28,6 +28,7 @@ import { comboboxAnatomy, comboboxMachine, comboboxMeta, comboboxStructure, conn
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
 import { withoutHidden } from '../overlay-exit'
@@ -247,24 +248,24 @@ export class XhComboboxElement<V = string> extends XhPortalHostElement {
 
   /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
   private readonly notifyClear = (): void => {
-    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+    emitEvent(this, 'clear')
   }
 
   /** 浮层里的列表滚到末端，请求下一页。 */
   private readonly notifyLoadMore = (): void => {
-    this.dispatchEvent(new CustomEvent('load-more', { bubbles: true, composed: true }))
+    emitEvent(this, 'load-more')
   }
 
   private readonly notifyValue = (details: ComboboxValueChangeDetails<unknown>): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyInputValue = (details: ComboboxInputValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('input-value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'input-value-change', details)
   }
 
   private readonly notifyOpen = (details: ComboboxOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   private readonly ctrl = new MachineController<ComboboxSchema>(

@@ -17,6 +17,7 @@ import type {
 } from '@xihan-ui/headless'
 import { approvalAnatomy, approvalMachine, approvalMeta, connectApproval } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
@@ -116,7 +117,7 @@ export class XhApprovalElement extends XhElement {
   declare translations?: Partial<ApprovalTranslations>
 
   private readonly emit = (type: string, detail: unknown): void => {
-    this.dispatchEvent(new CustomEvent(type, { detail, bubbles: true, composed: true }))
+    emitEvent(this, type, detail)
   }
 
   private readonly notifyDecision = (details: ApprovalDecisionDetails): void => this.emit('decision', details)

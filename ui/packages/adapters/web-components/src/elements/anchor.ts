@@ -10,6 +10,7 @@ import type { AnchorNode, AnchorSchema, AnchorTranslations, AnchorValueChangeDet
 import type { ElementStructure } from '../element-base'
 import { anchorAnatomy, anchorMachine, anchorMeta, anchorStructure, connectAnchor } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -89,7 +90,7 @@ export class XhAnchorElement extends XhElement {
   declare target?: HTMLElement | null
 
   private readonly notify = (details: AnchorValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly ctrl = new MachineController<AnchorSchema>(

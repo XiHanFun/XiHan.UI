@@ -9,6 +9,7 @@ import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { TogglePressedChangeDetails, ToggleSchema } from '@xihan-ui/headless'
 import { connectToggle, toggleAnatomy, toggleMachine, toggleMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -52,7 +53,7 @@ export class XhToggleElement extends XhElement {
   declare fullWidth?: boolean
 
   private readonly notify = (details: TogglePressedChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('pressed-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'pressed-change', details)
   }
 
   private readonly ctrl = new MachineController<ToggleSchema>(this, toggleMachine, () => this.machineProps())

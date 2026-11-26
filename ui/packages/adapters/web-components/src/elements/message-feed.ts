@@ -17,6 +17,7 @@ import type {
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectMessageFeed, messageFeedAnatomy, messageFeedMachine, messageFeedMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -82,11 +83,11 @@ export class XhMessageFeedElement extends XhElement {
   private config: RuntimeConfig | null = null
 
   private readonly notifyStick = (details: MessageFeedStickChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('stick-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'stick-change', details)
   }
 
   private readonly notifyFocus = (details: MessageFeedItemFocusDetails): void => {
-    this.dispatchEvent(new CustomEvent('item-focus', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'item-focus', details)
   }
 
   private readonly ctrl = new MachineController<MessageFeedSchema>(

@@ -12,6 +12,7 @@ import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTabs, tabsAnatomy, tabsMachine, tabsMeta, tabsOverflowMenuProps, tabsStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { MachineController } from '../runtime/machine-controller'
 import { OverflowMenuController } from '../runtime/overflow-menu-controller'
@@ -149,19 +150,19 @@ export class XhTabsElement extends XhPortalHostElement {
   declare translations?: Partial<TabsTranslations>
 
   private readonly notify = (details: TabsValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyTabMove = (details: TabsMoveDetails): void => {
-    this.dispatchEvent(new CustomEvent('tab-move', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'tab-move', details)
   }
 
   private readonly notifyTabClose = (details: TabsCloseDetails): void => {
-    this.dispatchEvent(new CustomEvent('tab-close', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'tab-close', details)
   }
 
   private readonly notifyTabAdd = (): void => {
-    this.dispatchEvent(new CustomEvent('tab-add', { bubbles: true, composed: true }))
+    emitEvent(this, 'tab-add')
   }
 
   private readonly ctrl = new MachineController<TabsSchema>(

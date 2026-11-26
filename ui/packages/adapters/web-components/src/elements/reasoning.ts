@@ -12,6 +12,7 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { createExitGate } from '@xihan-ui/core/presence'
 import { connectReasoning, reasoningAnatomy, reasoningDuration, reasoningMeta, reasoningStatusText, toolCallMachine } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { withoutHidden } from '../overlay-exit'
@@ -96,7 +97,7 @@ export class XhReasoningElement extends XhElement {
   }
 
   private readonly notify = (details: ToolCallOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   // configName 显式给 reasoning：机器叫 tool-call，不指定的话全局文案会取到那一格

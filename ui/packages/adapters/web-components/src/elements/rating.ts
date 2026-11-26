@@ -11,6 +11,7 @@ import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectRating, hasNamingContent, ratingAnatomy, ratingMachine, ratingMeta, ratingStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -105,11 +106,11 @@ export class XhRatingElement extends XhElement {
   declare translations?: Partial<RatingTranslations>
 
   private readonly notifyValue = (details: RatingValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyHover = (details: RatingHoverChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('hover-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'hover-change', details)
   }
 
   private readonly ctrl = new MachineController<RatingSchema>(this, ratingMachine, () => this.machineProps())

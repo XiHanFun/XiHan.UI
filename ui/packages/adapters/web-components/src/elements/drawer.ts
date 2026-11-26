@@ -7,13 +7,14 @@
 
 import type { Cleanup, IdGenerator, Layer, OverlayBackdropVariant, RuntimeConfig, Service, Size } from '@xihan-ui/core'
 import type { ExitGate } from '@xihan-ui/core/presence'
-import type { DrawerActionIntents, DrawerConfirmErrorDetails, DrawerOpenChangeDetails, DrawerSchema, DrawerStructureActions } from '@xihan-ui/headless'
+import type { DrawerActionIntents, DrawerConfirmErrorDetails, DrawerOpenChangeDetails, DrawerPanelSizeChangeDetails, DrawerSchema, DrawerStructureActions } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { createExitGate } from '@xihan-ui/core/presence'
 import { connectDrawer, drawerAnatomy, drawerMachine, drawerMeta, drawerStructure } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
@@ -192,14 +193,14 @@ export class XhDrawerElement extends XhPortalHostElement {
   private actionIntents(): DrawerActionIntents {
     return {
       onConfirm: () => {
-        this.dispatchEvent(new CustomEvent('confirm', { bubbles: true, composed: true }))
+        emitEvent(this, 'confirm')
         return this.confirmAction?.()
       },
       onConfirmError: (details) => {
-        this.dispatchEvent(new CustomEvent<DrawerConfirmErrorDetails>('confirm-error', { detail: details, bubbles: true, composed: true }))
+        emitEvent<DrawerConfirmErrorDetails>(this, 'confirm-error', details)
       },
       onCancelPress: () => {
-        this.dispatchEvent(new CustomEvent('cancel-press', { bubbles: true, composed: true }))
+        emitEvent(this, 'cancel-press')
       },
       pending: this.pendingState,
       onPendingChange: (next) => {
@@ -234,7 +235,7 @@ export class XhDrawerElement extends XhPortalHostElement {
   })
 
   private readonly notify = (details: DrawerOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   private readonly ctrl = new MachineController<DrawerSchema>(
@@ -268,8 +269,8 @@ export class XhDrawerElement extends XhPortalHostElement {
       minPanelSize: this.minPanelSize,
       maxPanelSize: this.maxPanelSize,
       onOpenChange: this.notify,
-      onExitComplete: () => this.dispatchEvent(new CustomEvent('exit-complete', { bubbles: true, composed: true })),
-      onPanelSizeChange: details => this.dispatchEvent(new CustomEvent('panel-size-change', { detail: details, bubbles: true, composed: true })),
+      onExitComplete: () => emitEvent(this, 'exit-complete'),
+      onPanelSizeChange: details => emitEvent<DrawerPanelSizeChangeDetails>(this, 'panel-size-change', details),
     }
   }
 

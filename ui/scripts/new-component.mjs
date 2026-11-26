@@ -374,6 +374,7 @@ export type Xh${n.P}Props = PropsOf<typeof Xh${n.P}>
   t['wc-element'] = `import type { ${n.P}PressedChangeDetails, ${n.P}Schema } from '@xihan-ui/headless'
 import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import { connect${n.P}, ${n.camel}Anatomy, ${n.camel}Machine, ${n.camel}Meta } from '@xihan-ui/headless'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -411,7 +412,7 @@ export class Xh${n.P}Element extends XhElement {
   declare size?: Size
 
   private readonly notify = (details: ${n.P}PressedChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('pressed-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'pressed-change', details)
   }
 
   private readonly ctrl = new MachineController<${n.P}Schema>(this, ${n.camel}Machine, () => this.machineProps())

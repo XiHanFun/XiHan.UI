@@ -11,6 +11,7 @@ import type { ElementStructure } from '../element-base'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectFieldArray, fieldArrayAnatomy, fieldArrayDragContainer, fieldArrayDragItems, fieldArrayDragProps, fieldArrayMachine, fieldArrayMeta, fieldArrayStructure, sortableMachine } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -129,7 +130,7 @@ export class XhFieldArrayElement extends XhElement {
   declare translations?: Partial<FieldArrayTranslations>
 
   private readonly notifyValue = (details: FieldArrayValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   // 机器只有一个还焦点的收尾动作（自己经 scope 取节点），不需要 config/layer/定位引擎，

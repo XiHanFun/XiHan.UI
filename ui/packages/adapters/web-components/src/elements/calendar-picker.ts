@@ -21,6 +21,7 @@ import type {
 } from '@xihan-ui/headless'
 import { calendarPickerAnatomy, calendarPickerMachine, calendarPickerMeta, connectCalendarPicker } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -141,15 +142,15 @@ export class XhCalendarPickerElement extends XhElement {
   declare translations?: Partial<CalendarPickerTranslations>
 
   private readonly notifyValue = (details: CalendarPickerValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyFocus = (details: CalendarFocusChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('focused-value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'focused-value-change', details)
   }
 
   private readonly notifyActiveView = (details: CalendarViewChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('active-view-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'active-view-change', details)
   }
 
   private readonly ctrl = new MachineController<CalendarPickerSchema>(

@@ -6,9 +6,10 @@
 // 提供 scrollbar 相关实现。
 
 import type { Direction, Orientation, Service, Size } from '@xihan-ui/core'
-import type { ScrollbarAnchor, ScrollbarRevealMode, ScrollbarSchema } from '@xihan-ui/headless'
+import type { ScrollbarAnchor, ScrollbarRevealMode, ScrollbarSchema, ScrollbarScrollDetails } from '@xihan-ui/headless'
 import { connectScrollbar, scrollbarAnatomy, scrollbarMachine, scrollbarMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -121,10 +122,10 @@ export class XhScrollbarElement extends XhElement {
       translations: this.translations,
       // 事件名逐个写成字面量：清单分析器按构造事件时的第一个实参认事件名，
       // 经一个带 name 形参的辅助函数转一手，它会把形参名当成事件名，清单里多出一个永不派发的 name
-      onScrollStart: detail => this.dispatchEvent(new CustomEvent('scroll-start', { detail, bubbles: true, composed: true })),
-      onScrollEnd: detail => this.dispatchEvent(new CustomEvent('scroll-end', { detail, bubbles: true, composed: true })),
-      onDragStart: detail => this.dispatchEvent(new CustomEvent('drag-start', { detail, bubbles: true, composed: true })),
-      onDragEnd: detail => this.dispatchEvent(new CustomEvent('drag-end', { detail, bubbles: true, composed: true })),
+      onScrollStart: detail => emitEvent<ScrollbarScrollDetails>(this, 'scroll-start', detail),
+      onScrollEnd: detail => emitEvent<ScrollbarScrollDetails>(this, 'scroll-end', detail),
+      onDragStart: detail => emitEvent<ScrollbarScrollDetails>(this, 'drag-start', detail),
+      onDragEnd: detail => emitEvent<ScrollbarScrollDetails>(this, 'drag-end', detail),
     }
   }
 

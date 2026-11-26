@@ -10,6 +10,7 @@ import type { AlertOpenChangeDetails, AlertSchema } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { alertAnatomy, alertMachine, alertMeta, alertStructure, connectAlert } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
@@ -81,7 +82,7 @@ export class XhAlertElement extends XhElement {
   declare description?: string
 
   private readonly notify = (details: AlertOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   private readonly ctrl = new MachineController<AlertSchema>(

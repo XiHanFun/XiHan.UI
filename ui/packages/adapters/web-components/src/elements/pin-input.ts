@@ -10,6 +10,7 @@ import type { PinInputSchema, PinInputTranslations, PinInputType, PinInputValueC
 import type { ElementStructure } from '../element-base'
 import { connectPinInput, pinInputAnatomy, pinInputMachine, pinInputMeta, pinInputStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -128,11 +129,11 @@ export class XhPinInputElement extends XhElement {
   declare translations?: Partial<PinInputTranslations>
 
   private readonly notifyChange = (details: PinInputValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyComplete = (details: PinInputValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-complete', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-complete', details)
   }
 
   // pin-input 机器无副作用：不需要 config/layer/refs，controller 只带 props。

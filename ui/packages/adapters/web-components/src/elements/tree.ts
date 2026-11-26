@@ -11,6 +11,7 @@ import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTree, treeAnatomy, treeMachine, treeMeta, treeStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { FeedbackNodes } from '../dom/feedback-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -189,31 +190,31 @@ export class XhTreeElement extends XhElement {
   declare translations?: Partial<TreeTranslations>
 
   private readonly notifyExpanded = (details: TreeExpandedValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('expanded-value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'expanded-value-change', details)
   }
 
   private readonly notifySelection = (details: TreeSelectionChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('selection-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'selection-change', details)
   }
 
   private readonly notifyChecked = (details: TreeCheckedChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('checked-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'checked-change', details)
   }
 
   private readonly notifyNodeMove = (details: TreeNodeMoveDetails): void => {
-    this.dispatchEvent(new CustomEvent('node-move', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'node-move', details)
   }
 
   private readonly notifyBranchLoadStart = (details: TreeBranchLoadStartDetails): void => {
-    this.dispatchEvent(new CustomEvent('branch-load-start', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'branch-load-start', details)
   }
 
   private readonly notifyBranchLoad = (details: TreeBranchLoadDetails): void => {
-    this.dispatchEvent(new CustomEvent('branch-load', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'branch-load', details)
   }
 
   private readonly notifyBranchLoadError = (details: TreeBranchLoadErrorDetails): void => {
-    this.dispatchEvent(new CustomEvent('branch-load-error', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'branch-load-error', details)
   }
 
   /** 懒分支的四种取数反馈：作者没写时由元素补在分支里。 */

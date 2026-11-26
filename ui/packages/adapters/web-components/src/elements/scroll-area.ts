@@ -10,6 +10,7 @@ import type { ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollbarProps, 
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectScrollArea, scrollAreaAnatomy, scrollAreaMeta, scrollAreaScrollbarProps, scrollbarAnatomy, scrollbarMachine } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -101,11 +102,11 @@ export class XhScrollAreaElement extends XhElement {
   )
 
   private readonly notifyScroll = (details: ScrollAreaScrollDetails): void => {
-    this.dispatchEvent(new CustomEvent('scroll-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'scroll-change', details)
   }
 
   private readonly notifyReachEnd = (details: ScrollAreaScrollDetails): void => {
-    this.dispatchEvent(new CustomEvent('reach-end', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'reach-end', details)
   }
 
   private areaProps(): ScrollAreaProps {

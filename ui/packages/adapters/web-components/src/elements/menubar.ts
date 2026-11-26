@@ -16,6 +16,7 @@ import { connectMenubar, createMenuTreeNode, menubarAnatomy, menubarMachine, men
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
@@ -229,19 +230,19 @@ export class XhMenubarElement extends XhPortalHostElement {
   }
 
   private readonly notifyValue = (details: MenubarValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyItemSelect = (details: MenubarItemSelectDetails): void => {
-    this.dispatchEvent(new CustomEvent('item-select', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'item-select', details)
   }
 
   private readonly notifyCheckboxValue = (details: MenubarCheckboxValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('checkbox-value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'checkbox-value-change', details)
   }
 
   private readonly notifyRadioValue = (details: MenubarRadioValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('radio-value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'radio-value-change', details)
   }
 
   private wireSubmenuChild(child: MenuSubmenuChild): void {

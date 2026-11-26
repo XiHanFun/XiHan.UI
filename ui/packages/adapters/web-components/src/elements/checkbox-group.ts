@@ -11,6 +11,7 @@ import type { ElementStructure } from '../element-base'
 import { checkboxGroupAnatomy, checkboxGroupMachine, checkboxGroupMeta, checkboxGroupStructure, connectCheckboxGroup } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -126,7 +127,7 @@ export class XhCheckboxGroupElement<V = string> extends XhElement {
   private readonly declaredDisabled = createDisabledDeclarations()
 
   private readonly notify = (details: CheckboxGroupValueChangeDetails<unknown>): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly ctrl = new MachineController<CheckboxGroupSchema>(this, checkboxGroupMachine, () => this.machineProps())

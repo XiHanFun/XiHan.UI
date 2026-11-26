@@ -8,6 +8,7 @@
 import type { Service } from '@xihan-ui/core'
 import type { AffixChangeDetails, AffixSchema } from '@xihan-ui/headless'
 import { affixAnatomy, affixMachine, affixMeta, connectAffix } from '@xihan-ui/headless'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -47,7 +48,7 @@ export class XhAffixElement extends XhElement {
   declare target?: HTMLElement | null
 
   private readonly notify = (details: AffixChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('affix-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'affix-change', details)
   }
 
   private readonly ctrl = new MachineController<AffixSchema>(

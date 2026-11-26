@@ -13,6 +13,7 @@ import { createExitGate } from '@xihan-ui/core/presence'
 import { connectHoverCard, hoverCardAnatomy, hoverCardMachine, hoverCardMeta } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
@@ -126,7 +127,7 @@ export class XhHoverCardElement extends XhPortalHostElement {
   })
 
   private readonly notify = (details: HoverCardOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   private readonly ctrl = new MachineController<HoverCardSchema>(

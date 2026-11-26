@@ -12,6 +12,7 @@ import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTagGroup, tagGroupAnatomy, tagGroupMachine, tagGroupMeta, tagGroupStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -152,11 +153,11 @@ export class XhTagGroupElement extends XhElement {
   }
 
   private readonly notify = (details: TagGroupValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyDelete = (details: TagGroupItemDeleteDetails): void => {
-    this.dispatchEvent(new CustomEvent('item-delete', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'item-delete', details)
   }
 
   // tag-group 机器无副作用（连打缓冲住在 refs 里、由机器自己建），

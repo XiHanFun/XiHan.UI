@@ -28,6 +28,7 @@ import { createExitGate } from '@xihan-ui/core/presence'
 import { connectTreeSelect, treeSelectAnatomy, treeSelectMachine, treeSelectMeta, treeSelectStructure } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { FeedbackNodes } from '../dom/feedback-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
@@ -265,31 +266,31 @@ export class XhTreeSelectElement extends XhPortalHostElement {
 
   /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
   private readonly notifyClear = (): void => {
-    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+    emitEvent(this, 'clear')
   }
 
   private readonly notifyValue = (details: TreeSelectValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyExpanded = (details: TreeSelectExpandedValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('expanded-value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'expanded-value-change', details)
   }
 
   private readonly notifyOpen = (details: TreeSelectOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   private readonly notifyBranchLoadStart = (details: TreeSelectBranchLoadStartDetails): void => {
-    this.dispatchEvent(new CustomEvent('branch-load-start', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'branch-load-start', details)
   }
 
   private readonly notifyBranchLoad = (details: TreeSelectBranchLoadDetails): void => {
-    this.dispatchEvent(new CustomEvent('branch-load', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'branch-load', details)
   }
 
   private readonly notifyBranchLoadError = (details: TreeSelectBranchLoadErrorDetails): void => {
-    this.dispatchEvent(new CustomEvent('branch-load-error', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'branch-load-error', details)
   }
 
   private readonly ctrl = new MachineController<TreeSelectSchema>(

@@ -40,6 +40,7 @@ import {
   normalizeHeatmapString,
 } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { createGeneratedElement, generatedChildren, hasAuthorContent } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -181,15 +182,15 @@ export class XhHeatmapElement extends XhElement {
   declare activeKey?: string | null
 
   private readonly notifyActive = (details: HeatmapDatumDetails | null): void => {
-    this.dispatchEvent(new CustomEvent('datum-active', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'datum-active', details)
   }
 
   private readonly notifyPress = (details: HeatmapDatumDetails): void => {
-    this.dispatchEvent(new CustomEvent('datum-press', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'datum-press', details)
   }
 
   private readonly notifyKey = (details: HeatmapActiveKeyChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('active-key-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'active-key-change', details)
   }
 
   // 过渡的时长与减弱动效从 root 读：取值口惰性读，角色节点要等首次 updated 才发现得到

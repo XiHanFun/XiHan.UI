@@ -10,6 +10,7 @@ import type { CollectionVirtualizer, LogApi, LogLevel, LogProps, LogSchema, LogS
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectLog, logAnatomy, logMachine, logMeta, parseAnsi } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -89,7 +90,7 @@ export class XhLogElement extends XhElement {
   readonly #ansiText = new WeakMap<HTMLElement, string>()
 
   private readonly notify = (details: LogStickChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('stick-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'stick-change', details)
   }
 
   private readonly ctrl = new MachineController<LogSchema>(

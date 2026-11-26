@@ -11,6 +11,7 @@ import type { ColorChannel, ColorSliderSchema, ColorSliderServices, ColorSliderT
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { colorSliderAnatomy, colorSliderMachine, colorSliderMeta, colorSliderSliderProps, connectColorSlider, sliderMachine } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -86,11 +87,11 @@ export class XhColorSliderElement extends XhElement {
   private readonly sliderScope = createScope(null, this.idGen)
 
   private readonly notifyValue = (details: ColorSliderValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyValueEnd = (details: ColorSliderValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change-end', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change-end', details)
   }
 
   private readonly ctrl = new MachineController<ColorSliderSchema>(

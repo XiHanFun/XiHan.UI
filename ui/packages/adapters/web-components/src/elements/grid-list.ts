@@ -18,6 +18,7 @@ import type {
 import { connectGridList, gridListAnatomy, gridListMachine, gridListMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -110,11 +111,11 @@ export class XhGridListElement extends XhElement {
   /** 上一帧是否整体禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。 */
   private wasGridDisabled = false
   private readonly notifyValue = (details: GridListValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   private readonly notifyAction = (details: GridListActionDetails): void => {
-    this.dispatchEvent(new CustomEvent('action', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'action', details)
   }
 
   private readonly ctrl = new MachineController<GridListSchema>(this, gridListMachine, () => this.machineProps())

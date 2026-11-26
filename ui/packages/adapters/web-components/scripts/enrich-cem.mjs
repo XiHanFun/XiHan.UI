@@ -15,15 +15,15 @@ const CEM_PATH = 'custom-elements.json'
 const manifest = JSON.parse(await readFile(CEM_PATH, 'utf8'))
 const tokenEntries = componentTokensByComponent(await readComponentTokenManifest())
 
-/** 元素源码里事件名与 detail 类型的配对:notify 函数签名 + CustomEvent 调用。 */
+/** 元素源码里事件名与 detail 类型的配对:notify 函数签名 + emitEvent 调用。 */
 async function eventTypesOf(sourcePath) {
   const source = await readFile(sourcePath, 'utf8')
   const map = new Map()
-  // 形态一:notify = (details: FooDetails) => ... new CustomEvent('foo-change', ...)
-  for (const m of source.matchAll(/details:\s*(\w+Details)\b[\s\S]+?new CustomEvent\('([\w-]+)'/g))
+  // 形态一:notify = (details: FooDetails) => ... emitEvent(this, 'foo-change', details)
+  for (const m of source.matchAll(/details:\s*(\w+Details)\b[\s\S]+?emitEvent\(this, '([\w-]+)'/g))
     map.set(m[2], m[1])
-  // 形态二:new CustomEvent<FooDetails>('foo-change', ...)
-  for (const m of source.matchAll(/new CustomEvent<(\w+)>\('([\w-]+)'/g))
+  // 形态二:emitEvent<FooDetails>(this, 'foo-change', ...)
+  for (const m of source.matchAll(/emitEvent<(\w+)>\(this, '([\w-]+)'/g))
     map.set(m[2], m[1])
   // 形态三:emit 中转——notify = (details: FooDetails) => this.emit('foo-change', details)。
   // 窗口限 300 字符:notify 函数都是单行或两三行,再远就该是下一处声明了

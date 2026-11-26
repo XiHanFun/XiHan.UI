@@ -144,7 +144,7 @@ size 改变正文字号与块间距，三档共用同一份块列表
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `inline-mount` | `CustomEvent` | 新铺出一个行内挂点的占位节点；detail 为 `{ key, element, block, index, inline }` |
+| `inline-mount` | `MarkdownInlineMount` | 新铺出一个行内挂点的占位节点；detail 为 `{ key, element, block, index, inline }` |
 
 ### 插槽
 

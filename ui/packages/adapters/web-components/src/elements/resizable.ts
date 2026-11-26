@@ -11,6 +11,7 @@ import type { ResizeEdge } from '@xihan-ui/pointer'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectResizable, resizableAnatomy, resizableMachine, resizableMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -113,11 +114,11 @@ export class XhResizableElement extends XhElement {
   private readonly resizableScope = createScope(null, this.idGen)
 
   private readonly notifyDimensions = (details: ResizableDimensionsChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('dimensions-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'dimensions-change', details)
   }
 
   private readonly notifyDimensionsEnd = (details: ResizableDimensionsChangeEndDetails): void => {
-    this.dispatchEvent(new CustomEvent('dimensions-change-end', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'dimensions-change-end', details)
   }
 
   private readonly ctrl = new MachineController<ResizableSchema>(

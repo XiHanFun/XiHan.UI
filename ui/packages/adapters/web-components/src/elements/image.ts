@@ -9,6 +9,7 @@ import type { ImageApi, ImageSchema, ImageStatus, ImageStatusChangeDetails } fro
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { connectImage, imageAnatomy, imageMachine, imageMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { createAuthoredElement } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { placeAfterRoot } from '../dom/structure'
@@ -104,7 +105,7 @@ export class XhImageElement extends XhElement {
   private readonly previewViewers = new WeakSet<Element>()
 
   private readonly notify = (details: ImageStatusChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('status-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'status-change', details)
   }
 
   // image 机器不碰 DOM、不用定位与消解层：不需要 config/layer/refs/scope，controller 只带 props。

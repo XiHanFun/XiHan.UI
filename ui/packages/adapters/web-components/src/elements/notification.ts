@@ -30,6 +30,7 @@ import {
   notificationMeta,
 } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
@@ -107,7 +108,7 @@ export class XhNotificationElement extends XhElement {
   declare translations?: Partial<NotificationTranslations>
 
   private readonly notify = (details: NotificationItemsChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('items-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'items-change', details)
   }
 
   // 条目到达与叠摞的追踪都挂在 root 部件上：refs 只装这一个节点 getter。
@@ -296,11 +297,11 @@ export class XhNotificationItemElement extends XhElement {
 
   private readonly notifyStatus = (details: NotificationStatusChangeDetails): void => {
     // 必须冒泡：外层 `<xh-notification>` 就靠这条事件知道该把记录删掉了
-    this.dispatchEvent(new CustomEvent('status-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'status-change', details)
   }
 
   private readonly notifyAction = (details: NotificationActionDetails): void => {
-    this.dispatchEvent(new CustomEvent('action', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'action', details)
   }
 
   // 计时器与 visibilitychange 都由机器自己经 scope 拿，不需要 config/layer/定位引擎。

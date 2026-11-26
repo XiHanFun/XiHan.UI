@@ -10,6 +10,7 @@ import type { PresenceProps } from '@xihan-ui/headless'
 import { createExitGate } from '@xihan-ui/core/presence'
 import { connectPresence, presenceAnatomy, presenceMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { withoutHidden } from '../overlay-exit'
@@ -98,7 +99,7 @@ export class XhPresenceElement extends XhElement {
     if (this.exitPending) {
       this.exitPending = false
       if (!visible)
-        this.dispatchEvent(new CustomEvent('exit-complete', { bubbles: true, composed: true }))
+        emitEvent(this, 'exit-complete')
     }
   }
 }

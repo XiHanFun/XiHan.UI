@@ -10,6 +10,7 @@ import type { DateFieldSchema, DateFieldSegmentProps, DateFieldTranslations, Dat
 import type { ElementStructure } from '../element-base'
 import { connectDateField, dateFieldAnatomy, dateFieldMachine, dateFieldMeta, dateFieldStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { HOUR_CYCLE_CONVERTER } from '../dom/hour-cycle'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -174,11 +175,11 @@ export class XhDateFieldElement extends XhElement {
 
   /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
   private readonly notifyClear = (): void => {
-    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+    emitEvent(this, 'clear')
   }
 
   private readonly notifyChange = (details: DateFieldValueChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'value-change', details)
   }
 
   // date-field 机器无副作用：不需要 config/layer/refs，controller 只带 props。

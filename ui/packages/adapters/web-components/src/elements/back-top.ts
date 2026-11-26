@@ -8,6 +8,7 @@
 import type { ActionVariant, Service, Size, Tone } from '@xihan-ui/core'
 import type { BackTopBehavior, BackTopSchema, BackTopTranslations, BackTopVisibilityChangeDetails } from '@xihan-ui/headless'
 import { backTopAnatomy, backTopMachine, backTopMeta, connectBackTop } from '@xihan-ui/headless'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -58,7 +59,7 @@ export class XhBackTopElement extends XhElement {
   declare target?: HTMLElement | null
 
   private readonly notify = (details: BackTopVisibilityChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('visibility-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'visibility-change', details)
   }
 
   private readonly ctrl = new MachineController<BackTopSchema>(

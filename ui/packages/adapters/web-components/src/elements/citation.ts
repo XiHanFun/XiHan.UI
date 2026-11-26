@@ -21,6 +21,7 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { citationAnatomy, citationMachine, citationMeta, connectCitation } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -125,15 +126,15 @@ export class XhCitationElement extends XhPortalHostElement {
   })
 
   private readonly onActiveSourceChange = (details: CitationActiveSourceChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('active-source-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'active-source-change', details)
   }
 
   private readonly onOpenChange = (details: CitationOpenChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'open-change', details)
   }
 
   private readonly onSourceOpen = (details: CitationSourceOpenDetails): void => {
-    this.dispatchEvent(new CustomEvent('source-open', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'source-open', details)
   }
 
   private readonly ctrl = new MachineController<CitationSchema>(

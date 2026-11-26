@@ -10,6 +10,7 @@ import type { CheckboxCheckedChangeDetails, CheckboxCheckedState, CheckboxSchema
 import type { ElementStructure } from '../element-base'
 import { checkboxAnatomy, checkboxMachine, checkboxMeta, checkboxStructure, connectCheckbox } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -74,7 +75,7 @@ export class XhCheckboxElement extends XhElement {
   declare size?: Size
 
   private readonly notify = (details: CheckboxCheckedChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('checked-change', { detail: details, bubbles: true, composed: true }))
+    emitEvent(this, 'checked-change', details)
   }
 
   private readonly ctrl = new MachineController<CheckboxSchema>(this, checkboxMachine, () => this.machineProps())
