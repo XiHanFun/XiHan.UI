@@ -385,19 +385,15 @@ export const commandMachine = createMachine({
                 else
                   returnFocusNow?.()
               },
+              reactivate: () => reactivateFocus?.(),
               // 退场播完后等开在面板里的层（比如面板里一颗按钮的提示）先退栈再释放
               nested: release.nested,
             })
           },
-          onReopen: () => {
-            // 关闭时撤下的背景失活在重开时补回
-            refs.get('syncModalResources')?.()
-            const activate = reactivateFocus
-            flush(() => scope.getWin().requestAnimationFrame(() => {
-              if (state.get() === 'open' && reactivateFocus === activate)
-                activate?.()
-            }))
-          },
+          // 关闭时撤下的背景失活在重开时补回；焦点域由 trackPresenceResources 在下一帧重新激活
+          onReopen: () => refs.get('syncModalResources')?.(),
+          flush,
+          scope,
         })
       },
     },

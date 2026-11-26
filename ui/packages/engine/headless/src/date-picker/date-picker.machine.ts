@@ -495,7 +495,6 @@ export const datePickerMachine = createMachine({
 
       // Layer、DismissableLayer 与 FocusScope 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
       trackLayer: ({ refs, context, send, flush, scope, state, track }) => {
-        let reactivateFocus: (() => void) | null = null
         return trackPresenceResources({
           presence: () => refs.get('presence'),
           open: () => state.get() === 'open',
@@ -527,16 +526,10 @@ export const datePickerMachine = createMachine({
                 return canTakeFocus(cell, scope) ? cell : null
               },
               restoreFocus: () => context.get('returnFocus'),
-              onReactivate: reactivate => reactivateFocus = reactivate,
             },
           }),
-          onReopen: () => {
-            const activate = reactivateFocus
-            flush(() => scope.getWin().requestAnimationFrame(() => {
-              if (state.get() === 'open' && reactivateFocus === activate)
-                activate?.()
-            }))
-          },
+          flush,
+          scope,
         })
       },
     },

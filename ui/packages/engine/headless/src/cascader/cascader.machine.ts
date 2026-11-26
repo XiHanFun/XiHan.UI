@@ -624,7 +624,6 @@ export const cascaderMachine = createMachine({
 
       // Layer、DismissableLayer 与 FocusScope 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
       trackLayer: ({ refs, context, send, flush, scope, state, track, prop }) => {
-        let reactivateFocus: (() => void) | null = null
         return trackPresenceResources({
           presence: refs.get('presence'),
           open: () => state.get() === 'open',
@@ -672,16 +671,10 @@ export const cascaderMachine = createMachine({
               // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
               // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
               restoreTarget: () => refs.get('getTriggerEl')(),
-              onReactivate: reactivate => reactivateFocus = reactivate,
             },
           }),
-          onReopen: () => {
-            const activate = reactivateFocus
-            flush(() => scope.getWin().requestAnimationFrame(() => {
-              if (state.get() === 'open' && reactivateFocus === activate)
-                activate?.()
-            }))
-          },
+          flush,
+          scope,
         })
       },
     },

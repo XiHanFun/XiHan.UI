@@ -570,7 +570,6 @@ export const timeRangePickerMachine = createMachine({
       // Layer、DismissableLayer 与 FocusScope 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
       trackLayer: (params) => {
         const { refs, context, send, flush, scope, state, track } = params
-        let reactivateFocus: (() => void) | null = null
         return trackPresenceResources({
           presence: () => refs.get('presence'),
           open: () => state.get() === 'open',
@@ -620,16 +619,10 @@ export const timeRangePickerMachine = createMachine({
               restoreFocus: () => context.get('returnFocus'),
               // 归还落点显式给触发器，避免 Safari 指针激活时退回 body。
               restoreTarget: () => refs.get('getTriggerEl')(),
-              onReactivate: reactivate => reactivateFocus = reactivate,
             },
           }),
-          onReopen: () => {
-            const activate = reactivateFocus
-            flush(() => scope.getWin().requestAnimationFrame(() => {
-              if (state.get() === 'open' && reactivateFocus === activate)
-                activate?.()
-            }))
-          },
+          flush,
+          scope,
         })
       },
     },

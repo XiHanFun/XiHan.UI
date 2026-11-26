@@ -461,7 +461,6 @@ export const menubarMachine = createMachine({
       }),
       // 一排菜单共用 Layer，但最终关闭只等待当前 owner 的 Presence；切换菜单不重建行为层。
       trackLayer: ({ refs, context, send, flush, scope, state, track }) => {
-        let reactivateFocus: (() => void) | null = null
         let behaviorLayer: Layer | null = null
         const resourceOpen = (): boolean => {
           const owner = context.get('value') ?? refs.get('layerValue')
@@ -505,7 +504,6 @@ export const menubarMachine = createMachine({
                   },
                   // 焦点归还由 restoreTriggerFocus 收口
                   restoreFocus: () => false,
-                  onReactivate: reactivate => reactivateFocus = reactivate,
                 },
           }),
           canRelease: () => {
@@ -513,13 +511,8 @@ export const menubarMachine = createMachine({
             return behaviorLayer == null || config == null || config.layerRegistry.top() === behaviorLayer
           },
           onReleaseReady: retry => refs.get('config')?.layerRegistry.subscribe(() => scope.getWin().queueMicrotask(retry)) ?? (() => {}),
-          onReopen: () => {
-            const activate = reactivateFocus
-            flush(() => scope.getWin().requestAnimationFrame(() => {
-              if (resourceOpen() && reactivateFocus === activate)
-                activate?.()
-            }))
-          },
+          flush,
+          scope,
         })
       },
     },

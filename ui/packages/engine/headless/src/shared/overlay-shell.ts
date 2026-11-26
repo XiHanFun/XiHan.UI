@@ -201,11 +201,12 @@ function watchNestedLayers(registry: LayerRegistry, layer: Layer): NestedLayerWa
 }
 
 /**
- * 行为资源的释放函数，可顺带交出两样：
+ * 行为资源的释放函数，可顺带交出三样：
  * - returnFocus「立即归还焦点」：退场期间资源仍保留，关闭那一刻内容已经 inert，焦点要在那时就交回触发器，不能等资源释放；
+ * - reactivate「重新激活焦点域」：退场途中又打开，资源原样复用，失活的焦点域要重新接管（trackPresenceResources 在下一帧调它）；
  * - nested：开在本层里的层走了没有，退场播完要释放时先问它（见 createLayerReleaseGate）。
  */
-export type OverlayRelease = Cleanup & { returnFocus?: () => void, nested?: NestedLayerWatch }
+export type OverlayRelease = Cleanup & { returnFocus?: () => void, reactivate?: () => void, nested?: NestedLayerWatch }
 
 /** 退场播完后的释放闸门。 */
 export interface LayerReleaseGate {
@@ -538,8 +539,15 @@ export interface PresenceResourceOptions {
    * 带 nested 时（setupLayerTransaction、trackOverlayLayer 给的都带），退出完成后等开在本层里的层先退栈再释放。
    */
   acquire: () => OverlayRelease | undefined
-  /** 退场尚未完成便重开时调用；用于恢复被失活的焦点域。 */
+  /** 退场尚未完成便重开时调用：焦点域之外还要补回的能力（如背景失活）。焦点域由下面两项排期自己重新激活。 */
   onReopen?: () => void
+  /**
+   * 等宿主把这一轮提交到 DOM 的排期，取机器的 flush。与 scope 同给时，退场途中重开会在提交之后的下一帧
+   * 调资源的 reactivate：那时仍展开、租约也还是同一份才调，期间又关上或换了一份资源就不调。
+   */
+  flush?: (fn: () => void) => void
+  /** 取下一帧的窗口，取机器的 scope。 */
+  scope?: { getWin: () => Window }
   /** 退出完成后是否可以立即释放；多层菜单用它等待本层重新成为栈顶。 */
   canRelease?: () => boolean
   /** canRelease 为 false 时订阅释放条件变化。 */
@@ -591,6 +599,17 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
     offExit = presence?.onExitComplete(finish)
     return presence
   }
+  // 退场中重开：焦点域失活着，等这一轮提交到 DOM 之后的下一帧再让它重新接管
+  const scheduleReactivate = (): void => {
+    const target = release
+    if (!target?.reactivate || !o.flush || !o.scope)
+      return
+    const win = o.scope.getWin()
+    o.flush(() => win.requestAnimationFrame(() => {
+      if (!disposed && release === target && o.open())
+        target.reactivate?.()
+    }))
+  }
   const sync = (): void => {
     if (disposed)
       return
@@ -608,8 +627,10 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
       if (!release && gate && !gate.ready(sync))
         return
       release ??= o.acquire()
-      if (reopening)
+      if (reopening) {
         o.onReopen?.()
+        scheduleReactivate()
+      }
       return
     }
     // 关闭那一刻归还焦点：资源要留到退场播完，焦点不能跟着等
@@ -724,7 +745,11 @@ export function trackOverlayLayer(o: OverlayLayerOptions): OverlayRelease | unde
       })
     }
   }, { registry: config.layerRegistry, flush: o.flush ?? (task => task()) })
-  return Object.assign(() => cleanup(), { returnFocus: () => focusScope?.returnFocus(), nested: cleanup.nested })
+  return Object.assign(() => cleanup(), {
+    returnFocus: () => focusScope?.returnFocus(),
+    reactivate: () => focusScope?.reactivate(),
+    nested: cleanup.nested,
+  })
 }
 
 /** 消解层回报的原因翻成关闭事件的来源：Escape 是 esc，其余（层外按下、层外聚焦）都算层外交互。 */

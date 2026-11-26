@@ -787,7 +787,6 @@ export const colorPickerMachine = createMachine({
 
       // Layer、DismissableLayer 与 FocusScope 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
       trackLayer: ({ refs, send, flush, scope, state, track, prop }) => {
-        let reactivateFocus: (() => void) | null = null
         return trackPresenceResources({
           presence: () => refs.get('presence'),
           // 常驻形态不入层栈：不抢焦点、不点外关闭
@@ -806,16 +805,10 @@ export const colorPickerMachine = createMachine({
               restoreFocus: () => true,
               // 归还落点显式给触发器：Safari 指针激活时也不退回 body。
               restoreTarget: () => refs.get('getAnchorEl')(),
-              onReactivate: reactivate => reactivateFocus = reactivate,
             },
           }),
-          onReopen: () => {
-            const activate = reactivateFocus
-            flush(() => scope.getWin().requestAnimationFrame(() => {
-              if (state.matches('open') && reactivateFocus === activate)
-                activate?.()
-            }))
-          },
+          flush,
+          scope,
         })
       },
 

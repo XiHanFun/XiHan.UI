@@ -326,7 +326,6 @@ export const menuMachine = createMachine({
       }),
       // Layer、DismissableLayer 与 FocusScope 共用本实例 Presence；父子菜单各自保留自己的 Layer。
       trackLayer: ({ refs, prop, context, send, flush, scope, state, track }) => {
-        let reactivateFocus: (() => void) | null = null
         let behaviorLayer: Layer | null = null
         return trackPresenceResources({
           presence: () => refs.get('presence'),
@@ -354,7 +353,6 @@ export const menuMachine = createMachine({
               restoreFocus: () => context.get('returnFocus'),
               // 给了外部锚点就还给它
               restoreTarget: () => prop('anchor') ?? refs.get('getAnchorEl')(),
-              onReactivate: reactivate => reactivateFocus = reactivate,
             },
           }),
           canRelease: () => {
@@ -362,13 +360,8 @@ export const menuMachine = createMachine({
             return behaviorLayer == null || config == null || config.layerRegistry.top() === behaviorLayer
           },
           onReleaseReady: retry => refs.get('config')?.layerRegistry.subscribe(() => scope.getWin().queueMicrotask(retry)) ?? (() => {}),
-          onReopen: () => {
-            const activate = reactivateFocus
-            flush(() => scope.getWin().requestAnimationFrame(() => {
-              if (state.get() === 'open' && reactivateFocus === activate)
-                activate?.()
-            }))
-          },
+          flush,
+          scope,
         })
       },
     },

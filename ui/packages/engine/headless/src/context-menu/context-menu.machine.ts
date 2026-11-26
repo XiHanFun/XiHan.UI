@@ -403,7 +403,6 @@ export const contextMenuMachine = createMachine({
       }),
       // Layer、DismissableLayer 与 FocusScope 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
       trackLayer: ({ refs, context, send, flush, scope, state, track }) => {
-        let reactivateFocus: (() => void) | null = null
         let behaviorLayer: Layer | null = null
         return trackPresenceResources({
           presence: () => refs.get('presence'),
@@ -434,7 +433,6 @@ export const contextMenuMachine = createMachine({
               restoreFocus: () => context.get('returnFocus'),
               // 触发区不占 Tab 位时它接不住焦点，归还给打开前的持有者（触发区里那个自带 Tab 位的元素）
               restoreTarget: () => context.get('innerTabStop') ? null : refs.get('getTriggerEl')(),
-              onReactivate: reactivate => reactivateFocus = reactivate,
             },
           }),
           canRelease: () => {
@@ -442,13 +440,8 @@ export const contextMenuMachine = createMachine({
             return behaviorLayer == null || config == null || config.layerRegistry.top() === behaviorLayer
           },
           onReleaseReady: retry => refs.get('config')?.layerRegistry.subscribe(() => scope.getWin().queueMicrotask(retry)) ?? (() => {}),
-          onReopen: () => {
-            const activate = reactivateFocus
-            flush(() => scope.getWin().requestAnimationFrame(() => {
-              if (state.get() === 'open' && reactivateFocus === activate)
-                activate?.()
-            }))
-          },
+          flush,
+          scope,
         })
       },
     },
