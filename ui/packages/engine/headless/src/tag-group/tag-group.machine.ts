@@ -7,7 +7,7 @@
 
 import type { TagPressedPart } from '../tag/tag.types'
 import type { TagGroupSchema, TagGroupSelectionMode } from './tag-group.types'
-import { createTypeahead, setup, trackListMotion } from '@xihan-ui/core'
+import { createTypeahead, resetDeclaredValue, setup, trackListMotion } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { normalizeGridSelection, toggleGridSelection } from '../shared/grid-collection'
 import { TAG_GROUP_ITEM_SELECTOR } from './tag-group.anatomy'
@@ -44,6 +44,10 @@ export const tagGroupMachine = createMachine({
   // 按住途中整组转入禁用或只读：不会再来 keyup，按压面由机器自己收
   watch: ({ track, prop, action }) => {
     track([() => prop('disabled'), () => prop('readOnly')], () => action(['releaseWhenInert']))
+  },
+  // 所在表单被重置：选中集合回到初值，与同表单的原生控件一起还原
+  on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
   },
   states: {
     idle: {
@@ -95,6 +99,7 @@ export const tagGroupMachine = createMachine({
       },
     },
     actions: {
+      resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
       markListTracked: ({ context }) => context.set('listTracked', true),
       startPress: ({ context, event }) => {
         const e = event.current()

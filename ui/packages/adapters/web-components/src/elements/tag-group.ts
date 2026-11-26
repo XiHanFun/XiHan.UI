@@ -50,7 +50,8 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {boolean} disabled - 整组禁用：不可修改选中值，也不可移除任何标签
  * @attr {boolean} read-only - 只读：可聚焦、可导航，但不可修改
  * @attr {boolean} invalid - 校验失败标注：标签列表报告 aria-invalid，根与列表带 data-invalid
- * @attr {boolean} required - 必填标注：根与列表带 data-required；grid 角色不收 aria-required，必填由字段的标题与错误文案告知
+ * @attr {boolean} required - 必填标注：根与列表带 data-required；grid 角色不收 aria-required，必填由字段的标题与错误文案告知；给了 name 时表单出口另带原生 required
+ * @attr {string} name - 表单字段名；提供后生成结构铺表单出口（hidden-input），选中值按逗号拼成一串随表单提交
  * @attr {boolean} loop - 方向键到达末尾回绕，默认 true；写 loop="false" 关闭
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义，默认 ltr
  * @attr {'horizontal'|'vertical'} orientation - 方向键轴向，默认 horizontal
@@ -67,6 +68,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart cell - role=gridcell，标签内的格，文字与移除按钮都写在它之内
  * @csspart item-indicator - 选中标记，落在格内、文字之后与摘除钮之前；选中时展示、未选中以 hidden 收起，对读屏隐藏；内容留空时由皮肤绘制对号
  * @csspart item-text - 标签文字（连打检索的取字来源），接线为 tag 的 label（data-scope="tag"）
+ * @csspart hidden-input - 表单出口，可选；须是原生 `<input>`，元素把它写成视觉隐藏的文本输入，值是按逗号拼起的选中值
  * @csspart item-delete-trigger - 移除按钮，不占 Tab 位；接线为所在标签那份 tag 的 close-trigger（data-scope="tag"），整组未开放移除时收起，可及名使用 translations.deleteItem
  */
 export class XhTagGroupElement extends XhElement {
@@ -85,6 +87,7 @@ export class XhTagGroupElement extends XhElement {
     build: host => host.ctrl.service
       ? tagGroupStructure(connectTagGroup(host.ctrl.service, wcNormalize), {
           label: host.label,
+          hiddenInput: host.name !== undefined,
           slotted: (name, key) => host.slotted(name, key),
         })
       : undefined,
@@ -106,6 +109,7 @@ export class XhTagGroupElement extends XhElement {
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
     required: { converter: BOOLEAN_CONVERTER },
+    name: { converter: STRING_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     orientation: { converter: STRING_CONVERTER },
@@ -126,6 +130,7 @@ export class XhTagGroupElement extends XhElement {
   declare readOnly?: boolean
   declare invalid?: boolean
   declare required?: boolean
+  declare name?: string
   declare loop?: boolean
   declare direction?: Direction
   declare orientation?: Orientation
@@ -174,6 +179,7 @@ export class XhTagGroupElement extends XhElement {
       readOnly: control.readOnly,
       invalid: control.invalid,
       required: control.required,
+      name: this.name,
       loop: this.loop,
       dir: this.direction,
       orientation: this.orientation,
@@ -291,6 +297,7 @@ export class XhTagGroupElement extends XhElement {
     put('root', api.getRootProps())
     put('label', api.getLabelProps())
     put('list', api.getListProps())
+    put('hidden-input', api.getHiddenInputProps())
 
     // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取作者在条目上的声明。
     // 条目节点接成 tag 的 root，文字与摘除钮接成同一份 tag 的 label 与 close-trigger

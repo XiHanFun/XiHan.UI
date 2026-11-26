@@ -70838,6 +70838,10 @@
               "name": "item-text"
             },
             {
+              "description": "表单出口，可选；须是原生 `<input>`，元素把它写成视觉隐藏的文本输入，值是按逗号拼起的选中值",
+              "name": "hidden-input"
+            },
+            {
               "description": "移除按钮，不占 Tab 位；接线为所在标签那份 tag 的 close-trigger（data-scope=\"tag\"），整组未开放移除时收起，可及名使用 translations.deleteItem",
               "name": "item-delete-trigger"
             }
@@ -70868,7 +70872,7 @@
                 "text": "ElementStructure<XhTagGroupElement>"
               },
               "static": true,
-              "default": "{ build: host => host.ctrl.service ? tagGroupStructure(connectTagGroup(host.ctrl.service, wcNormalize), { label: host.label, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
+              "default": "{ build: host => host.ctrl.service ? tagGroupStructure(connectTagGroup(host.ctrl.service, wcNormalize), { label: host.label, hiddenInput: host.name !== undefined, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
             },
             {
               "kind": "field",
@@ -70966,6 +70970,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "required"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name"
             },
             {
               "kind": "field",
@@ -71380,9 +71393,17 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "必填标注：根与列表带 data-required；grid 角色不收 aria-required，必填由字段的标题与错误文案告知",
+              "description": "必填标注：根与列表带 data-required；grid 角色不收 aria-required，必填由字段的标题与错误文案告知；给了 name 时表单出口另带原生 required",
               "name": "required",
               "fieldName": "required"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "表单字段名；提供后生成结构铺表单出口（hidden-input），选中值按逗号拼成一串随表单提交",
+              "name": "name",
+              "fieldName": "name"
             },
             {
               "type": {

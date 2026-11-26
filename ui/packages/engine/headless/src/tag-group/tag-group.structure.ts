@@ -18,6 +18,7 @@ export const TAG_GROUP_STRUCTURE_PARTS = [
   'list',
   'cell',
   'item-indicator',
+  'hidden-input',
 ] as const satisfies readonly TagGroupPart[]
 
 /** anatomy 里不进标准结构的部件。 */
@@ -34,6 +35,8 @@ type TagGroupStructureNode = StructureNode<TagGroupStructurePart | TagGroupTagPa
 export interface TagGroupStructureOptions {
   /** 标题文字：给了就铺带这段文字的 label；label 插槽有内容时铺内容归作者的 label。 */
   label?: string
+  /** 带不带表单出口：给了 name 才带，缺省不带。 */
+  hiddenInput?: boolean
   /**
    * 作者给了哪些插槽的内容：label、item（标签文字，按标签的值带 key）。
    * 标签文字没给插槽时铺 collection 里的 label。
@@ -69,7 +72,10 @@ function itemStructure(node: TagGroupNodeMeta, slotted: StructureSlotted): TagGr
   }
 }
 
-/** 标签组在 root 里的标准结构，次序是标题、标签列表；列表里每条数据一枚标签，没给 collection 时列表是空的。 */
+/**
+ * 标签组在 root 里的标准结构，次序是标题、标签列表、表单出口；列表里每条数据一枚标签，没给 collection 时列表是空的。
+ * 给了 name 才铺表单出口。
+ */
 export function tagGroupStructure(model: TagGroupStructureModel, options: TagGroupStructureOptions = {}): TagGroupStructureNode[] {
   const slotted = options.slotted ?? NOTHING_SLOTTED
   const nodes: TagGroupStructureNode[] = []
@@ -78,5 +84,7 @@ export function tagGroupStructure(model: TagGroupStructureModel, options: TagGro
   else if (options.label != null)
     nodes.push({ key: 'label', tag: 'span', part: 'label', text: options.label })
   nodes.push({ key: 'list', tag: 'div', part: 'list', children: model.collection.map(node => itemStructure(node, slotted)) })
+  if (options.hiddenInput)
+    nodes.push({ key: 'hidden-input', tag: 'input', part: 'hidden-input' })
   return nodes
 }

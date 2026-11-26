@@ -2777,6 +2777,7 @@ export { useTagGroupContext, useTagGroupItemContext } from './components/tag-gro
 export type { TagGroupItemContext } from './components/tag-group/context'
 export {
   XhTagGroupCell,
+  XhTagGroupHiddenInput,
   XhTagGroupItem,
   XhTagGroupItemDeleteTrigger,
   XhTagGroupItemIndicator,
@@ -2788,6 +2789,7 @@ export {
 export type {
   TagGroupRootSlotProps,
   XhTagGroupCellProps,
+  XhTagGroupHiddenInputProps,
   XhTagGroupItemDeleteTriggerProps,
   XhTagGroupItemIndicatorProps,
   XhTagGroupItemProps,

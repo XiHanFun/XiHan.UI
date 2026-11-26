@@ -18,12 +18,15 @@ import { tagAnatomy } from '../tag/tag.anatomy'
 //
 // item-indicator 单独一层是因为页内持久集合的选中不能只靠底色：选中的那一枚在文字后
 // 亮一枚对号，没选中时收起；只作标记的一排（selectionMode none）永远不出现。
+//
+// hidden-input 是表单出口：整组一份，选中值随表单提交；不进键盘与读屏。
 export const tagGroupAnatomy = createAnatomy('tag-group', [
   'root',
   'label',
   'list',
   'cell',
   'item-indicator',
+  'hidden-input',
 ])
 
 const parts = tagGroupAnatomy.build()

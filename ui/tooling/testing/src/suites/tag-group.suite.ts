@@ -688,6 +688,48 @@ export const tagGroupSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'name：hidden-input 是视觉隐藏的文本输入，选中值按逗号拼成一串随表单提交；没选时是空串，必填时带原生 required',
+      spec: { apg: APG },
+      fixture: (base: FixtureNode): FixtureNode => ({ ...base, children: [...(base.children ?? []), { part: 'hidden-input', tag: 'input' }] }),
+      props: { selectionMode: 'multiple', name: 'stack', required: true },
+      initial: {
+        order: ['root', 'label', 'list', 'cell[0]', 'item-indicator[0]', 'cell[1]', 'item-indicator[1]', 'cell[2]', 'item-indicator[2]', 'cell[3]', 'item-indicator[3]', 'hidden-input'],
+        parts: { 'hidden-input': { 'type': 'text', 'name': 'stack', 'tabindex': '-1', 'aria-hidden': 'true' } },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'value 与 required 都不在快照的采集清单里',
+          run: ({ doc }) => {
+            const hidden = doc.querySelector<HTMLInputElement>('[data-scope="tag-group"][data-part="hidden-input"]')!
+            if (hidden.value !== '' || !hidden.required)
+              throw new Error(`没选时表单出口应是带 required 的空串，实际 value=${JSON.stringify(hidden.value)} required=${hidden.required}`)
+          },
+        },
+        clickItem(0, { events: [{ type: 'value-change', detail: { value: ['vue'] } }] }),
+        clickItem(2, { events: [{ type: 'value-change', detail: { value: ['vue', 'svelte'] } }] }),
+        {
+          kind: 'raw',
+          why: '同上',
+          run: ({ doc }) => {
+            const value = doc.querySelector<HTMLInputElement>('[data-scope="tag-group"][data-part="hidden-input"]')?.value
+            if (value !== 'vue,svelte')
+              throw new Error(`表单出口应是按逗号拼起的选中值 "vue,svelte"，实际 ${JSON.stringify(value)}`)
+          },
+        },
+      ],
+    },
+    {
+      name: '作者不写结构、给了 name：标签列表之后多铺一份表单出口',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { selectionMode: 'single', name: 'stack', defaultValue: 'vue', collection: [{ value: 'vue', label: 'Vue' }, { value: 'react', label: 'React' }] },
+      initial: {
+        order: ['root', 'list', 'cell[0]', 'item-indicator[0]', 'cell[1]', 'item-indicator[1]', 'hidden-input'],
+        parts: { 'hidden-input': { type: 'text', name: 'stack' } },
+      },
+    },
+    {
       name: '受控 value：点选只发 value-change 不自改 DOM，父写回后才变',
       spec: { adr: 'controlled-uncontrolled' },
       props: { selectionMode: 'multiple', value: [] },

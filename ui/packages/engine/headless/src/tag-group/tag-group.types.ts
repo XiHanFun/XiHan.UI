@@ -119,8 +119,16 @@ export interface TagGroupSchema extends MachineSchema {
     readOnly?: boolean
     /** 校验失败：标签列表报告 aria-invalid，根与列表带 data-invalid。 */
     invalid?: boolean
-    /** 必填：根与列表带 data-required。grid 角色不收 aria-required，必填由字段的标题与错误文案告知。 */
+    /**
+     * 必填：根与列表带 data-required。grid 角色不收 aria-required，必填由字段的标题与错误文案告知；
+     * 给了 name 时 hidden-input 另带原生 required，一枚都没选就拦下表单提交。
+     */
     required?: boolean
+    /**
+     * 表单字段名；提供后 hidden-input 才带 name，选中值按逗号拼成一串随表单提交，一枚都没选时是空串。
+     * 值本身含逗号时拼出来的串分不开，这类值请换成不带逗号的键。
+     */
+    name?: string
     /** 方向键到达末尾是否回绕，默认 true。 */
     loop?: boolean
     /** 文字方向，默认 ltr。 */
@@ -182,6 +190,8 @@ export interface TagGroupSchema extends MachineSchema {
     | { type: 'PRESS.END', part: TagPressedPart, value: string }
     /** 列表动效已接上：之后到达的标签才播进场。 */
     | { type: 'LIST.TRACKED' }
+    /** 所在表单被重置：选中集合回到 defaultValue（受控且没给 defaultValue 时不动）。 */
+    | { type: 'FORM.RESET' }
   tag: never
   guard: 'canPress'
   action:
@@ -195,6 +205,7 @@ export interface TagGroupSchema extends MachineSchema {
     | 'endPress'
     | 'releaseWhenInert'
     | 'markListTracked'
+    | 'resetToDefault'
   effect: 'trackListMotion'
 }
 
@@ -239,4 +250,9 @@ export interface TagGroupApi<T extends PropTypes = PropTypes> {
   getItemTextProps: (props: TagGroupItemProps) => T['element']
   /** 移除按钮：所在标签那份 tag 的 close-trigger，不占 Tab 位；可及名、禁用与收起都由 tag 提供。 */
   getItemDeleteTriggerProps: (props: TagGroupItemProps) => T['button']
+  /**
+   * 表单出口：整组一份，视觉隐藏的文本输入，值是按逗号拼起的选中值；给了 name 才参与提交。
+   * 不用 type=hidden：那样不进约束校验，required 拦不住空值。
+   */
+  getHiddenInputProps: () => T['input']
 }

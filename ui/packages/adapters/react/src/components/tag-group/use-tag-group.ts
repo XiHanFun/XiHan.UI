@@ -7,8 +7,10 @@
 
 import type { Service } from '@xihan-ui/core'
 import type { TagGroupApi, TagGroupSchema } from '@xihan-ui/headless'
+import type { RefObject } from 'react'
 import { connectTagGroup, tagGroupMachine } from '@xihan-ui/headless'
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
+import { useFormReset } from '../../runtime/attach-form-reset'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
@@ -22,6 +24,8 @@ export interface TagGroupContext {
   api: TagGroupApi
   /** 状态机实例，供部件上报 DOM 侧的事实（如标签卸载带走了焦点）。 */
   service: Service<TagGroupSchema>
+  /** 表单重置的锚点：接在根节点上。 */
+  rootRef: RefObject<HTMLElement | null>
 }
 
 export function useTagGroup(props: TagGroupSchema['props']): TagGroupContext {
@@ -34,5 +38,8 @@ export function useTagGroup(props: TagGroupSchema['props']): TagGroupContext {
     return () => setLabelCount(n => n - 1)
   }, [])
   const service = useMachine(tagGroupMachine, () => ({ ...props, labelled: labelCount > 0 }), { scope })
-  return { registerLabel, api: connectTagGroup(service, reactNormalize), service }
+  const rootRef = useRef<HTMLElement | null>(null)
+  // 选中集合攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置选中值不会回到初值
+  useFormReset(service, rootRef)
+  return { registerLabel, api: connectTagGroup(service, reactNormalize), service, rootRef }
 }

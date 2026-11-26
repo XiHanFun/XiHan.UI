@@ -30,6 +30,7 @@
 - `collection` 是文本、禁用与可移除的事实源；也可以逐个编写。
 - 连续输入按首字母跳转，只移动焦点、不改变选中值。
 - `invalid` 时标签列表报 `aria-invalid`，根与列表带 `data-invalid`；`required` 在根与列表上带 `data-required`。`grid` 角色不收 `aria-required`，放进[表单字段](./field)时必填由字段标题的星号与错误文案告知。
+- `name` 让选中值随表单提交：表单出口是 `hidden-input` 部件，一份视觉隐藏的文本输入，值是按逗号拼起的选中值，一枚都没选时是空串；同时给了 `required` 时它带原生 `required`，没选就拦下表单提交。值本身含逗号时拼出来的串分不开，这类值换成不带逗号的键。所在表单重置时选中集合回到 `defaultValue`。不写结构时给了 `name` 才在列表之后铺这份表单出口。
 - 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是标签列表，`collection` 的每条数据一枚标签，格子里依次是文字、选中标记与移除按钮；没给 `collection` 时列表是空的，移除标签由宿主改 `collection`。Web Components 里标题与标签文字可以写在宿主的直接子节点 `slot="label"`、`slot="item:<值>"` 上接管。
 
 ## 无障碍

@@ -22,7 +22,7 @@
 
 加粗的是必需部件。
 
-`data-scope="tag-group"`：`root` · `label` · **`list`** · `cell` · `item-indicator`
+`data-scope="tag-group"`：`root` · `label` · **`list`** · `cell` · `item-indicator` · `hidden-input`
 
 ## 示例
 
@@ -43,6 +43,12 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 逐部件自行编写，标签中即可放置头像、计数等自带内容，移除按钮照常归 cell 管理；条目渲染为 tag 的 root、文字是 tag 的 label，产出的结构与只提供数据的一份完全一致，Tab 位与键盘也一样
 
 <XhDemo src="tag-group/04-parts" />
+
+### 随表单提交
+
+写了 name 才带表单出口：选中值按逗号拼成一串随表单提交，required 时一枚都没选就拦下
+
+<XhDemo src="tag-group/05-form" />
 
 ## 设计指引
 
@@ -72,6 +78,7 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 - `collection` 是文本、禁用与可移除的事实源；也可以逐个编写。
 - 连续输入按首字母跳转，只移动焦点、不改变选中值。
 - `invalid` 时标签列表报 `aria-invalid`，根与列表带 `data-invalid`；`required` 在根与列表上带 `data-required`。`grid` 角色不收 `aria-required`，放进[表单字段](./field)时必填由字段标题的星号与错误文案告知。
+- `name` 让选中值随表单提交：表单出口是 `hidden-input` 部件，一份视觉隐藏的文本输入，值是按逗号拼起的选中值，一枚都没选时是空串；同时给了 `required` 时它带原生 `required`，没选就拦下表单提交。值本身含逗号时拼出来的串分不开，这类值换成不带逗号的键。所在表单重置时选中集合回到 `defaultValue`。不写结构时给了 `name` 才在列表之后铺这份表单出口。
 - 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是标签列表，`collection` 的每条数据一枚标签，格子里依次是文字、选中标记与移除按钮；没给 `collection` 时列表是空的，移除标签由宿主改 `collection`。Web Components 里标题与标签文字可以写在宿主的直接子节点 `slot="label"`、`slot="item:<值>"` 上接管。
 
 ### 组合
@@ -100,7 +107,7 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tag-group>` |
-| Vue 组件 | `XhTagGroupCell` `XhTagGroupItem` `XhTagGroupItemDeleteTrigger` `XhTagGroupItemIndicator` `XhTagGroupItemText` `XhTagGroupLabel` `XhTagGroupList` `XhTagGroupRoot` |
+| Vue 组件 | `XhTagGroupCell` `XhTagGroupHiddenInput` `XhTagGroupItem` `XhTagGroupItemDeleteTrigger` `XhTagGroupItemIndicator` `XhTagGroupItemText` `XhTagGroupLabel` `XhTagGroupList` `XhTagGroupRoot` |
 | 组合式函数 | `useTagGroup` |
 | 状态机 | `tagGroupMachine` |
 | 皮肤 | `@xihan-ui/styles/tag-group.css` |
@@ -119,7 +126,8 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | `disabled` | `boolean` |  | 整组禁用：键盘与点击都不再修改选中值，也不可移除任何标签。 |
 | `readOnly` | `boolean` |  | 只读：仍可聚焦、可导航与朗读，但选中值不可修改、标签也不可移除。 |
 | `invalid` | `boolean` |  | 校验失败：标签列表报告 aria-invalid，根与列表带 data-invalid。 |
-| `required` | `boolean` |  | 必填：根与列表带 data-required。grid 角色不收 aria-required，必填由字段的标题与错误文案告知。 |
+| `required` | `boolean` |  | 必填：根与列表带 data-required。grid 角色不收 aria-required，必填由字段的标题与错误文案告知； 给了 name 时 hidden-input 另带原生 required，一枚都没选就拦下表单提交。 |
+| `name` | `string` |  | 表单字段名；提供后 hidden-input 才带 name，选中值按逗号拼成一串随表单提交，一枚都没选时是空串。 值本身含逗号时拼出来的串分不开，这类值请换成不带逗号的键。 |
 | `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 horizontal：标签成排出现。 |
@@ -180,7 +188,7 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.TOGGLE` · `ITEM.FOCUS` · `ITEM.DELETE` · `LIST.BLUR` · `PRESS.START` · `PRESS.END` · `LIST.TRACKED`
+**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.TOGGLE` · `ITEM.FOCUS` · `ITEM.DELETE` · `LIST.BLUR` · `PRESS.START` · `PRESS.END` · `LIST.TRACKED` · `FORM.RESET`
 
 **判据**：`canPress`
 
@@ -212,6 +220,7 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | `getItemIndicatorProps` | `(props: TagGroupItemProps) => T['element']` | 选中标记：落在格子内、文字之后与摘除钮之前，选中时展示、未选中时以 hidden 收起； 对读屏隐藏，选中态由标签上的 aria-selected 表达。内容留空时由皮肤绘制对号，也可放入图标。 |
 | `getItemTextProps` | `(props: TagGroupItemProps) => T['element']` | 标签文字：tag 的 label，截断规则挂在该层。 |
 | `getItemDeleteTriggerProps` | `(props: TagGroupItemProps) => T['button']` | 移除按钮：所在标签那份 tag 的 close-trigger，不占 Tab 位；可及名、禁用与收起都由 tag 提供。 |
+| `getHiddenInputProps` | `() => T['input']` | 表单出口：整组一份，视觉隐藏的文本输入，值是按逗号拼起的选中值；给了 name 才参与提交。 不用 type=hidden：那样不进约束校验，required 拦不住空值。 |
 
 ## 无障碍
 
@@ -247,6 +256,7 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | `list` | `role` | 'grid' |
 | `cell` | `role` | 'gridcell' |
 | `item-indicator` | `aria-hidden` | 'true' |
+| `hidden-input` | `aria-hidden` | 'true' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `aria-selected` | 'true' \| 'false' \| undefined |
 | `item` | `role` | 'row' |

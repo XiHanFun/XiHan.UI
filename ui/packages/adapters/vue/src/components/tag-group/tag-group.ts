@@ -6,7 +6,7 @@
 // 提供 tag group 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { TagGroupApi, TagGroupItemProps, TagGroupNode, TagGroupNodeMeta, TagGroupSchema, TagGroupSelectionMode, TagGroupTranslations, TagVariant } from '@xihan-ui/headless'
+import type { TagGroupApi, TagGroupItemProps, TagGroupNode, TagGroupNodeMeta, TagGroupSchema, TagGroupSelectionMode, TagGroupStructureOptions, TagGroupTranslations, TagVariant } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { PropsOf } from '../../runtime/props-of'
@@ -44,8 +44,10 @@ export const XhTagGroupRoot = defineComponent({
     readOnly: { type: Boolean, default: undefined },
     /** 校验失败：标签列表报告 aria-invalid，根与列表带 data-invalid。 */
     invalid: { type: Boolean, default: undefined },
-    /** 必填：根与列表带 data-required。 */
+    /** 必填：根与列表带 data-required；给了 name 时表单出口另带原生 required。 */
     required: { type: Boolean, default: undefined },
+    /** 表单字段名；提供后标准结构铺表单出口，选中值按逗号拼成一串随表单提交。 */
+    name: { type: String },
     loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction> },
     orientation: { type: String as PropType<Orientation> },
@@ -89,7 +91,7 @@ export const XhTagGroupRoot = defineComponent({
           toggle: ctx.api.value.toggle,
           deleteItem: ctx.api.value.deleteItem,
         }) ?? []
-        : renderDefaultStructure(ctx.api.value, props.label, { label: slots.label, item: slots.item })),
+        : renderDefaultStructure(ctx.api.value, { label: props.label, hiddenInput: props.name != null }, { label: slots.label, item: slots.item })),
     ])
   },
 })
@@ -201,6 +203,15 @@ export const XhTagGroupItemDeleteTrigger = defineComponent({
   },
 })
 
+/** 表单出口：整组只有一份，提供 name 后才参与提交。 */
+export const XhTagGroupHiddenInput = defineComponent({
+  name: 'XhTagGroupHiddenInput',
+  setup() {
+    const ctx = useTagGroupContext()
+    return () => h('input', ctx.api.value.getHiddenInputProps())
+  },
+})
+
 /** 标准结构里各部件对应的组件；标签、标签文字与摘除钮委派给 tag，按「tag/部件名」找。 */
 const TAG_GROUP_PARTS = {
   'label': XhTagGroupLabel,
@@ -210,6 +221,7 @@ const TAG_GROUP_PARTS = {
   'tag/item-text': XhTagGroupItemText,
   'item-indicator': XhTagGroupItemIndicator,
   'tag/item-delete-trigger': XhTagGroupItemDeleteTrigger,
+  'hidden-input': XhTagGroupHiddenInput,
 }
 
 interface TagGroupStructureSlots {
@@ -221,8 +233,8 @@ interface TagGroupStructureSlots {
  * 未写默认插槽时铺开的整套结构，作者只提供数据：照 headless 的 tagGroupStructure 渲，
  * 与 Web Components 不写部件时元素生成的节点出自同一份。标题与标签文字由对应插槽接管。
  */
-function renderDefaultStructure(api: TagGroupApi, label: string | undefined, authored: TagGroupStructureSlots): VNode[] {
-  const nodes = tagGroupStructure(api, { label, slotted: name => authored[name as keyof TagGroupStructureSlots] != null })
+function renderDefaultStructure(api: TagGroupApi, options: Pick<TagGroupStructureOptions, 'label' | 'hiddenInput'>, authored: TagGroupStructureSlots): VNode[] {
+  const nodes = tagGroupStructure(api, { ...options, slotted: name => authored[name as keyof TagGroupStructureSlots] != null })
   return renderStructure(nodes, TAG_GROUP_PARTS, (node) => {
     const meta = node.data as TagGroupNodeMeta
     switch (node.slot?.name) {
@@ -238,6 +250,7 @@ function renderDefaultStructure(api: TagGroupApi, label: string | undefined, aut
 
 // 各组件接受的 props，与 React 同名
 export type XhTagGroupCellProps = PropsOf<typeof XhTagGroupCell>
+export type XhTagGroupHiddenInputProps = PropsOf<typeof XhTagGroupHiddenInput>
 export type XhTagGroupItemProps = PropsOf<typeof XhTagGroupItem>
 export type XhTagGroupItemDeleteTriggerProps = PropsOf<typeof XhTagGroupItemDeleteTrigger>
 export type XhTagGroupItemIndicatorProps = PropsOf<typeof XhTagGroupItemIndicator>

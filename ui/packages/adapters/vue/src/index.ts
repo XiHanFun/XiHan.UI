@@ -1342,6 +1342,7 @@ export { useTagGroupContext, useTagGroupItemContext } from './components/tag-gro
 export type { TagGroupItemContext } from './components/tag-group/context'
 export {
   XhTagGroupCell,
+  XhTagGroupHiddenInput,
   XhTagGroupItem,
   XhTagGroupItemDeleteTrigger,
   XhTagGroupItemIndicator,
@@ -1350,7 +1351,7 @@ export {
   XhTagGroupList,
   XhTagGroupRoot,
 } from './components/tag-group/tag-group'
-export type { TagGroupRootSlotProps, XhTagGroupCellProps, XhTagGroupItemDeleteTriggerProps, XhTagGroupItemIndicatorProps, XhTagGroupItemProps, XhTagGroupItemTextProps, XhTagGroupLabelProps, XhTagGroupListProps, XhTagGroupRootProps } from './components/tag-group/tag-group'
+export type { TagGroupRootSlotProps, XhTagGroupCellProps, XhTagGroupHiddenInputProps, XhTagGroupItemDeleteTriggerProps, XhTagGroupItemIndicatorProps, XhTagGroupItemProps, XhTagGroupItemTextProps, XhTagGroupLabelProps, XhTagGroupListProps, XhTagGroupRootProps } from './components/tag-group/tag-group'
 export { useTagGroup } from './components/tag-group/use-tag-group'
 export type { TagGroupContext } from './components/tag-group/use-tag-group'
 export { useTagContext } from './components/tag/context'

@@ -1,0 +1,36 @@
+<!-- 随表单提交 | 写了 name 才带表单出口：选中值按逗号拼成一串随表单提交，required 时一枚都没选就拦下 -->
+<form
+  id="tag-group-form"
+  style="display: flex; flex-direction: column; gap: 12px; max-inline-size: 420px"
+>
+  <xh-tag-group
+    id="tag-group-form-topics"
+    label="关注的话题"
+    name="topics"
+    selection-mode="multiple"
+    default-value="design"
+    required
+  ></xh-tag-group>
+  <xh-button type="submit" variant="outline" style="align-self: start">
+    <button data-xh-part="root">提交</button>
+  </xh-button>
+  <span data-demo-output>表单收到：<span id="tag-group-form-result">（还没提交）</span></span>
+</form>
+
+<script type="module">
+  const form = document.getElementById("tag-group-form");
+  const group = document.getElementById("tag-group-form-topics");
+  const result = document.getElementById("tag-group-form-result");
+
+  // 条目数据是数组，交不成属性，只走 property
+  group.collection = [
+    { value: "design", label: "设计" },
+    { value: "a11y", label: "无障碍" },
+    { value: "motion", label: "动效" },
+  ];
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    result.textContent = String(new FormData(form).get("topics") ?? "");
+  });
+</script>

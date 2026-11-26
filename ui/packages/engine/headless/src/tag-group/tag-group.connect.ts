@@ -13,6 +13,7 @@ import { TAG_GROUP_EN_US } from '../locale/en-US'
 import { isEditableTarget } from '../shared/editable-target'
 import { createGridCollection, fromInlineControl, readGridKey } from '../shared/grid-collection'
 import { resolveTranslations } from '../shared/translations'
+import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { connectStaticTag } from '../tag'
 import { tagGroupAnatomy, tagGroupItems, tagGroupItemText } from './tag-group.anatomy'
 
@@ -359,5 +360,25 @@ export function connectTagGroup<T extends PropTypes>(
         },
       }),
     ),
+
+    // 表单出口：整组只有一份，提交的就是当前选中值。写成视觉隐藏的文本输入而不是 type=hidden：
+    // hidden 不参与约束校验，required 拦不住空值提交
+    getHiddenInputProps: () => normalize.input({
+      ...parts['hidden-input'].attrs,
+      // type 须先于 value 写入：改 type 会重置输入的值
+      'type': 'text',
+      // 未给 name 时不产出该属性，这份输入便不参与提交
+      'name': prop('name'),
+      // 多选把整组值并成一串：一份输入只提交得出一个值；没选时是空串，required 据此拦下
+      'value': value.join(','),
+      'required': required || undefined,
+      // 禁用的组不该提交出值
+      'disabled': groupDisabled || undefined,
+      // 只读随 prop 走，恒真会让 required 不生效
+      'readonly': readOnly || undefined,
+      'tabindex': -1,
+      'aria-hidden': true,
+      'style': VISUALLY_HIDDEN_STYLE,
+    }),
   }
 }
