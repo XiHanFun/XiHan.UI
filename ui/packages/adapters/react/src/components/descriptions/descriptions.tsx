@@ -6,15 +6,20 @@
 // 提供 descriptions 相关实现。
 
 import type { ControlVariant, Size } from '@xihan-ui/core'
-import type { DescriptionsColumns, DescriptionsPlacement, DescriptionsProps } from '@xihan-ui/headless'
+import type { DescriptionsApi, DescriptionsColumns, DescriptionsNode, DescriptionsNodeMeta, DescriptionsPlacement, DescriptionsProps, StructureNode } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ElementType, ReactNode } from 'react'
-import { connectDescriptions } from '@xihan-ui/headless'
+import { connectDescriptions, descriptionsStructure } from '@xihan-ui/headless'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { reactNormalize } from '../../runtime/normalize-props'
+import { renderStructure } from '../../runtime/structure'
 import { DescriptionsProvider, useDescriptionsContext } from './context'
 
 export interface XhDescriptionsRootProps extends ComponentPropsWithRef<'dl'> {
+  /** 各组的数据：不给 children 时按它铺出标准结构。 */
+  collection?: readonly DescriptionsNode[]
+  /** 标准结构里一格的取值，可得到这一组的元信息；未提供时取值铺 collection 里的 value。 */
+  renderValue?: (item: DescriptionsNodeMeta) => ReactNode
   /** 每行排几组，一到六列；未写即每行一组。 */
   columns?: DescriptionsColumns
   /** 形态：ghost 不画壳（默认），outline 绘制外框并在格与格之间补网格线，subtle 淡底。默认 ghost。 */
@@ -34,6 +39,8 @@ export interface XhDescriptionsRootProps extends ComponentPropsWithRef<'dl'> {
 
 /** 一组只读的标签与取值：四个轴只落在这一层，各格从这里继承。 */
 export function XhDescriptionsRoot({
+  collection,
+  renderValue,
   columns,
   variant,
   placement,
@@ -43,14 +50,14 @@ export function XhDescriptionsRoot({
   children,
   ...rest
 }: XhDescriptionsRootProps): ReactNode {
-  const configured = withXhConfig('descriptions', { columns, variant, placement, size }) as DescriptionsProps
+  const configured = withXhConfig('descriptions', { collection, columns, variant, placement, size }) as DescriptionsProps
   const api = connectDescriptions(configured, reactNormalize)
   const Tag = as as 'dl'
   return (
     <DescriptionsProvider value={{ api }}>
       {header}
       <Tag {...mergeReactProps(api.getRootProps(), rest)}>
-        {children}
+        {children ?? renderDefaultStructure(api, renderValue)}
       </Tag>
     </DescriptionsProvider>
   )
@@ -140,4 +147,26 @@ export function XhDescriptionsExtra({ children, ...rest }: XhDescriptionsExtraPr
       {children}
     </div>
   )
+}
+
+/** 按数据铺的一格：结构节点上的跨列数是作者会写在节点上的字符串，交给格子时换成数。 */
+function DescriptionsStructureItem({ span, ...rest }: Omit<XhDescriptionsItemProps, 'span'> & { span?: string }): ReactNode {
+  return <XhDescriptionsItem {...rest} span={span == null ? undefined : Number(span)} />
+}
+
+/** 标准结构里各部件对应的组件。 */
+const DESCRIPTIONS_PARTS = {
+  item: DescriptionsStructureItem,
+  label: XhDescriptionsLabel,
+  value: XhDescriptionsValue,
+}
+
+/**
+ * 未给 children 时照 descriptionsStructure 铺开的各组，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 取值给了 renderValue 就由它提供，否则铺 collection 里的 value。头部照旧经 header。
+ */
+function renderDefaultStructure(api: DescriptionsApi, renderValue: ((item: DescriptionsNodeMeta) => ReactNode) | undefined): ReactNode[] {
+  const nodes = descriptionsStructure(api, { slotted: name => name === 'value' && renderValue != null })
+  return renderStructure(nodes, DESCRIPTIONS_PARTS, (node: StructureNode) =>
+    node.slot?.name === 'value' ? renderValue?.(node.data as DescriptionsNodeMeta) : undefined)
 }

@@ -22994,7 +22994,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-descriptions>`：Light-DOM 行为宿主，无状态机，把 connectDescriptions 产出接到各角色节点。\n排版使用 CSS Grid，columns 写为列数。\n\n标签由作者决定，root 写 `<dl>`、label 写 `<dt>`、value 写 `<dd>` 时标签与取值天然成对；\n组件不补 role，也不使用 `<table>`：这是一份描述列表，不是数据表。",
+          "description": "`<xh-descriptions>`：Light-DOM 行为宿主，无状态机，把 connectDescriptions 产出接到各角色节点。\n排版使用 CSS Grid，columns 写为列数。\n\n标签由作者决定，root 写 `<dl>`、label 写 `<dt>`、value 写 `<dd>` 时标签与取值天然成对；\n组件不补 role，也不使用 `<table>`：这是一份描述列表，不是数据表。\n\n不写部件（或只写 root）时元素按标准结构生成：`<dl>` 里 collection 的每一组一个 `<div>` 格子（写着 span），\n里面是 `<dt>` 标签与 `<dd>` 取值；某一格的取值可用宿主直接子节点 `slot=\"value:<身份>\"` 接管（没写 value 的组按下标）。\n头部排在根之外，要头部时手写结构。",
           "name": "XhDescriptionsElement",
           "cssParts": [
             {
@@ -23038,6 +23038,24 @@
             },
             {
               "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhDescriptionsElement>"
+              },
+              "static": true,
+              "default": "{ rootTag: 'dl', build: host => descriptionsStructure(host.api(), { slotted: (name, key) => host.slotted(name, key) }), }"
+            },
+            {
+              "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "readonly DescriptionsNode[] | undefined"
+              },
+              "description": "各组的数据：不写部件（或只写 root）时按它生成标准结构；手写结构时不读。"
+            },
+            {
+              "kind": "field",
               "name": "columns",
               "privacy": "public",
               "type": {
@@ -23071,6 +23089,17 @@
                 "text": "Size | undefined"
               },
               "attribute": "size"
+            },
+            {
+              "kind": "method",
+              "name": "api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "DescriptionsApi"
+                }
+              },
+              "description": "连接层的这一帧：读响应式 property，不回读 DOM 特性。"
             },
             {
               "kind": "method",

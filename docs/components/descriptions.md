@@ -60,6 +60,12 @@ ghost 不画壳，subtle 铺一层淡底，outline 绘制一圈描边并在格�
 
 <XhDemo src="descriptions/08-header" />
 
+### 数据写法
+
+只给 collection、不写结构时按标准结构铺：一组一格，dt 标签与 dd 取值照数据成对，span 让一格横跨几列
+
+<XhDemo src="descriptions/09-collection" />
+
 ## 设计指引
 
 ### 何时使用
@@ -79,6 +85,7 @@ ghost 不画壳，subtle 铺一层淡底，outline 绘制一圈描边并在格�
 - 标签在左时，同一列的标签宽度取这一列最长的那个，标签与值之间的竖线上下对齐；各列各取各的。依赖 CSS 子网格（Chrome 117 起），更早的引擎里每格按自己的标签定宽。
 - 每一格可以通过 `span` 横跨多列，上限是当前列数；窄档一行只放一组时忽略该值。
 - 网格线与跨列、行里摆了几格无关；最后一行没摆满时，最后一格与空着的列连成一格。
+- 只给 `collection` 时照标准结构铺（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`dl` 里每组一格，格子里 `dt` 标签在前、`dd` 取值在后；条目写 `label`、`content`（数字原样转成文字）与可选的 `span`。描述列表只读、没有选中一说，条目身份写 `value`，不写时按下标。取值可由 Vue 的 `value` 插槽、React 的 `renderValue` 或 Web Components 宿主直接子节点 `slot="value:<身份>"` 接管。头部照旧经 Vue 的 `header` 插槽、React 的 `header` 给出；Web Components 要头部时手写结构。
 
 ### 组合
 
@@ -112,10 +119,22 @@ ghost 不画壳，subtle 铺一层淡底，outline 绘制一圈描边并在格�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `collection` | `readonly DescriptionsNode[]` |  | 各组的数据：给了且不写结构时（Vue 不写默认插槽、React 不给 children、Web Components 只写 root）按它铺出标准结构。 作者手写结构时不读它。 |
 | `columns` | `DescriptionsColumns` |  | 每行放置几组，一到六列；未提供时每行一组。 |
 | `placement` | `DescriptionsPlacement` |  | 标签的位置：top / left；未提供时标签在上。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `variant` | `ControlVariant` |  | 形态：ghost 不画壳（默认），outline 绘制外框并在格与格之间补网格线，subtle 淡底。默认 ghost。 |
+
+### DescriptionsNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` |  | 条目身份，同一份描述列表里唯一；不写时取下标。Web Components 用 `slot="value:&lt;身份&gt;"` 接管取值时要写。 |
+| `label` | `string` | 是 | 标签。 |
+| `content` | `string \| number` |  | 取值；数字原样转成文字。不写时这一格的取值是空的。 |
+| `span` | `number` |  | 该格横跨几列，未写即占一列；上限是根上的 columns。 |
 
 ### 插槽
 
@@ -125,6 +144,7 @@ ghost 不画壳，subtle 铺一层淡底，outline 绘制一圈描边并在格�
 | --- | --- | --- | --- |
 | `XhDescriptionsRoot` | `default` | — |  |
 | `XhDescriptionsRoot` | `header` | — | 列表之前的头部：放 XhDescriptionsHeader（内含 Title 与 Extra）。 它渲染为根的兄弟排在列表前：根常写成 dl，dl 的子节点只能是成对的 dt / dd。 |
+| `XhDescriptionsRoot` | `value` | `DescriptionsNodeMeta` | 标准结构里一格的取值，载荷是这一组的元信息；不写时取值铺 collection 里的 value。 |
 
 ### React 适配器 props
 
@@ -135,6 +155,7 @@ ghost 不画壳，subtle 铺一层淡底，outline 绘制一圈描边并在格�
 | `XhDescriptionsItem` | `as` | `ElementType` |  | 每一格渲染为哪个标签，默认 div。 |
 | `XhDescriptionsItem` | `span` | `number` |  | 该格横跨几列，未写即占一列；上限是根上的 columns。 |
 | `XhDescriptionsLabel` | `as` | `ElementType` |  | 标签渲染为哪个标签，默认 dt。 |
+| `XhDescriptionsRoot` | `renderValue` | `(item: DescriptionsNodeMeta) => ReactNode` |  | 标准结构里一格的取值，可得到这一组的元信息；未提供时取值铺 collection 里的 value。 |
 | `XhDescriptionsRoot` | `as` | `ElementType` |  | 根渲染为哪个标签，默认 dl。 |
 | `XhDescriptionsRoot` | `header` | `ReactNode` |  | 列表之前的头部：放 XhDescriptionsHeader（内含 Title 与 Extra）。 它渲染为根的兄弟排在列表前：根常写成 dl，dl 的子节点只能是成对的 dt / dd。 |
 | `XhDescriptionsTitle` | `as` | `ElementType` |  | 标题渲染为哪个标签，默认 div：组件不往文档大纲里插标题，作者按页面层级改写成 h2 / h3。 |
@@ -146,6 +167,7 @@ ghost 不画壳，subtle 铺一层淡底，outline 绘制一圈描边并在格�
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
+| `collection` | `readonly DescriptionsNodeMeta[]` | 由 collection 推导的各组元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getHeaderProps` | `() => T['element']` | 列表之前的头部：左侧标题、右侧附加内容（操作、状态）。 它排在根之外：根常写成 dl，dl 的子节点只能是成对的 dt / dd。 |
 | `getTitleProps` | `() => T['element']` | 标题。作者按页面层级选标题标签（h2 / h3…），组件不替作者定层级。 |

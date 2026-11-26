@@ -6,7 +6,7 @@
 // 提供 descriptions 相关实现。
 
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
-import type { DescriptionsApi, DescriptionsItemProps, DescriptionsProps } from './descriptions.types'
+import type { DescriptionsApi, DescriptionsItemProps, DescriptionsNodeMeta, DescriptionsProps } from './descriptions.types'
 import { descriptionsAnatomy } from './descriptions.anatomy'
 
 const parts = descriptionsAnatomy.build()
@@ -37,7 +37,18 @@ export function connectDescriptions<T extends PropTypes>(
     return Math.min(Math.max(Math.trunc(item.span), 1), columns)
   }
 
+  // 条目身份没写就取下标：展示型条目没有焦点与状态，按位置复用节点不出错
+  const collection: DescriptionsNodeMeta[] = (props.collection ?? []).map((node, index) => ({
+    value: node.value ?? String(index),
+    index,
+    label: node.label,
+    content: node.content == null ? '' : String(node.content),
+    span: node.span,
+  }))
+
   return {
+    collection,
+
     getRootProps: () => normalize.element(rootAttrs),
 
     // 头部与根是兄弟，继承不到根上的尺寸档：自己再落一次

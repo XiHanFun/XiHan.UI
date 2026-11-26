@@ -135,5 +135,23 @@ export const descriptionsSuite: ConformanceSuite = {
         counts: { root: 1, item: 3, label: 3, value: 3 },
       },
     },
+    {
+      name: '标准结构：只给 collection 不写结构时，dl 里一组一格、dt / dd 成对，组件不补 role',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', tag: 'dl', defaultStructure: true }),
+      props: {
+        columns: 2,
+        collection: [
+          { label: '订单号', content: 'XH-20260810-0042' },
+          { label: '金额', content: 1280 },
+          { value: 'remark', label: '备注', content: '工作日送达', span: 2 },
+        ],
+      },
+      initial: {
+        order: ['root', 'item[0]', 'label[0]', 'value[0]', 'item[1]', 'label[1]', 'value[1]', 'item[2]', 'label[2]', 'value[2]'],
+        counts: { root: 1, item: 3, label: 3, value: 3, header: 0 },
+        parts: { 'root': { 'data-columns': '2', 'role': null }, 'label[0]': { role: null }, 'value[2]': { role: null } },
+      },
+    },
   ],
 }

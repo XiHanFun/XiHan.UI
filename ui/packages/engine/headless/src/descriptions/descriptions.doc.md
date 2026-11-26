@@ -19,6 +19,7 @@
 - 标签在左时，同一列的标签宽度取这一列最长的那个，标签与值之间的竖线上下对齐；各列各取各的。依赖 CSS 子网格（Chrome 117 起），更早的引擎里每格按自己的标签定宽。
 - 每一格可以通过 `span` 横跨多列，上限是当前列数；窄档一行只放一组时忽略该值。
 - 网格线与跨列、行里摆了几格无关；最后一行没摆满时，最后一格与空着的列连成一格。
+- 只给 `collection` 时照标准结构铺（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`dl` 里每组一格，格子里 `dt` 标签在前、`dd` 取值在后；条目写 `label`、`content`（数字原样转成文字）与可选的 `span`。描述列表只读、没有选中一说，条目身份写 `value`，不写时按下标。取值可由 Vue 的 `value` 插槽、React 的 `renderValue` 或 Web Components 宿主直接子节点 `slot="value:<身份>"` 接管。头部照旧经 Vue 的 `header` 插槽、React 的 `header` 给出；Web Components 要头部时手写结构。
 
 ## 组合
 

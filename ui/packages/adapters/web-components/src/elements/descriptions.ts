@@ -6,8 +6,9 @@
 // 提供 descriptions 相关实现。
 
 import type { ControlVariant, Size } from '@xihan-ui/core'
-import type { DescriptionsColumns, DescriptionsPlacement, DescriptionsProps } from '@xihan-ui/headless'
-import { connectDescriptions, descriptionsAnatomy, descriptionsMeta } from '@xihan-ui/headless'
+import type { DescriptionsApi, DescriptionsColumns, DescriptionsNode, DescriptionsPlacement, DescriptionsProps } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
+import { connectDescriptions, descriptionsAnatomy, descriptionsMeta, descriptionsStructure } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -20,6 +21,10 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  *
  * 标签由作者决定，root 写 `<dl>`、label 写 `<dt>`、value 写 `<dd>` 时标签与取值天然成对；
  * 组件不补 role，也不使用 `<table>`：这是一份描述列表，不是数据表。
+ *
+ * 不写部件（或只写 root）时元素按标准结构生成：`<dl>` 里 collection 的每一组一个 `<div>` 格子（写着 span），
+ * 里面是 `<dt>` 标签与 `<dd>` 取值；某一格的取值可用宿主直接子节点 `slot="value:<身份>"` 接管（没写 value 的组按下标）。
+ * 头部排在根之外，要头部时手写结构。
  *
  * @customElement xh-descriptions
  * @attr {1|2|3|4|5|6} columns - 每行放置几组，如实写为根上的 data-columns；未提供时每行一组
@@ -37,27 +42,41 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 export class XhDescriptionsElement extends XhElement {
   static override partContract = { anatomy: descriptionsAnatomy, meta: descriptionsMeta }
 
+  static override structure: ElementStructure<XhDescriptionsElement> = {
+    rootTag: 'dl',
+    build: host => descriptionsStructure(host.api(), { slotted: (name, key) => host.slotted(name, key) }),
+  }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开
   static override properties = {
     columns: { type: Number },
     variant: { converter: STRING_CONVERTER },
     placement: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    // 各组的数据是数组，只走 property
+    collection: { attribute: false },
   }
 
+  /** 各组的数据：不写部件（或只写 root）时按它生成标准结构；手写结构时不读。 */
+  declare collection?: readonly DescriptionsNode[]
   declare columns?: DescriptionsColumns
   declare variant?: ControlVariant
   declare placement?: DescriptionsPlacement
   declare size?: Size
 
-  protected wire(): void {
-    // 读响应式 property，不回读 DOM 特性
-    const api = connectDescriptions(this.configured('descriptions', {
+  /** 连接层的这一帧：读响应式 property，不回读 DOM 特性。 */
+  private api(): DescriptionsApi {
+    return connectDescriptions(this.configured('descriptions', {
+      collection: this.collection,
       columns: this.columns,
       variant: this.variant,
       placement: this.placement,
       size: this.size,
     } satisfies DescriptionsProps), wcNormalize)
+  }
+
+  protected wire(): void {
+    const api = this.api()
 
     const root = this.getPart('root')
     if (root)

@@ -15,7 +15,40 @@ export type DescriptionsPlacement = 'top' | 'left'
 
 /** 尺寸档位，只影响每格的内边距、组与组的间距与整体字号。 */
 
+/**
+ * 一组「标签 + 取值」的数据。label 铺进 label 部件，content 铺进 value 部件。
+ * 描述列表只读、没有选中一说；条目身份写 value，不写时按下标认。
+ */
+export interface DescriptionsNode {
+  /** 条目身份，同一份描述列表里唯一；不写时取下标。Web Components 用 `slot="value:<身份>"` 接管取值时要写。 */
+  value?: string
+  /** 标签。 */
+  label: string
+  /** 取值；数字原样转成文字。不写时这一格的取值是空的。 */
+  content?: string | number
+  /** 该格横跨几列，未写即占一列；上限是根上的 columns。 */
+  span?: number
+}
+
+/** 一组的元信息，由 collection 推导。 */
+export interface DescriptionsNodeMeta {
+  /** node.value，没写时为下标，恒为字符串。 */
+  value: string
+  /** 第几组，0 起。 */
+  index: number
+  label: string
+  /** node.content 转成的文字；没写时为空串。 */
+  content: string
+  /** 原样透传，未提供时为 undefined；钳到列数以内由 getItemProps 负责。 */
+  span?: number
+}
+
 export interface DescriptionsProps {
+  /**
+   * 各组的数据：给了且不写结构时（Vue 不写默认插槽、React 不给 children、Web Components 只写 root）按它铺出标准结构。
+   * 作者手写结构时不读它。
+   */
+  collection?: readonly DescriptionsNode[]
   /** 每行放置几组，一到六列；未提供时每行一组。 */
   columns?: DescriptionsColumns
   /** 形态：ghost 不画壳（默认），outline 绘制外框并在格与格之间补网格线，subtle 淡底。默认 ghost。 */
@@ -41,6 +74,8 @@ export interface DescriptionsItemProps {
 }
 
 export interface DescriptionsApi<T extends PropTypes = PropTypes> {
+  /** 由 collection 推导的各组元信息，按数据顺序排列；未提供 collection 时为空数组。 */
+  collection: readonly DescriptionsNodeMeta[]
   getRootProps: () => T['element']
   /**
    * 列表之前的头部：左侧标题、右侧附加内容（操作、状态）。

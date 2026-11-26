@@ -8566,8 +8566,11 @@
       "DescriptionsApi",
       "DescriptionsColumns",
       "DescriptionsItemProps",
+      "DescriptionsNode",
+      "DescriptionsNodeMeta",
       "DescriptionsPlacement",
       "DescriptionsProps",
+      "DescriptionsStructureOptions",
       "DescriptionsTranslations",
       "DialogActionIntents",
       "DialogApi",
@@ -10588,6 +10591,7 @@
       "descriptionsAnatomy",
       "descriptionsKeyboard",
       "descriptionsMeta",
+      "descriptionsStructure",
       "dialogAnatomy",
       "dialogKeyboard",
       "dialogMachine",
@@ -15340,6 +15344,7 @@
       "visibleCount"
     ],
     "descriptions": [
+      "collection",
       "columns",
       "placement",
       "size",
