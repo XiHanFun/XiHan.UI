@@ -7,7 +7,7 @@
 
 import type { Params, Scope } from '@xihan-ui/core'
 import type { IndicatorPresence } from '../shared/indicator'
-import type { AnchorIndicatorRect, AnchorSchema, AnchorTargetOffset } from './anchor.types'
+import type { AnchorIndicatorRect, AnchorNodeMeta, AnchorSchema, AnchorTargetOffset } from './anchor.types'
 import { itemValue, queryItems, resolveScrollBehavior, setup } from '@xihan-ui/core'
 import { frameLoop } from '@xihan-ui/motion'
 import { createIndicatorPresence, createLiquidIndicator, measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../shared/indicator'
@@ -85,10 +85,15 @@ function findTargetEl(scope: Scope, id: string): HTMLElement | null {
   return scope.getRootNode().getElementById(id)
 }
 
+/** 目录数据摊成元信息：没写 label 的条目，链接文字就是 id 本身。 */
+export function anchorNodeMetas(collection: AnchorSchema['props']['collection']): AnchorNodeMeta[] {
+  return (collection ?? []).map(node => ({ value: node.value, label: node.label ?? node.value }))
+}
+
 /** 目标 id 清单：优先用作者给的，否则按渲染出来的链接现查。 */
-function collectTargetIds(targets: readonly string[] | undefined, list: HTMLElement | null): string[] {
+function collectTargetIds(targets: AnchorSchema['props']['collection'], list: HTMLElement | null): string[] {
   if (targets && targets.length > 0)
-    return [...targets]
+    return anchorNodeMetas(targets).map(node => node.value)
   return queryItems(list, anchorItemQuery)
     .map(el => itemValue(el))
     .filter((v): v is string => v != null)

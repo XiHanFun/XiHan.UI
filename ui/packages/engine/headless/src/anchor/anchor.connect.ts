@@ -11,6 +11,7 @@ import { createPressTracker, dataAttr, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { ANCHOR_EN_US } from '../locale/en-US'
 import { resolveTranslations } from '../shared/translations'
 import { anchorAnatomy } from './anchor.anatomy'
+import { anchorNodeMetas } from './anchor.machine'
 
 const parts = anchorAnatomy.build()
 
@@ -37,6 +38,7 @@ export function connectAnchor<T extends PropTypes>(
 
   return {
     value,
+    collection: anchorNodeMetas(prop('collection')),
     isActive,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
 

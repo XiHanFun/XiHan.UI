@@ -6,12 +6,14 @@
 // 提供 anchor 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { AnchorSchema, AnchorTranslations } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { AnchorApi, AnchorNode, AnchorSchema, AnchorTranslations } from '@xihan-ui/headless'
+import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { PropsOf } from '../../runtime/props-of'
+import { anchorStructure } from '@xihan-ui/headless'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { renderStructure } from '../../runtime/structure'
 import { provideAnchor, useAnchorContext } from './context'
 import { useAnchor } from './use-anchor'
 
@@ -24,7 +26,8 @@ export const XhAnchorRoot = defineComponent({
   props: {
     value: { type: String as PropType<string | null> },
     defaultValue: { type: String as PropType<string | null> },
-    collection: { type: Array as PropType<readonly string[]> },
+    /** 目录数据：目标区块的 id 或 `{ value, label }`；不写默认插槽时按它铺出标准结构。 */
+    collection: { type: Array as PropType<readonly AnchorNode[]> },
     offset: { type: Number },
     bounds: { type: Number },
     smooth: { type: Boolean, default: undefined },
@@ -49,7 +52,7 @@ export const XhAnchorRoot = defineComponent({
     // 传响应式 props 对象本身而非快照，供机器每次读时重新展开
     const ctx = useAnchor(withXhConfig('anchor', props) as AnchorProps, notify, () => props.target ?? null)
     provideAnchor(ctx)
-    return () => h('nav', ctx.api.value.getRootProps(), slots.default?.())
+    return () => h('nav', ctx.api.value.getRootProps(), slots.default ? slots.default() : renderDefaultStructure(ctx.api.value))
   },
 })
 
@@ -106,6 +109,19 @@ export const XhAnchorIndicator = defineComponent({
     return () => h('li', ctx.api.value.getIndicatorProps())
   },
 })
+
+/** 标准结构里各部件对应的组件。 */
+const ANCHOR_PARTS = {
+  list: XhAnchorList,
+  item: XhAnchorItem,
+  link: XhAnchorLink,
+  indicator: XhAnchorIndicator,
+}
+
+/** 未写默认插槽时照 anchorStructure 铺开的目录，与 Web Components 不写部件时元素生成的节点出自同一份。 */
+function renderDefaultStructure(api: AnchorApi): VNode[] {
+  return renderStructure(anchorStructure(api), ANCHOR_PARTS)
+}
 
 // 各组件接受的 props，与 React 同名
 export type XhAnchorIndicatorProps = PropsOf<typeof XhAnchorIndicator>

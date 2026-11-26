@@ -6,10 +6,12 @@
 // 提供 anchor 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { AnchorSchema, AnchorTranslations } from '@xihan-ui/headless'
+import type { AnchorApi, AnchorNode, AnchorSchema, AnchorTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
+import { anchorStructure } from '@xihan-ui/headless'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
+import { renderStructure } from '../../runtime/structure'
 import { AnchorProvider, useAnchorContext } from './context'
 import { useAnchor } from './use-anchor'
 
@@ -21,7 +23,8 @@ type RootElementProps = Omit<ComponentPropsWithRef<'nav'>, 'defaultValue' | 'dir
 export interface XhAnchorRootProps extends RootElementProps {
   value?: string | null
   defaultValue?: string | null
-  collection?: readonly string[]
+  /** 目录数据：目标区块的 id 或 `{ value, label }`；不给 children 时按它铺出标准结构。 */
+  collection?: readonly AnchorNode[]
   offset?: number
   bounds?: number
   smooth?: boolean
@@ -71,7 +74,7 @@ export function XhAnchorRoot({
   return (
     <AnchorProvider value={ctx}>
       <nav {...mergeReactProps(ctx.api.getRootProps(), rest)}>
-        {children}
+        {children ?? renderDefaultStructure(ctx.api)}
       </nav>
     </AnchorProvider>
   )
@@ -123,4 +126,17 @@ export interface XhAnchorIndicatorProps extends ComponentPropsWithRef<'li'> {}
 export function XhAnchorIndicator({ ...rest }: XhAnchorIndicatorProps): ReactNode {
   const ctx = useAnchorContext()
   return <li {...mergeReactProps(ctx.api.getIndicatorProps(), rest)} />
+}
+
+/** 标准结构里各部件对应的组件。 */
+const ANCHOR_PARTS = {
+  list: XhAnchorList,
+  item: XhAnchorItem,
+  link: XhAnchorLink,
+  indicator: XhAnchorIndicator,
+}
+
+/** 未给 children 时照 anchorStructure 铺开的目录，与 Web Components 不写部件时元素生成的节点出自同一份。 */
+function renderDefaultStructure(api: AnchorApi): ReactNode[] {
+  return renderStructure(anchorStructure(api), ANCHOR_PARTS)
 }

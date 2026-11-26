@@ -6,8 +6,9 @@
 // 提供 anchor 相关实现。
 
 import type { Direction, Orientation, Service, Size, Tone } from '@xihan-ui/core'
-import type { AnchorSchema, AnchorTranslations, AnchorValueChangeDetails } from '@xihan-ui/headless'
-import { anchorAnatomy, anchorMachine, anchorMeta, connectAnchor } from '@xihan-ui/headless'
+import type { AnchorNode, AnchorSchema, AnchorTranslations, AnchorValueChangeDetails } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
+import { anchorAnatomy, anchorMachine, anchorMeta, anchorStructure, connectAnchor } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -23,6 +24,9 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  *
  * 作者须使用正确的标签：root 是 `<nav>`，list 是 `<ul>`，item 是 `<li>`，link 是 `<a>`；
  * href 由元素按 value 派生。
+ *
+ * 不写部件（或只写 root）时元素按 collection 生成标准结构：`<nav>` 里一个列表，每条一个 li，里面一条链接
+ * （写着目标区块的 id，文字取 label，缺省回退为 id），列表末尾是指示条。只铺一层，嵌套目录手写结构。
  *
  * @customElement xh-anchor
  * @attr {string} value - 受控激活项；未提供该属性即非受控
@@ -45,6 +49,11 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  */
 export class XhAnchorElement extends XhElement {
   static override partContract = { anatomy: anchorAnatomy, meta: anchorMeta }
+
+  static override structure: ElementStructure<XhAnchorElement> = {
+    rootTag: 'nav',
+    build: host => host.ctrl.service ? anchorStructure(connectAnchor(host.ctrl.service, wcNormalize)) : undefined,
+  }
 
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -74,7 +83,8 @@ export class XhAnchorElement extends XhElement {
   declare direction?: Direction
   declare tone?: Tone
   declare size?: Size
-  declare collection?: readonly string[]
+  /** 目录数据：目标区块的 id 或 `{ value, label }`；观察器按它查目标，不写部件时按它生成标准结构。 */
+  declare collection?: readonly AnchorNode[]
   declare translations?: Partial<AnchorTranslations>
   declare target?: HTMLElement | null
 

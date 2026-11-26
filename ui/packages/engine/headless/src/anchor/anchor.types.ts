@@ -19,6 +19,21 @@ export interface AnchorValueChangeDetails {
   value: string | null
 }
 
+/** 目录里的一条：value 是目标区块的元素 id，label 是链接文字。 */
+export interface AnchorNode {
+  /** 目标区块的元素 id。 */
+  value: string
+  /** 链接文字；默认回退为 value。 */
+  label?: string
+}
+
+/** 目录里一条的元信息，由 collection 推导。 */
+export interface AnchorNodeMeta {
+  value: string
+  /** node.label ?? node.value，恒为字符串；没写 label 的那一条即 id 本身。 */
+  label: string
+}
+
 /**
  * 链接指向的区块，由作者在部件上声明。
  * connect 据此产出属性，不反查 DOM：它在 Vue 的 render 期求值，此时 DOM 尚不存在。
@@ -61,8 +76,11 @@ export interface AnchorSchema extends MachineSchema {
     /** 当前激活的锚点 id，给定即受控。 */
     value?: string | null
     defaultValue?: string | null
-    /** 目标区块的 id 清单，按文档序提供；未提供时按渲染出的 link 查询。 */
-    collection?: readonly string[]
+    /**
+     * 目录数据，按文档序提供：每条 `{ value, label }`，value 是目标区块的 id。
+     * 观察器按它查目标区块，未提供时按渲染出的 link 查询；不写结构时按它铺出标准结构，链接文字取 label（缺省回退为 id）。
+     */
+    collection?: readonly AnchorNode[]
     /** 判定线距滚动容器视口顶边的距离（px），默认 0。 */
     offset?: number
     /** 压线判定的容差（px），默认 1；区块顶边落在判定线下方该距离内仍视为越过。 */
@@ -122,6 +140,8 @@ export interface AnchorSchema extends MachineSchema {
 export interface AnchorApi<T extends PropTypes = PropTypes> {
   /** 当前激活的锚点 id；没有区块越过判定线时为 null。 */
   value: string | null
+  /** 由 collection 推导的目录元信息，按数据顺序排列；未提供 collection 时为空数组。 */
+  collection: readonly AnchorNodeMeta[]
   isActive: (value: string) => boolean
   setValue: (next: string | null) => void
   getRootProps: () => T['element']

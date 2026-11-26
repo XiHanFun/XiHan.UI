@@ -276,5 +276,21 @@ export const anchorSuite: ConformanceSuite = {
         { kind: 'settle', until: { attr: { part: 'link[0]', name: 'data-pressed', value: null } }, expect: { parts: { 'link[0]': { 'aria-current': null }, 'link[1]': { 'aria-current': 'location' } } } },
       ],
     },
+    {
+      name: '标准结构：只给 collection 不写结构时，nav 里一个 ul、一条一个 li 里的链接，末尾是指示条',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', tag: 'nav', defaultStructure: true }),
+      props: { defaultValue: 'install', collection: [{ value: 'intro', label: '第 intro 节' }, { value: 'install', label: '第 install 节' }, { value: 'usage' }] },
+      initial: {
+        order: ['root', 'list', 'item[0]', 'link[0]', 'item[1]', 'link[1]', 'item[2]', 'link[2]', 'indicator'],
+        counts: { 'root': 1, 'list': 1, 'item': 3, 'link': 3, 'link-text': 0, 'indicator': 1 },
+        parts: {
+          'root': { 'aria-label': 'Anchor navigation' },
+          'link[0]': { 'aria-current': null },
+          'link[1]': { 'aria-current': 'location', 'data-current': '' },
+          'indicator': { 'aria-hidden': 'true' },
+        },
+      },
+    },
   ],
 }

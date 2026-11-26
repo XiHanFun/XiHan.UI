@@ -42,6 +42,12 @@
 
 <XhDemo src="anchor/04-nested" />
 
+### 数据写法
+
+只给 collection、不写结构时按标准结构铺：一条一个链接，文字取 label，末尾带滑动的指示条
+
+<XhDemo src="anchor/05-collection" />
+
 ## 设计指引
 
 ### 何时使用
@@ -58,6 +64,7 @@
 - 支持页面或指定容器滚动：指定 `target` 后监听并滚动该容器，未指定时作用于页面；与[固钉](./affix)、[回到顶部](./back-top)同一个名字、同一种取值。
 - 支持滚动偏移、平滑滚动和当前项指示线：不放 `indicator` 部件时当前链接自带一条静态线（竖排贴起始缘、横排贴底边），放了部件则由部件滑动。
 - 支持水平、垂直和嵌套目录。
+- 只给 `collection` 时照标准结构铺（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`nav` 里一个列表，每条一个 `li`，里面一条链接，`href` 由目标区块的 id 派生，列表末尾是滑动的指示条。条目写 `{ value, label }`，`value` 是目标区块的 id、`label` 是链接文字，不写 `label` 时链接文字就是 id；观察器照旧按这份清单查目标区块。只铺一层，嵌套目录与链接里的图标要用时手写结构。
 
 ### 组合
 
@@ -91,7 +98,7 @@
 | --- | --- | --- | --- |
 | `value` | `string \| null` |  | 当前激活的锚点 id，给定即受控。 |
 | `defaultValue` | `string \| null` |  |  |
-| `collection` | `readonly string[]` |  | 目标区块的 id 清单，按文档序提供；未提供时按渲染出的 link 查询。 |
+| `collection` | `readonly AnchorNode[]` |  | 目录数据，按文档序提供：每条 `{ value, label }`，value 是目标区块的 id。 观察器按它查目标区块，未提供时按渲染出的 link 查询；不写结构时按它铺出标准结构，链接文字取 label（缺省回退为 id）。 |
 | `offset` | `number` |  | 判定线距滚动容器视口顶边的距离（px），默认 0。 |
 | `bounds` | `number` |  | 压线判定的容差（px），默认 1；区块顶边落在判定线下方该距离内仍视为越过。 |
 | `smooth` | `boolean` |  | 点击链接时平滑滚动到目标，默认 false。 |
@@ -101,6 +108,15 @@
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: AnchorValueChangeDetails) => void` |  | value 变化意图回调。 |
+
+### AnchorNode
+
+`collection` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 是 | 目标区块的元素 id。 |
+| `label` | `string` |  | 链接文字；默认回退为 value。 |
 
 ### 事件
 
@@ -137,6 +153,7 @@
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string \| null` | 当前激活的锚点 id；没有区块越过判定线时为 null。 |
+| `collection` | `readonly AnchorNodeMeta[]` | 由 collection 推导的目录元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `isActive` | `(value: string) => boolean` |  |
 | `setValue` | `(next: string \| null) => void` |  |
 | `getRootProps` | `() => T['element']` |  |

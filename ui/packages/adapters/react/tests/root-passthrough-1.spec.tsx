@@ -122,7 +122,7 @@ const cases: Case[] = [
   {
     name: 'anchor',
     render: extra => (
-      <XhAnchorRoot collection={['a', 'b']} offset={8} bounds={4} onValueChange={noop} {...extra} />
+      <XhAnchorRoot collection={[{ value: 'a' }, { value: 'b' }]} offset={8} bounds={4} onValueChange={noop} {...extra} />
     ),
     schemaKeys: ['collection', 'offset', 'bounds', 'onValueChange'],
   },

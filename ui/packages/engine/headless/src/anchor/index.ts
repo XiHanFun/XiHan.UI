@@ -10,10 +10,13 @@ export { connectAnchor } from './anchor.connect'
 export { anchorKeyboard } from './anchor.keyboard'
 export { ANCHOR_DEFAULT_BOUNDS, ANCHOR_DEFAULT_OFFSET, anchorMachine, resolveActiveAnchor } from './anchor.machine'
 export { anchorMeta } from './anchor.meta'
+export { anchorStructure } from './anchor.structure'
 export type {
   AnchorApi,
   AnchorIndicatorRect,
   AnchorLinkProps,
+  AnchorNode,
+  AnchorNodeMeta,
   AnchorRefs,
   AnchorSchema,
   AnchorTargetOffset,
