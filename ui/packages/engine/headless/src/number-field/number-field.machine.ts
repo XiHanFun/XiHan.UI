@@ -10,12 +10,34 @@ import type { NumberCodec } from '../shared/number'
 import type { NumberFieldPressedPart, NumberFieldSchema } from './number-field.types'
 import { resetDeclaredValue, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { decodeNumber, encodeNumber, normalizeValue, stepValue } from '../shared/number'
+import { encodeWithPrecision, resolveNumberFieldPrecision, roundToPrecision } from './number-field.format'
 
 const { createMachine } = setup<NumberFieldSchema>()
 
-/** 作者给的显示串换算。两个方向都缺省时就是原来的 Number() / String()。 */
+/**
+ * 值串与数之间的换算：作者的 parse / format，外加提交位数。两个方向都缺省、也没给 precision 时就是原来的 Number() / String()。
+ * 给了 precision，组件写回的每个数（步进、取端点、失焦规范化）先四舍五入到这么多位：有 format 时交给它，没有时按位数补齐。
+ */
 function codecOf(prop: Params<NumberFieldSchema>['prop']): NumberCodec {
-  return { parse: prop('parse'), format: prop('format') }
+  const parse = prop('parse')
+  const format = prop('format')
+  const precision = resolveNumberFieldPrecision(prop('precision'))
+  if (precision === undefined)
+    return { parse, format }
+  return {
+    parse,
+    format: format ? value => format(roundToPrecision(value, precision)) : value => encodeWithPrecision(value, precision),
+  }
+}
+
+/** 非受控初值：给了 precision 就按它写一遍（3 写成 3.00），读不出数的原样留下；受控值按原样显示。 */
+function initialValue(prop: Params<NumberFieldSchema>['prop']): string {
+  const raw = prop('defaultValue') ?? ''
+  if (resolveNumberFieldPrecision(prop('precision')) === undefined)
+    return raw
+  const codec = codecOf(prop)
+  const n = decodeNumber(raw, codec)
+  return Number.isFinite(n) ? encodeNumber(n, codec) : raw
 }
 
 export const NUMBER_FIELD_STEP = 1
@@ -46,13 +68,15 @@ export const numberFieldMachine = createMachine({
     // 值住在 cell 里，由 cell 收口受控/非受控
     value: cell<string>(() => ({
       value: prop('value'),
-      defaultValue: prop('defaultValue') ?? '',
+      defaultValue: initialValue(prop),
       onChange: value => prop('onValueChange')?.({ value, valueAsNumber: decodeNumber(value, codecOf(prop)) }),
     })),
     // 按住时的方向，逐实例存在 context 里
     pressDirection: cell<1 | -1>(() => ({ defaultValue: 1 })),
     // 按压通道：被 Space / Enter 或触屏按住的那颗钮；与 spinning（连发）互不牵连，只投影按压面
     pressed: cell<NumberFieldPressedPart | null>(() => ({ defaultValue: null })),
+    // 焦点在输入框里：给了 formatOptions 时编辑显示原值、失焦显示格式化文字
+    focused: cell<boolean>(() => ({ defaultValue: false })),
   }),
   initialState: () => 'idle',
   // 按住途中转入禁用 / 只读，或值贴到了这一侧的端点：按钮随即 disabled，浏览器不再派 pointerup / keyup，
@@ -70,7 +94,8 @@ export const numberFieldMachine = createMachine({
     'VALUE.STEP': { guard: 'canStep', actions: ['stepValue'] },
     'VALUE.TO_MIN': { guard: 'canStep', actions: ['toMin'] },
     'VALUE.TO_MAX': { guard: 'canStep', actions: ['toMax'] },
-    'INPUT.BLUR': { actions: ['normalize'] },
+    'INPUT.FOCUS': { actions: ['markFocused'] },
+    'INPUT.BLUR': { actions: ['normalize', 'markBlurred'] },
   },
   states: {
     idle: {
@@ -134,6 +159,8 @@ export const numberFieldMachine = createMachine({
         if (max != null)
           context.set('value', encodeNumber(max, codecOf(prop)))
       },
+      markFocused: ({ context }) => context.set('focused', true),
+      markBlurred: ({ context }) => context.set('focused', false),
       startTriggerPress: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'TRIGGER.PRESS.START')

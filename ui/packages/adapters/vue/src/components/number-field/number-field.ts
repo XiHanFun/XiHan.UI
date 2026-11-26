@@ -6,7 +6,7 @@
 // 提供 number field 相关实现。
 
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
-import type { NumberFieldApi, NumberFieldSchema } from '@xihan-ui/headless'
+import type { NumberFieldApi, NumberFieldSchema, NumberFieldStructureOptions } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { PropsOf } from '../../runtime/props-of'
@@ -20,10 +20,10 @@ import { useNumberField } from './use-number-field'
 
 type NumberFieldProps = NumberFieldSchema['props']
 
-/** 默认插槽的载荷：原始输入串与其数值、增减是否仍可进行，以及写值、增减的命令。 */
+/** 默认插槽的载荷：原始输入串与其数值、此刻显示的文字、增减是否仍可进行，以及写值、增减的命令。 */
 export type NumberFieldRootSlotProps = Pick<
   NumberFieldApi,
-  'value' | 'valueAsNumber' | 'empty' | 'canIncrement' | 'canDecrement' | 'outOfRange' | 'setValue' | 'increment' | 'decrement'
+  'value' | 'valueAsNumber' | 'empty' | 'displayValue' | 'canIncrement' | 'canDecrement' | 'outOfRange' | 'setValue' | 'increment' | 'decrement'
 >
 
 export const XhNumberFieldRoot = defineComponent({
@@ -55,6 +55,12 @@ export const XhNumberFieldRoot = defineComponent({
     size: { type: String as PropType<Size> },
     parse: { type: Function as PropType<NumberFieldProps['parse']> },
     format: { type: Function as PropType<NumberFieldProps['format']> },
+    /** 提交时保留几位小数：步进、取端点与失焦写回的值四舍五入并补齐到这么多位。 */
+    precision: { type: Number },
+    /** 交给 Intl.NumberFormat 的选项：失焦时按格式显示，编辑时换回原值；值与提交始终是原值。 */
+    formatOptions: { type: Object as PropType<Intl.NumberFormatOptions> },
+    /** BCP 47 语言标记，只决定 formatOptions 的显示写法；未提供时取全局配置，再没有按宿主语言。 */
+    locale: { type: String },
   },
   // value-change 携带 { value, valueAsNumber }，update:value 携带裸串
   emits: {
@@ -79,6 +85,7 @@ export const XhNumberFieldRoot = defineComponent({
             value: api.value,
             valueAsNumber: api.valueAsNumber,
             empty: api.empty,
+            displayValue: api.displayValue,
             canIncrement: api.canIncrement,
             canDecrement: api.canDecrement,
             outOfRange: api.outOfRange,
@@ -86,7 +93,7 @@ export const XhNumberFieldRoot = defineComponent({
             increment: api.increment,
             decrement: api.decrement,
           })
-        : renderDefaultStructure(props.label, slots.label))
+        : renderDefaultStructure({ label: props.label, hiddenInput: props.formatOptions != null && props.name != null }, slots.label))
     }
   },
 })
@@ -157,6 +164,15 @@ export const XhNumberFieldDecrementTrigger = defineComponent({
   },
 })
 
+/** 表单出口：给了 formatOptions 时提交原值，name 从输入框挪到这里。 */
+export const XhNumberFieldHiddenInput = defineComponent({
+  name: 'XhNumberFieldHiddenInput',
+  setup() {
+    const ctx = useNumberFieldContext()
+    return () => h('input', ctx.api.value.getHiddenInputProps())
+  },
+})
+
 /** 标准结构里各部件对应的组件。 */
 const NUMBER_FIELD_PARTS = {
   'label': XhNumberFieldLabel,
@@ -164,20 +180,22 @@ const NUMBER_FIELD_PARTS = {
   'decrement-trigger': XhNumberFieldDecrementTrigger,
   'input': XhNumberFieldInput,
   'increment-trigger': XhNumberFieldIncrementTrigger,
+  'hidden-input': XhNumberFieldHiddenInput,
 }
 
 /**
  * 未写默认插槽时铺开的整套结构：照 headless 的 numberFieldStructure 渲，
  * 与 Web Components 不写部件时元素生成的节点出自同一份。标题由 label 插槽接管。
  */
-function renderDefaultStructure(label: string | undefined, labelSlot?: () => VNode[]): VNode[] {
-  const nodes = numberFieldStructure({ label, slotted: name => name === 'label' && labelSlot != null })
+function renderDefaultStructure(options: Pick<NumberFieldStructureOptions, 'label' | 'hiddenInput'>, labelSlot?: () => VNode[]): VNode[] {
+  const nodes = numberFieldStructure({ ...options, slotted: name => name === 'label' && labelSlot != null })
   return renderStructure(nodes, NUMBER_FIELD_PARTS, node => (node.slot ? labelSlot?.() : undefined))
 }
 
 // 各组件接受的 props，与 React 同名
 export type XhNumberFieldControlProps = PropsOf<typeof XhNumberFieldControl>
 export type XhNumberFieldDecrementTriggerProps = PropsOf<typeof XhNumberFieldDecrementTrigger>
+export type XhNumberFieldHiddenInputProps = PropsOf<typeof XhNumberFieldHiddenInput>
 export type XhNumberFieldIncrementTriggerProps = PropsOf<typeof XhNumberFieldIncrementTrigger>
 export type XhNumberFieldInputProps = PropsOf<typeof XhNumberFieldInput>
 export type XhNumberFieldLabelProps = PropsOf<typeof XhNumberFieldLabel>

@@ -50295,7 +50295,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-number-field>`：Light-DOM 行为宿主：作者写 root / label / input / 加减按钮四类角色节点，\n元素运行 number-field 状态机并把 connect 产出接上。\n\n键盘全部在 input 上（ArrowUp / Down 步进、PageUp / Down 大步进、Home / End 取端点），\n两个按钮对读屏隐藏：它们只是指针用户的快捷方式，暴露出来等于把同一个控件报告两遍。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label），盒里减号、输入框、加号；\n标题可以由宿主直接子节点 `slot=\"label\"` 接管。前后缀照旧手写部件。",
+          "description": "`<xh-number-field>`：Light-DOM 行为宿主：作者写 root / label / input / 加减按钮四类角色节点，\n元素运行 number-field 状态机并把 connect 产出接上。\n\n键盘全部在 input 上（ArrowUp / Down 步进、PageUp / Down 大步进、Home / End 取端点），\n两个按钮对读屏隐藏：它们只是指针用户的快捷方式，暴露出来等于把同一个控件报告两遍。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label），盒里减号、输入框、加号；\n标题可以由宿主直接子节点 `slot=\"label\"` 接管。前后缀照旧手写部件。给了 formatOptions 与 name 时末尾再铺一份表单出口（hidden-input）。",
           "name": "XhNumberFieldElement",
           "cssParts": [
             {
@@ -50329,6 +50329,10 @@
             {
               "description": "减一步；到达 min 时为 disabled",
               "name": "decrement-trigger"
+            },
+            {
+              "description": "表单出口，可选；给了 formatOptions 时 name 从输入框挪到这里，提交的是原值",
+              "name": "hidden-input"
             }
           ],
           "members": [
@@ -50357,7 +50361,7 @@
                 "text": "ElementStructure<XhNumberFieldElement>"
               },
               "static": true,
-              "default": "{ build: host => numberFieldStructure({ label: host.label, slotted: (name, key) => host.slotted(name, key) }), }"
+              "default": "{ build: host => numberFieldStructure({ label: host.label, hiddenInput: host.formatOptions != null && host.name !== undefined, slotted: (name, key) => host.slotted(name, key), }), }"
             },
             {
               "kind": "field",
@@ -50559,6 +50563,33 @@
             },
             {
               "kind": "field",
+              "name": "precision",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "precision"
+            },
+            {
+              "kind": "field",
+              "name": "locale",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "formatOptions",
+              "privacy": "public",
+              "type": {
+                "text": "Intl.NumberFormatOptions"
+              },
+              "description": "交给 Intl.NumberFormat 的选项：失焦时按格式显示，编辑时换回原值，值与提交始终是原值；只能通过 property 设置"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -50587,6 +50618,15 @@
                 "text": "boolean"
               },
               "description": "值是合法数字但落在 [min, max] 之外；还没进文档时为 false。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "displayValue",
+              "type": {
+                "text": "string"
+              },
+              "description": "输入框此刻显示的文字：给了 formatOptions、失焦且值读得出数时是格式化文字，其余时候就是原值；还没进文档时为空串。",
               "readonly": true
             },
             {
@@ -50769,6 +50809,22 @@
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "提交时保留几位小数：步进、取端点与失焦写回的值四舍五入并补齐到这么多位，夹进 [0, 20]",
+              "name": "precision",
+              "fieldName": "precision"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "BCP 47 语言标记，只决定 formatOptions 的显示写法；未提供时取全局配置，再没有按宿主语言，宿主也没有时按 en-US",
+              "name": "locale",
+              "fieldName": "locale"
             }
           ],
           "superclass": {

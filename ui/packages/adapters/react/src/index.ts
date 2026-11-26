@@ -2020,6 +2020,7 @@ export { useNumberFieldContext } from './components/number-field/context'
 export {
   XhNumberFieldControl,
   XhNumberFieldDecrementTrigger,
+  XhNumberFieldHiddenInput,
   XhNumberFieldIncrementTrigger,
   XhNumberFieldInput,
   XhNumberFieldLabel,
@@ -2031,6 +2032,7 @@ export type {
   NumberFieldRootSlotProps,
   XhNumberFieldControlProps,
   XhNumberFieldDecrementTriggerProps,
+  XhNumberFieldHiddenInputProps,
   XhNumberFieldIncrementTriggerProps,
   XhNumberFieldInputProps,
   XhNumberFieldLabelProps,

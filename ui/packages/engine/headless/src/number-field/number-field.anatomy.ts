@@ -16,4 +16,5 @@ export const numberFieldAnatomy = createAnatomy('number-field', [
   'suffix',
   'increment-trigger',
   'decrement-trigger',
+  'hidden-input',
 ])

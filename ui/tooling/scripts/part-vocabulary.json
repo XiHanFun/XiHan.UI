@@ -757,6 +757,7 @@
       "date-field",
       "file-upload",
       "image-cropper",
+      "number-field",
       "pin-input",
       "radio-group",
       "rating",

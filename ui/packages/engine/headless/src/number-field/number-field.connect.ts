@@ -7,9 +7,10 @@
 
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { NumberFieldApi, NumberFieldPressedPart, NumberFieldSchema } from './number-field.types'
-import { createPressTracker, dataAttr, isComposingEvent } from '@xihan-ui/core'
+import { createPressTracker, dataAttr, isComposingEvent, resolveLocale } from '@xihan-ui/core'
 import { decodeNumber } from '../shared/number'
 import { numberFieldAnatomy } from './number-field.anatomy'
+import { formatNumberFieldValue, resolveNumberFieldPrecision } from './number-field.format'
 
 const parts = numberFieldAnatomy.build()
 
@@ -30,6 +31,16 @@ export function connectNumberField<T extends PropTypes>(
   const max = prop('max')
   // 形态默认落 outline：不写时 root 与 control 都如实投影，皮肤不再依赖缺省档
   const variant = prop('variant') ?? 'outline'
+
+  // 给了 formatOptions：失焦时按语言格式化显示，编辑时换回原值；值、通知与提交始终是原值，提交改走 hidden-input。
+  // 禁用时焦点必然不在框里（有的浏览器禁用时不派 blur），一并按失焦算
+  const formatOptions = prop('formatOptions')
+  const formatted = formatOptions != null
+  const formattedText = formatted && !empty
+    ? formatNumberFieldValue(valueAsNumber, resolveLocale(prop('locale'), scope), formatOptions, resolveNumberFieldPrecision(prop('precision')))
+    : undefined
+  const editing = context.get('focused') && !disabled
+  const displayValue = formattedText !== undefined && !editing ? formattedText : value
 
   // 只在已经贴着边界时关掉按钮的 disabled；空值时两个方向都还能走（会落到 min 或 0）
   const editable = !disabled && !readOnly
@@ -92,6 +103,7 @@ export function connectNumberField<T extends PropTypes>(
     value,
     valueAsNumber,
     empty,
+    displayValue,
     disabled,
     readOnly,
     invalid,
@@ -159,8 +171,9 @@ export function connectNumberField<T extends PropTypes>(
       'role': 'spinbutton',
       'inputmode': 'decimal',
       'autocomplete': 'off',
-      'name': prop('name'),
-      'value': value,
+      // 给了 formatOptions 时失焦显示的是格式化文字，表单出口挪到 hidden-input，这里不带 name
+      'name': formatted ? undefined : prop('name'),
+      'value': displayValue,
       'placeholder': prop('placeholder'),
       'disabled': disabled || undefined,
       'readonly': readOnly || undefined,
@@ -171,6 +184,8 @@ export function connectNumberField<T extends PropTypes>(
       'aria-valuenow': empty ? undefined : valueAsNumber,
       'aria-valuemin': min,
       'aria-valuemax': max,
+      // 格式化之后的念法（¥1,234.50）：只读 aria-valuenow 读屏念出的是裸数
+      'aria-valuetext': formattedText,
       'aria-invalid': invalid ? 'true' : 'false',
       // Field Chrome 不读取 number-field anatomy；原生输入角色与单行布局由 Headless 明确投影
       'data-xh-field-input': '',
@@ -181,6 +196,7 @@ export function connectNumberField<T extends PropTypes>(
       'onInput': (event: Event) => {
         send({ type: 'VALUE.SET', value: (event.target as HTMLInputElement).value })
       },
+      'onFocus': () => send({ type: 'INPUT.FOCUS' }),
       'onBlur': () => send({ type: 'INPUT.BLUR' }),
       'onKeyDown': (event: KeyboardEvent) => {
         if (!editable || event.ctrlKey || event.metaKey || event.altKey)
@@ -235,6 +251,17 @@ export function connectNumberField<T extends PropTypes>(
       'data-disabled': dataAttr(!canDecrement),
       'data-pressed': dataAttr(pressed === 'decrement'),
       ...pressProps(-1, canDecrement, 'decrement'),
+    }),
+
+    // 表单出口：只在给了 formatOptions 时接 name，提交的是原值；没给时提交照旧走输入框，这一份不参与
+    getHiddenInputProps: () => normalize.input({
+      ...parts['hidden-input'].attrs,
+      // type 先于 value 写：改 type 会重置输入的值
+      type: 'hidden',
+      name: formatted ? prop('name') : undefined,
+      value,
+      // 禁用的控件不该提交出值
+      disabled: disabled || undefined,
     }),
   }
 }

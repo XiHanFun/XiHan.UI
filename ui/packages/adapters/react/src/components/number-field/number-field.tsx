@@ -22,10 +22,10 @@ import { useNumberField } from './use-number-field'
 
 type NumberFieldProps = NumberFieldSchema['props']
 
-/** 函数式 children 的载荷：原始输入串与其数值、增减是否仍可进行，以及写值、增减的命令。 */
+/** 函数式 children 的载荷：原始输入串与其数值、此刻显示的文字、增减是否仍可进行，以及写值、增减的命令。 */
 export type NumberFieldRootSlotProps = Pick<
   NumberFieldApi,
-  'value' | 'valueAsNumber' | 'empty' | 'canIncrement' | 'canDecrement' | 'outOfRange' | 'setValue' | 'increment' | 'decrement'
+  'value' | 'valueAsNumber' | 'empty' | 'displayValue' | 'canIncrement' | 'canDecrement' | 'outOfRange' | 'setValue' | 'increment' | 'decrement'
 >
 
 /** 根上自有的取值；defaultValue 与原生的同名属性含义不同，由这里接管。 */
@@ -62,6 +62,12 @@ export interface XhNumberFieldRootProps extends RootElementProps {
   size?: Size
   parse?: NumberFieldProps['parse']
   format?: NumberFieldProps['format']
+  /** 提交时保留几位小数：步进、取端点与失焦写回的值四舍五入并补齐到这么多位。 */
+  precision?: number
+  /** 交给 Intl.NumberFormat 的选项：失焦时按格式显示，编辑时换回原值；值与提交始终是原值。 */
+  formatOptions?: Intl.NumberFormatOptions
+  /** BCP 47 语言标记，只决定 formatOptions 的显示写法；未提供时取全局配置，再没有按宿主语言。 */
+  locale?: string
   onValueChange?: NumberFieldProps['onValueChange']
   children?: SlotChildren<NumberFieldRootSlotProps>
 }
@@ -90,6 +96,9 @@ export function XhNumberFieldRoot({
   size,
   parse,
   format,
+  precision,
+  formatOptions,
+  locale,
   onValueChange,
   children,
   ...rest
@@ -117,6 +126,9 @@ export function XhNumberFieldRoot({
     size,
     parse,
     format,
+    precision,
+    formatOptions,
+    locale,
     onValueChange,
   } as NumberFieldProps))
   const api = ctx.api
@@ -134,6 +146,7 @@ export function XhNumberFieldRoot({
               value: api.value,
               valueAsNumber: api.valueAsNumber,
               empty: api.empty,
+              displayValue: api.displayValue,
               canIncrement: api.canIncrement,
               canDecrement: api.canDecrement,
               outOfRange: api.outOfRange,
@@ -141,7 +154,7 @@ export function XhNumberFieldRoot({
               increment: api.increment,
               decrement: api.decrement,
             })
-          : renderDefaultStructure(label)}
+          : renderDefaultStructure(label, formatOptions != null && name != null)}
       </div>
     </NumberFieldProvider>
   )
@@ -200,13 +213,17 @@ export function XhNumberFieldInput({ ...rest }: XhNumberFieldInputProps): ReactN
   // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
   const fieldLabel = useFieldLabelWiring()
   const ctx = useNumberFieldContext()
+  // 得焦切换显示挂的是 focus，它不冒泡：留在 React 的合成事件上收到的是冒泡的 focusin，
+  // 直接派到框上的 focus 到不了处理器
+  const bind = useNativeEvents(fieldLabel({
+    ...fieldWiring,
+    ...ctx.api.getInputProps(),
+  }), ['onFocus'])
   return (
     <input
       {...mergeReactProps(
-        fieldLabel({
-          ...fieldWiring,
-          ...ctx.api.getInputProps(),
-        }),
+        bind.attrs,
+        { ref: bind.ref },
         rest,
       )}
     />
@@ -243,6 +260,25 @@ export function XhNumberFieldDecrementTrigger({ children, ...rest }: XhNumberFie
   )
 }
 
+export interface XhNumberFieldHiddenInputProps extends ComponentPropsWithRef<'input'> {}
+/** 表单出口：给了 formatOptions 时提交原值，name 从输入框挪到这里。 */
+export function XhNumberFieldHiddenInput({ ...rest }: XhNumberFieldHiddenInputProps): ReactNode {
+  const ctx = useNumberFieldContext()
+  return (
+    <input
+      {...mergeReactProps(
+        ctx.api.getHiddenInputProps(),
+        // 值攥在机器里，这份影子输入没有自己的变更出口。React 要求带 value 的输入
+        // 交出一个出口，否则在开发构建里逐帧告警；这个出口不会被调用
+        { onChange: noop },
+        rest,
+      )}
+    />
+  )
+}
+
+function noop(): void {}
+
 /** 标准结构里各部件对应的组件。 */
 const NUMBER_FIELD_PARTS = {
   'label': XhNumberFieldLabel,
@@ -250,14 +286,15 @@ const NUMBER_FIELD_PARTS = {
   'decrement-trigger': XhNumberFieldDecrementTrigger,
   'input': XhNumberFieldInput,
   'increment-trigger': XhNumberFieldIncrementTrigger,
+  'hidden-input': XhNumberFieldHiddenInput,
 }
 
 /**
  * 未写 children 时铺开的整套结构：照 headless 的 numberFieldStructure 渲，
  * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题内容交给 label 部件。
  */
-function renderDefaultStructure(label: ReactNode): ReactNode[] {
+function renderDefaultStructure(label: ReactNode, hiddenInput: boolean): ReactNode[] {
   const slotted = label != null && typeof label !== 'string'
-  const nodes = numberFieldStructure({ label: typeof label === 'string' ? label : undefined, slotted: name => name === 'label' && slotted })
+  const nodes = numberFieldStructure({ label: typeof label === 'string' ? label : undefined, hiddenInput, slotted: name => name === 'label' && slotted })
   return renderStructure(nodes, NUMBER_FIELD_PARTS, node => (node.slot ? label : undefined))
 }

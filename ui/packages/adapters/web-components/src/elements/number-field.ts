@@ -26,7 +26,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * 两个按钮对读屏隐藏：它们只是指针用户的快捷方式，暴露出来等于把同一个控件报告两遍。
  *
  * 不写部件（或只写 root）时元素按标准结构生成：标题（label），盒里减号、输入框、加号；
- * 标题可以由宿主直接子节点 `slot="label"` 接管。前后缀照旧手写部件。
+ * 标题可以由宿主直接子节点 `slot="label"` 接管。前后缀照旧手写部件。给了 formatOptions 与 name 时末尾再铺一份表单出口（hidden-input）。
  *
  * @customElement xh-number-field
  * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
@@ -49,6 +49,9 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
+ * @attr {number} precision - 提交时保留几位小数：步进、取端点与失焦写回的值四舍五入并补齐到这么多位，夹进 [0, 20]
+ * @attr {string} locale - BCP 47 语言标记，只决定 formatOptions 的显示写法；未提供时取全局配置，再没有按宿主语言，宿主也没有时按 en-US
+ * @prop {Intl.NumberFormatOptions} formatOptions - 交给 Intl.NumberFormat 的选项：失焦时按格式显示，编辑时换回原值，值与提交始终是原值；只能通过 property 设置
  * @prop {(text: string) => number} parse - 显示串 → 数（千位分隔符、单位后缀等依靠它读回）；只能通过 property 设置
  * @prop {(value: number) => string} format - 数 → 显示串，只在步进 / 取端点 / 失焦规范化时使用；只能通过 property 设置
  * @fires value-change - 值变化；detail 为 `{ value: string, valueAsNumber: number }`
@@ -60,6 +63,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart suffix - 输入框后的装饰段；对读屏隐藏
  * @csspart increment-trigger - 加一步；到达 max 时为 disabled
  * @csspart decrement-trigger - 减一步；到达 min 时为 disabled
+ * @csspart hidden-input - 表单出口，可选；给了 formatOptions 时 name 从输入框挪到这里，提交的是原值
  */
 export class XhNumberFieldElement extends XhElement {
   static override partContract = { anatomy: numberFieldAnatomy, meta: numberFieldMeta }
@@ -67,7 +71,11 @@ export class XhNumberFieldElement extends XhElement {
   static override fieldTarget = { parts: ['input'], kind: 'state' } as const
 
   static override structure: ElementStructure<XhNumberFieldElement> = {
-    build: host => numberFieldStructure({ label: host.label, slotted: (name, key) => host.slotted(name, key) }),
+    build: host => numberFieldStructure({
+      label: host.label,
+      hiddenInput: host.formatOptions != null && host.name !== undefined,
+      slotted: (name, key) => host.slotted(name, key),
+    }),
   }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -95,6 +103,10 @@ export class XhNumberFieldElement extends XhElement {
     // 函数交不成 attribute，只走 property（el.parse = fn）
     parse: { attribute: false },
     format: { attribute: false },
+    precision: { converter: NUMBER_CONVERTER },
+    locale: { converter: STRING_CONVERTER },
+    // 对象进不了属性，只走 property（el.formatOptions = { style: 'currency', currency: 'CNY' }）
+    formatOptions: { attribute: false },
   }
 
   declare label?: string
@@ -119,6 +131,9 @@ export class XhNumberFieldElement extends XhElement {
   declare size?: Size
   declare parse?: NumberFieldSchema['props']['parse']
   declare format?: NumberFieldSchema['props']['format']
+  declare precision?: number
+  declare locale?: string
+  declare formatOptions?: Intl.NumberFormatOptions
 
   private readonly notify = (details: NumberFieldValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -158,6 +173,9 @@ export class XhNumberFieldElement extends XhElement {
       size: this.size,
       parse: this.parse,
       format: this.format,
+      precision: this.precision,
+      formatOptions: this.formatOptions,
+      locale: this.locale,
       onValueChange: this.notify,
     }
   }
@@ -165,6 +183,11 @@ export class XhNumberFieldElement extends XhElement {
   /** 值是合法数字但落在 [min, max] 之外；还没进文档时为 false。 */
   get outOfRange(): boolean {
     return this.ctrl.service ? connectNumberField(this.ctrl.service, wcNormalize).outOfRange : false
+  }
+
+  /** 输入框此刻显示的文字：给了 formatOptions、失焦且值读得出数时是格式化文字，其余时候就是原值；还没进文档时为空串。 */
+  get displayValue(): string {
+    return this.ctrl.service ? connectNumberField(this.ctrl.service, wcNormalize).displayValue : ''
   }
 
   protected wire(): void {
@@ -183,6 +206,7 @@ export class XhNumberFieldElement extends XhElement {
     put('suffix', api.getSuffixProps())
     put('increment-trigger', api.getIncrementTriggerProps())
     put('decrement-trigger', api.getDecrementTriggerProps())
+    put('hidden-input', api.getHiddenInputProps())
     // 输入框的 value 不需要在这里另外回写：spreader 把 value/checked/selected 三个键
     // 当 property 写（dom/spread.ts 的 PROP_KEYS），属性写法只管初值、盖不住用户输入过的框
   }

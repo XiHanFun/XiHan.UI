@@ -1,0 +1,21 @@
+<!-- 提交位数 | precision 决定保留几位小数：步进、取端点与失焦写回的值四舍五入并补齐，输入途中不动 -->
+<!-- step 的小数位不多于 precision：每一步都落在两位小数的格点上 -->
+<xh-number-field
+  id="number-field-precision"
+  label="费率（%）"
+  value="3.50"
+  precision="2"
+  step="0.25"
+  min="0"
+  max="100"
+></xh-number-field>
+<span data-demo-output>值：<span id="number-field-precision-value">3.50</span></span>
+
+<script type="module">
+  const field = document.getElementById("number-field-precision");
+  const valueText = document.getElementById("number-field-precision-value");
+  field.addEventListener("value-change", (event) => {
+    field.value = event.detail.value;
+    valueText.textContent = event.detail.value;
+  });
+</script>

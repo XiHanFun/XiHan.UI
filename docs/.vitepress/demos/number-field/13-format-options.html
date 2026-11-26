@@ -1,0 +1,42 @@
+<!-- 格式化显示 | formatOptions 交给 Intl.NumberFormat：失焦时显示格式化文字，聚焦编辑时换回原值；值与表单提交始终是原值 -->
+<form
+  id="number-field-format-form"
+  style="display: flex; flex-direction: column; gap: 12px; max-inline-size: 320px"
+>
+  <xh-number-field
+    id="number-field-format"
+    label="单价"
+    value="1234.5"
+    name="price"
+    locale="zh-CN"
+    min="0"
+    step="10"
+  ></xh-number-field>
+  <xh-button type="submit" variant="outline" style="align-self: start">
+    <button data-xh-part="root">提交</button>
+  </xh-button>
+  <span data-demo-output>
+    值：<span id="number-field-format-value">1234.5</span> ·
+    表单收到：<span id="number-field-format-result">（还没提交）</span>
+  </span>
+</form>
+
+<script type="module">
+  const form = document.getElementById("number-field-format-form");
+  const field = document.getElementById("number-field-format");
+  const valueText = document.getElementById("number-field-format-value");
+  const result = document.getElementById("number-field-format-result");
+
+  // 对象交不成属性，只走 property；选项原样交给 Intl.NumberFormat，语言取 locale
+  field.formatOptions = { style: "currency", currency: "CNY" };
+
+  field.addEventListener("value-change", (event) => {
+    field.value = event.detail.value;
+    valueText.textContent = event.detail.value;
+  });
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    result.textContent = String(new FormData(form).get("price") ?? "");
+  });
+</script>

@@ -18,6 +18,7 @@ export const NUMBER_FIELD_STRUCTURE_PARTS = [
   'decrement-trigger',
   'input',
   'increment-trigger',
+  'hidden-input',
 ] as const satisfies readonly NumberFieldPart[]
 
 /** anatomy 里不进标准结构的部件：输入框前后的单位、货币符由作者手写结构时自己摆。 */
@@ -32,11 +33,13 @@ type NumberFieldNode = StructureNode<(typeof NUMBER_FIELD_STRUCTURE_PARTS)[numbe
 export interface NumberFieldStructureOptions {
   /** 标题文字：给了就铺带这段文字的 label；label 插槽有内容时铺内容归作者的 label。 */
   label?: string
+  /** 带不带表单出口：给了 formatOptions 与 name 才带（提交的是原值，不是失焦后显示的格式化文字），缺省不带。 */
+  hiddenInput?: boolean
   /** 作者给了哪些插槽的内容：只有 label。 */
   slotted?: StructureSlotted
 }
 
-/** 数字输入框在 root 里的标准结构，次序是标题、盒；盒里减号在前、加号在后，夹着输入框。 */
+/** 数字输入框在 root 里的标准结构，次序是标题、盒、表单出口；盒里减号在前、加号在后，夹着输入框。 */
 export function numberFieldStructure(options: NumberFieldStructureOptions = {}): NumberFieldNode[] {
   const nodes: NumberFieldNode[] = []
   if (options.slotted?.('label'))
@@ -53,5 +56,7 @@ export function numberFieldStructure(options: NumberFieldStructureOptions = {}):
       { key: 'increment-trigger', tag: 'button', part: 'increment-trigger' },
     ],
   })
+  if (options.hiddenInput)
+    nodes.push({ key: 'hidden-input', tag: 'input', part: 'hidden-input' })
   return nodes
 }

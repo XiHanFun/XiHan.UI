@@ -472,6 +472,80 @@ export const numberFieldSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'precision：初值、步进与失焦写回的值都按位数补齐；输入途中不打断',
+      spec: { apg: APG },
+      props: { defaultValue: '1', step: 0.5, precision: 2 },
+      steps: [
+        { kind: 'raw', why: 'value 是 property', run: ({ doc }) => expectValue(doc, '1.00', '非受控初值应按位数补齐') },
+        { kind: 'click', part: 'increment-trigger', expect: { parts: { input: { 'aria-valuenow': '1.5' } } } },
+        { kind: 'raw', why: 'value 是 property', run: ({ doc }) => expectValue(doc, '1.50', '步进写回的值应按位数补齐') },
+        { kind: 'focus', part: 'input' },
+        {
+          kind: 'raw',
+          why: '真实输入要写 value 并派发 input',
+          run: ({ doc }) => {
+            typeInto(doc, '2.345')
+            expectValue(doc, '2.345', '输入途中不该替用户取整')
+          },
+        },
+        { kind: 'blur', expect: { parts: { input: { 'aria-valuenow': '2.35' } } } },
+        { kind: 'raw', why: 'value 是 property', run: ({ doc }) => expectValue(doc, '2.35', '失焦应四舍五入到两位') },
+      ],
+    },
+    {
+      name: 'formatOptions：失焦按格式显示、编辑时换回原值，读屏念格式化文字；name 挪到 hidden-input，提交原值',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({
+        part: 'root',
+        children: [
+          { part: 'label', text: '单价' },
+          {
+            part: 'control',
+            children: [
+              { part: 'decrement-trigger', tag: 'button', text: '−' },
+              { part: 'input', tag: 'input' },
+              { part: 'increment-trigger', tag: 'button', text: '+' },
+            ],
+          },
+          { part: 'hidden-input', tag: 'input' },
+        ],
+      }),
+      props: { defaultValue: '1234.5', name: 'price', locale: 'en-US', formatOptions: { style: 'currency', currency: 'USD' } },
+      initial: {
+        parts: {
+          'input': { 'aria-valuenow': '1234.5', 'aria-valuetext': '$1,234.50', 'name': null },
+          'hidden-input': { type: 'hidden', name: 'price' },
+        },
+      },
+      steps: [
+        { kind: 'raw', why: 'value 是 property', run: ({ doc }) => expectValue(doc, '$1,234.50', '失焦时应显示格式化文字') },
+        { kind: 'focus', part: 'input' },
+        { kind: 'raw', why: 'value 是 property', run: ({ doc }) => expectValue(doc, '1234.5', '编辑时应换回原值') },
+        { kind: 'raw', why: '真实输入要写 value 并派发 input', run: ({ doc }) => typeInto(doc, '99') },
+        { kind: 'blur', expect: { parts: { input: { 'aria-valuetext': '$99.00' } } } },
+        {
+          kind: 'raw',
+          why: 'value 是 property；表单出口提交的是原值，不是显示的格式化文字',
+          run: ({ doc }) => {
+            expectValue(doc, '$99.00', '失焦后应重新按格式显示')
+            const hidden = doc.querySelector<HTMLInputElement>('[data-scope="number-field"][data-part="hidden-input"]')?.value
+            if (hidden !== '99')
+              throw new Error(`表单出口应提交原值 "99"，实际 ${JSON.stringify(hidden)}`)
+          },
+        },
+      ],
+    },
+    {
+      name: '作者不写结构、给了 formatOptions 与 name：盒后多铺一份表单出口',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { label: '金额', defaultValue: '1024', name: 'amount', locale: 'en-US', formatOptions: {} },
+      initial: {
+        order: ['root', 'label', 'control', 'decrement-trigger', 'input', 'increment-trigger', 'hidden-input'],
+        parts: { 'input': { 'aria-valuetext': '1,024', 'name': null }, 'hidden-input': { type: 'hidden', name: 'amount' } },
+      },
+    },
+    {
       name: '作者不写结构：三端都照 numberFieldStructure 铺出标题与盒里的减号、输入框、加号',
       spec: { apg: `${APG}#roles_states_properties` },
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),

@@ -15,9 +15,11 @@
 ## 特性
 
 - `step` 与 `largeStep` 分别对应方向键和 PageUp / PageDown。
-- 不写结构时按标准结构铺出标题与盒里的减号、输入框、加号（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数，`label` 给标题文字。前后缀照旧手写部件。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。
+- 不写结构时按标准结构铺出标题与盒里的减号、输入框、加号（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数，`label` 给标题文字；给了 `formatOptions` 与 `name` 时盒后再铺一份表单出口（`hidden-input`）。前后缀照旧手写部件。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。
 - 长按加减按钮连续步进，按住越久越快：先等 `changeDelay`（300ms），随后从 `changeInterval`（50ms）一拍起，每连发一次间隔缩到上一拍的 0.85，约半秒后收到 `minChangeInterval`（10ms）。把 `minChangeInterval` 写成与 `changeInterval` 相同即按固定节奏连发。
-- `parse` / `format` 成对，用于接入固定小数位、千分位、货币符号或自定义换算。
+- `formatOptions` 声明式格式化：选项原样交给 `Intl.NumberFormat`（分组、货币、百分比、单位、紧凑记数），与[统计数值](./statistic)的同名选项同一口径，语言取 `locale`，没给时取全局配置，再没有按宿主语言。输入框失焦时显示格式化文字（`$1,234.50`），聚焦编辑时换回可编辑的原值（`1234.5`）；值、`onValueChange` 与表单提交始终是原值，读屏经 `aria-valuetext` 念格式化文字。给了 `formatOptions` 时 `name` 从输入框挪到 `hidden-input` 部件，提交的是原值而不是显示的文字；不写结构时组件自己铺这份表单出口，手写部件时要连它一起写。
+- `precision` 决定提交时保留几位小数：步进、取端点与失焦写回的值按十进制四舍五入（一半时远离零）并补齐到这么多位，`12.5` 写成 `12.50`；非受控初值同样按它写一遍，用户正在输入时不动。`step` 的小数位不应多于 `precision`，否则每一步都会被取整吃掉。`formatOptions` 里没写小数位或有效位时，显示的位数跟 `precision` 走。
+- `parse` / `format` 成对，用于接入固定小数位、千分位、货币符号或自定义换算；与 `precision` 同在时先取整再交给 `format`，与 `formatOptions` 同在时 `format` 写的是原值，`formatOptions` 只管失焦时的显示。
 - 越界的值在失焦规范化时被夹回区间；`clampValueOnBlur` 关掉后越界值原样留在框里（仍按 `format` 补格式），由 `outOfRange` 与根上的 `data-out-of-range` 报出来，交给表单层提示。步进在两种情形下都不会越界。
 - `prefix` / `suffix` 在框内放置货币符、单位或图标，两段对读屏隐藏。
 - `control` 是必需部件，也是输入、前后缀与两个动作共用的唯一视觉盒，投影 Field Chrome 家族（`data-xh-field-chrome`、`data-xh-field-size`、`data-variant`），输入与前后缀分别投影 `data-xh-field-input` 与 `data-xh-field-affix`；默认即 `outline`：字段底 `--xh-bg-field`（缺省白底）、`--xh-border-control` 描边、control 圆角、无阴影，不写 `variant` 时 root 与 control 都落 `data-variant="outline"`，悬停与聚焦由整体盒统一反馈，聚焦描边一律 `--xh-border-control-focus`，内侧补一道 inset 线，合起来就是盒内的焦点环。减、加两颗动作走 Action Control 的 `field-inset` ghost 档，control 投影 `data-xh-action-owner`、两颗钮投影 `data-xh-action-display="hover-focus"`：可悬停的精细指针下两颗钮上下叠在盒的逻辑末端（宽取 `--xh-control-indicator-lg`、四周内收一截、各占盒内高的一半），平时收起，指针落到盒上或盒里有焦点时显出，显出时铺 `--xh-bg-subtle` 淡底、悬停升一档、按下升两档，字形是上下箭头；粗指针与不能悬停的设备上两颗钮是正方视觉盒、横排在末端、常显，命中区由家族伪元素外扩到 44px。钮字取次要前景 `--xh-fg-muted`。
@@ -39,7 +41,8 @@
 
 ### 当前边界
 
-- 默认解析使用严格的 `Number()` 语义，不识别本地化小数分隔符；需要千分位、逗号小数或单位时，显式提供互逆的 `parse` / `format`。组件不推测 locale。
+- 默认解析使用严格的 `Number()` 语义，不识别本地化小数分隔符；`formatOptions` 只改失焦时的显示，编辑时的原值仍是 `.` 作小数点、不带分组与符号，粘进带货币符的文字读不出数时原样留下。编辑也要按本地写法读回时，显式提供互逆的 `parse` / `format`。
+- 百分比要编辑「25」而不是「0.25」时用 `{ style: 'unit', unit: 'percent' }`：值就是 25；`style: 'percent'` 的值是 0.25，失焦显示 25%。
 - 空串与非法文本以原串保留，失焦不会改写为另一个数；此时调用步进会从 `min`（有值时）或 `0` 开始。业务校验和错误文案由表单层提供。
 - 长按加速只缩短间隔、不放大步长：每一拍仍按 `step` 走，数值不会跳过对齐的格点。
 - 输入使用 `type="text"` 与 `inputmode="decimal"`，组件不接管滚轮，避免页面滚动时意外改值。

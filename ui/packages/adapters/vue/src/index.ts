@@ -973,6 +973,7 @@ export { useNumberFieldContext } from './components/number-field/context'
 export {
   XhNumberFieldControl,
   XhNumberFieldDecrementTrigger,
+  XhNumberFieldHiddenInput,
   XhNumberFieldIncrementTrigger,
   XhNumberFieldInput,
   XhNumberFieldLabel,
@@ -980,7 +981,7 @@ export {
   XhNumberFieldRoot,
   XhNumberFieldSuffix,
 } from './components/number-field/number-field'
-export type { NumberFieldRootSlotProps, XhNumberFieldControlProps, XhNumberFieldDecrementTriggerProps, XhNumberFieldIncrementTriggerProps, XhNumberFieldInputProps, XhNumberFieldLabelProps, XhNumberFieldPrefixProps, XhNumberFieldRootProps, XhNumberFieldSuffixProps } from './components/number-field/number-field'
+export type { NumberFieldRootSlotProps, XhNumberFieldControlProps, XhNumberFieldDecrementTriggerProps, XhNumberFieldHiddenInputProps, XhNumberFieldIncrementTriggerProps, XhNumberFieldInputProps, XhNumberFieldLabelProps, XhNumberFieldPrefixProps, XhNumberFieldRootProps, XhNumberFieldSuffixProps } from './components/number-field/number-field'
 export { useNumberField } from './components/number-field/use-number-field'
 export type { NumberFieldContext } from './components/number-field/use-number-field'
 export { usePageHeaderContext } from './components/page-header/context'
