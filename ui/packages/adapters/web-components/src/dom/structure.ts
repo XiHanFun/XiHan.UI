@@ -374,6 +374,17 @@ export function createStructureState(): StructureState {
   return { keys: new WeakMap(), adopted: new Map() }
 }
 
+/** 上一轮由元素按标准结构铺部件的宿主。 */
+const generatedHosts = new WeakSet<Element>()
+
+/**
+ * 宿主的部件此刻是不是由元素按标准结构铺的（作者没写部件，或只写了 root 与可接管部件）。
+ * 这时部件随数据增减：数据还没到、或本来就是空的，少几个必需部件不是作者漏写。
+ */
+export function isStructureGenerated(host: Element): boolean {
+  return generatedHosts.has(host)
+}
+
 /** 作者有没有给这个插槽（slot 属性值）写内容：宿主直接子节点里待搬的，或已经搬进结构、还在原处的。 */
 export function hasSlotContent(host: Element, state: StructureState, slot: string): boolean {
   for (const child of Array.from(host.children)) {
@@ -438,6 +449,7 @@ export function syncStructure(
     },
   }
   if (owned) {
+    generatedHosts.delete(host)
     placeStructure(host, [], state.keys)
     if (root)
       placeStructure(root, [], state.keys)
@@ -446,6 +458,7 @@ export function syncStructure(
     const nodes = build(taken)
     if (!nodes)
       return
+    generatedHosts.add(host)
     checkTakeoverOrder(host, nodes, takeover)
     if (spec.rootless) {
       placeStructure(host, nodes, state.keys, slots, outlets)

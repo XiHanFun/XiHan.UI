@@ -20,7 +20,7 @@ import { containsPart, discoverParts, PART_OWNER_ATTR } from './dom/parts'
 import { settleTransitionsAfterWiring } from './dom/settle-transitions'
 import { createSpreader } from './dom/spread'
 import { reportStackingTrap } from './dom/stacking-context'
-import { createStructureState, hasSlotContent, slotAttrOf, syncStructure } from './dom/structure'
+import { createStructureState, hasSlotContent, isStructureGenerated, slotAttrOf, syncStructure } from './dom/structure'
 import { XhReactiveElement } from './reactive'
 
 let instanceSeq = 0
@@ -562,7 +562,7 @@ export abstract class XhElement extends XhReactiveElement {
         syncStructure(this as unknown as HTMLElement, structure, taken => structure.build(this as never, taken), this.structureState, this.externalPartRoots())
       this.refreshParts()
       if (contract)
-        validatePartContract(contract, this.partMap, this as unknown as HTMLElement, this.instanceId)
+        validatePartContract(contract, this.partMap, this as unknown as HTMLElement, this.instanceId, isStructureGenerated(this as unknown as HTMLElement))
       this.wire()
     }
     finally {

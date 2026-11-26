@@ -82,6 +82,7 @@ export function delegatedScopesOf(contract: PartContract): ReadonlyMap<string, R
 /**
  * 比对已发现的角色节点与契约：缺必需 part 报 error，出现解剖外的 part 名报 warn，
  * 委派目标不是已注册元素的解剖名报 error。
+ * 部件由元素按标准结构铺（generated）时不核必需部件：部件随数据增减，数据还没到或本来就空时少的那几个不是作者漏写。
  * 委派节点的接线结果排到微任务里核：宿主在本函数返回后同步接线，微任务里读到的已是接线后的 data-scope。
  * 通道静默时直接返回，不做扫描。
  */
@@ -90,13 +91,14 @@ export function validatePartContract(
   parts: ReadonlyMap<string, HTMLElement[]>,
   host: HTMLElement,
   instanceId: string,
+  generated = false,
 ): void {
   if (getDiagnostics().getLevel() === 'silent')
     return
 
   const scope = contract.anatomy.name
 
-  for (const part of contract.meta.requiredParts) {
+  for (const part of generated ? [] : contract.meta.requiredParts) {
     if (requiredPartPresent(contract, part, parts, host))
       continue
     reportDiagnostic({
