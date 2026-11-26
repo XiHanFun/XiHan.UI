@@ -533,6 +533,31 @@ export const mentionSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'required：输入框带原生 required 与 aria-required，随表单校验；没写时 aria-required 显式为 false',
+      spec: { apg: APG },
+      props: { required: true },
+      initial: { parts: { input: { 'aria-required': 'true' } } },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'required 不在快照的采集清单里（既不是 aria- 也不是 data-）',
+          run: ({ doc }) => {
+            if (!doc.querySelector('[data-scope="mention"][data-part="input"]')?.hasAttribute('required'))
+              throw new Error('必填时输入框应带原生 required')
+          },
+        },
+        { kind: 'setProps', props: { required: false }, expect: { parts: { input: { 'aria-required': 'false' } } } },
+        {
+          kind: 'raw',
+          why: '同上',
+          run: ({ doc }) => {
+            if (doc.querySelector('[data-scope="mention"][data-part="input"]')?.hasAttribute('required'))
+              throw new Error('撤掉必填后输入框不应再带原生 required')
+          },
+        },
+      ],
+    },
+    {
       name: '三个视觉轴如实落到根上；输入框自身即 Field Chrome 视觉盒，只带形态与家族尺寸档，不重复标注语气与尺寸',
       spec: { apg: APG },
       props: { variant: 'subtle', tone: 'brand', size: 'lg' },

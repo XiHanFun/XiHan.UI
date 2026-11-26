@@ -45470,6 +45470,15 @@
             },
             {
               "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "required"
+            },
+            {
+              "kind": "field",
               "name": "invalid",
               "privacy": "public",
               "type": {
@@ -45845,6 +45854,14 @@
               "description": "只读：仍可聚焦与复制，不可写入，候选也不打开",
               "name": "read-only",
               "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "必填：输入框带原生 required 与 aria-required，放进字段时从字段继承",
+              "name": "required",
+              "fieldName": "required"
             },
             {
               "type": {

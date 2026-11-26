@@ -183,6 +183,8 @@ export interface MentionSchema extends MachineSchema {
     disabled?: boolean
     /** 只读：正文仍可聚焦与复制，不可修改，候选也不打开。 */
     readOnly?: boolean
+    /** 必填：输入框带原生 required 与 aria-required，随表单校验；星号由外层的字段壳绘制。 */
+    required?: boolean
     /** 校验失败标注：描边与聚焦环换为失败色，同时经 aria-invalid 上报。 */
     invalid?: boolean
     /** 候选加载中：候选面板报告 aria-busy，显示在途占位、隐藏空态占位。 */

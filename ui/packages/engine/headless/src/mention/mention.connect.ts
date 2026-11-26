@@ -55,6 +55,7 @@ export function connectMention<T extends PropTypes>(
   const disabled = !!prop('disabled')
   const loading = !!prop('loading')
   const readOnly = !!prop('readOnly')
+  const required = !!prop('required')
   const invalid = !!prop('invalid')
   const loop = prop('loop') ?? true
   const translations = resolveTranslations(MENTION_EN_US, prop('translations'))
@@ -207,8 +208,11 @@ export function connectMention<T extends PropTypes>(
       'value': value,
       'disabled': disabled || undefined,
       'readonly': readOnly || undefined,
+      // 输入框本身就是表单出口，原生 required 随表单校验；读屏经 aria-required 得知
+      'required': required || undefined,
       // 显式 true/false：省略是没说，显式 false 是明确说了不是
       'aria-invalid': invalid ? 'true' : 'false',
+      'aria-required': required ? 'true' : 'false',
       'aria-haspopup': 'listbox',
       // aria-expanded 不在 textbox 的支持属性里，多行宿主上整条缺席
       'aria-expanded': isMultilineHost(input) ? undefined : (open ? 'true' : 'false'),

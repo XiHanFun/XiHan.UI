@@ -63,6 +63,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @attr {boolean} disabled - 整个控件禁用：输入框使用原生 disabled，候选一概不打开
  * @attr {boolean} loading - 候选加载中：候选面板报告 aria-busy，显示在途占位、隐藏空态占位
  * @attr {boolean} read-only - 只读：仍可聚焦与复制，不可写入，候选也不打开
+ * @attr {boolean} required - 必填：输入框带原生 required 与 aria-required，放进字段时从字段继承
  * @attr {boolean} invalid - 校验失败标注
  * @attr {string} placeholder - 输入框占位文字；未提供时保留作者标注在 input 部件上的值
  * @attr {string} name - 表单字段名；提供后输入框才带 name，整段正文随表单一并提交
@@ -122,6 +123,7 @@ export class XhMentionElement extends XhPortalHostElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     loading: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    required: { converter: BOOLEAN_CONVERTER },
     invalid: { converter: BOOLEAN_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
     name: { converter: STRING_CONVERTER },
@@ -146,6 +148,7 @@ export class XhMentionElement extends XhPortalHostElement {
   declare disabled?: boolean
   declare loading?: boolean
   declare readOnly?: boolean
+  declare required?: boolean
   declare invalid?: boolean
   declare placeholder?: string
   declare name?: string
@@ -209,6 +212,7 @@ export class XhMentionElement extends XhPortalHostElement {
     const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
+      required: this.required,
       invalid: this.invalid,
     })
     return {
@@ -222,6 +226,7 @@ export class XhMentionElement extends XhPortalHostElement {
       disabled: control.disabled,
       loading: this.loading ?? false,
       readOnly: control.readOnly,
+      required: control.required,
       invalid: control.invalid,
       placeholder: this.placeholder,
       name: this.name,

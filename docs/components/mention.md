@@ -91,7 +91,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 - `content` 是候选、空态与加载态共用的唯一浮层表面；`empty` / `loading` 是 listbox 之外的同级 `role=status`，只在零可见候选时把文字覆盖到该表面。自动结构保留 `No results`，手写结构没有状态文案时不绘制空框。
 - 候选仍在加载且当前没有可见项时由 `loading` 显示，空态让位；已有候选时列表保持可见可操作，只通过 `aria-busy` 报告后台刷新。
 - 带 `hidden` 的候选不参与计数、高亮、方向键或 Enter；全部隐藏后清除 `aria-activedescendant`，不提交不可见的旧项。
-- `name` 让整段正文随表单提交，表单重置回落到 `defaultValue`。
+- `name` 让整段正文随表单提交，表单重置回落到 `defaultValue`；`required` 让输入框带原生 `required` 与 `aria-required`，空着时拦下表单提交，放进[表单字段](./field)时从字段继承。
 - 输入框投影 Field Chrome，描边式静息无影，唯一候选面使用实体弹出面（描边加投影）；空态和加载文字位于材质之上，不另绘框。浮层走弹层那一套进出场：从锚点一侧短移、淡入放大；增强对比度时切为实体，减弱动效时取消位移与缩放、只留淡变。
 - 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、只报 `aria-busy`，选项照常可选、不淡化（淡到禁用透明度会把文字压到 4.5:1 以下），在途占位让位；空态与加载文字取次要文字、上下内距一档。
 - 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字（原生 `<label>`），接着是输入框（缺省单行，开了 `multiline` 是 textarea）与浮层，浮层里是 `collection` 的候选（文字、有副文本时的副文本）、空态与在途占位（文字取 `translations.empty`、`translations.loading`，按状态收放）；过滤仍由宿主改 `collection`。Web Components 里标题、空态、候选文字与行首行尾可以写在宿主的直接子节点 `slot="label"`、`slot="empty"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"` 上接管。
@@ -136,6 +136,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `defaultValue` | `string` |  |  |
 | `disabled` | `boolean` |  | 整个控件禁用：输入框使用原生 disabled，候选一概不打开。 |
 | `readOnly` | `boolean` |  | 只读：正文仍可聚焦与复制，不可修改，候选也不打开。 |
+| `required` | `boolean` |  | 必填：输入框带原生 required 与 aria-required，随表单校验；星号由外层的字段壳绘制。 |
 | `invalid` | `boolean` |  | 校验失败标注：描边与聚焦环换为失败色，同时经 aria-invalid 上报。 |
 | `loading` | `boolean` |  | 候选加载中：候选面板报告 aria-busy，显示在途占位、隐藏空态占位。 |
 | `placeholder` | `string` |  | 输入框占位文字。未提供时整条不输出，作者写在 input 部件上的声明因此得以保留。 |
@@ -294,6 +295,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-label` | props.ariaLabel |
 | `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `input` | `aria-required` | 'true' \| 'false' |
 | `input` | `role` | undefined \| 'combobox' |
 | `content` | `aria-busy` | 'true' \| undefined |
 | `content` | `aria-hidden` | !open \|\| undefined |

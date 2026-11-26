@@ -54,6 +54,8 @@ export const XhMentionRoot = defineComponent({
     loading: Boolean,
     name: { type: String },
     readOnly: { type: Boolean, default: undefined },
+    /** 必填：输入框带原生 required 与 aria-required；放进字段时从字段继承。 */
+    required: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     placeholder: { type: String },
     loop: { type: Boolean, default: undefined },

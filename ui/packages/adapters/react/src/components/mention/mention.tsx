@@ -57,6 +57,8 @@ export interface XhMentionRootProps extends RootElementProps {
   /** 表单字段名；提供后输入框才带 name，整段正文随表单一并提交。 */
   name?: string
   readOnly?: boolean
+  /** 必填：输入框带原生 required 与 aria-required；放进字段时从字段继承。 */
+  required?: boolean
   invalid?: boolean
   placeholder?: string
   loop?: boolean
@@ -95,6 +97,7 @@ export function XhMentionRoot({
   loading,
   name,
   readOnly,
+  required,
   invalid,
   placeholder,
   loop,
@@ -126,6 +129,7 @@ export function XhMentionRoot({
     loading,
     name,
     readOnly,
+    required,
     invalid,
     placeholder,
     loop,
