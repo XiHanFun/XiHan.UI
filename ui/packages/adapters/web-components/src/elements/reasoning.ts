@@ -6,14 +6,15 @@
 // 提供 reasoning 相关实现。
 
 import type { ControlVariant, IdGenerator, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { ExitGate } from '@xihan-ui/core/presence'
 import type { ReasoningProps, ReasoningTranslations, ToolCallOpenChangeDetails, ToolCallSchema } from '@xihan-ui/headless'
-import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createExitGate } from '@xihan-ui/core/presence'
 import { connectReasoning, reasoningAnatomy, reasoningDuration, reasoningMeta, reasoningStatusText, toolCallMachine } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
-import { createOverlayExit, withoutHidden } from '../overlay-exit'
+import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 给出
@@ -127,7 +128,7 @@ export class XhReasoningElement extends XhElement {
     }
   }
 
-  private exit: OverlayExit | null = null
+  private exit: ExitGate | null = null
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly reasoningScope = createScope(null, this.idGen)
   private config: RuntimeConfig | null = null
@@ -159,7 +160,7 @@ export class XhReasoningElement extends XhElement {
     // [hidden]{display:none!important}（Tailwind preflight）压得过皮肤，hidden 跟着开合走退场就一帧都播不出来
     const content = this.getPart('content')
     this.ensureConfig()
-    this.exit ??= createOverlayExit({
+    this.exit ??= createExitGate({
       open: api.open,
       onExitComplete: () => this.requestUpdate(),
     })

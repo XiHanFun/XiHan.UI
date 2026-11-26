@@ -6,15 +6,16 @@
 // 提供 side nav 相关实现。
 
 import type { Cleanup, IdGenerator, Layer, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
+import type { ExitGate } from '@xihan-ui/core/presence'
 import type { SideNavApi, SideNavExpandedValueChangeDetails, SideNavNode, SideNavNodeProps, SideNavSchema, SideNavTranslations, SideNavValueChangeDetails, TooltipSchema } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createExitGate } from '@xihan-ui/core/presence'
 import { connectSideNav, findSideNavRowEl, sideNavAnatomy, sideNavMachine, sideNavMeta, sideNavStructure, sideNavTooltipProps, tooltipMachine } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
-import { createOverlayExit, withoutHidden } from '../overlay-exit'
+import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 import { XhIconElement } from './icon'
@@ -148,7 +149,7 @@ export class XhSideNavElement extends XhPortalHostElement {
   private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
   private config: RuntimeConfig | null = null
   /** 每个弹出面板的定位层一份退场闸门：退场动画播完才真收。 */
-  private readonly exits = new Map<HTMLElement, { value: string, gate: OverlayExit }>()
+  private readonly exits = new Map<HTMLElement, { value: string, gate: ExitGate }>()
 
   /**
    * 折叠态全部顶层分支的定位层共用一份租约：任一面板可见时整排搬到落点，逻辑来源是侧栏根。
@@ -184,7 +185,7 @@ export class XhSideNavElement extends XhPortalHostElement {
 
   private readonly hintEngine: PositionEnginePort = createDeferredPositionEngine()
   /** 名称提示的退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
-  private hintExit: OverlayExit | null = null
+  private hintExit: ExitGate | null = null
   /** 名称提示的定位层显示期间搬到浮层落点，视觉环境取自它对着的那一行。 */
   private readonly hintPortal = this.createAnchoredPortalController({
     name: 'SideNav tooltip',
@@ -262,7 +263,7 @@ export class XhSideNavElement extends XhPortalHostElement {
   // 每次（重）建机器后都要重注：refs 属于机器实例
   private injectHintRefs(svc: Service<TooltipSchema>): void {
     this.ensureConfig()
-    this.hintExit ??= createOverlayExit({ open: false, onExitComplete: () => this.requestUpdate() })
+    this.hintExit ??= createExitGate({ open: false, onExitComplete: () => this.requestUpdate() })
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerHintLayer)
     svc.refs.set('presence', this.hintExit.presence)
@@ -327,13 +328,13 @@ export class XhSideNavElement extends XhPortalHostElement {
   }
 
   /** WC 只报告真实面板 Presence 的接入与离场，资源会话由 Headless 按 value 记账。 */
-  private setPresence(value: string, presence: OverlayExit['presence'], connected: boolean): void {
+  private setPresence(value: string, presence: ExitGate['presence'], connected: boolean): void {
     if (this.ctrl.service.getStatus() !== 'Started')
       return
     this.ctrl.service.send({ type: 'PRESENCE.SET', value, presence, connected })
   }
 
-  private releaseExit(el: HTMLElement, entry: { value: string, gate: OverlayExit }): void {
+  private releaseExit(el: HTMLElement, entry: { value: string, gate: ExitGate }): void {
     this.setPresence(entry.value, entry.gate.presence, false)
     entry.gate.dispose()
     this.setPartHidden(el, true)
@@ -443,7 +444,7 @@ export class XhSideNavElement extends XhPortalHostElement {
       let entry = this.exits.get(el)
       if (!entry) {
         this.ensureConfig()
-        const gate = createOverlayExit({
+        const gate = createExitGate({
           open,
           onExitComplete: () => this.requestUpdate(),
         })
@@ -494,7 +495,7 @@ export class XhSideNavElement extends XhPortalHostElement {
       if (hintContent.textContent !== api.tooltipText)
         hintContent.textContent = api.tooltipText
       this.ensureConfig()
-      this.hintExit ??= createOverlayExit({ open: false, onExitComplete: () => this.requestUpdate() })
+      this.hintExit ??= createExitGate({ open: false, onExitComplete: () => this.requestUpdate() })
       const open = hint.state.matches('visible')
       this.hintExit.track(hintContent)
       this.hintExit.update(open)

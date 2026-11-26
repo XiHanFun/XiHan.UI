@@ -6,6 +6,7 @@
 // 提供 expression input 相关实现。
 
 import type { Cleanup, ControlVariant, Direction, ExpressionCheck, ExpressionCompletionKind, ExpressionCompletionSource, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
+import type { ExitGate } from '@xihan-ui/core/presence'
 import type { FunctionTable } from '@xihan-ui/expression'
 import type {
   ExpressionInputApi,
@@ -22,8 +23,8 @@ import type {
   ExpressionInputValueChangeDetails,
 } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createExitGate } from '@xihan-ui/core/presence'
 import {
   connectExpressionInput,
   EXPRESSION_INPUT_STRUCTURE_TAKEOVER,
@@ -35,7 +36,7 @@ import {
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
-import { createOverlayExit, withoutHidden } from '../overlay-exit'
+import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -171,7 +172,7 @@ export class XhExpressionInputElement extends XhPortalHostElement {
   private readonly inputScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
   private config: RuntimeConfig | null = null
-  private exit: OverlayExit | null = null
+  private exit: ExitGate | null = null
   private readonly portal = this.createAnchoredPortalController({
     name: 'ExpressionInput',
     config: () => this.config,
@@ -274,7 +275,7 @@ export class XhExpressionInputElement extends XhPortalHostElement {
 
   private injectRefs(svc: Service<ExpressionInputSchema>): void {
     this.ensureConfig()
-    this.exit ??= createOverlayExit({
+    this.exit ??= createExitGate({
       open: false,
       onExitComplete: () => this.requestUpdate(),
     })
@@ -424,7 +425,7 @@ export class XhExpressionInputElement extends XhPortalHostElement {
 
     // 退场动画播完之前先别收：必须排在 put('content') 之后，data-state 得先落进 DOM
     this.ensureConfig()
-    this.exit ??= createOverlayExit({
+    this.exit ??= createExitGate({
       open: api.open,
       onExitComplete: () => this.requestUpdate(),
     })

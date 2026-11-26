@@ -9,12 +9,12 @@
 // 再转 unmounted，退场多长由皮肤与动效令牌决定。
 
 import type { Service } from '@xihan-ui/core'
+import type { ExitGate } from '@xihan-ui/core/presence'
 import type { NotificationItemSchema } from '@xihan-ui/headless'
-import type { OverlayExit } from './overlay-exit'
-import { createOverlayExit } from './overlay-exit'
+import { createExitGate } from '@xihan-ui/core/presence'
 
 export class NotificationItemExitGate {
-  private exit: OverlayExit | null = null
+  private exit: ExitGate | null = null
 
   constructor(private readonly service: () => Service<NotificationItemSchema>) {}
 
@@ -22,7 +22,7 @@ export class NotificationItemExitGate {
   sync(root: HTMLElement | null, open: boolean): void {
     if (!this.exit) {
       // 收起由机器转 unmounted 后的 hidden 表出，这里不另排更新
-      this.exit = createOverlayExit({ open, onExitComplete: () => {} })
+      this.exit = createExitGate({ open, onExitComplete: () => {} })
       this.service().refs.set('presence', this.exit.presence)
     }
     this.exit.track(root)

@@ -6,17 +6,18 @@
 // 提供 accordion 相关实现。
 
 import type { ControlVariant, Direction, Orientation, Size, Tone } from '@xihan-ui/core'
+import type { ExitGate } from '@xihan-ui/core/presence'
 import type { AccordionItemProps, AccordionNode, AccordionSchema, AccordionValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import type { OverlayExit } from '../overlay-exit'
 import { isItemDisabled } from '@xihan-ui/core'
+import { createExitGate } from '@xihan-ui/core/presence'
 import { accordionAnatomy, accordionMachine, accordionMeta, accordionStructure, connectAccordion } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { GEN_ATTR } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { STRUCTURE_MARK } from '../dom/structure'
 import { XhElement } from '../element-base'
-import { createOverlayExit, withoutHidden } from '../overlay-exit'
+import { withoutHidden } from '../overlay-exit'
 import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 
@@ -53,7 +54,7 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  */
 export class XhAccordionElement extends XhElement {
   // 闸门按面板各持一个：手风琴模式下切换项时，一个进场一个退场是同时发生的
-  private readonly exits = new Map<string, OverlayExit>()
+  private readonly exits = new Map<string, ExitGate>()
   /** 每个面板里内容的挂卸落点，按面板节点各持一个。 */
   private readonly lazyContents = new WeakMap<HTMLElement, LazyContent>()
 
@@ -173,7 +174,7 @@ export class XhAccordionElement extends XhElement {
       const open = api.isOpen(item.value)
       let exit = this.exits.get(item.value)
       if (!exit) {
-        exit = createOverlayExit({
+        exit = createExitGate({
           open,
           onExitComplete: () => this.requestUpdate(),
         })

@@ -6,15 +6,16 @@
 // 提供 pagination 相关实现。
 
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
+import type { ExitGate } from '@xihan-ui/core/presence'
 import type { PaginationApi, PaginationEllipsisSide, PaginationEntryRange, PaginationPage, PaginationPageChangeDetails, PaginationPageItem, PaginationSchema, PaginationTranslations, SelectApi, SelectSchema } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createExitGate } from '@xihan-ui/core/presence'
 import { connectPagination, paginationAnatomy, paginationMachine, paginationMeta, paginationPageSizeSelectProps, paginationStructure, selectMachine } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
-import { createOverlayExit, withoutHidden } from '../overlay-exit'
+import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -153,7 +154,7 @@ export class XhPaginationElement extends XhPortalHostElement {
   private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着展开态走改成跟着 presence 走，退场动画播完才真收。 */
-  private exit: OverlayExit | null = null
+  private exit: ExitGate | null = null
   private ellipsisPortalSource: HTMLElement | null = null
   private readonly ellipsisPortal = this.createAnchoredPortalController({
     name: 'Pagination ellipsis',
@@ -193,7 +194,7 @@ export class XhPaginationElement extends XhPortalHostElement {
   private pageSizeNodes: PageSizeNodes | null = null
   private pageSizeMount: HTMLElement | null = null
   /** 下拉浮层的退场闸门，与省略位那层各走各的。 */
-  private pageSizeExit: OverlayExit | null = null
+  private pageSizeExit: ExitGate | null = null
   private readonly pageSizePortal = this.createAnchoredPortalController({
     name: 'Pagination page size',
     config: () => this.config,
@@ -217,18 +218,18 @@ export class XhPaginationElement extends XhPortalHostElement {
   }
 
   /** 在状态机挂载前建立 Presence，让省略位行为资源与真实退场共享租约。 */
-  private ensureExit(open: boolean): OverlayExit {
+  private ensureExit(open: boolean): ExitGate {
     this.ensureConfig()
-    this.exit ??= createOverlayExit({
+    this.exit ??= createExitGate({
       open,
       onExitComplete: () => this.requestUpdate(),
     })
     return this.exit
   }
 
-  private ensurePageSizeExit(open: boolean): OverlayExit {
+  private ensurePageSizeExit(open: boolean): ExitGate {
     this.ensureConfig()
-    this.pageSizeExit ??= createOverlayExit({
+    this.pageSizeExit ??= createExitGate({
       open,
       onExitComplete: () => this.requestUpdate(),
     })

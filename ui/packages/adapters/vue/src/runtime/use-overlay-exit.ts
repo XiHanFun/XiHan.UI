@@ -6,10 +6,9 @@
 // 提供 use overlay exit 相关实现。
 
 import type { RuntimeConfig } from '@xihan-ui/core'
-import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { ExitGate, PresenceHandle } from '@xihan-ui/core/presence'
 import type { MaybeRefOrGetter, Ref } from 'vue'
-import { overlayKit, whenOverlayKit } from '@xihan-ui/core'
-import { attachCssExit, createPresence } from '@xihan-ui/core/presence'
+import { createExitGate } from '@xihan-ui/core/presence'
 import { getCurrentInstance, isRef, onBeforeUnmount, onMounted, ref, toValue, watch } from 'vue'
 
 // 退场闸门：把「几时真的收起浮层」从展开态挪到 presence 上。
@@ -57,71 +56,49 @@ export interface OverlayExitOptions {
 export function useOverlayExit(options: OverlayExitOptions): Ref<boolean> {
   const { isOpen, contentRef } = options
   const visible = ref(isOpen())
-  let presence: PresenceHandle | null = null
-  const tracked = new Map<HTMLElement, () => void>()
-  let stopOpen: (() => void) | undefined
-  let stopContent: (() => void) | undefined
-  let stopGate: (() => void) | undefined
-  // 可见 = presence 还在场，且没在等浮层按需块
-  let rendered = visible.value
-  let gated = false
-  let waitingKit: (() => void) | null = null
-  const apply = (): void => {
-    visible.value = rendered && !gated
-  }
+  let gate: ExitGate | null = null
+  const stops: Array<() => void> = []
 
   const start = (config: RuntimeConfig | null): void => {
     if (!config) {
-      stopOpen = watch(isOpen, (open) => {
-        rendered = open
-        apply()
-      })
+      stops.push(watch(isOpen, (open) => {
+        visible.value = open
+      }))
       return
     }
 
-    if (options.awaitOverlayKit) {
-      // 挂载之后才展开、且按需块还没到：先藏着，到了再露。排在渲染之前跑，展开那一帧就不露
-      stopGate = watch(isOpen, (open) => {
-        if (!open || waitingKit || overlayKit())
-          return
-        gated = true
-        apply()
-        waitingKit = whenOverlayKit(() => {
-          waitingKit = null
-          gated = false
-          apply()
-        })
-      })
-    }
-
-    presence = createPresence({
+    const exit = createExitGate({
       open: isOpen(),
-      onRenderedChange: (next) => {
-        rendered = next
-        apply()
+      onExitComplete: () => {
+        visible.value = false
       },
+      onOverlayKitReady: options.awaitOverlayKit
+        ? (next) => {
+            visible.value = next
+          }
+        : undefined,
     })
-    options.onPresence?.(presence)
-    rendered = presence.rendered
-    apply()
+    const sync = (): void => {
+      visible.value = exit.visible
+    }
+    gate = exit
+    options.onPresence?.(exit.presence)
+    sync()
 
+    // 挂载之后才展开、且按需块还没到：排在渲染之前先藏着，展开那一帧就不露
+    if (options.awaitOverlayKit) {
+      stops.push(watch(isOpen, (open) => {
+        exit.hold(open)
+        sync()
+      }))
+    }
     // data-state 提交到 DOM 之后再驱动 presence，让退场探测读到正确的 animationName
-    stopOpen = watch(isOpen, open => presence?.update(open), { flush: 'post' })
-
+    stops.push(watch(isOpen, (open) => {
+      exit.update(open)
+      sync()
+    }, { flush: 'post' }))
     // 延迟配置到挂载期才就绪时 content 已经存在，immediate 负责补上首次 attach。
-    stopContent = watch([contentRef, ...(options.additionalExitRefs ?? [])], (nodes) => {
-      const next = new Set(nodes.filter((node): node is HTMLElement => node !== null))
-      for (const node of next) {
-        if (!tracked.has(node))
-          tracked.set(node, attachCssExit(node, presence!))
-      }
-      for (const [node, detach] of tracked) {
-        if (!next.has(node)) {
-          tracked.delete(node)
-          detach()
-        }
-      }
-    }, { flush: 'post', immediate: true })
+    stops.push(watch([contentRef, ...(options.additionalExitRefs ?? [])], nodes => exit.track(...nodes), { flush: 'post', immediate: true }))
   }
 
   const initial = toValue(options.config)
@@ -142,14 +119,9 @@ export function useOverlayExit(options: OverlayExitOptions): Ref<boolean> {
   }
 
   onBeforeUnmount(() => {
-    stopOpen?.()
-    stopContent?.()
-    stopGate?.()
-    waitingKit?.()
-    waitingKit = null
-    for (const detach of tracked.values()) detach()
-    tracked.clear()
-    presence?.dispose()
+    for (const stop of stops.splice(0)) stop()
+    gate?.dispose()
+    gate = null
     options.onPresence?.(null)
   })
 

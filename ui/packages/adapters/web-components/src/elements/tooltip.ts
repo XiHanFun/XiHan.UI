@@ -7,17 +7,18 @@
 
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone, VirtualAnchor } from '@xihan-ui/core'
 import type { KbdPlatform } from '@xihan-ui/core/hotkey'
+import type { ExitGate } from '@xihan-ui/core/presence'
 import type { TooltipApi, TooltipGroup, TooltipOpenChangeDetails, TooltipSchema, TooltipTranslations } from '@xihan-ui/headless'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import type { ElementStructure } from '../element-base'
-import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createExitGate } from '@xihan-ui/core/presence'
 import { connectTooltip, createTooltipGroup, tooltipAnatomy, tooltipMachine, tooltipMeta, tooltipStructure } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createGeneratedElement, GEN_ATTR, reconcile, setText } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
-import { createOverlayExit, withoutHidden } from '../overlay-exit'
+import { withoutHidden } from '../overlay-exit'
 import { XhReactiveElement } from '../reactive'
 import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
@@ -95,7 +96,7 @@ export class XhTooltipElement extends XhPortalHostElement {
   }
 
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
-  private exit: OverlayExit | null = null
+  private exit: ExitGate | null = null
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
@@ -235,7 +236,7 @@ export class XhTooltipElement extends XhPortalHostElement {
     if (!this.engine && typeof document !== 'undefined')
       this.engine = createDeferredPositionEngine()
     this.ensureConfig()
-    this.exit ??= createOverlayExit({
+    this.exit ??= createExitGate({
       open: (this.open ?? this.defaultOpen) ?? false,
       onExitComplete: () => this.requestUpdate(),
     })
@@ -294,7 +295,7 @@ export class XhTooltipElement extends XhPortalHostElement {
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     const content = this.getPart('content')
     this.ensureConfig()
-    this.exit ??= createOverlayExit({
+    this.exit ??= createExitGate({
       open: api.open,
       onExitComplete: () => this.requestUpdate(),
     })

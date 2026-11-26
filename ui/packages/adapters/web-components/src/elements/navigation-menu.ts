@@ -6,15 +6,16 @@
 // 提供 navigation menu 相关实现。
 
 import type { Cleanup, Direction, IdGenerator, Layer, Orientation, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
+import type { ExitGate } from '@xihan-ui/core/presence'
 import type { NavigationMenuNode, NavigationMenuSchema, NavigationMenuTranslations, NavigationMenuValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled } from '@xihan-ui/core'
+import { createExitGate } from '@xihan-ui/core/presence'
 import { connectNavigationMenu, navigationMenuAnatomy, navigationMenuMachine, navigationMenuMeta, navigationMenuStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
-import { createOverlayExit, withoutHidden } from '../overlay-exit'
+import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -88,7 +89,7 @@ function authorDisabled(el: HTMLElement): boolean {
  */
 export class XhNavigationMenuElement extends XhElement {
   /** 逐个 content 一份退场闸门：一个菜单一份，它们各开各的。 */
-  private readonly exits = new Map<HTMLElement, { value: string, gate: OverlayExit }>()
+  private readonly exits = new Map<HTMLElement, { value: string, gate: ExitGate }>()
   /** 退场闸门与消解层共用一份环境包。 */
   private config: RuntimeConfig | null = null
 
@@ -212,7 +213,7 @@ export class XhNavigationMenuElement extends XhElement {
   }
 
   /** Presence 的身份与生命周期由 Headless 记账；WC 只报告真实 content 的接入与离场。 */
-  private setPresence(value: string, presence: OverlayExit['presence'], connected: boolean): void {
+  private setPresence(value: string, presence: ExitGate['presence'], connected: boolean): void {
     if (this.ctrl.service.getStatus() !== 'Started')
       return
     this.ctrl.service.send({
@@ -223,7 +224,7 @@ export class XhNavigationMenuElement extends XhElement {
     })
   }
 
-  private releaseExit(el: HTMLElement, entry: { value: string, gate: OverlayExit }): void {
+  private releaseExit(el: HTMLElement, entry: { value: string, gate: ExitGate }): void {
     this.setPresence(entry.value, entry.gate.presence, false)
     entry.gate.dispose()
     this.setPartHidden(el, true)
@@ -284,7 +285,7 @@ export class XhNavigationMenuElement extends XhElement {
       let entry = this.exits.get(el)
       if (!entry) {
         this.ensureConfig()
-        const gate = createOverlayExit({
+        const gate = createExitGate({
           open,
           onExitComplete: () => this.requestUpdate(),
         })

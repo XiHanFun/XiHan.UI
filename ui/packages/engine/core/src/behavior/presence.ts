@@ -6,6 +6,8 @@
 // 提供 presence 相关实现。
 
 export { attachCssExit } from './presence/animation-end'
+export { createExitGate } from './presence/exit-gate'
+export type { ExitGate, ExitGateOptions } from './presence/exit-gate'
 // 进出场存在性子入口：三态机 + 退出租约 + CSS 退场探测。
 export { createPresence } from './presence/index'
 export type { ExitLease, PresenceHandle, PresenceOptions } from './presence/index'

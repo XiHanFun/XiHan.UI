@@ -6,16 +6,17 @@
 // 提供 hover card 相关实现。
 
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, VirtualAnchor } from '@xihan-ui/core'
+import type { ExitGate } from '@xihan-ui/core/presence'
 import type { HoverCardOpenChangeDetails, HoverCardSchema } from '@xihan-ui/headless'
-import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createExitGate } from '@xihan-ui/core/presence'
 import { connectHoverCard, hoverCardAnatomy, hoverCardMachine, hoverCardMeta } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
-import { createOverlayExit, withoutHidden } from '../overlay-exit'
+import { withoutHidden } from '../overlay-exit'
 import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
@@ -113,7 +114,7 @@ export class XhHoverCardElement extends XhPortalHostElement {
   private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
-  private exit: OverlayExit | null = null
+  private exit: ExitGate | null = null
   /** content 里 `<template>` 写的内容按 headless 的挂卸判定克隆进来或撤走；没写模板的作者节点照旧常驻 */
   private readonly lazyContent = new LazyContent({ stash: false })
   private readonly portal = this.createAnchoredPortalController({
@@ -198,7 +199,7 @@ export class XhHoverCardElement extends XhPortalHostElement {
   // 每次(重)建机器后都要重注：refs 属于机器实例，重连时的新机器不会继承旧的。
   private injectRefs(svc: Service<HoverCardSchema>): void {
     this.ensureConfig()
-    this.exit ??= createOverlayExit({
+    this.exit ??= createExitGate({
       open: (this.open ?? this.defaultOpen) ?? false,
       onExitComplete: () => this.requestUpdate(),
     })
@@ -251,7 +252,7 @@ export class XhHoverCardElement extends XhPortalHostElement {
       // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
       // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
       this.ensureConfig()
-    this.exit ??= createOverlayExit({
+    this.exit ??= createExitGate({
       open: api.open,
       onExitComplete: () => this.requestUpdate(),
     })

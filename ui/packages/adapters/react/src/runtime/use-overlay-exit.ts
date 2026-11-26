@@ -6,9 +6,9 @@
 // 提供 use overlay exit 相关实现。
 
 import type { RuntimeConfig } from '@xihan-ui/core'
-import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { ExitGate, PresenceHandle } from '@xihan-ui/core/presence'
 import type { RefObject } from 'react'
-import { attachCssExit, createPresence } from '@xihan-ui/core/presence'
+import { createExitGate } from '@xihan-ui/core/presence'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 // 退场闸门：把「几时真的收起内容」从展开态挪到 presence 上。
@@ -56,53 +56,38 @@ export function useOverlayExit(options: OverlayExitOptions): boolean {
   const latest = useRef(options)
   latest.current = options
 
-  // data-state 落到 DOM 之后再驱动进出场：早于提交驱动，退场探测读到的还是上一帧的
-  // animationName，量不到这次的动画
-  const detachExit = useRef<(() => void) | undefined>(undefined)
-  const observedNode = useRef<HTMLElement | null>(null)
-  const observedPresence = useRef<PresenceHandle | null>(null)
-  const presenceRef = useRef<PresenceHandle | null>(null)
-  // Presence 归提交生命周期所有；StrictMode 的清理与重建必须得到新的租约容器。
+  // 闸门归提交生命周期所有；StrictMode 的清理与重建必须得到新的租约容器。
+  const gateRef = useRef<ExitGate | null>(null)
   useIsomorphicLayoutEffect(() => {
     if (!config)
       return
-    const presence = createPresence({ open: latest.current.isOpen(), onRenderedChange: setVisible })
-    presenceRef.current = presence
+    const gate = createExitGate({ open: latest.current.isOpen(), onExitComplete: () => setVisible(false) })
+    gateRef.current = gate
     const onPresence = latest.current.onPresence
-    onPresence?.(presence)
-    setVisible(presence.rendered)
+    onPresence?.(gate.presence)
+    setVisible(gate.visible)
     return () => {
-      presence.dispose()
+      gate.dispose()
       onPresence?.(null)
-      if (presenceRef.current === presence)
-        presenceRef.current = null
-      if (observedPresence.current === presence) {
-        detachExit.current?.()
-        detachExit.current = undefined
-        observedNode.current = null
-        observedPresence.current = null
-      }
+      if (gateRef.current === gate)
+        gateRef.current = null
     }
   }, [config])
 
+  // data-state 落到 DOM 之后再驱动进出场：早于提交驱动，退场探测读到的还是上一帧的
+  // animationName，量不到这次的动画
   useIsomorphicLayoutEffect(() => {
     const open = latest.current.isOpen()
-    const presence = presenceRef.current
-    if (!presence) {
+    const gate = gateRef.current
+    if (!gate) {
       setVisible(open)
       return
     }
     if (open)
-      presence.update(true)
-    const node = latest.current.contentRef.current
-    if (node !== observedNode.current || presence !== observedPresence.current) {
-      const detach = detachExit.current
-      detachExit.current = node ? attachCssExit(node, presence) : undefined
-      observedNode.current = node
-      observedPresence.current = presence
-      detach?.()
-    }
-    presence.update(open)
+      gate.presence.update(true)
+    gate.track(latest.current.contentRef.current)
+    gate.update(open)
+    setVisible(gate.visible)
   })
 
   return visible

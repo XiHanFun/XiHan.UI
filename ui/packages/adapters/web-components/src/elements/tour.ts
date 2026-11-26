@@ -6,6 +6,7 @@
 // 提供 tour 相关实现。
 
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service } from '@xihan-ui/core'
+import type { ExitGate } from '@xihan-ui/core/presence'
 import type {
   TourCompleteDetails,
   TourOpenChangeDetails,
@@ -16,15 +17,14 @@ import type {
   TourTranslations,
   TourValueChangeDetails,
 } from '@xihan-ui/headless'
-import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createExitGate } from '@xihan-ui/core/presence'
 import { connectTour, resolveTourBoundary, tourAnatomy, tourMachine, tourMeta } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
-import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 
@@ -137,7 +137,7 @@ export class XhTourElement extends XhPortalHostElement {
   private contentNode: HTMLElement | null = null
   private backdropNode: HTMLElement | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，气泡的退场动画播完才真收。 */
-  private exit: OverlayExit | null = null
+  private exit: ExitGate | null = null
   private readonly portal = this.createPortalLeaseController({
     name: 'Tour',
     config: () => this.config,
@@ -210,9 +210,9 @@ export class XhTourElement extends XhPortalHostElement {
   }
 
   /** 退场闸门建立一次，并在状态机挂载前把同一份 Presence 交给 Headless。 */
-  private ensureExit(): OverlayExit {
+  private ensureExit(): ExitGate {
     this.ensureConfig()
-    this.exit ??= createOverlayExit({
+    this.exit ??= createExitGate({
       open: this.ctrl.service.state.get() === 'open',
       onExitComplete: () => this.requestUpdate(),
     })

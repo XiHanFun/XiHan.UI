@@ -6,14 +6,15 @@
 // 提供 collapsible 相关实现。
 
 import type { Direction, IdGenerator, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { ExitGate } from '@xihan-ui/core/presence'
 import type { CollapsibleOpenChangeDetails, CollapsibleSchema } from '@xihan-ui/headless'
-import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createExitGate } from '@xihan-ui/core/presence'
 import { collapsibleAnatomy, collapsibleMachine, collapsibleMeta, connectCollapsible } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
-import { createOverlayExit, withoutHidden } from '../overlay-exit'
+import { withoutHidden } from '../overlay-exit'
 import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 
@@ -38,7 +39,7 @@ import { MachineController } from '../runtime/machine-controller'
  * @csspart indicator - 开合方向标记（展开时转向）
  */
 export class XhCollapsibleElement extends XhElement {
-  private exit: OverlayExit | null = null
+  private exit: ExitGate | null = null
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly collapsibleScope = createScope(null, this.idGen)
   private config: RuntimeConfig | null = null
@@ -119,7 +120,7 @@ export class XhCollapsibleElement extends XhElement {
     // [hidden]{display:none!important}（Tailwind preflight）压得过皮肤，hidden 跟着开合走退场就一帧都播不出来
     const content = this.getPart('content')
     this.ensureConfig()
-    this.exit ??= createOverlayExit({
+    this.exit ??= createExitGate({
       open: api.open,
       onExitComplete: () => this.requestUpdate(),
     })

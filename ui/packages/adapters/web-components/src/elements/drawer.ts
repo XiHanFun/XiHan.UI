@@ -6,17 +6,18 @@
 // 提供 drawer 相关实现。
 
 import type { Cleanup, IdGenerator, Layer, OverlayBackdropVariant, RuntimeConfig, Service, Size } from '@xihan-ui/core'
+import type { ExitGate } from '@xihan-ui/core/presence'
 import type { DrawerActionIntents, DrawerConfirmErrorDetails, DrawerOpenChangeDetails, DrawerSchema, DrawerStructureActions } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createExitGate } from '@xihan-ui/core/presence'
 import { connectDrawer, drawerAnatomy, drawerMachine, drawerMeta, drawerStructure } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
-import { createOverlayExit, withoutHidden } from '../overlay-exit'
+import { withoutHidden } from '../overlay-exit'
 import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -218,7 +219,7 @@ export class XhDrawerElement extends XhPortalHostElement {
   private readonly drawerScope = createScope(() => this, this.idGen)
   private config: RuntimeConfig | null = null
   private contentNode: HTMLElement | null = null
-  private exit: OverlayExit | null = null
+  private exit: ExitGate | null = null
   private backdropNode: HTMLElement | null = null
   private readonly lazyContent = new LazyContent({ stash: false })
   private readonly portal = this.createPortalLeaseController({
@@ -284,9 +285,9 @@ export class XhDrawerElement extends XhPortalHostElement {
   }
 
   /** 退场闸门建一次；presence 不是响应式 cell，退场结束要显式排一次更新才轮得到收起。 */
-  private ensureExit(open: boolean): OverlayExit {
+  private ensureExit(open: boolean): ExitGate {
     this.ensureConfig()
-    this.exit ??= createOverlayExit({
+    this.exit ??= createExitGate({
       open,
       onExitComplete: () => this.requestUpdate(),
       // 不靠落位藏面板：焦点陷阱与滚动锁所在的浮层按需块到了才露出内容

@@ -6,18 +6,19 @@
 // 提供 select 相关实现。
 
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, PropTypes, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
+import type { ExitGate } from '@xihan-ui/core/presence'
 import type { CollectionVirtualizer, SelectionValueKey, SelectItemProps, SelectNode, SelectOpenChangeDetails, SelectSchema, SelectTagMeta, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import type { OverlayExit } from '../overlay-exit'
 import type { StructureVirtualBinding } from '../runtime/structure-virtual'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { createExitGate } from '@xihan-ui/core/presence'
 import { connectSelect, selectAnatomy, selectMachine, selectMeta, selectStructure, VIRTUAL_STRUCTURE_DELEGATE } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { unwrapDelegated } from '../dom/structure'
-import { createOverlayExit, withoutHidden } from '../overlay-exit'
+import { withoutHidden } from '../overlay-exit'
 import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
@@ -227,7 +228,7 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
   private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
-  private exit: OverlayExit | null = null
+  private exit: ExitGate | null = null
   private readonly portal = this.createAnchoredPortalController({
     name: 'Select',
     config: () => this.config,
@@ -363,9 +364,9 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
   }
 
   /** 在状态机挂载前建立 Presence，确保 default-open 的行为资源与视觉退场共享同一租约。 */
-  private ensureExit(open: boolean): OverlayExit {
+  private ensureExit(open: boolean): ExitGate {
     this.ensureConfig()
-    this.exit ??= createOverlayExit({
+    this.exit ??= createExitGate({
       open,
       onExitComplete: () => this.requestUpdate(),
     })

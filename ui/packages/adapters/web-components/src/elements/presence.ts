@@ -5,13 +5,14 @@
 
 // 提供 presence 相关实现。
 
+import type { ExitGate } from '@xihan-ui/core/presence'
 import type { PresenceProps } from '@xihan-ui/headless'
-import type { OverlayExit } from '../overlay-exit'
+import { createExitGate } from '@xihan-ui/core/presence'
 import { connectPresence, presenceAnatomy, presenceMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
-import { createOverlayExit, withoutHidden } from '../overlay-exit'
+import { withoutHidden } from '../overlay-exit'
 import { LazyContent } from '../runtime/lazy-content'
 
 /**
@@ -44,7 +45,7 @@ export class XhPresenceElement extends XhElement {
   declare lazyMount?: boolean
   declare unmountOnExit?: boolean
 
-  private exit: OverlayExit | null = null
+  private exit: ExitGate | null = null
   /** root 里内容的挂卸落点。 */
   private readonly lazyContent = new LazyContent()
   /** 第一次接线时的在场与否；之后 present 一变即算变过。 */
@@ -80,7 +81,7 @@ export class XhPresenceElement extends XhElement {
     this.spreader.spread(root, withoutHidden(api.getRootProps(true, this.moved)))
 
     // data-state 已写进 DOM，再驱动闸门：退场探测读到的才是这一次的动画
-    this.exit ??= createOverlayExit({
+    this.exit ??= createExitGate({
       open: api.present,
       onExitComplete: () => {
         this.exitPending = true

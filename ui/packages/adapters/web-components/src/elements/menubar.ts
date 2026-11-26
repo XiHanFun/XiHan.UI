@@ -6,17 +6,18 @@
 // 提供 menubar 相关实现。
 
 import type { Cleanup, Direction, IdGenerator, Layer, Orientation, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
+import type { ExitGate } from '@xihan-ui/core/presence'
 import type { MenubarAnyItemProps, MenubarCheckboxValueChangeDetails, MenubarItemSelectDetails, MenubarNode, MenubarRadioValue, MenubarRadioValueChangeDetails, MenubarSchema, MenubarTranslations, MenubarValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import type { OverlayExit } from '../overlay-exit'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { createExitGate } from '@xihan-ui/core/presence'
 import { connectMenubar, createMenuTreeNode, menubarAnatomy, menubarMachine, menubarMeta, menubarStructure } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
-import { createOverlayExit, withoutHidden } from '../overlay-exit'
+import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { setMenuSubmenuOwner } from '../runtime/menu-submenu-owner'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
@@ -81,7 +82,7 @@ export class XhMenubarElement extends XhPortalHostElement {
   declare portalContainer?: () => Element | null
 
   /** 逐个 content 一份退场闸门：一个菜单一份，它们各开各的。 */
-  private readonly exits = new Map<HTMLElement, { value: string, gate: OverlayExit }>()
+  private readonly exits = new Map<HTMLElement, { value: string, gate: ExitGate }>()
 
   /**
    * 整排菜单的定位层共用一份租约：任一张可见时全部搬到落点，逻辑来源是菜单栏根。
@@ -458,7 +459,7 @@ export class XhMenubarElement extends XhPortalHostElement {
         entry = undefined
       }
       if (!entry) {
-        const gate = createOverlayExit({
+        const gate = createExitGate({
           open,
           onExitComplete: () => this.requestUpdate(),
         })

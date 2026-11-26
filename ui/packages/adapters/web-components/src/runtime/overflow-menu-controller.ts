@@ -11,17 +11,17 @@
 // 建出来的节点归 menu 的 scope，不写 data-xh-part（与每页条数下拉、自绘滚动条同一条路）。
 
 import type { Cleanup, IconRecord, IdGenerator, Layer, RuntimeConfig, Scope, Service } from '@xihan-ui/core'
+import type { ExitGate } from '@xihan-ui/core/presence'
 import type { MenuAnyItemProps, MenuApi, MenuSchema } from '@xihan-ui/headless'
 import type { Spreader } from '../dom/spread'
-import type { OverlayExit } from '../overlay-exit'
 import type { ReactiveControllerHost } from '../reactive'
 import type { AnchoredPortalController, AnchoredPortalControllerOptions } from './anchored-portal-controller'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createExitGate } from '@xihan-ui/core/presence'
 import { connectMenu, menuMachine } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { mergeAsChildProps } from '../dom/as-child'
 import { wcNormalize } from '../dom/normalize'
-import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from './machine-controller'
 import { ScrollbarsController } from './scrollbars-controller'
 
@@ -65,7 +65,7 @@ export class OverflowMenuController {
   /** 菜单那一套节点；钮缺席时不建。 */
   private nodes: OverflowMenuNodes | null = null
   /** 退场闸门：收起从跟着展开态走改成跟着 presence 走，退场动画播完才真收。 */
-  private exit: OverlayExit | null = null
+  private exit: ExitGate | null = null
   private readonly menuCtrl: MachineController<MenuSchema>
   private readonly portal: AnchoredPortalController
   /** 条目列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；浮层里的条子走 4px 档。 */
@@ -102,9 +102,9 @@ export class OverflowMenuController {
     return this.config
   }
 
-  private ensureExit(open: boolean): OverlayExit {
+  private ensureExit(open: boolean): ExitGate {
     this.ensureConfig()
-    this.exit ??= createOverlayExit({
+    this.exit ??= createExitGate({
       open,
       onExitComplete: () => this.host.requestUpdate(),
     })

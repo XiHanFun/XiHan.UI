@@ -6,9 +6,9 @@
 // 提供 use overlay 相关实现。
 
 import type { IdGenerator, Layer, MachineSchema, RuntimeConfig, Scope, Service } from '@xihan-ui/core'
-import type { PresenceHandle } from '@xihan-ui/core/presence'
-import { createRuntimeConfig, overlayKit, whenOverlayKit } from '@xihan-ui/core'
-import { attachCssExit, createPresence } from '@xihan-ui/core/presence'
+import type { ExitGate, PresenceHandle } from '@xihan-ui/core/presence'
+import { createRuntimeConfig } from '@xihan-ui/core'
+import { createExitGate } from '@xihan-ui/core/presence'
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useXhConfig } from '../config/config'
 
@@ -70,10 +70,6 @@ export function useOverlay(options: UseOverlayOptions): OverlayWiring {
   const { scope, idGenerator, initialOpen, container } = options
   const xhConfig = useXhConfig()
   const [rendered, setRendered] = useState(initialOpen)
-  // 在等浮层按需块：展开了先藏着，到了再露。挂载时就开着的不等，关过一次之后按常规等
-  const [gated, setGated] = useState(false)
-  const kitExempt = useRef(initialOpen)
-  const waitingKit = useRef<(() => void) | null>(null)
 
   // 取值器随渲染换，接线只建一次：拿 ref 转一道，别让它成为重建的理由
   const latest = useRef(options)
@@ -90,16 +86,21 @@ export function useOverlay(options: UseOverlayOptions): OverlayWiring {
       // 宿主把滚动搬进内容容器时 body 本身不滚，加锁会是空操作；这条把真正在滚的那层交给滚动锁
       scrollRoot: () => scrollRoot.current?.() ?? null,
     })
-    return { config, presence: null as PresenceHandle | null }
+    return { config, gate: null as ExitGate | null }
   }, [scope, idGenerator])
 
   const onCreate = useCallback((service: Service<MachineSchema>): (() => void) => {
     if (!parts)
       return () => {}
     const { config } = parts
-    // StrictMode 重建机器时必须重新建立已销毁的 Presence，不能继续使用旧租约容器。
-    const presence = createPresence({ open: latest.current.initialOpen, onRenderedChange: setRendered })
-    parts.presence = presence
+    // StrictMode 重建机器时必须重新建立已销毁的闸门，不能继续使用旧租约容器。
+    // 挂载时就开着的不等浮层按需块，与服务端直出的标记对齐；收起过一次之后按常规等
+    const gate = createExitGate({
+      open: latest.current.initialOpen,
+      onExitComplete: () => setRendered(false),
+      onOverlayKitReady: latest.current.awaitOverlayKit ? setRendered : undefined,
+    })
+    parts.gate = gate
     // 只提供注册函数，入栈出栈由机器的效应按展开态驱动
     const registerLayer = (): ReturnType<RuntimeConfig['layerRegistry']['register']> =>
       config.layerRegistry.register({
@@ -109,80 +110,37 @@ export function useOverlay(options: UseOverlayOptions): OverlayWiring {
       })
     service.refs.set('config', config)
     service.refs.set('registerLayer', registerLayer)
-    service.refs.set('presence', presence)
+    service.refs.set('presence', gate.presence)
     latest.current.refs?.(service, config)
     return () => {
-      presence.dispose()
-      if (parts.presence === presence)
-        parts.presence = null
+      gate.dispose()
+      if (parts.gate === gate)
+        parts.gate = null
     }
   }, [parts])
 
   // data-state 落到 DOM 之后再驱动进出场：早于提交驱动，退场探测读到的还是上一帧的
-  // animationName，量不到这次的动画
-  const observed = useRef<{ presence: PresenceHandle | null, nodes: Map<HTMLElement, () => void> }>({ presence: null, nodes: new Map() })
+  // animationName，量不到这次的动画。展开那一帧要等按需块时，rendered 在同一轮布局效应里翻假，一帧都不露
   useIsomorphicLayoutEffect(() => {
     const open = latest.current.isOpen()
-    const presence = parts?.presence
-    if (!presence) {
+    const gate = parts?.gate
+    if (!gate) {
       setRendered(open)
       return
     }
     if (open)
-      presence.update(true)
-    if (observed.current.presence !== presence) {
-      for (const detach of observed.current.nodes.values()) detach()
-      observed.current.nodes.clear()
-      observed.current.presence = presence
-    }
-    const nodes = new Set([
-      (latest.current.exitNode ?? latest.current.node)(),
-      ...latest.current.additionalExitNodes?.() ?? [],
-    ].filter((node): node is HTMLElement => node !== null))
-    for (const node of nodes) {
-      if (!observed.current.nodes.has(node))
-        observed.current.nodes.set(node, attachCssExit(node, presence))
-    }
-    for (const [node, detach] of observed.current.nodes) {
-      if (!nodes.has(node)) {
-        observed.current.nodes.delete(node)
-        detach()
-      }
-    }
-    presence.update(open)
+      gate.presence.update(true)
+    gate.track((latest.current.exitNode ?? latest.current.node)(), ...latest.current.additionalExitNodes?.() ?? [])
+    gate.update(open)
+    setRendered(gate.visible)
   })
-
-  // 与上面驱动 presence 的那条同一轮布局效应里定下来：展开那一帧 rendered 还没翻真，两处一并重渲，一帧都不露
-  useIsomorphicLayoutEffect(() => {
-    if (!latest.current.awaitOverlayKit || !parts)
-      return
-    if (!latest.current.isOpen()) {
-      kitExempt.current = false
-      return
-    }
-    if (kitExempt.current || waitingKit.current || overlayKit())
-      return
-    setGated(true)
-    waitingKit.current = whenOverlayKit(() => {
-      waitingKit.current = null
-      setGated(false)
-    })
-  })
-
-  useEffect(() => () => {
-    for (const detach of observed.current.nodes.values()) detach()
-    observed.current.nodes.clear()
-    observed.current.presence = null
-    waitingKit.current?.()
-    waitingKit.current = null
-  }, [])
 
   const portalContainer = useCallback(
     () => container?.() ?? xhConfig.portalContainer?.() ?? parts?.config.portalContainer() ?? null,
     [container, xhConfig, parts],
   )
 
-  return { rendered: rendered && !gated, portalContainer, onCreate }
+  return { rendered, portalContainer, onCreate }
 }
 
 export type { PresenceHandle }

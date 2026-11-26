@@ -6,6 +6,7 @@
 // 提供 floating panel 相关实现。
 
 import type { IdGenerator, RuntimeConfig, Service } from '@xihan-ui/core'
+import type { ExitGate } from '@xihan-ui/core/presence'
 import type {
   FloatingPanelDimensionsChangeDetails,
   FloatingPanelDragEndDetails,
@@ -19,13 +20,13 @@ import type {
   FloatingPanelWindowState,
   FloatingPanelWindowStateChangeDetails,
 } from '@xihan-ui/headless'
-import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createExitGate } from '@xihan-ui/core/presence'
 import { connectFloatingPanel, floatingPanelAnatomy, floatingPanelMachine, floatingPanelMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
-import { createOverlayExit, withoutHidden } from '../overlay-exit'
+import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值的唯一事实源留在机器与 connect。
@@ -146,7 +147,7 @@ export class XhFloatingPanelElement extends XhElement {
   private readonly panelScope = createScope(null, this.idGen)
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
-  private exit: OverlayExit | null = null
+  private exit: ExitGate | null = null
 
   private readonly notifyOpen = (details: FloatingPanelOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
@@ -262,7 +263,7 @@ export class XhFloatingPanelElement extends XhElement {
     // 探测器才读得到退场那支动画
     const positioner = this.getPart('positioner')
     this.ensureConfig()
-    this.exit ??= createOverlayExit({
+    this.exit ??= createExitGate({
       open: api.open,
       onExitComplete: () => this.requestUpdate(),
     })

@@ -6,6 +6,7 @@
 // 提供 command 相关实现。
 
 import type { Cleanup, Direction, IdGenerator, Layer, OverlayBackdropVariant, RuntimeConfig, Service, Size } from '@xihan-ui/core'
+import type { ExitGate } from '@xihan-ui/core/presence'
 import type {
   CommandApi,
   CommandGroup,
@@ -19,14 +20,14 @@ import type {
   CommandSchema,
 } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createExitGate } from '@xihan-ui/core/presence'
 import { commandAnatomy, commandMachine, commandMeta, commandStructure, connectCommand, resolveCommandGroups } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
-import { createOverlayExit, withoutHidden } from '../overlay-exit'
+import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
@@ -153,7 +154,7 @@ export class XhCommandElement extends XhPortalHostElement {
   private readonly commandScope = createScope(() => this, this.idGen)
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
-  private exit: OverlayExit | null = null
+  private exit: ExitGate | null = null
 
   /** 结果列表的自绘条：与 list 同级挂在面板（content 已经 relative）里；模态浮层里的条子走 4px 档 */
   private readonly bars = new ScrollbarsController(this, {
@@ -319,7 +320,7 @@ export class XhCommandElement extends XhPortalHostElement {
   // onBuilt 在 ctrl 构造期就跑，service 由参数传入。
   private injectRefs(svc: Service<CommandSchema>): void {
     this.ensureConfig()
-    this.exit ??= createOverlayExit({
+    this.exit ??= createExitGate({
       open: (this.open ?? this.defaultOpen) ?? false,
       onExitComplete: () => this.requestUpdate(),
       // 不靠落位藏面板：焦点陷阱与滚动锁所在的浮层按需块到了才露出内容
@@ -414,7 +415,7 @@ export class XhCommandElement extends XhPortalHostElement {
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     this.ensureConfig()
-    this.exit ??= createOverlayExit({
+    this.exit ??= createExitGate({
       open: api.open,
       onExitComplete: () => this.requestUpdate(),
       // 不靠落位藏面板：焦点陷阱与滚动锁所在的浮层按需块到了才露出内容
