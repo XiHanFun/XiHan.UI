@@ -73,6 +73,7 @@ variant 只改变分段框的底色与描边用法，tone 与 variant 正交，s
 - `min` / `max` 越界时只标注不改写。
 - 标准组合包含标签、输入框、时间段和隐藏表单输入；聚焦只强调正在编辑的时间段。
 - 框内自带清空按钮（`clear-trigger`）：有值时才显示，点击后焦点回到第一段。
+- `clearable` 缺省开启；写 false 即关掉清空能力：有值也不露清空按钮，`api.clear()` 也被拦下；段位上按退格逐段清值照旧。必选的字段用它去掉清空钮。
 - 聚焦环、边框和当前段位使用同一段短过渡，焦点进入与离开不会瞬时跳变。
 
 ### 组合
@@ -116,6 +117,7 @@ variant 只改变分段框的底色与描边用法，tone 与 variant 正交，s
 | `granularity` | `TimeGranularity` |  | 值精确到哪一段，默认 minute。 |
 | `disabled` | `boolean` |  | 禁用：段整体退出 Tab 序列、键盘一概不响应，隐藏输入不参与提交。 |
 | `readOnly` | `boolean` |  | 只读：仍可聚焦、可用左右键在段间移动，但不可修改值。 |
+| `clearable` | `boolean` |  | 清空能力，默认开启：有值且改得动时露出清空按钮。 写 false 即关掉：清空按钮恒带 hidden 收起，api.clear() 也被拦下；段位上按退格逐段清值照旧。 |
 | `invalid` | `boolean` |  | 校验失败标注。 |
 | `required` | `boolean` |  | 必填标注（写入每段的 aria-required）。 |
 | `name` | `string` |  | 表单字段名；提供后隐藏输入才带 name，值随表单一并提交。 |
@@ -176,13 +178,14 @@ variant 只改变分段框的底色与描边用法，tone 与 variant 正交，s
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
 | `canClear` | `boolean` | 有值且可编辑（既不 disabled 也不 readOnly）；清空按钮据此显隐。 |
+| `clearable` | `boolean` | 清空能力是否开启（clearable 没写成 false）。 |
 | `hourCycle` | `TimeHourCycle` | 实际生效的小时制（prop 未提供时由 locale 推断的值）。 |
 | `granularity` | `TimeGranularity` |  |
 | `segments` | `TimeSegmentType[]` | 当前参与显示的段，文档序。未列入的段由 connect 写上 hidden 收起。 |
 | `focusedSegment` | `TimeSegmentType \| null` | 焦点所在段；焦点在组外时为 null。 |
 | `getSegmentText` | `(props: TimeFieldSegmentProps) => string` | 某一段应显示的文字（空段是占位串）。各适配器都用它填充文本，保证同构。 |
 | `setValue` | `(next: string) => void` |  |
-| `clear` | `() => void` |  |
+| `clear` | `() => void` | 发起清空；关掉 clearable 时不生效，无条件清空用 setValue('')。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |

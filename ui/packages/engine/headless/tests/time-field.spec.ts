@@ -1099,3 +1099,17 @@ describe('清空按钮的按压通道：Space / Enter 与触屏按住投影 data
     }
   })
 })
+
+describe('clearable', () => {
+  it('写 false：有值也收起清空钮、clear() 拦下；setValue 照旧', () => {
+    const m = open({ granularity: 'minute', defaultValue: '13:45', clearable: false })
+    expect(m.clear.hasAttribute('hidden')).toBe(true)
+    expect([m.api().clearable, m.api().canClear]).toEqual([false, false])
+    m.api().clear()
+    expect(m.api().value).toBe('13:45')
+  })
+
+  it('缺省开着', () => {
+    expect(open({ granularity: 'minute', defaultValue: '13:45' }).clear.hasAttribute('hidden')).toBe(false)
+  })
+})

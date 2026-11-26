@@ -41,6 +41,8 @@ export interface XhTimeFieldRootProps extends Omit<ComponentPropsWithRef<'div'>,
   disabled?: boolean
   translations?: TimeFieldProps['translations']
   readOnly?: boolean
+  /** 清空能力，缺省开启；写 false 时不铺清空按钮，api.clear() 也不生效。 */
+  clearable?: boolean
   invalid?: boolean
   required?: boolean
   name?: string
@@ -66,6 +68,7 @@ export function XhTimeFieldRoot({
   disabled,
   translations,
   readOnly,
+  clearable,
   invalid,
   required,
   name,
@@ -90,6 +93,7 @@ export function XhTimeFieldRoot({
     disabled,
     translations,
     readOnly,
+    clearable,
     invalid,
     required,
     name,

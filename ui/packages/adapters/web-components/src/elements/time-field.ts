@@ -50,6 +50,7 @@ function declaredSegment(el: HTMLElement, position: number): TimeSegmentType {
  * @attr {'hour'|'minute'|'second'} granularity - 值精确到哪一段，默认 minute
  * @attr {boolean} disabled - 禁用：整组退出 Tab 序列，隐藏输入不参与提交
  * @attr {boolean} read-only - 只读：仍可聚焦与换段，不可修改值
+ * @attr {boolean} clearable - 清空能力，默认开启；写 "false" 关掉：不铺清空按钮，连接层的 clear() 也不生效
  * @attr {boolean} invalid - 校验失败标注
  * @attr {boolean} required - 必填标注，写入每段的 aria-required
  * @attr {string} name - 表单字段名；提供后隐藏输入才带 name
@@ -81,6 +82,7 @@ export class XhTimeFieldElement extends XhElement {
     granularity: { converter: STRING_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    clearable: { converter: BOOLEAN_CONVERTER },
     invalid: { converter: BOOLEAN_CONVERTER },
     translations: { attribute: false },
     required: { converter: BOOLEAN_CONVERTER },
@@ -100,6 +102,7 @@ export class XhTimeFieldElement extends XhElement {
   declare granularity?: TimeGranularity
   declare disabled?: boolean
   declare readOnly?: boolean
+  declare clearable?: boolean
   declare invalid?: boolean
   declare translations?: TimeFieldSchema['props']['translations']
   declare required?: boolean
@@ -141,6 +144,7 @@ export class XhTimeFieldElement extends XhElement {
       granularity: this.granularity,
       disabled: control.disabled,
       readOnly: control.readOnly,
+      clearable: this.clearable,
       invalid: control.invalid,
       translations: this.translations,
       required: control.required,

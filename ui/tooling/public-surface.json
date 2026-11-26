@@ -16982,6 +16982,7 @@
     ],
     "time-field": [
       "ariaLabel",
+      "clearable",
       "defaultValue",
       "disabled",
       "granularity",
@@ -26002,6 +26003,7 @@
     },
     "xh-time-field": {
       "attributes": [
+        "clearable",
         "default-value",
         "disabled",
         "granularity",

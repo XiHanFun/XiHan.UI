@@ -55,7 +55,9 @@ export function connectTimeField<T extends PropTypes>(
   const segments = timeSegments(granularity, hourCycle)
   const empty = value === ''
   // 清空按钮只在有东西可清、且改得动的时候显形
-  const canClear = editable && !empty
+  // 清空钮缺省开着；写 false 即收起，clear() 一并拦下
+  const clearable = prop('clearable') !== false
+  const canClear = clearable && editable && !empty
   // 清空按钮的按压通道：键盘 / 触屏按住期间的按压面，指针按住由 :active 表出，皮肤两者同一档
   const press = pressHandlers(service)
   const outOfRange = isTimeOutOfRange(value, prop('min'), prop('max'))
@@ -104,13 +106,17 @@ export function connectTimeField<T extends PropTypes>(
     readOnly,
     invalid,
     canClear,
+    clearable,
     hourCycle,
     granularity,
     segments,
     focusedSegment,
     getSegmentText: ({ segment }) => textOf(segment),
     setValue: next => send({ type: 'VALUE.SET', value: next }),
-    clear: () => send({ type: 'VALUE.CLEAR' }),
+    clear: () => {
+      if (clearable)
+        send({ type: 'VALUE.CLEAR' })
+    },
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,

@@ -72,6 +72,11 @@ export interface TimeFieldSchema extends MachineSchema {
     disabled?: boolean
     /** 只读：仍可聚焦、可用左右键在段间移动，但不可修改值。 */
     readOnly?: boolean
+    /**
+     * 清空能力，默认开启：有值且改得动时露出清空按钮。
+     * 写 false 即关掉：清空按钮恒带 hidden 收起，api.clear() 也被拦下；段位上按退格逐段清值照旧。
+     */
+    clearable?: boolean
     /** 校验失败标注。 */
     invalid?: boolean
     /** 必填标注（写入每段的 aria-required）。 */
@@ -125,7 +130,7 @@ export interface TimeFieldSchema extends MachineSchema {
     | { type: 'SEGMENT.FOCUS', segment: TimeSegmentType }
     | { type: 'SEGMENT.BLUR' }
     | { type: 'FORM.RESET' }
-    /** 清空按钮被 Space / Enter 或触屏按住；清不了（禁用、只读或没有值）时被守卫拦截。 */
+    /** 清空按钮被 Space / Enter 或触屏按住；清不了（关掉了 clearable、禁用、只读或没有值）时被守卫拦截。 */
     | { type: 'PRESS.START' }
     /** 按住的清空按钮抬起、失焦或指针取消。 */
     | { type: 'PRESS.END' }
@@ -160,6 +165,8 @@ export interface TimeFieldApi<T extends PropTypes = PropTypes> {
   invalid: boolean
   /** 有值且可编辑（既不 disabled 也不 readOnly）；清空按钮据此显隐。 */
   canClear: boolean
+  /** 清空能力是否开启（clearable 没写成 false）。 */
+  clearable: boolean
   /** 实际生效的小时制（prop 未提供时由 locale 推断的值）。 */
   hourCycle: TimeHourCycle
   granularity: TimeGranularity
@@ -170,6 +177,7 @@ export interface TimeFieldApi<T extends PropTypes = PropTypes> {
   /** 某一段应显示的文字（空段是占位串）。各适配器都用它填充文本，保证同构。 */
   getSegmentText: (props: TimeFieldSegmentProps) => string
   setValue: (next: string) => void
+  /** 发起清空；关掉 clearable 时不生效，无条件清空用 setValue('')。 */
   clear: () => void
   getRootProps: () => T['element']
   getLabelProps: () => T['label']

@@ -587,6 +587,16 @@ export const timeFieldSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'clearable 写 false：有值也不露清空钮，按住不进入按压面；改回 true 即露面',
+      spec: { adr: 'press-channel' },
+      props: { defaultValue: '13:45', clearable: false },
+      initial: { parts: { 'clear-trigger': { hidden: '' } } },
+      steps: [
+        heldPressIgnored('time-field', 'clear-trigger', '关掉 clearable 时清空钮藏着，不接受按压'),
+        { kind: 'setProps', props: { clearable: true }, expect: { parts: { 'clear-trigger': { hidden: null } } } },
+      ],
+    },
+    {
       name: '禁用或只读时清空钮藏着，按住不进入按压面',
       spec: { adr: 'press-channel' },
       props: { defaultValue: '13:45', disabled: true },
