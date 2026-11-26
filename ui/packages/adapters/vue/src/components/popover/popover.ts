@@ -5,7 +5,7 @@
 
 // 提供 popover 相关实现。
 
-import type { Direction, Placement, Size } from '@xihan-ui/core'
+import type { Direction, Placement, Size, VirtualAnchor } from '@xihan-ui/core'
 import type { PopoverApi, PopoverSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -30,13 +30,28 @@ export const XhPopoverRoot = defineComponent({
   props: {
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    /** 外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger。 */
-    anchor: { type: Object as PropType<HTMLElement | null> },
+    /**
+     * 外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger。
+     * 也收带 getBoundingClientRect() 的虚拟锚点（指针落点、文本选区），这时焦点归还给 trigger。
+     */
+    anchor: { type: Object as PropType<HTMLElement | VirtualAnchor | null> },
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
+    /** 空间不足时翻到对侧，默认 true；false 时守着 placement 那一侧。 */
+    flip: { type: Boolean, default: undefined },
+    /** 碰撞边界：浮层只在这块区域与视口的交集里摆。收元素或带 getBoundingClientRect() 的对象。 */
+    boundary: { type: Object as PropType<Element | VirtualAnchor | null> },
     /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
     dir: { type: String as PropType<Direction> },
     modal: { type: Boolean, default: false },
+    /** 展开后先聚焦到 content 内匹配该选择器的元素；没给或不匹配时落到第一个可聚焦元素。 */
+    initialFocus: { type: String },
+    /** 收起时把焦点归还给 trigger（或元素锚点），默认 true。 */
+    restoreFocus: { type: Boolean, default: undefined },
+    /** 第一次打开时才挂载 content 里的内容，默认 false。 */
+    lazyMount: { type: Boolean, default: undefined },
+    /** 收起动画播完后卸载 content 里的内容，默认 false；下次打开重新挂载。 */
+    unmountOnExit: { type: Boolean, default: undefined },
     closeOnEscape: { type: Boolean, default: true },
     closeOnInteractOutside: { type: Boolean, default: true },
     /** 浮层不可打开：触发器转原生 disabled。 */
@@ -48,6 +63,7 @@ export const XhPopoverRoot = defineComponent({
   emits: {
     'open-change': (_details: PayloadOf<PopoverProps, 'onOpenChange'>) => true,
     'update:open': (_open: PayloadOf<PopoverProps, 'onOpenChange'>['open']) => true,
+    'exit-complete': () => true,
   },
   slots: Object as SlotsType<{
     default?: (props: PopoverRootSlotProps) => VNode[]
@@ -57,7 +73,7 @@ export const XhPopoverRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = usePopover(withXhConfig('popover', props) as PopoverProps, notify)
+    const ctx = usePopover(withXhConfig('popover', props) as PopoverProps, notify, () => emit('exit-complete'))
     providePopover(ctx)
     return () => slots.default?.({ open: ctx.api.value.open, setOpen: ctx.api.value.setOpen })
   },
@@ -123,7 +139,7 @@ export const XhPopoverContent = defineComponent({
       hidden: !ctx.visible.value || undefined,
       style: ctx.visible.value ? undefined : { display: 'none' },
       ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
-    }, slots.default?.())
+    }, ctx.api.value.isContentMounted(ctx.visible.value) ? slots.default?.() : undefined)
   },
 })
 

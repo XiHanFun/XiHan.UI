@@ -55,7 +55,8 @@ export function usePopover(props: PopoverSchema['props']): PopoverContext {
     kind: 'popover',
     // trigger 记为本层分支，点它算层内交互；外部锚点同理，点它交给打开它的那条命令去切换。
     // 浮层壳一并记上：面板之外还浮着自绘滚动条，按住它拖动不该把面板消解掉
-    branches: () => [triggerRef.current, anchorRef.current, positionerRef.current].filter(Boolean) as Element[],
+    // 虚拟锚点只给得出矩形，不是节点，不记
+    branches: () => [triggerRef.current, (anchorRef.current as Partial<Node> | null | undefined)?.nodeType === 1 ? anchorRef.current : null, positionerRef.current].filter(Boolean) as Element[],
     isModal: () => modalRef.current ?? false,
   }), [])
 

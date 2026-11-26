@@ -5,13 +5,13 @@
 
 // 提供 tooltip 相关实现。
 
-import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
+import type { Direction, Placement, Size, Tone, VirtualAnchor } from '@xihan-ui/core'
 import type { KbdPlatform } from '@xihan-ui/core/hotkey'
 import type { TooltipApi, TooltipSchema, TooltipTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { createTooltipGroup } from '@xihan-ui/headless'
+import { createTooltipGroup, tooltipStructure } from '@xihan-ui/headless'
 import { useRef, useState } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
@@ -19,6 +19,7 @@ import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { TooltipGroupContext, TooltipProvider, useTooltipContext } from './context'
 import { useTooltip } from './use-tooltip'
 
@@ -54,6 +55,14 @@ export interface XhTooltipRootProps {
   defaultOpen?: boolean
   placement?: Placement
   offset?: number
+  /** 空间不足时翻到对侧，默认 true；false 时守着 placement 那一侧。 */
+  flip?: boolean
+  /** 碰撞边界：提示只在这块区域与视口的交集里摆。收元素或带 getBoundingClientRect() 的对象。 */
+  boundary?: Element | VirtualAnchor | null
+  /** 第一次展开时才挂载 content 里的内容，默认 false。 */
+  lazyMount?: boolean
+  /** 收起动画播完后卸载 content 里的内容，默认 false；下次展开重新挂载。 */
+  unmountOnExit?: boolean
   /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
   dir?: Direction
   openDelay?: number
@@ -71,15 +80,22 @@ export interface XhTooltipRootProps {
   size?: Size
   translations?: Partial<TooltipTranslations>
   onOpenChange?: TooltipProps['onOpenChange']
+  // —— 不给 children 时的标准结构（tooltipStructure）——
+  /** 触发按钮的内容；委托模式下是装在容器里的一个个锚点。 */
+  trigger?: ReactNode
+  /** 提示文字。 */
+  content?: ReactNode
   children?: SlotChildren<TooltipRootSlotProps>
 }
 
-export function XhTooltipRoot({ children, ...props }: XhTooltipRootProps): ReactNode {
+export function XhTooltipRoot({ children, trigger, content, ...props }: XhTooltipRootProps): ReactNode {
   // disabled 写成自有键：作者没写时，字段集压下来的作用域禁用也要落得进来
   const ctx = useTooltip(withXhConfig('tooltip', { ...props, disabled: props.disabled }) as TooltipProps)
   return (
     <TooltipProvider value={ctx}>
-      {renderSlot(children, { open: ctx.api.open, setOpen: ctx.api.setOpen })}
+      {children !== undefined
+        ? renderSlot(children, { open: ctx.api.open, setOpen: ctx.api.setOpen })
+        : renderDefaultStructure(ctx.api.delegated, { trigger, content })}
     </TooltipProvider>
   )
 }
@@ -163,15 +179,17 @@ export function XhTooltipContent({ children, ...rest }: XhTooltipContentProps): 
       )}
     >
       {/* 委托模式下文字与快捷键由组件铺在作者写的节点（箭头）之后，没有快捷键时不铺 shortcut */}
-      {ctx.api.delegated
-        ? (
-            <>
-              {children}
-              <XhTooltipText />
-              {ctx.api.shortcut !== null && <XhTooltipShortcut />}
-            </>
-          )
-        : children}
+      {!ctx.api.isContentMounted(ctx.rendered)
+        ? null
+        : ctx.api.delegated
+          ? (
+              <>
+                {children}
+                <XhTooltipText />
+                {ctx.api.shortcut !== null && <XhTooltipShortcut />}
+              </>
+            )
+          : children}
     </div>
   )
 }
@@ -180,4 +198,32 @@ export interface XhTooltipArrowProps extends ComponentPropsWithRef<'div'> {}
 export function XhTooltipArrow({ children, ...rest }: XhTooltipArrowProps): ReactNode {
   const ctx = useTooltipContext()
   return <div {...mergeReactProps(ctx.api.getArrowProps(), rest)}>{children}</div>
+}
+
+/** 标准结构里各部件对应的组件。 */
+const TOOLTIP_PARTS = {
+  trigger: XhTooltipTrigger,
+  positioner: XhTooltipPositioner,
+  content: XhTooltipContent,
+  text: XhTooltipText,
+  arrow: XhTooltipArrow,
+}
+
+type TooltipSections = Readonly<Record<'trigger' | 'content', ReactNode>>
+
+/**
+ * 未给 children 时铺开的整套结构：照 headless 的 tooltipStructure 渲，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 触发器与提示文字是字符串时作文字，是别的节点时由对应部件装着；箭头恒铺。
+ */
+function renderDefaultStructure(delegated: boolean, { trigger, content }: TooltipSections): ReactNode[] {
+  const text = (value: ReactNode): string | undefined => (typeof value === 'string' ? value : undefined)
+  const sections: Readonly<Record<string, ReactNode>> = {
+    trigger: typeof trigger === 'string' ? undefined : trigger,
+    content: typeof content === 'string' ? undefined : content,
+  }
+  return renderStructure(
+    tooltipStructure({ triggerText: text(trigger), content: text(content), delegated, slotted: name => sections[name] != null }),
+    TOOLTIP_PARTS,
+    node => (node.slot ? sections[node.slot.name] : undefined),
+  )
 }

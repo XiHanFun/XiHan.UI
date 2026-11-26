@@ -1,4 +1,4 @@
-<!-- 落在指针位置 | 触发器缩为一个像素、按点击坐标固定放置，浮层就固定在刚点击的位置；再点一次更换落点 -->
+<!-- 落在指针位置 | anchor 交一个只给得出矩形的虚拟锚点，浮层就固定在刚点击的位置；再点一次更换落点，不用再摆一颗看不见的触发器 -->
 <script setup lang="ts">
 import {
   XhPopoverArrow,
@@ -8,22 +8,18 @@ import {
   XhPopoverPositioner,
   XhPopoverRoot,
   XhPopoverTitle,
-  XhPopoverTrigger,
 } from "@xihan-ui/vue";
-import { computed, ref } from "vue";
+import { ref, shallowRef } from "vue";
 
 const open = ref(false);
 const point = ref({ x: 0, y: 0 });
-
-// 指针坐标是物理坐标，锚点用 left / top 摆位；一像素而非零像素，位移探测才武装得起来
-const anchorStyle = computed(
-  () =>
-    `position: fixed; left: ${point.value.x}px; top: ${point.value.y}px;`
-    + " inline-size: 1px; block-size: 1px; padding: 0; border: 0; opacity: 0; pointer-events: none",
-);
+// 虚拟锚点：每次定位现读矩形；换一个对象，浮层即按新落点重挂
+const anchor = shallowRef<{ getBoundingClientRect: () => DOMRect } | null>(null);
 
 function pin(event: MouseEvent): void {
-  point.value = { x: event.clientX, y: event.clientY };
+  const { clientX: x, clientY: y } = event;
+  point.value = { x, y };
+  anchor.value = { getBoundingClientRect: () => new DOMRect(x, y, 0, 0) };
   open.value = true;
 }
 </script>
@@ -47,12 +43,12 @@ function pin(event: MouseEvent): void {
 
     <XhPopoverRoot
       v-model:open="open"
+      :anchor="anchor"
       placement="bottom-start"
       :offset="8"
       :close-on-interact-outside="false"
       :translations="{ close: '关闭' }"
     >
-      <XhPopoverTrigger tabindex="-1" :style="anchorStyle" />
       <XhPopoverPositioner>
         <XhPopoverContent>
           <XhPopoverTitle>这一点</XhPopoverTitle>

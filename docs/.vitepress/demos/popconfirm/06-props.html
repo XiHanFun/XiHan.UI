@@ -1,0 +1,21 @@
+<!-- props 写法 | 不写结构时按标准结构铺：触发器、标题、说明与确认文字几个属性写出一个弹出确认；取消钮的文字缺省取语言包 -->
+<xh-popconfirm
+  id="popconfirm-props"
+  trigger-text="删除这条记录"
+  title-text="删除后不可恢复"
+  description="这条记录连同它的附件一起清掉。"
+  confirm-text="删除"
+></xh-popconfirm>
+<span data-demo-output>答复：<span id="popconfirm-props-answer">还没答复</span></span>
+
+<script type="module">
+  // 两颗按钮各派一个事件，答复写进输出栏
+  const host = document.getElementById("popconfirm-props");
+  const answer = document.getElementById("popconfirm-props-answer");
+  host.addEventListener("confirm", () => {
+    answer.textContent = "已删除";
+  });
+  host.addEventListener("cancel-press", () => {
+    answer.textContent = "已取消";
+  });
+</script>

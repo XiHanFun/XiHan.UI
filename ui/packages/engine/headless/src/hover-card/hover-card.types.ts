@@ -5,7 +5,7 @@
 
 // 定义 hover card 类型契约。
 
-import type { Cleanup, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size } from '@xihan-ui/core'
+import type { Cleanup, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, VirtualAnchor } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { TitleDescriptionParts } from '../shared/title-description'
 
@@ -44,6 +44,20 @@ export interface HoverCardSchema extends MachineSchema {
     placement?: Placement
     /** 浮层与锚点的间距（px）。 */
     offset?: number
+    /** 空间不足时翻到对侧，默认 true；false 时守着 placement 那一侧，交叉轴贴边挪位照旧。 */
+    flip?: boolean
+    /**
+     * 碰撞边界：卡片只在这块区域与视口的交集里摆，翻面、贴边挪位与可用空间都以交集为界。
+     * 收元素或带 getBoundingClientRect() 的对象；缺省只受视口与裁剪祖先约束。
+     */
+    boundary?: Element | VirtualAnchor | null
+    /**
+     * 第一次展开时才挂载 content 里的内容，默认 false。列表里每行一张悬浮卡片时，收起态背着的整份卡片内容是挂载开销的大头。
+     * positioner 与 content 节点照旧常驻。
+     */
+    lazyMount?: boolean
+    /** 收起动画播完后卸载 content 里的内容，默认 false；下次展开重新挂载。 */
+    unmountOnExit?: boolean
     /** 悬停进入到展开的等待毫秒，默认 700。 */
     openDelay?: number
     /** 指针离开 trigger 或 content 到收起的等待毫秒，默认 300。 */
@@ -73,6 +87,8 @@ export interface HoverCardSchema extends MachineSchema {
     position: PositionResult | null
     /** 焦点是否停在卡片内（trigger 或 content 及其后代）；为 true 时纯指针移出不收起。 */
     focusHeld: boolean
+    /** 挂载之后展开过没有（含首帧即展开）。lazyMount 下 content 里的内容从第一次展开起才挂载。 */
+    opened: boolean
   }
   computed: Record<string, never>
   refs: HoverCardRefs
@@ -101,7 +117,7 @@ export interface HoverCardSchema extends MachineSchema {
     | { type: 'CONTROLLED.CLOSE' }
   tag: never
   guard: 'isOpenControlled' | 'isDisabled' | 'isFocusHeld'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'markFocusHeld' | 'clearFocusHeld' | 'clearOpenedAtMount'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'markFocusHeld' | 'clearFocusHeld' | 'clearOpenedAtMount' | 'markOpened'
   effect: 'waitForOpenDelay' | 'waitForCloseDelay' | 'trackPosition' | 'trackLayer'
 }
 
@@ -115,6 +131,12 @@ export interface HoverCardApi<T extends PropTypes = PropTypes> {
   getTitleProps: () => T['element']
   getDescriptionProps: () => T['element']
   getArrowProps: () => T['element']
+  /**
+   * content 里的内容此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。
+   * 缺省恒为真；lazyMount 下没展开过为假；unmountOnExit 下闸门落下（退场播完）即为假。
+   * positioner 与 content 节点不受它管，一向常驻。
+   */
+  isContentMounted: (present: boolean) => boolean
 }
 
 /** 读屏文案。本组件目前没有需要外露的文案，保留该位。 */

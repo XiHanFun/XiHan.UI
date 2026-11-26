@@ -558,6 +558,7 @@ const translations = {
     },
   },
   'pin-input': { input: (index, length) => `第 ${index} 個字元，共 ${length} 個` },
+  'popconfirm': { ok: '確定', cancel: '取消' },
   'popover': { close: '關閉' },
   'progress': { segmentValueText: ({ value, label }) => `${value}，${label}` },
   'prompt-input': { send: '傳送', stop: '停止產生' },

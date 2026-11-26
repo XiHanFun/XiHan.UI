@@ -685,6 +685,8 @@ export const PIE_CHART_EN_US: XhLocaleBucket<'pie-chart'> = {
 
 export const PIN_INPUT_EN_US: XhLocaleBucket<'pin-input'> = { input: (index, length) => `Character ${index} of ${length}` }
 
+export const POPCONFIRM_EN_US: XhLocaleBucket<'popconfirm'> = { ok: 'OK', cancel: 'Cancel' }
+
 export const POPOVER_EN_US: XhLocaleBucket<'popover'> = { close: 'Close' }
 
 export const PROGRESS_EN_US: XhLocaleBucket<'progress'> = { segmentValueText: ({ value, label }) => `${value}, ${label}` }
@@ -1021,6 +1023,7 @@ const translations = {
   'password-input': PASSWORD_INPUT_EN_US,
   'pie-chart': PIE_CHART_EN_US,
   'pin-input': PIN_INPUT_EN_US,
+  'popconfirm': POPCONFIRM_EN_US,
   'popover': POPOVER_EN_US,
   'progress': PROGRESS_EN_US,
   'prompt-input': PROMPT_INPUT_EN_US,

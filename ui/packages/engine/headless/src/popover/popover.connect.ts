@@ -9,6 +9,7 @@ import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-u
 import type { PopoverApi, PopoverPressedPart, PopoverSchema } from './popover.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
 import { POPOVER_EN_US } from '../locale/en-US'
+import { disclosureContentMounted } from '../shared/disclosure-mount'
 import { overlayArrowVars, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { resolveTranslations } from '../shared/translations'
 import { popoverAnatomy } from './popover.anatomy'
@@ -61,6 +62,13 @@ export function connectPopover<T extends PropTypes>(
   return {
     open,
     setOpen,
+    // 挂卸只管 content 里的内容：positioner 与 content 节点常驻，aria-controls 始终指得到它，定位引擎也总有节点可量
+    isContentMounted: present => disclosureContentMounted({
+      lazyMount: prop('lazyMount') ?? false,
+      unmountOnExit: prop('unmountOnExit') ?? false,
+      opened: context.get('opened'),
+      present,
+    }),
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
       'id': ids.trigger,
@@ -123,7 +131,7 @@ export function connectPopover<T extends PropTypes>(
       'data-placement': placement,
       // popover 没有 root 部件，尺寸轴落在浮层树最外层的 content 上
       'data-size': prop('size'),
-      // 收起时留在 DOM 只隐藏，不卸载作者节点
+      // content 节点收起时留在 DOM 只隐藏；里面的内容卸不卸由 isContentMounted 定
       'hidden': !open || undefined,
     }),
     getTitleProps: () => normalize.element({ ...parts.title.attrs, id: ids.title }),

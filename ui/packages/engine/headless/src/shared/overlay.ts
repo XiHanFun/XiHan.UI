@@ -5,7 +5,7 @@
 
 // 提供 overlay 相关实现。
 
-import type { Placement } from '@xihan-ui/core'
+import type { Anchor, Placement, PositionOptions, VirtualAnchor } from '@xihan-ui/core'
 
 // 浮层交给定位引擎的默认落点与间距；各族机器统一引这里，不靠引擎自己的兜底。
 
@@ -28,6 +28,38 @@ export const OVERLAY_ARROW_SIZE = 8 * Math.SQRT2
 
 /** 箭头中心距浮层两端的最小距离，让开浮层圆角 --xh-shape-overlay（8px）。 */
 export const OVERLAY_ARROW_PADDING = 8
+
+/**
+ * 锚定浮层（popover / popconfirm / hover-card / tooltip）共有的定位微调，原样交给定位引擎。
+ * 不写就不交，缺省落在引擎自己那一档：空间不足翻到对侧，只受视口与裁剪祖先约束。
+ */
+export interface OverlayPositioningProps {
+  /** 空间不足时翻到对侧，缺省 true；false 时守着 placement 那一侧，交叉轴贴边挪位照旧。 */
+  flip?: boolean
+  /**
+   * 碰撞边界：浮层只在这块区域与视口的交集里摆，翻面、贴边挪位与可用空间都以交集为界。
+   * 收元素或带 getBoundingClientRect() 的对象，每次定位现读它此刻的矩形。
+   */
+  boundary?: Element | VirtualAnchor | null
+}
+
+/** 定位微调转成引擎参数：只带作者写了的那几项，没写的留给引擎缺省。 */
+export function overlayPositioningOptions(props: OverlayPositioningProps): Pick<PositionOptions, 'flip' | 'boundary'> {
+  const out: Pick<PositionOptions, 'flip' | 'boundary'> = {}
+  if (props.flip !== undefined)
+    out.flip = props.flip
+  if (props.boundary)
+    out.boundary = props.boundary
+  return out
+}
+
+/**
+ * 锚点是不是元素。虚拟锚点（指针落点、文本选区）只给得出矩形：接不了焦点、写不了读屏属性，
+ * 也不能记成层的分支，这几处只认元素锚点。
+ */
+export function overlayAnchorElement(anchor: Anchor | null | undefined): HTMLElement | null {
+  return anchor != null && (anchor as Partial<Node>).nodeType === 1 ? anchor as HTMLElement : null
+}
 
 /** 定位结果的最小形状：算出来才有坐标，锚点滚出视区时引擎置 hidden。 */
 export interface OverlayPlacementLike {

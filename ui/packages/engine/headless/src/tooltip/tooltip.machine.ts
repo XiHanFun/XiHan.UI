@@ -11,7 +11,7 @@ import type { TooltipAnchor, TooltipRefs, TooltipSchema } from './tooltip.types'
 import { requireOverlayKit, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
-import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
+import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED, overlayPositioningOptions } from '../shared/overlay'
 import { setupLayerTransaction, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { linkDescription, unlinkDescription } from './tooltip.delegate'
 import { pageTooltipGroup } from './tooltip.group'
@@ -87,6 +87,8 @@ export const tooltipMachine = createMachine({
     focusOpened: cell<boolean>(() => ({ defaultValue: false })),
     instant: cell<boolean>(() => ({ defaultValue: false })),
     anchor: cell<TooltipAnchor | null>(() => ({ defaultValue: null })),
+    // 首帧即展开也算展开过：lazyMount 下内容照常首屏就在
+    opened: cell<boolean>(() => ({ defaultValue: openAtMount(prop) })),
   }),
   refs: () => ({
     config: null,
@@ -146,6 +148,7 @@ export const tooltipMachine = createMachine({
     // 复合态：两个子态下浮层都可见，定位挂在这一层，指针在两态间来回不重挂
     visible: {
       initial: 'open',
+      entry: ['markOpened'],
       effects: ['trackPosition', 'trackGroup', 'trackDescription'],
       exit: ['clearInstant'],
       on: {
@@ -211,6 +214,10 @@ export const tooltipMachine = createMachine({
         },
       }),
       clearOpenedAtMount,
+      markOpened: ({ context }) => {
+        if (!context.get('opened'))
+          context.set('opened', true)
+      },
       markFocusOpened: ({ context }) => context.set('focusOpened', true),
       clearFocusOpened: ({ context }) => context.set('focusOpened', false),
       // 热窗口内打开即接替：不播进场。打开那一刻判，收起即清
@@ -289,6 +296,8 @@ export const tooltipMachine = createMachine({
           dir: prop('dir'),
           // 引擎量不到箭头，尺寸与让开圆角的余量由这里交进去
           arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
+          // 作者写了的翻面开关与碰撞边界原样交给引擎
+          ...overlayPositioningOptions({ flip: prop('flip'), boundary: prop('boundary') }),
         }),
         onResult: result => context.set('position', result),
       }),

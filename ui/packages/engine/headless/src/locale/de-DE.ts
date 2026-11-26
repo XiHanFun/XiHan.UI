@@ -560,6 +560,7 @@ const translations = {
     },
   },
   'pin-input': { input: (index, length) => `Zeichen ${index} von ${length}` },
+  'popconfirm': { ok: 'OK', cancel: 'Abbrechen' },
   'popover': { close: 'Schließen' },
   'progress': { segmentValueText: ({ value, label }) => `${value}, ${label}` },
   'prompt-input': { send: 'Senden', stop: 'Generierung stoppen' },

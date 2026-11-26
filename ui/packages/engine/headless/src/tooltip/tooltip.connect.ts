@@ -10,6 +10,7 @@ import type { TooltipApi, TooltipSchema } from './tooltip.types'
 import { dataAttr } from '@xihan-ui/core'
 import { formatHotkeyLabel, HOTKEY_TEXT_EN_US } from '@xihan-ui/core/hotkey'
 import { TOOLTIP_EN_US } from '../locale/en-US'
+import { disclosureContentMounted } from '../shared/disclosure-mount'
 import { overlayArrowVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { resolveTranslations } from '../shared/translations'
 import { tooltipAnatomy } from './tooltip.anatomy'
@@ -63,6 +64,13 @@ export function connectTooltip<T extends PropTypes>(
     delegated: delegate !== undefined,
     text: anchor?.text ?? '',
     shortcut,
+    // 挂卸只管 content 里的内容：positioner 与 content 节点常驻，定位引擎总有节点可量
+    isContentMounted: present => disclosureContentMounted({
+      lazyMount: prop('lazyMount') ?? false,
+      unmountOnExit: prop('unmountOnExit') ?? false,
+      opened: context.get('opened'),
+      present,
+    }),
     getTriggerProps: () => delegate !== undefined
       ? normalize.element({
           ...parts.trigger.attrs,
@@ -171,7 +179,7 @@ export function connectTooltip<T extends PropTypes>(
         right: 'auto',
       },
     }),
-    // 常挂 + hidden 显隐，不卸载作者写在 content 里的节点。
+    // content 节点常挂 + hidden 显隐；里面的内容卸不卸由 isContentMounted 定。
     // content 自身不可聚焦，但必须可悬停：指针移入浮层要能撤销收起等待。
     getContentProps: () => normalize.element({
       ...parts.content.attrs,

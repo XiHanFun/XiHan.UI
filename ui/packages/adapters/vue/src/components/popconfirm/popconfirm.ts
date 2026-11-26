@@ -5,15 +5,18 @@
 
 // 提供 popconfirm 相关实现。
 
-import type { Direction, Placement, Size } from '@xihan-ui/core'
-import type { PopconfirmApi, PopconfirmConfirmErrorDetails, PopconfirmNotifiers, PopconfirmOverlayProps, PopconfirmProps } from '@xihan-ui/headless'
+import type { Direction, Placement, Size, VirtualAnchor } from '@xihan-ui/core'
+import type { PopconfirmApi, PopconfirmConfirmErrorDetails, PopconfirmNotifiers, PopconfirmOverlayProps, PopconfirmProps, PopconfirmStructureOptions, PopconfirmTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { PropsOf } from '../../runtime/props-of'
+import { popconfirmStructure } from '@xihan-ui/headless'
 import { defineComponent, h, mergeProps } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
+import { renderStructure } from '../../runtime/structure'
 import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
 import { useOverlayScrollbars } from '../../runtime/use-overlay-scrollbars'
 import { providePopconfirm, usePopconfirmContext } from './context'
@@ -32,10 +35,35 @@ export const XhPopconfirmRoot = defineComponent({
     defaultOpen: Boolean,
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
+    /** 空间不足时翻到对侧，默认 true；false 时守着 placement 那一侧。 */
+    flip: { type: Boolean, default: undefined },
+    /** 碰撞边界：浮层只在这块区域与视口的交集里摆。收元素或带 getBoundingClientRect() 的对象。 */
+    boundary: { type: Object as PropType<Element | VirtualAnchor | null> },
     /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
     dir: { type: String as PropType<Direction> },
     closeOnEscape: { type: Boolean, default: true },
     closeOnInteractOutside: { type: Boolean, default: true },
+    /** 展开后先聚焦到 content 内匹配该选择器的元素；没给或不匹配时落到第一个可聚焦元素（标准结构里是取消钮）。 */
+    initialFocus: { type: String },
+    /** 收起时把焦点归还给 trigger，默认 true。 */
+    restoreFocus: { type: Boolean, default: undefined },
+    /** 第一次打开时才挂载 content 里的内容，默认 false。 */
+    lazyMount: { type: Boolean, default: undefined },
+    /** 收起动画播完后卸载 content 里的内容，默认 false；下次打开重新挂载。 */
+    unmountOnExit: { type: Boolean, default: undefined },
+    /** 标准结构里两颗钮的缺省文字。 */
+    translations: { type: Object as PropType<Partial<PopconfirmTranslations>> },
+    // —— 不写默认插槽时的标准结构（popconfirmStructure）——
+    /** 触发按钮的文字；trigger 插槽有内容时以插槽为准。 */
+    triggerText: { type: String },
+    /** 标题文字；title 插槽有内容时以插槽为准。 */
+    title: { type: String },
+    /** 说明文字；description 插槽有内容时以插槽为准。 */
+    description: { type: String },
+    /** 确认钮的文字，缺省取语言包。 */
+    confirmText: { type: String },
+    /** 取消钮的文字，缺省取语言包。 */
+    cancelText: { type: String },
     /** 不可打开：触发器转原生 disabled，展开途中转为禁用即收起。 */
     disabled: { type: Boolean, default: undefined },
     size: { type: String as PropType<Size> },
@@ -52,9 +80,16 @@ export const XhPopconfirmRoot = defineComponent({
     'update:open': (_open: PayloadOf<PopconfirmProps, 'onOpenChange'>['open']) => true,
     'confirm-error': (_details: PopconfirmConfirmErrorDetails) => true,
     'cancel-press': () => true,
+    'exit-complete': () => true,
   },
   slots: Object as SlotsType<{
     default?: (props: PopconfirmRootSlotProps) => VNode[]
+    /** 触发按钮的内容，压过 trigger-text。 */
+    trigger?: () => VNode[]
+    /** 标题，压过 title。 */
+    title?: () => VNode[]
+    /** 说明，压过 description。 */
+    description?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const notify: PopconfirmNotifiers = {
@@ -65,17 +100,29 @@ export const XhPopconfirmRoot = defineComponent({
       onConfirm: () => props.onConfirm?.(),
       onConfirmError: details => emit('confirm-error', details),
       onCancelPress: () => { emit('cancel-press') },
+      onExitComplete: () => { emit('exit-complete') },
     }
+    // 全局配置只取文案：两颗钮的缺省文字在标准结构里读，渲染期读这份代理
+    const configured = withXhConfig('popconfirm', props)
     const ctx = usePopconfirm(props as PopconfirmOverlayProps, notify)
     providePopconfirm(ctx)
-    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
-      open: ctx.api.value.open,
-      pending: ctx.api.value.pending,
-      actionError: ctx.api.value.actionError,
-      setOpen: ctx.api.value.setOpen,
-      confirm: ctx.api.value.confirm,
-      cancel: ctx.api.value.cancel,
-    }))
+    return () => h('div', ctx.api.value.getRootProps(), slots.default
+      ? slots.default({
+          open: ctx.api.value.open,
+          pending: ctx.api.value.pending,
+          actionError: ctx.api.value.actionError,
+          setOpen: ctx.api.value.setOpen,
+          confirm: ctx.api.value.confirm,
+          cancel: ctx.api.value.cancel,
+        })
+      : renderDefaultStructure({
+          triggerText: props.triggerText,
+          title: props.title,
+          description: props.description,
+          confirmText: props.confirmText,
+          cancelText: props.cancelText,
+          translations: configured.translations,
+        }, { trigger: slots.trigger, title: slots.title, description: slots.description }))
   },
 })
 
@@ -139,7 +186,7 @@ export const XhPopconfirmContent = defineComponent({
       hidden: !ctx.visible.value || undefined,
       style: ctx.visible.value ? undefined : { display: 'none' },
       ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
-    }, slots.default?.())
+    }, ctx.api.value.isContentMounted(ctx.visible.value) ? slots.default?.() : undefined)
   },
 })
 
@@ -185,6 +232,29 @@ export const XhPopconfirmArrow = defineComponent({
     return () => h('div', ctx.api.value.getArrowProps())
   },
 })
+
+/** 标准结构里各部件对应的组件。 */
+const POPCONFIRM_PARTS = {
+  'trigger': XhPopconfirmTrigger,
+  'positioner': XhPopconfirmPositioner,
+  'content': XhPopconfirmContent,
+  'title': XhPopconfirmTitle,
+  'description': XhPopconfirmDescription,
+  'cancel-trigger': XhPopconfirmCancelTrigger,
+  'confirm-trigger': XhPopconfirmConfirmTrigger,
+  'arrow': XhPopconfirmArrow,
+}
+
+type PopconfirmSectionSlots = Readonly<Partial<Record<'trigger' | 'title' | 'description', () => VNode[]>>>
+
+/**
+ * 未写默认插槽时铺开的整套结构：照 headless 的 popconfirmStructure 渲，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 触发器、标题与说明取文字或同名插槽，取消与确认两颗钮的文字缺省取语言包。
+ */
+function renderDefaultStructure(text: Omit<PopconfirmStructureOptions, 'slotted'>, sections: PopconfirmSectionSlots): VNode[] {
+  const nodes = popconfirmStructure({ ...text, slotted: name => sections[name as keyof PopconfirmSectionSlots] != null })
+  return renderStructure(nodes, POPCONFIRM_PARTS, node => (node.slot ? sections[node.slot.name as keyof PopconfirmSectionSlots]?.() : undefined))
+}
 
 // 各组件接受的 props，与 React 同名
 export type XhPopconfirmArrowProps = PropsOf<typeof XhPopconfirmArrow>

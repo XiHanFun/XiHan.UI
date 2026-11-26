@@ -38237,6 +38237,42 @@
             },
             {
               "kind": "field",
+              "name": "flip",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "flip"
+            },
+            {
+              "kind": "field",
+              "name": "lazyMount",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "lazy-mount"
+            },
+            {
+              "kind": "field",
+              "name": "unmountOnExit",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "unmount-on-exit"
+            },
+            {
+              "kind": "field",
+              "name": "boundary",
+              "privacy": "public",
+              "type": {
+                "text": "Element | VirtualAnchor | null | undefined"
+              },
+              "description": "碰撞边界：卡片只在这块区域与视口的交集里摆。收元素或带 getBoundingClientRect() 的对象，只作为 property 暴露。"
+            },
+            {
+              "kind": "field",
               "name": "openDelay",
               "privacy": "public",
               "type": {
@@ -38322,6 +38358,14 @@
               "privacy": "private",
               "default": "null",
               "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
+              "name": "lazyContent",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new LazyContent({ stash: false })",
+              "description": "content 里 `<template>` 写的内容按 headless 的挂卸判定克隆进来或撤走；没写模板的作者节点照旧常驻"
             },
             {
               "kind": "field",
@@ -38463,6 +38507,30 @@
               "description": "浮层与锚点的间距（px），默认 8",
               "name": "offset",
               "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "空间不足时翻到对侧，默认 true；写 \"false\" 时守着 placement 那一侧",
+              "name": "flip",
+              "fieldName": "flip"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "第一次展开时才挂载：content 里写一个 `<template>`，第一次展开才克隆、之后常驻。没写模板的作者节点始终常驻",
+              "name": "lazy-mount",
+              "fieldName": "lazyMount"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "收起动画播完后撤走 content 里 `<template>` 克隆出的内容，下次展开重新克隆，默认 false",
+              "name": "unmount-on-exit",
+              "fieldName": "unmountOnExit"
             },
             {
               "type": {
@@ -54120,7 +54188,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-popconfirm>`：Light-DOM 行为宿主：作者写 root / trigger / positioner / content / ... 角色节点，\n元素运行 popover 状态机（开合、定位、消解层、焦点域都在那里）并把 connectPopconfirm 产出接上。\n确认与取消不进入状态机，点击时先派发对应事件再请求收起。\n\n浮层不陷入焦点，也没有关闭按钮：答复由 confirm-trigger / cancel-trigger 两个按钮给出，\nEscape 与层外交互只收起浮层、只派发 open-change。",
+          "description": "`<xh-popconfirm>`：Light-DOM 行为宿主：作者写 root / trigger / positioner / content / ... 角色节点，\n元素运行 popover 状态机（开合、定位、消解层、焦点域都在那里）并把 connectPopconfirm 产出接上。\n确认与取消不进入状态机，点击时先派发对应事件再请求收起。\n\n浮层不陷入焦点，也没有关闭按钮：答复由 confirm-trigger / cancel-trigger 两个按钮给出，\nEscape 与层外交互只收起浮层、只派发 open-change。\n\n不写部件（或只写 root）时元素按标准结构生成：trigger-text、title-text、description 几个属性（或宿主直接子节点上写\n`slot=\"trigger\"`、`slot=\"title\"`、`slot=\"description\"` 的节点）给出触发器、标题与说明，取消与确认两颗钮的文字\n取 cancel-text、confirm-text，没写时取语言包。",
           "name": "XhPopconfirmElement",
           "cssParts": [
             {
@@ -54177,6 +54245,15 @@
               },
               "static": true,
               "default": "{ anatomy: popconfirmAnatomy, meta: popconfirmMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhPopconfirmElement>"
+              },
+              "static": true,
+              "default": "{ build: host => popconfirmStructure({ ...(host.triggerText === undefined ? {} : { triggerText: host.triggerText }), ...(host.titleText === undefined ? {} : { title: host.titleText }), ...(host.description === undefined ? {} : { description: host.description }), ...(host.confirmText === undefined ? {} : { confirmText: host.confirmText }), ...(host.cancelText === undefined ? {} : { cancelText: host.cancelText }), translations: host.structureTranslations(), slotted: (name, key) => host.slotted(name, key), }), }"
             },
             {
               "kind": "field",
@@ -54261,6 +54338,114 @@
             },
             {
               "kind": "field",
+              "name": "flip",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "flip"
+            },
+            {
+              "kind": "field",
+              "name": "initialFocus",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "initial-focus"
+            },
+            {
+              "kind": "field",
+              "name": "restoreFocus",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "restore-focus"
+            },
+            {
+              "kind": "field",
+              "name": "lazyMount",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "lazy-mount"
+            },
+            {
+              "kind": "field",
+              "name": "unmountOnExit",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "unmount-on-exit"
+            },
+            {
+              "kind": "field",
+              "name": "triggerText",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "trigger-text"
+            },
+            {
+              "kind": "field",
+              "name": "titleText",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "title-text"
+            },
+            {
+              "kind": "field",
+              "name": "description",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "description"
+            },
+            {
+              "kind": "field",
+              "name": "confirmText",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "confirm-text"
+            },
+            {
+              "kind": "field",
+              "name": "cancelText",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "cancel-text"
+            },
+            {
+              "kind": "field",
+              "name": "boundary",
+              "privacy": "public",
+              "type": {
+                "text": "Element | VirtualAnchor | null | undefined"
+              },
+              "description": "碰撞边界：浮层只在这块区域与视口的交集里摆。收元素或带 getBoundingClientRect() 的对象，只作为 property 暴露。"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<PopconfirmTranslations> | undefined"
+              },
+              "description": "标准结构里两颗钮的缺省文字；手写部件时按钮文字是作者写在节点里的内容。只作为 property 暴露。"
+            },
+            {
+              "kind": "field",
               "name": "idGen",
               "type": {
                 "text": "IdGenerator"
@@ -54301,6 +54486,14 @@
               "privacy": "private",
               "default": "null",
               "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
+              "name": "lazyContent",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new LazyContent({ stash: false })",
+              "description": "content 里 `<template>` 写的内容按 headless 的挂卸判定克隆进来或撤走；没写模板的作者节点照旧常驻"
             },
             {
               "kind": "field",
@@ -54397,6 +54590,17 @@
             },
             {
               "kind": "method",
+              "name": "structureTranslations",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<PopconfirmTranslations> | undefined"
+                }
+              },
+              "description": "标准结构里两颗钮的缺省文字：作者写在元素上的那份并上全局配置里这一桶。"
+            },
+            {
+              "kind": "method",
               "name": "ensureConfig",
               "privacy": "private",
               "return": {
@@ -54477,6 +54681,13 @@
             }
           ],
           "events": [
+            {
+              "name": "exit-complete",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "退场动画播完、本层资源全部释放；卸载和退场途中重开不派发"
+            },
             {
               "description": "open 状态变化；detail 为 `{ open: boolean }`",
               "name": "open-change",
@@ -54572,6 +54783,86 @@
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "空间不足时翻到对侧，默认 true；写 \"false\" 时守着 placement 那一侧",
+              "name": "flip",
+              "fieldName": "flip"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "展开后先聚焦到 content 内匹配此选择器的元素；没给或不匹配时落到第一个可聚焦元素",
+              "name": "initial-focus",
+              "fieldName": "initialFocus"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "收起时把焦点归还给 trigger，默认 true；写 \"false\" 关闭",
+              "name": "restore-focus",
+              "fieldName": "restoreFocus"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "第一次打开时才挂载：content 里写一个 `<template>`，第一次打开才克隆、之后常驻。没写模板的作者节点始终常驻",
+              "name": "lazy-mount",
+              "fieldName": "lazyMount"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "收起动画播完后撤走 content 里 `<template>` 克隆出的内容，下次打开重新克隆，默认 false",
+              "name": "unmount-on-exit",
+              "fieldName": "unmountOnExit"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标准结构里触发按钮的文字",
+              "name": "trigger-text",
+              "fieldName": "triggerText"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标准结构里的标题文字。不用 HTML 全局属性 title：写在宿主上会出浏览器原生提示",
+              "name": "title-text",
+              "fieldName": "titleText"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标准结构里的说明文字",
+              "name": "description",
+              "fieldName": "description"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标准结构里确认钮的文字，缺省取语言包",
+              "name": "confirm-text",
+              "fieldName": "confirmText"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标准结构里取消钮的文字，缺省取语言包",
+              "name": "cancel-text",
+              "fieldName": "cancelText"
             }
           ],
           "superclass": {
@@ -54818,6 +55109,51 @@
             },
             {
               "kind": "field",
+              "name": "initialFocus",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "initial-focus"
+            },
+            {
+              "kind": "field",
+              "name": "restoreFocus",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "restore-focus"
+            },
+            {
+              "kind": "field",
+              "name": "lazyMount",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "lazy-mount"
+            },
+            {
+              "kind": "field",
+              "name": "unmountOnExit",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "unmount-on-exit"
+            },
+            {
+              "kind": "field",
+              "name": "flip",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "flip"
+            },
+            {
+              "kind": "field",
               "name": "closeOnEscape",
               "privacy": "public",
               "type": {
@@ -54857,9 +55193,18 @@
               "name": "anchor",
               "privacy": "public",
               "type": {
-                "text": "HTMLElement | null | undefined"
+                "text": "HTMLElement | VirtualAnchor | null | undefined"
               },
-              "description": "外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger；用于由别处的按钮受控打开浮层，此时通常不写 trigger。\n展开期间它带 aria-haspopup、aria-expanded、aria-controls，收起或换锚点时还原；点它算层内交互。只作为 property 暴露。"
+              "description": "外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger；用于由别处的按钮受控打开浮层，此时通常不写 trigger。\n展开期间它带 aria-haspopup、aria-expanded、aria-controls，收起或换锚点时还原；点它算层内交互。只作为 property 暴露。\n也收带 getBoundingClientRect() 的虚拟锚点（指针落点、文本选区），每次定位现读矩形，这时焦点归还给 trigger。"
+            },
+            {
+              "kind": "field",
+              "name": "boundary",
+              "privacy": "public",
+              "type": {
+                "text": "Element | VirtualAnchor | null | undefined"
+              },
+              "description": "碰撞边界：浮层只在这块区域与视口的交集里摆。收元素或带 getBoundingClientRect() 的对象，只作为 property 暴露。"
             },
             {
               "kind": "field",
@@ -54912,6 +55257,14 @@
               "privacy": "private",
               "default": "null",
               "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
+              "name": "lazyContent",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new LazyContent({ stash: false })",
+              "description": "content 里 `<template>` 写的内容按 headless 的挂卸判定克隆进来或撤走；没写模板的作者节点照旧常驻"
             },
             {
               "kind": "field",
@@ -55033,6 +55386,13 @@
           ],
           "events": [
             {
+              "name": "exit-complete",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "退场动画播完、本层资源全部释放；卸载和退场途中重开不派发"
+            },
+            {
               "description": "open 状态变化；detail 为 `{ open: boolean }`",
               "name": "open-change",
               "type": {
@@ -55088,6 +55448,46 @@
               "description": "模态浮层陷入焦点并回绕 Tab，默认 false",
               "name": "modal",
               "fieldName": "modal"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "展开后先聚焦到 content 内匹配此选择器的元素；没给或不匹配时落到第一个可聚焦元素",
+              "name": "initial-focus",
+              "fieldName": "initialFocus"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "收起时把焦点归还给 trigger（或元素锚点），默认 true；写 \"false\" 关闭",
+              "name": "restore-focus",
+              "fieldName": "restoreFocus"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "第一次打开时才挂载：content 里写一个 `<template>`，第一次打开才克隆、之后常驻。没写模板的作者节点始终常驻",
+              "name": "lazy-mount",
+              "fieldName": "lazyMount"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "收起动画播完后撤走 content 里 `<template>` 克隆出的内容，下次打开重新克隆，默认 false",
+              "name": "unmount-on-exit",
+              "fieldName": "unmountOnExit"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "空间不足时翻到对侧，默认 true；写 \"false\" 时守着 placement 那一侧",
+              "name": "flip",
+              "fieldName": "flip"
             },
             {
               "type": {
@@ -79044,7 +79444,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tooltip>`：Light-DOM 行为宿主：作者写 trigger / positioner / content / arrow 角色节点，\n元素运行 tooltip 状态机并把 connect 产出接上。浮层坐标由本元素创建的定位引擎计算，\n经 refs 交给状态机的定位效应；引擎或角色节点缺席时状态机照常转移，只是不产出坐标。",
+          "description": "`<xh-tooltip>`：Light-DOM 行为宿主：作者写 trigger / positioner / content / arrow 角色节点，\n元素运行 tooltip 状态机并把 connect 产出接上。浮层坐标由本元素创建的定位引擎计算，\n经 refs 交给状态机的定位效应；引擎或角色节点缺席时状态机照常转移，只是不产出坐标。\n\n不写部件时元素按标准结构生成：trigger-text 属性（或宿主直接子节点上写 `slot=\"trigger\"` 的节点）给出触发器，\ncontent 属性（或 `slot=\"content\"` 的节点）给出提示文字，content 里末尾再生成箭头。",
           "name": "XhTooltipElement",
           "cssParts": [
             {
@@ -79092,6 +79492,15 @@
             },
             {
               "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhTooltipElement>"
+              },
+              "static": true,
+              "default": "{ rootless: true, build: host => tooltipStructure({ ...(host.triggerText === undefined ? {} : { triggerText: host.triggerText }), ...(host.content === undefined ? {} : { content: host.content }), // 空串与没写一样，不进委托 delegated: Boolean(host.delegate), slotted: (name, key) => host.slotted(name, key), }), }"
+            },
+            {
+              "kind": "field",
               "name": "exit",
               "type": {
                 "text": "OverlayExit | null"
@@ -79135,6 +79544,60 @@
                 "text": "number | undefined"
               },
               "attribute": "offset"
+            },
+            {
+              "kind": "field",
+              "name": "flip",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "flip"
+            },
+            {
+              "kind": "field",
+              "name": "lazyMount",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "lazy-mount"
+            },
+            {
+              "kind": "field",
+              "name": "unmountOnExit",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "unmount-on-exit"
+            },
+            {
+              "kind": "field",
+              "name": "triggerText",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "trigger-text"
+            },
+            {
+              "kind": "field",
+              "name": "content",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "content"
+            },
+            {
+              "kind": "field",
+              "name": "boundary",
+              "privacy": "public",
+              "type": {
+                "text": "Element | VirtualAnchor | null | undefined"
+              },
+              "description": "碰撞边界：提示只在这块区域与视口的交集里摆。收元素或带 getBoundingClientRect() 的对象，只作为 property 暴露。"
             },
             {
               "kind": "field",
@@ -79253,6 +79716,14 @@
               "readonly": true,
               "default": "new WeakMap()",
               "description": "委托模式下生成在 content 里的 text 与 shortcut。"
+            },
+            {
+              "kind": "field",
+              "name": "lazyContent",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new LazyContent({ stash: false })",
+              "description": "content 里 `<template>` 写的内容按 headless 的挂卸判定克隆进来或撤走；没写模板的作者节点照旧常驻"
             },
             {
               "kind": "field",
@@ -79394,9 +79865,15 @@
                   "type": {
                     "text": "TooltipApi"
                   }
+                },
+                {
+                  "name": "mounted",
+                  "type": {
+                    "text": "boolean"
+                  }
                 }
               ],
-              "description": "委托模式下在 content 里生成 text 与 shortcut，排在作者写的节点（箭头）之后；没有快捷键时不生成 shortcut，退出委托时都摘掉。"
+              "description": "委托模式下在 content 里生成 text 与 shortcut，排在作者写的节点（箭头）之后；没有快捷键时不生成 shortcut，\n退出委托或内容该卸时都摘掉。只认自己这一份生成标记：标准结构在 content 里生成的箭头不归这里管。"
             }
           ],
           "events": [
@@ -79440,6 +79917,46 @@
               "description": "浮层与锚点的间距（px），默认 8",
               "name": "offset",
               "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "空间不足时翻到对侧，默认 true；写 \"false\" 时守着 placement 那一侧",
+              "name": "flip",
+              "fieldName": "flip"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "第一次展开时才挂载：content 里写一个 `<template>`，第一次展开才克隆、之后常驻；委托模式下组件铺的文字与快捷键同样等到那时。没写模板的作者节点始终常驻",
+              "name": "lazy-mount",
+              "fieldName": "lazyMount"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "收起动画播完后撤走 content 里 `<template>` 克隆出的内容（及委托模式下组件铺的文字与快捷键），下次展开重新铺，默认 false",
+              "name": "unmount-on-exit",
+              "fieldName": "unmountOnExit"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标准结构里触发按钮的文字",
+              "name": "trigger-text",
+              "fieldName": "triggerText"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标准结构里的提示文字",
+              "name": "content",
+              "fieldName": "content"
             },
             {
               "type": {

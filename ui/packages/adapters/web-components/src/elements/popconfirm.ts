@@ -5,17 +5,19 @@
 
 // 提供 popconfirm 相关实现。
 
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size } from '@xihan-ui/core'
-import type { PopconfirmConfirmErrorDetails, PopconfirmIntents, PopoverOpenChangeDetails, PopoverSchema } from '@xihan-ui/headless'
+import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, VirtualAnchor } from '@xihan-ui/core'
+import type { PopconfirmConfirmErrorDetails, PopconfirmIntents, PopconfirmTranslations, PopoverOpenChangeDetails, PopoverSchema } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectPopconfirm, popconfirmAnatomy, popconfirmMeta, popoverMachine } from '@xihan-ui/headless'
+import { connectPopconfirm, popconfirmAnatomy, popconfirmMeta, popconfirmStructure, popoverMachine } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
 import { createOverlayExit, withoutHidden } from '../overlay-exit'
+import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -32,6 +34,10 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * 浮层不陷入焦点，也没有关闭按钮：答复由 confirm-trigger / cancel-trigger 两个按钮给出，
  * Escape 与层外交互只收起浮层、只派发 open-change。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：trigger-text、title-text、description 几个属性（或宿主直接子节点上写
+ * `slot="trigger"`、`slot="title"`、`slot="description"` 的节点）给出触发器、标题与说明，取消与确认两颗钮的文字
+ * 取 cancel-text、confirm-text，没写时取语言包。
+ *
  * @customElement xh-popconfirm
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
@@ -42,12 +48,23 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @attr {boolean} close-on-escape - Esc 关闭，默认 true；写 close-on-escape="false" 关闭
  * @attr {boolean} close-on-interact-outside - 层外交互关闭，默认 true；写 "false" 关闭
  * @attr {'sm'|'md'|'lg'} size - 尺寸
+ * @attr {boolean} flip - 空间不足时翻到对侧，默认 true；写 "false" 时守着 placement 那一侧
+ * @attr {string} initial-focus - 展开后先聚焦到 content 内匹配此选择器的元素；没给或不匹配时落到第一个可聚焦元素
+ * @attr {boolean} restore-focus - 收起时把焦点归还给 trigger，默认 true；写 "false" 关闭
+ * @attr {boolean} lazy-mount - 第一次打开时才挂载：content 里写一个 `<template>`，第一次打开才克隆、之后常驻。没写模板的作者节点始终常驻
+ * @attr {boolean} unmount-on-exit - 收起动画播完后撤走 content 里 `<template>` 克隆出的内容，下次打开重新克隆，默认 false
+ * @attr {string} trigger-text - 标准结构里触发按钮的文字
+ * @attr {string} title-text - 标准结构里的标题文字。不用 HTML 全局属性 title：写在宿主上会出浏览器原生提示
+ * @attr {string} description - 标准结构里的说明文字
+ * @attr {string} confirm-text - 标准结构里确认钮的文字，缺省取语言包
+ * @attr {string} cancel-text - 标准结构里取消钮的文字，缺省取语言包
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires confirm - 点击了确认按钮；随后浮层收起。异步门经 confirmAction 属性：
  *   事件拿不到监听函数的返回值，给元素赋 `confirmAction = () => thenable` 即挂起确认门
  *   （浮层等兑现才收、确认按钮转圈，拒绝留在原地），confirm 事件照发只作通知
  * @fires confirm-error - 确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因
  * @fires cancel-press - 点击了取消按钮；随后浮层收起。Escape 与层外交互只发 open-change
+ * @fires exit-complete - 退场动画播完、本层资源全部释放；卸载和退场途中重开不派发
  * @csspart root - 包裹触发器的根容器，承载 data-state
  * @csspart trigger - 触发按钮（aria-haspopup / aria-expanded / aria-controls 所在），同时是定位锚点
  * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
@@ -64,6 +81,18 @@ export class XhPopconfirmElement extends XhPortalHostElement {
 
   static override partContract = { anatomy: popconfirmAnatomy, meta: popconfirmMeta }
 
+  static override structure: ElementStructure<XhPopconfirmElement> = {
+    build: host => popconfirmStructure({
+      ...(host.triggerText === undefined ? {} : { triggerText: host.triggerText }),
+      ...(host.titleText === undefined ? {} : { title: host.titleText }),
+      ...(host.description === undefined ? {} : { description: host.description }),
+      ...(host.confirmText === undefined ? {} : { confirmText: host.confirmText }),
+      ...(host.cancelText === undefined ? {} : { cancelText: host.cancelText }),
+      translations: host.structureTranslations(),
+      slotted: (name, key) => host.slotted(name, key),
+    }),
+  }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     open: { converter: BOOLEAN_CONVERTER },
@@ -77,6 +106,19 @@ export class XhPopconfirmElement extends XhPortalHostElement {
     closeOnInteractOutside: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-interact-outside' },
     disabled: { converter: BOOLEAN_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    flip: { converter: BOOLEAN_CONVERTER },
+    initialFocus: { converter: STRING_CONVERTER, attribute: 'initial-focus' },
+    restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },
+    lazyMount: { converter: BOOLEAN_CONVERTER, attribute: 'lazy-mount' },
+    unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
+    triggerText: { converter: STRING_CONVERTER, attribute: 'trigger-text' },
+    titleText: { converter: STRING_CONVERTER, attribute: 'title-text' },
+    description: { converter: STRING_CONVERTER },
+    confirmText: { converter: STRING_CONVERTER, attribute: 'confirm-text' },
+    cancelText: { converter: STRING_CONVERTER, attribute: 'cancel-text' },
+    // 对象值进不了属性，只作为 property 暴露
+    boundary: { attribute: false },
+    translations: { attribute: false },
   }
 
   declare open?: boolean
@@ -88,6 +130,20 @@ export class XhPopconfirmElement extends XhPortalHostElement {
   declare closeOnInteractOutside?: boolean
   declare disabled?: boolean
   declare size?: Size
+  declare flip?: boolean
+  declare initialFocus?: string
+  declare restoreFocus?: boolean
+  declare lazyMount?: boolean
+  declare unmountOnExit?: boolean
+  declare triggerText?: string
+  declare titleText?: string
+  declare description?: string
+  declare confirmText?: string
+  declare cancelText?: string
+  /** 碰撞边界：浮层只在这块区域与视口的交集里摆。收元素或带 getBoundingClientRect() 的对象，只作为 property 暴露。 */
+  declare boundary?: Element | VirtualAnchor | null
+  /** 标准结构里两颗钮的缺省文字；手写部件时按钮文字是作者写在节点里的内容。只作为 property 暴露。 */
+  declare translations?: Partial<PopconfirmTranslations>
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly popconfirmScope = createScope(() => this, this.idGen)
@@ -95,6 +151,8 @@ export class XhPopconfirmElement extends XhPortalHostElement {
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  /** content 里 `<template>` 写的内容按 headless 的挂卸判定克隆进来或撤走；没写模板的作者节点照旧常驻 */
+  private readonly lazyContent = new LazyContent({ stash: false })
   private readonly portal = this.createAnchoredPortalController({
     name: 'Popconfirm',
     config: () => this.config,
@@ -171,7 +229,13 @@ export class XhPopconfirmElement extends XhPortalHostElement {
       defaultOpen: this.defaultOpen ?? false,
       placement: this.placement,
       offset: this.offset,
+      flip: this.flip,
+      boundary: this.boundary,
       dir: this.direction,
+      initialFocus: this.initialFocus,
+      restoreFocus: this.restoreFocus,
+      lazyMount: this.lazyMount,
+      unmountOnExit: this.unmountOnExit,
       closeOnEscape: this.pendingState ? false : this.closeOnEscape,
       closeOnInteractOutside: this.pendingState ? false : this.closeOnInteractOutside,
       disabled: this.disabled,
@@ -179,7 +243,13 @@ export class XhPopconfirmElement extends XhPortalHostElement {
       // content 只引用作者写了的标题与说明
       parts: renderedTitleDescription(this.getPart('title'), this.getPart('description')),
       onOpenChange: this.notify,
+      onExitComplete: () => this.dispatchEvent(new CustomEvent('exit-complete', { bubbles: true, composed: true })),
     }
+  }
+
+  /** 标准结构里两颗钮的缺省文字：作者写在元素上的那份并上全局配置里这一桶。 */
+  private structureTranslations(): Partial<PopconfirmTranslations> | undefined {
+    return this.configured('popconfirm', { translations: this.translations }).translations
   }
 
   private ensureConfig(): void {
@@ -279,6 +349,8 @@ export class XhPopconfirmElement extends XhPortalHostElement {
     exit.track(content)
     exit.update(api.open)
     this.setPartHidden(content, !exit.visible, { attribute: true })
+    // 写在 content 里 <template> 中的内容按 headless 的判定克隆或撤走；新挂上的部件由部件观察器补一轮 wire 接上属性
+    this.lazyContent.sync(content, api.isContentMounted(exit.visible))
     this.bars.wire()
     this.portal.sync(exit.visible)
   }

@@ -5,7 +5,7 @@
 
 // 提供 hover card 相关实现。
 
-import type { Direction, Placement, Size } from '@xihan-ui/core'
+import type { Direction, Placement, Size, VirtualAnchor } from '@xihan-ui/core'
 import type { HoverCardApi, HoverCardSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
@@ -30,6 +30,14 @@ export interface XhHoverCardRootProps extends Omit<ComponentPropsWithRef<'div'>,
   defaultOpen?: boolean
   placement?: Placement
   offset?: number
+  /** 空间不足时翻到对侧，默认 true；false 时守着 placement 那一侧。 */
+  flip?: boolean
+  /** 碰撞边界：卡片只在这块区域与视口的交集里摆。收元素或带 getBoundingClientRect() 的对象。 */
+  boundary?: Element | VirtualAnchor | null
+  /** 第一次展开时才挂载 content 里的内容，默认 false。 */
+  lazyMount?: boolean
+  /** 收起动画播完后卸载 content 里的内容，默认 false；下次展开重新挂载。 */
+  unmountOnExit?: boolean
   /** 悬停进入到展开的等待毫秒。 */
   openDelay?: number
   /** 指针离开到收起的等待毫秒。 */
@@ -48,6 +56,10 @@ export function XhHoverCardRoot({
   defaultOpen,
   placement,
   offset,
+  flip,
+  boundary,
+  lazyMount,
+  unmountOnExit,
   openDelay,
   closeDelay,
   dir,
@@ -62,6 +74,10 @@ export function XhHoverCardRoot({
     defaultOpen,
     placement,
     offset,
+    flip,
+    boundary,
+    lazyMount,
+    unmountOnExit,
     openDelay,
     closeDelay,
     dir,
@@ -150,7 +166,7 @@ export function XhHoverCardContent({ children, ...rest }: XhHoverCardContentProp
         },
       )}
     >
-      {children}
+      {ctx.api.isContentMounted(ctx.rendered) ? children : null}
     </div>
   )
 }

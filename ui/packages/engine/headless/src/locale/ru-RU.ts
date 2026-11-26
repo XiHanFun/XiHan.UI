@@ -576,6 +576,7 @@ const translations = {
     },
   },
   'pin-input': { input: (index, length) => `Символ ${index} из ${length}` },
+  'popconfirm': { ok: 'ОК', cancel: 'Отмена' },
   'popover': { close: 'Закрыть' },
   'progress': { segmentValueText: ({ value, label }) => `${value}, ${label}` },
   'prompt-input': { send: 'Отправить', stop: 'Остановить генерацию' },

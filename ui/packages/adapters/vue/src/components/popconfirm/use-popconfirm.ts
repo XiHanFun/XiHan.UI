@@ -58,13 +58,20 @@ export function usePopconfirm(
     defaultOpen: props.defaultOpen,
     placement: props.placement,
     offset: props.offset,
+    flip: props.flip,
+    boundary: props.boundary,
     dir: props.dir,
     disabled: props.disabled,
+    initialFocus: props.initialFocus,
+    restoreFocus: props.restoreFocus,
+    lazyMount: props.lazyMount,
+    unmountOnExit: props.unmountOnExit,
     closeOnEscape: pending.value ? false : props.closeOnEscape,
     closeOnInteractOutside: pending.value ? false : props.closeOnInteractOutside,
     size: props.size,
     parts: presence.parts.value,
     onOpenChange: notify?.onOpenChange,
+    onExitComplete: notify?.onExitComplete,
   }), scope)
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」

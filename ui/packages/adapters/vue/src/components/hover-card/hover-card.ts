@@ -5,7 +5,7 @@
 
 // 提供 hover card 相关实现。
 
-import type { Direction, Placement, Size } from '@xihan-ui/core'
+import type { Direction, Placement, Size, VirtualAnchor } from '@xihan-ui/core'
 import type { HoverCardApi, HoverCardSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -32,6 +32,14 @@ export const XhHoverCardRoot = defineComponent({
     defaultOpen: Boolean,
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
+    /** 空间不足时翻到对侧，默认 true；false 时守着 placement 那一侧。 */
+    flip: { type: Boolean, default: undefined },
+    /** 碰撞边界：卡片只在这块区域与视口的交集里摆。收元素或带 getBoundingClientRect() 的对象。 */
+    boundary: { type: Object as PropType<Element | VirtualAnchor | null> },
+    /** 第一次展开时才挂载 content 里的内容，默认 false。 */
+    lazyMount: { type: Boolean, default: undefined },
+    /** 收起动画播完后卸载 content 里的内容，默认 false；下次展开重新挂载。 */
+    unmountOnExit: { type: Boolean, default: undefined },
     openDelay: { type: Number },
     closeDelay: { type: Number },
     dir: { type: String as PropType<Direction> },
@@ -120,7 +128,7 @@ export const XhHoverCardContent = defineComponent({
       hidden: !ctx.visible.value || undefined,
       style: ctx.visible.value ? undefined : { display: 'none' },
       ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
-    }, slots.default?.())
+    }, ctx.api.value.isContentMounted(ctx.visible.value) ? slots.default?.() : undefined)
   },
 })
 

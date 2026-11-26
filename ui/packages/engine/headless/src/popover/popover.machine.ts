@@ -8,11 +8,11 @@
 import type { PositionResult } from '@xihan-ui/core'
 import type { OverlayRelease } from '../shared/overlay-shell'
 import type { PopoverPressedPart, PopoverSchema } from './popover.types'
-import { DIAGNOSTIC_CODES, reportDiagnostic, requireOverlayKit, setup } from '@xihan-ui/core'
+import { DIAGNOSTIC_CODES, reportDiagnostic, requireOverlayKit, setup, warn } from '@xihan-ui/core'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { trackExternalAnchorAria } from '../shared/external-anchor'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
-import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
+import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED, overlayAnchorElement, overlayPositioningOptions } from '../shared/overlay'
 import { createModalLayerResources, overlayCloseOnDismiss, setupLayerTransaction, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { popoverAnatomy } from './popover.anatomy'
 
@@ -20,6 +20,19 @@ import { popoverAnatomy } from './popover.anatomy'
 export const POPOVER_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_ANCHORED
 
 const { createMachine } = setup<PopoverSchema>()
+
+// 选择器写错时不让异常穿出焦点域的重试回调，回 null 走 Tab 序列
+function queryInContent(content: HTMLElement | null, selector: string): HTMLElement | null {
+  if (!content)
+    return null
+  try {
+    return content.querySelector<HTMLElement>(selector)
+  }
+  catch {
+    warn(false, `popover: initialFocus 不是合法的选择器：${selector}`)
+    return null
+  }
+}
 
 export const popoverMachine = createMachine({
   name: 'popover',
@@ -31,6 +44,8 @@ export const popoverMachine = createMachine({
     // 按压通道：正被按住的那颗按钮，与开合无关
     pressed: cell<PopoverPressedPart | null>(() => ({ defaultValue: null })),
     openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
+    // 首帧即展开也算打开过：lazyMount 下内容照常首屏就在
+    opened: cell<boolean>(() => ({ defaultValue: openAtMount(prop) })),
   }),
   refs: () => ({
     config: null,
@@ -83,6 +98,7 @@ export const popoverMachine = createMachine({
       },
     },
     open: {
+      entry: ['markOpened'],
       // 定位只服务于逻辑展开；行为层另由顶层效应保留到真实退场结束。
       effects: ['trackPosition'],
       // 收起即松开：按住 Enter 关掉浮层，里面那颗按钮随内容一起藏起，不会再来 keyup 或 blur
@@ -120,6 +136,10 @@ export const popoverMachine = createMachine({
       },
       releasePress: ({ context }) => context.set('pressed', null),
       clearOpenedAtMount,
+      markOpened: ({ context }) => {
+        if (!context.get('opened'))
+          context.set('opened', true)
+      },
       // Tab 与层外交互是「焦点已经去别处了」，再抢回触发器会把用户拽回来；其余出口一律归还
       setReturnFocus: ({ context, event }) => {
         const e = event.current()
@@ -171,12 +191,15 @@ export const popoverMachine = createMachine({
           // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高。
           // 这台机器由 popconfirm 共用，落不落槽各自的 connect 说了算
           size: true,
+          // 作者写了的翻面开关与碰撞边界原样交给引擎
+          ...overlayPositioningOptions({ flip: prop('flip'), boundary: prop('boundary') }),
         }),
         onResult: result => context.set('position', result),
       }),
-      // 外部锚点上的 aria-haspopup / aria-expanded / aria-controls：展开期间写上，收起或换锚点时还原
+      // 外部锚点上的 aria-haspopup / aria-expanded / aria-controls：展开期间写上，收起或换锚点时还原。
+      // 虚拟锚点只给得出矩形，没有节点可写
       trackAnchorAria: ({ prop, state, scope, track }) => trackExternalAnchorAria({
-        anchor: () => prop('anchor'),
+        anchor: () => overlayAnchorElement(prop('anchor')),
         open: () => state.get() === 'open',
         haspopup: 'dialog',
         controls: () => scope.ids('popover', 'content').content,
@@ -220,14 +243,20 @@ export const popoverMachine = createMachine({
             // 非模态浮层不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
             trapped: () => (prop('modal') ?? false) && state.get() === 'open',
             loop: () => prop('modal') ?? false,
-            // 缺省返回 null，落点仍由焦点域的 Tab 序列探测决定；
-            // 浮层里排着集合的组合件填这一条把落点收口（见 getInitialFocusEl）。
+            // 作者给了选择器先按它在 content 里找；没给或没找到时交回 getInitialFocusEl：
+            // 缺省返回 null，落点仍由焦点域的 Tab 序列探测决定；浮层里排着集合的组合件填这一条把落点收口。
             // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试到 DOM 就位
-            initialFocus: () => refs.get('getInitialFocusEl')(),
-            restoreFocus: () => context.get('returnFocus'),
+            initialFocus: () => {
+              const selector = prop('initialFocus')
+              const found = selector === undefined ? null : queryInContent(refs.get('getContentEl')(), selector)
+              return found ?? refs.get('getInitialFocusEl')()
+            },
+            // 作者关掉归还就一律不还；开着时 Tab 与层外交互收起也不还（焦点已经去别处了）
+            restoreFocus: () => (prop('restoreFocus') ?? true) && context.get('returnFocus'),
             // 归还落点显式给锚点：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
-            // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上。给了外部锚点就还给它
-            restoreTarget: () => prop('anchor') ?? refs.get('getAnchorEl')(),
+            // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上。给了元素锚点就还给它，
+            // 虚拟锚点接不了焦点，还给 trigger；两者都没有时回落到快照
+            restoreTarget: () => overlayAnchorElement(prop('anchor')) ?? refs.get('getAnchorEl')(),
           })
           reactivateFocus = focus.reactivate
           returnFocusNow = focus.returnFocus
@@ -294,6 +323,8 @@ export const popoverMachine = createMachine({
           },
           // 关闭时撤下的背景失活在重开时补回
           onReopen: () => refs.get('syncModalResources')?.(),
+          // 退场播完、层与焦点域都释放之后再通知：作者在这里做的清理不会撞上还没撤的资源
+          onReleased: () => prop('onExitComplete')?.(),
           flush,
           scope: config.scope,
         })

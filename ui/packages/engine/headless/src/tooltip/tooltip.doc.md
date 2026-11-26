@@ -15,6 +15,7 @@
 
 ## 特性
 
+- 不写结构时按标准结构铺（Vue 不写默认插槽、React 不给 children、Web Components 不写部件），三端出自同一个结构函数：触发按钮，定位层里的 content 先是装提示文字的 `text`、再是箭头。触发按钮的内容取 `trigger-text`（React 是 `trigger`）或 `trigger` 插槽，提示文字取 `content` 或 `content` 插槽；Web Components 是 `trigger-text`、`content` 两个属性与宿主直接子节点上的 `slot="trigger"` / `slot="content"`。触发器总是一颗库生成的按钮，要借用自己的控件当触发器（`asChild`）时手写部件。
 - `openDelay` / `closeDelay` 防止指针经过时连续闪烁。
 - 同页的提示共用一个接替窗口（`skipDelay`，默认 300ms）：另一个提示还开着、或刚收起一个不到这么久时，指向下一个不再等 `openDelay`、也不播进场，直接接替，上一个随之收起。横扫一排工具栏钮时提示一个个跟上。
 - `XhTooltipProvider`（Web Components 为 `<xh-tooltip-provider>` 容器元素）把子树里的提示放进同一组：组内共用接替窗口、同一时刻只开一个，不同组之间互不接替、互不收起；组上的 `openDelay` / `closeDelay` / `skipDelay` 是组内提示的缺省，提示自己写了就以提示为准。没放进 Provider 的提示同属页面级的那一组。Provider 自身不渲染节点，Web Components 那个元素是 `display: contents`。
@@ -27,6 +28,8 @@
   - 提示文字与锚点的名字不同（写了 `data-xh-tooltip`）时，锚点的 `aria-describedby` 引用 `text`；相同就不引用，读屏不念两遍。快捷键只由锚点自己的 `aria-keyshortcuts` 报给读屏。
   - 原生禁用的按钮仍收得到指针事件，悬停照样出提示；键盘本来就停不到它。
 - 聚焦也能触发，键盘用户可以访问。
+- `flip` 为 false 时不再自动翻面，守着 `placement` 那一侧，交叉轴贴边挪位照旧；`boundary` 给一块碰撞边界（元素或带 `getBoundingClientRect()` 的对象），提示只在它与视口的交集里摆，翻面与贴边都以交集为界。两项原样交给定位引擎，不写就留给引擎缺省。
+- content 里的内容缺省常驻、收起只隐藏。`lazyMount` 让它第一次展开时才挂载、之后常驻：表格、工具栏里成排的提示首屏只建触发器；`unmountOnExit` 让它在退场动画播完后卸载、下次展开重新挂载。委托模式下组件铺的 `text` 与 `shortcut` 一同挂卸。positioner 与 content 节点一向常驻；触发器只在展开期间指向 content，收起态的提示本来就不进描述。Web Components 写进 content 里一个 `<template>` 的内容按同一规则挂卸。
 - 收起时 `onOpenChange` 带上关闭原因 `reason`：指针移开、等过 `closeDelay` 与同组另一处提示露面把它顶掉报 `hover`；焦点离开、点在提示外报 `interact-outside`；按下触发器报 `close-trigger`；Escape 报 `esc`；`setOpen(false)` 报 `programmatic`。展开时不带。
 - 按下触发器即收起，让位给真正的操作；点击带来的那次聚焦不再把提示打开，指针移开再回来、或用键盘聚焦时照常出现。
 - 语气与尺寸两轴。

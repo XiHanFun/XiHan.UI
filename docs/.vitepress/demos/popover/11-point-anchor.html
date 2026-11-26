@@ -1,4 +1,4 @@
-<!-- 落在指针位置 | 触发器缩为一个像素、按点击坐标固定放置，浮层就固定在刚点击的位置；再点一次更换落点 -->
+<!-- 落在指针位置 | anchor 交一个只给得出矩形的虚拟锚点，浮层就固定在刚点击的位置；再点一次更换落点，不用再摆一颗看不见的触发器 -->
 <div style="inline-size: 100%; display: grid; gap: 12px">
   <div
     id="popover-point-area"
@@ -22,22 +22,6 @@
     offset="8"
     close-on-interact-outside="false"
   >
-    <!-- 一像素而非零像素，位移探测才武装得起来 -->
-    <button
-      data-xh-part="trigger"
-      tabindex="-1"
-      style="
-        position: fixed;
-        left: 0;
-        top: 0;
-        inline-size: 1px;
-        block-size: 1px;
-        padding: 0;
-        border: 0;
-        opacity: 0;
-        pointer-events: none;
-      "
-    ></button>
     <div data-xh-part="positioner">
       <div data-xh-part="content">
         <h3 data-xh-part="title">这一点</h3>
@@ -56,16 +40,15 @@
   // 文案是对象，只走 property
   popover.translations = { close: "关闭" };
 
-  const trigger = popover.querySelector('[data-xh-part="trigger"]');
   const readout = document.getElementById("popover-point-readout");
 
-  // 指针坐标是物理坐标，锚点用 left / top 摆位
+  // 虚拟锚点：每次定位现读矩形；换一个对象，浮层即按新落点重挂
   document
     .getElementById("popover-point-area")
     .addEventListener("click", (event) => {
-      trigger.style.left = `${event.clientX}px`;
-      trigger.style.top = `${event.clientY}px`;
-      readout.textContent = `${event.clientX} / ${event.clientY}`;
+      const { clientX: x, clientY: y } = event;
+      readout.textContent = `${x} / ${y}`;
+      popover.anchor = { getBoundingClientRect: () => new DOMRect(x, y, 0, 0) };
       popover.open = true;
     });
 

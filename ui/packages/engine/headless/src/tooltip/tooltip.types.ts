@@ -5,7 +5,7 @@
 
 // 定义 tooltip 类型契约。
 
-import type { Cleanup, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { Cleanup, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, VirtualAnchor } from '@xihan-ui/core'
 import type { KbdPlatform, KbdResolvedPlatform } from '@xihan-ui/core/hotkey'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { TooltipGroup } from './tooltip.group'
@@ -80,6 +80,20 @@ export interface TooltipSchema extends MachineSchema {
     dir?: Direction
     /** 浮层与锚点的间距（px）。 */
     offset?: number
+    /** 空间不足时翻到对侧，默认 true；false 时守着 placement 那一侧，交叉轴贴边挪位照旧。 */
+    flip?: boolean
+    /**
+     * 碰撞边界：提示只在这块区域与视口的交集里摆，翻面与贴边挪位都以交集为界。
+     * 收元素或带 getBoundingClientRect() 的对象；缺省只受视口与裁剪祖先约束。
+     */
+    boundary?: Element | VirtualAnchor | null
+    /**
+     * 第一次展开时才挂载 content 里的内容，默认 false。表格、工具栏里成排的提示收起态各背着一份内容，开了它首屏只建触发器。
+     * positioner 与 content 节点照旧常驻；trigger 只在展开期间指向 content，收起态的提示本来就不进描述。
+     */
+    lazyMount?: boolean
+    /** 收起动画播完后卸载 content 里的内容，默认 false；下次展开重新挂载。 */
+    unmountOnExit?: boolean
     /** 悬停进入到展开的等待毫秒，默认 150。 */
     openDelay?: number
     /** 悬停移出到收起的等待毫秒，默认 100。 */
@@ -126,6 +140,8 @@ export interface TooltipSchema extends MachineSchema {
     instant: boolean
     /** 委托模式下提示锚在哪个元素上、显示什么；收起后留着，退场期间内容不变。 */
     anchor: TooltipAnchor | null
+    /** 挂载之后展开过没有（含首帧即展开）。lazyMount 下 content 里的内容从第一次展开起才挂载。 */
+    opened: boolean
   }
   computed: Record<string, never>
   refs: TooltipRefs
@@ -155,7 +171,7 @@ export interface TooltipSchema extends MachineSchema {
     | { type: 'CONTROLLED.CLOSE' }
   tag: never
   guard: 'isOpenControlled' | 'isDisabled' | 'isFocusOpened' | 'hasAnchor'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'markFocusOpened' | 'clearFocusOpened' | 'syncInstant' | 'clearInstant' | 'trackCursor' | 'clearOpenedAtMount' | 'assignAnchor'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'markFocusOpened' | 'clearFocusOpened' | 'syncInstant' | 'clearInstant' | 'trackCursor' | 'clearOpenedAtMount' | 'markOpened' | 'assignAnchor'
   effect: 'waitForOpenDelay' | 'waitForCloseDelay' | 'trackPosition' | 'trackLayer' | 'trackGroup' | 'trackDescription'
 }
 
@@ -174,6 +190,12 @@ export interface TooltipApi<T extends PropTypes = PropTypes> {
   getArrowProps: () => T['element']
   getTextProps: () => T['element']
   getShortcutProps: () => T['element']
+  /**
+   * content 里的内容（含委托模式下组件铺的 text 与 shortcut）此刻该不该挂载。`present` 是适配器的退场闸门：
+   * 展开中或收起动画还没播完为真。缺省恒为真；lazyMount 下没展开过为假；unmountOnExit 下闸门落下（退场播完）即为假。
+   * positioner 与 content 节点不受它管，一向常驻。
+   */
+  isContentMounted: (present: boolean) => boolean
 }
 
 export interface TooltipTranslations {

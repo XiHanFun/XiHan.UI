@@ -5,7 +5,7 @@
 
 // 提供 hover card 相关实现。
 
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size } from '@xihan-ui/core'
+import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, VirtualAnchor } from '@xihan-ui/core'
 import type { HoverCardOpenChangeDetails, HoverCardSchema } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
@@ -16,6 +16,7 @@ import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
 import { createOverlayExit, withoutHidden } from '../overlay-exit'
+import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -46,6 +47,9 @@ const NUMBER_CONVERTER = {
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {string} placement - 请求的浮层朝向（top / right / bottom / left，可带 -start / -end 后缀），默认 bottom；空间不足时由引擎避让
  * @attr {number} offset - 浮层与锚点的间距（px），默认 8
+ * @attr {boolean} flip - 空间不足时翻到对侧，默认 true；写 "false" 时守着 placement 那一侧
+ * @attr {boolean} lazy-mount - 第一次展开时才挂载：content 里写一个 `<template>`，第一次展开才克隆、之后常驻。没写模板的作者节点始终常驻
+ * @attr {boolean} unmount-on-exit - 收起动画播完后撤走 content 里 `<template>` 克隆出的内容，下次展开重新克隆，默认 false
  * @attr {number} open-delay - 悬停进入到展开的等待毫秒，默认 700
  * @attr {number} close-delay - 指针移出到收起的等待毫秒，默认 300
  * @attr {'ltr'|'rtl'} dir - 文字方向，只在显式提供时才写到 root 上
@@ -72,6 +76,11 @@ export class XhHoverCardElement extends XhPortalHostElement {
     defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
+    flip: { converter: BOOLEAN_CONVERTER },
+    lazyMount: { converter: BOOLEAN_CONVERTER, attribute: 'lazy-mount' },
+    unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
+    // 对象值进不了属性，只作为 property 暴露
+    boundary: { attribute: false },
     openDelay: { converter: NUMBER_CONVERTER, attribute: 'open-delay' },
     closeDelay: { converter: NUMBER_CONVERTER, attribute: 'close-delay' },
     // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
@@ -85,6 +94,11 @@ export class XhHoverCardElement extends XhPortalHostElement {
   declare defaultOpen?: boolean
   declare placement?: Placement
   declare offset?: number
+  declare flip?: boolean
+  declare lazyMount?: boolean
+  declare unmountOnExit?: boolean
+  /** 碰撞边界：卡片只在这块区域与视口的交集里摆。收元素或带 getBoundingClientRect() 的对象，只作为 property 暴露。 */
+  declare boundary?: Element | VirtualAnchor | null
   declare openDelay?: number
   declare closeDelay?: number
   declare direction?: Direction
@@ -97,6 +111,8 @@ export class XhHoverCardElement extends XhPortalHostElement {
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  /** content 里 `<template>` 写的内容按 headless 的挂卸判定克隆进来或撤走；没写模板的作者节点照旧常驻 */
+  private readonly lazyContent = new LazyContent({ stash: false })
   private readonly portal = this.createAnchoredPortalController({
     name: 'HoverCard',
     config: () => this.config,
@@ -133,6 +149,10 @@ export class XhHoverCardElement extends XhPortalHostElement {
       defaultOpen: this.defaultOpen ?? false,
       placement: this.placement,
       offset: this.offset,
+      flip: this.flip,
+      boundary: this.boundary,
+      lazyMount: this.lazyMount,
+      unmountOnExit: this.unmountOnExit,
       openDelay: this.openDelay,
       closeDelay: this.closeDelay,
       dir: this.direction,
@@ -234,6 +254,8 @@ export class XhHoverCardElement extends XhPortalHostElement {
     this.exit.track(content)
     this.exit.update(api.open)
     this.setPartHidden(content, !this.exit.visible, { attribute: true })
+    // 写在 content 里 <template> 中的内容按 headless 的判定克隆或撤走；新挂上的部件由部件观察器补一轮 wire 接上属性
+    this.lazyContent.sync(content, api.isContentMounted(this.exit.visible))
 
     this.bars.wire()
     this.portal.sync(this.exit.visible)

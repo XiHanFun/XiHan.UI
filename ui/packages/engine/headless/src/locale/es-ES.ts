@@ -558,6 +558,7 @@ const translations = {
     },
   },
   'pin-input': { input: (index, length) => `Carácter ${index} de ${length}` },
+  'popconfirm': { ok: 'Aceptar', cancel: 'Cancelar' },
   'popover': { close: 'Cerrar' },
   'progress': { segmentValueText: ({ value, label }) => `${value}, ${label}` },
   'prompt-input': { send: 'Enviar', stop: 'Detener la generación' },

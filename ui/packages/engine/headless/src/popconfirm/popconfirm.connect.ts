@@ -10,6 +10,7 @@ import type { PopoverPressedPart, PopoverSchema } from '../popover'
 import type { PopconfirmApi, PopconfirmIntents } from './popconfirm.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
 import { createConfirmGate } from '../shared/confirm-gate'
+import { disclosureContentMounted } from '../shared/disclosure-mount'
 import { OVERLAY_PLACEMENT_ANCHORED, overlayArrowVars, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { popconfirmAnatomy } from './popconfirm.anatomy'
 
@@ -81,6 +82,13 @@ export function connectPopconfirm<T extends PropTypes>(
     setOpen,
     confirm,
     cancel,
+    // 挂卸只管 content 里的内容：positioner 与 content 节点常驻，aria-controls 始终指得到它
+    isContentMounted: present => disclosureContentMounted({
+      lazyMount: prop('lazyMount') ?? false,
+      unmountOnExit: prop('unmountOnExit') ?? false,
+      opened: context.get('opened'),
+      present,
+    }),
     // 根只框住触发器，浮层树靠 positioner 的固定定位飞出去；状态落在根上供整组样式取用
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -147,7 +155,7 @@ export function connectPopconfirm<T extends PropTypes>(
       'data-placement': placement,
       // 尺寸落在浮层树最外层的 content 上：positioner 是定位空壳，root 留在触发器那边
       'data-size': prop('size'),
-      // 收起时留在 DOM 只隐藏，不卸载作者节点
+      // content 节点收起时留在 DOM 只隐藏；里面的内容卸不卸由 isContentMounted 定
       'hidden': !open || undefined,
     }),
     getTitleProps: () => normalize.element({ ...parts.title.attrs, id: ids.title }),

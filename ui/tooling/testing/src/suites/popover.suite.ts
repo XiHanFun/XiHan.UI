@@ -276,5 +276,18 @@ export const popoverSuite: ConformanceSuite = {
       props: { defaultOpen: true },
       steps: [heldPress('popover', 'trigger'), heldPress('popover', 'close-trigger')],
     },
+    {
+      name: 'initialFocus：展开后焦点落在 content 里匹配选择器的元素，不落在 Tab 序列的第一颗按钮',
+      spec: { apg: APG },
+      props: { initialFocus: '[data-part="close-trigger"]' },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        {
+          kind: 'settle',
+          until: { activeElement: 'close-trigger' },
+          expect: { activeElement: { part: 'close-trigger', exact: true } },
+        },
+      ],
+    },
   ],
 }

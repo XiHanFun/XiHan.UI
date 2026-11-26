@@ -571,6 +571,7 @@ const translations = {
     },
   },
   'pin-input': { input: (index, length) => `第 ${index} 位，共 ${length} 位` },
+  'popconfirm': { ok: '确定', cancel: '取消' },
   'popover': { close: '关闭' },
   'progress': { segmentValueText: ({ value, label }) => `${value}，${label}` },
   'prompt-input': { send: '发送', stop: '停止生成' },

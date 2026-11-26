@@ -558,6 +558,7 @@ const translations = {
     },
   },
   'pin-input': { input: (index, length) => `총 ${length}자리 중 ${index}번째 자리` },
+  'popconfirm': { ok: '확인', cancel: '취소' },
   'popover': { close: '닫기' },
   'progress': { segmentValueText: ({ value, label }) => `${value}, ${label}` },
   'prompt-input': { send: '보내기', stop: '생성 중지' },

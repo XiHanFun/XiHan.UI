@@ -1,4 +1,4 @@
-import type { ConformanceSuite, StepWithExpect } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { popconfirmAnatomy, popconfirmKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { nativeActivation } from './shared/native-activation'
@@ -179,7 +179,7 @@ export const popconfirmSuite: ConformanceSuite = {
           kind: 'click',
           part: 'confirm-trigger',
           // confirm 事件不入跨适配器事件流；收起这件事经 open-change 如实上报
-          expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }] },
+          expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }, { type: 'exit-complete', detail: null }] },
         },
         {
           kind: 'settle',
@@ -209,7 +209,7 @@ export const popconfirmSuite: ConformanceSuite = {
           kind: 'click',
           part: 'cancel-trigger',
           // 先报取消、后报收起；cancel-press 不带载荷
-          expect: { events: [{ type: 'cancel-press', detail: null }, { type: 'open-change', detail: { open: false, reason: 'close-trigger' } }] },
+          expect: { events: [{ type: 'cancel-press', detail: null }, { type: 'open-change', detail: { open: false, reason: 'close-trigger' } }, { type: 'exit-complete', detail: null }] },
         },
         {
           kind: 'settle',
@@ -340,6 +340,29 @@ export const popconfirmSuite: ConformanceSuite = {
       spec: { adr: 'scroll-surface' },
       props: { defaultOpen: true },
       steps: [scrollbarsWired],
+    },
+    {
+      name: '作者不写结构：三端都照 popconfirmStructure 铺出触发器、说明、取消在确认之前与箭头；没给标题时 content 不写 aria-labelledby',
+      spec: { apg: DIALOG_SPEC },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { defaultOpen: true, triggerText: '删除这条记录', description: '这条记录连同它的附件一起清掉。', confirmText: '删除', cancelText: '取消' },
+      initial: {
+        order: ['root', 'trigger', 'positioner', 'content', 'description', 'cancel-trigger', 'confirm-trigger', 'arrow'],
+        counts: { title: 0 },
+        parts: {
+          'trigger': { 'type': 'button', 'aria-expanded': 'true', 'aria-controls': '@part(content)' },
+          'content': { 'role': 'dialog', 'aria-labelledby': null, 'aria-describedby': '@part(description)' },
+          'cancel-trigger': { 'type': 'button', 'data-xh-action-variant': 'outline' },
+          'confirm-trigger': { 'type': 'button', 'data-xh-action-variant': 'solid' },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'cancel-trigger',
+          expect: { events: [{ type: 'cancel-press', detail: null }, { type: 'open-change', detail: { open: false, reason: 'close-trigger' } }, { type: 'exit-complete', detail: null }] },
+        },
+      ],
     },
   ],
 }

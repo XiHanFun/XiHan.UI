@@ -80,7 +80,7 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 
 ### 落在指针位置
 
-触发器缩为一个像素、按点击坐标固定放置，浮层就固定在刚点击的位置；再点一次更换落点
+anchor 交一个只给得出矩形的虚拟锚点，浮层就固定在刚点击的位置；再点一次更换落点，不用再摆一颗看不见的触发器
 
 <XhDemo src="popover/11-point-anchor" />
 
@@ -100,9 +100,14 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 ### 特性
 
 - `placement` 只是首选位置，空间不足时定位引擎自动翻面。
+- `flip` 为 false 时不再自动翻面，守着 `placement` 那一侧，交叉轴贴边挪位照旧；`boundary` 给一块碰撞边界（元素或带 `getBoundingClientRect()` 的对象），浮层只在它与视口的交集里摆，翻面、贴边与可用空间都以交集为界。两项原样交给定位引擎，不写就留给引擎缺省。
 - `modal` 可选：需要锁定下层时开启；展开期间可动态切换，模态档会锁定页面滚动并让背景失活。
 - `end` 等对齐是逻辑方向，跟随书写方向，不是物理左右。
 - `anchor` 换成外部锚点：由别处的按钮（工具栏命令等）受控打开时，把那颗按钮交给 `anchor`，浮层就贴着它定位、收起时焦点归还给它，可以不写触发器。展开期间这颗按钮带 `aria-haspopup`、`aria-expanded` 与 `aria-controls`，收起或换锚点时还原；点它算浮层内的交互，开合交给打开它的那条命令。
+- `anchor` 也收虚拟锚点：一个带 `getBoundingClientRect()` 的对象（右键的指针落点、文本选区的 `Range`），浮层按它给的矩形落位，页面滚动、视口改尺时现读重算；换一个对象即按新矩形重挂。虚拟锚点接不了焦点、也写不了读屏属性：收起时焦点归还给触发器，没有触发器时回到打开前的焦点持有者。
+- 展开后焦点进入浮层：`initialFocus` 给一个选择器，焦点落在 content 里匹配它的元素上；没给或不匹配时落在第一个可聚焦元素上。`restoreFocus` 为 false 时收起不归还焦点（缺省归还给触发器或元素锚点）；Tab 与层外交互收起时焦点已经去了别处，一向不抢回。模态与非模态都生效。
+- content 里的内容缺省常驻、收起只隐藏。`lazyMount` 让它第一次打开时才挂载、之后常驻：表格每行一个气泡卡片时，收起态每个实例背着的整份内容是挂载开销的大头；`unmountOnExit` 让它在退场动画播完后卸载、下次打开重新挂载，内容里的组件状态与输入随之丢掉。positioner 与 content 节点不受这两项管，一向常驻，触发器的 `aria-controls` 始终指得到它。Web Components 的作者节点一向常驻；写进 content 里一个 `<template>` 的内容按同一规则挂卸。
+- 退场动画播完、层与焦点域等资源全部释放之后发出 `onExitComplete` / `exit-complete`；退场途中重开与卸载都不发。退场后的清理（重置表单、撤掉临时数据）放在这里，不必自己量动画。
 - `disabled` 让浮层不可打开：触发器转原生 disabled（退出 Tab 序列、画禁用面），点按与 `setOpen(true)` 都不展开，展开途中转为禁用即收起；与文字提示、悬浮卡片的 `disabled` 同名同义。
 
 默认内容面走 frosted 配方：实体底、1px 描边与 md 档投影，overlay 圆角 8px；箭头复用底色和边界。内衬纵 12 横 16（`sm` 纵 8 横 12、`lg` 纵 16 横 20），标题 14px / medium / 正文色，说明即气泡正文，14px 次级色，与标题相距 4px。触发器与关闭按钮走 Action Control 家族配方：触发器为 text 档中性描边，关闭按钮为 icon 档 ghost 面，悬停与按下沿画布承载阶梯换底，Space / Enter 与触屏按住期间投影 `data-pressed`，与指针按下同一副按压面。系统减少透明度、高对比与强制色时，原位切换为实体表面；打印时收起交互浮层。
@@ -140,11 +145,17 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 | --- | --- | --- | --- |
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
-| `anchor` | `HTMLElement \| null` |  | 外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger；用于由别处的按钮受控打开浮层，此时通常不渲染 trigger。 展开期间它带 aria-haspopup、aria-expanded、aria-controls，收起或换锚点时还原；点它算层内交互，不会先被判为层外交互关掉。 |
+| `anchor` | `HTMLElement \| VirtualAnchor \| null` |  | 外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger；用于由别处的按钮受控打开浮层，此时通常不渲染 trigger。 展开期间它带 aria-haspopup、aria-expanded、aria-controls，收起或换锚点时还原；点它算层内交互，不会先被判为层外交互关掉。 也收虚拟锚点：带 getBoundingClientRect() 的对象（指针落点、文本选区的 Range），每次定位现读它此刻的矩形， 页面滚动、视口改尺时跟着重算。虚拟锚点接不了焦点、也写不了读屏属性：收起时焦点归还给 trigger， 没有 trigger 时回到打开前的焦点持有者；换一个锚点对象即按新矩形重挂定位。 |
 | `placement` | `Placement` |  |  |
+| `flip` | `boolean` |  | 空间不足时翻到对侧，默认 true；false 时守着 placement 那一侧，交叉轴贴边挪位照旧。 |
+| `boundary` | `Element \| VirtualAnchor \| null` |  | 碰撞边界：浮层只在这块区域与视口的交集里摆，翻面、贴边挪位与可用空间都以交集为界。 收元素或带 getBoundingClientRect() 的对象；缺省只受视口与裁剪祖先约束。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
 | `modal` | `boolean` |  | 模态浮层陷入焦点；默认 false（非模态，Tab 可离开）。 |
+| `initialFocus` | `string` |  | 展开后先聚焦到 content 内匹配该选择器的元素；没给、或选择器不匹配时按 Tab 序列落到第一个可聚焦元素。 模态与非模态都生效：浮层展开时焦点总会进入 content。 |
+| `restoreFocus` | `boolean` |  | 收起时把焦点归还给 trigger（给了元素锚点时归还给它），默认 true。 Tab 与层外交互收起时焦点已经去了别处，一向不抢回，与这个开关无关。 |
+| `lazyMount` | `boolean` |  | 第一次打开时才挂载 content 里的内容，默认 false。页面上 Popover 很多（表格每行一个）时， 收起态每个实例背着的整份内容是挂载开销的大头。positioner 与 content 节点照旧常驻，trigger 的 aria-controls 始终指得到它。 |
+| `unmountOnExit` | `boolean` |  | 收起动画播完后卸载 content 里的内容，默认 false；下次打开重新挂载，内容里的组件状态与输入随之丢掉。 |
 | `closeOnEscape` | `boolean` |  |  |
 | `closeOnInteractOutside` | `boolean` |  |  |
 | `disabled` | `boolean` |  | 浮层不可打开：触发器转原生 disabled，点按与命令式 setOpen(true) 都不展开；展开途中转为禁用即收起。 与 Tooltip、HoverCard 的 disabled 同名同义：关掉的是浮层这件事。受控写回 open 仍按宿主的意思来。 |
@@ -152,6 +163,7 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 | `translations` | `Partial<PopoverTranslations>` |  |  |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定面板的内边距档位。 |
 | `onOpenChange` | `(details: PopoverOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
+| `onExitComplete` | `() => void` |  | 退场动画播完（或没有退场动画），且本层的层、消解层、焦点域与模态资源全部释放后通知；卸载和退场途中重开不通知。 |
 
 ### 事件
 
@@ -159,6 +171,7 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
+| `exit-complete` | `CustomEvent` | 退场动画播完、本层资源全部释放；卸载和退场途中重开不派发 |
 | `open-change` | `PopoverOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ### 插槽
@@ -211,6 +224,7 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 | `getDescriptionProps` | `() => T['element']` |  |
 | `getCloseTriggerProps` | `() => T['button']` |  |
 | `getArrowProps` | `() => T['element']` |  |
+| `isContentMounted` | `(present: boolean) => boolean` | content 里的内容此刻该不该挂载。`present` 是适配器的退场闸门：打开中或收起动画还没播完为真。 缺省恒为真；lazyMount 下没打开过为假；unmountOnExit 下闸门落下（退场播完）即为假。 positioner 与 content 节点不受它管，一向常驻。 |
 
 ## 无障碍
 

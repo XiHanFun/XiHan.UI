@@ -10,7 +10,7 @@ import type { HoverCardSchema } from './hover-card.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
-import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
+import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED, overlayPositioningOptions } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 
 /** 没传 placement 时浮层交给定位引擎的落点。 */
@@ -67,6 +67,8 @@ export const hoverCardMachine = createMachine({
     // 位置结果由 trackPosition 回填
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     focusHeld: cell<boolean>(() => ({ defaultValue: false })),
+    // 首帧即展开也算展开过：lazyMount 下内容照常首屏就在
+    opened: cell<boolean>(() => ({ defaultValue: openAtMount(prop) })),
   }),
   refs: () => ({
     config: null,
@@ -118,6 +120,7 @@ export const hoverCardMachine = createMachine({
     // 复合态：两个子态下浮层都可见；定位挂在这一层，行为资源由顶层 effect 持有。
     visible: {
       initial: 'open',
+      entry: ['markOpened'],
       effects: ['trackPosition'],
       on: {
         'CONTROLLED.CLOSE': { target: 'closed' },
@@ -165,6 +168,10 @@ export const hoverCardMachine = createMachine({
         extra: event => event.type === 'after.closeDelay' ? 'hover' : event.type === 'BLUR' ? 'interact-outside' : undefined,
       }),
       clearOpenedAtMount,
+      markOpened: ({ context }) => {
+        if (!context.get('opened'))
+          context.set('opened', true)
+      },
       markFocusHeld: ({ context }) => context.set('focusHeld', true),
       clearFocusHeld: ({ context }) => context.set('focusHeld', false),
     },
@@ -191,6 +198,8 @@ export const hoverCardMachine = createMachine({
           arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
           // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
           size: true,
+          // 作者写了的翻面开关与碰撞边界原样交给引擎
+          ...overlayPositioningOptions({ flip: prop('flip'), boundary: prop('boundary') }),
         }),
         onResult: result => context.set('position', result),
       }),

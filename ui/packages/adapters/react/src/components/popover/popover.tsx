@@ -5,7 +5,7 @@
 
 // 提供 popover 相关实现。
 
-import type { Direction, Placement, Size } from '@xihan-ui/core'
+import type { Direction, Placement, Size, VirtualAnchor } from '@xihan-ui/core'
 import type { PopoverApi, PopoverSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
@@ -28,13 +28,28 @@ export interface PopoverRootSlotProps extends Pick<PopoverApi, 'open' | 'setOpen
 export interface XhPopoverRootProps {
   open?: boolean
   defaultOpen?: boolean
-  /** 外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger。 */
-  anchor?: HTMLElement | null
+  /**
+   * 外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger。
+   * 也收带 getBoundingClientRect() 的虚拟锚点（指针落点、文本选区），这时焦点归还给 trigger。
+   */
+  anchor?: HTMLElement | VirtualAnchor | null
   placement?: Placement
   offset?: number
+  /** 空间不足时翻到对侧，默认 true；false 时守着 placement 那一侧。 */
+  flip?: boolean
+  /** 碰撞边界：浮层只在这块区域与视口的交集里摆。收元素或带 getBoundingClientRect() 的对象。 */
+  boundary?: Element | VirtualAnchor | null
   /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
   dir?: Direction
   modal?: boolean
+  /** 展开后先聚焦到 content 内匹配该选择器的元素；没给或不匹配时落到第一个可聚焦元素。 */
+  initialFocus?: string
+  /** 收起时把焦点归还给 trigger（或元素锚点），默认 true。 */
+  restoreFocus?: boolean
+  /** 第一次打开时才挂载 content 里的内容，默认 false。 */
+  lazyMount?: boolean
+  /** 收起动画播完后卸载 content 里的内容，默认 false；下次打开重新挂载。 */
+  unmountOnExit?: boolean
   closeOnEscape?: boolean
   closeOnInteractOutside?: boolean
   /** 浮层不可打开：触发器转原生 disabled。 */
@@ -42,6 +57,8 @@ export interface XhPopoverRootProps {
   translations?: PopoverProps['translations']
   size?: Size
   onOpenChange?: PopoverProps['onOpenChange']
+  /** 退场动画播完、本层资源全部释放后通知；卸载和退场途中重开不通知。 */
+  onExitComplete?: PopoverProps['onExitComplete']
   children?: SlotChildren<PopoverRootSlotProps>
 }
 
@@ -55,7 +72,7 @@ export function XhPopoverRoot({ children, ...props }: XhPopoverRootProps): React
   )
 }
 
-XhPopoverRoot.xhEvents = ['open-change'] as const
+XhPopoverRoot.xhEvents = ['open-change', 'exit-complete'] as const
 
 export interface XhPopoverTriggerProps extends ComponentPropsWithRef<'button'>, AsChildProps {}
 
@@ -113,7 +130,7 @@ export function XhPopoverContent({ children, ...rest }: XhPopoverContentProps): 
         },
       )}
     >
-      {children}
+      {ctx.api.isContentMounted(ctx.rendered) ? children : null}
     </div>
   )
 }

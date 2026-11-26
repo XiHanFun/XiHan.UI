@@ -9416,6 +9416,7 @@
       "PopconfirmOverlayProps",
       "PopconfirmPendingChannel",
       "PopconfirmProps",
+      "PopconfirmStructureOptions",
       "PopconfirmTranslations",
       "PopoverApi",
       "PopoverOpenChangeDetails",
@@ -9987,6 +9988,7 @@
       "TooltipPoint",
       "TooltipRefs",
       "TooltipSchema",
+      "TooltipStructureOptions",
       "TooltipTranslations",
       "TourApi",
       "TourBoundaryRect",
@@ -11044,6 +11046,7 @@
       "popconfirmAnatomy",
       "popconfirmKeyboard",
       "popconfirmMeta",
+      "popconfirmStructure",
       "popoverAnatomy",
       "popoverKeyboard",
       "popoverMachine",
@@ -11398,6 +11401,7 @@
       "tooltipKeyboard",
       "tooltipMachine",
       "tooltipMeta",
+      "tooltipStructure",
       "tourAnatomy",
       "tourKeyboard",
       "tourMachine",
@@ -15830,17 +15834,21 @@
       "tone"
     ],
     "hover-card": [
+      "boundary",
       "closeDelay",
       "defaultOpen",
       "dir",
       "disabled",
+      "flip",
+      "lazyMount",
       "offset",
       "onOpenChange",
       "open",
       "openDelay",
       "parts",
       "placement",
-      "size"
+      "size",
+      "unmountOnExit"
     ],
     "icon": [
       "flip",
@@ -16319,36 +16327,51 @@
       "variant"
     ],
     "popconfirm": [
+      "boundary",
       "closeOnEscape",
       "closeOnInteractOutside",
       "defaultOpen",
       "dir",
       "disabled",
+      "flip",
+      "initialFocus",
+      "lazyMount",
       "offset",
       "onCancelPress",
       "onConfirm",
       "onConfirmError",
+      "onExitComplete",
       "onOpenChange",
       "open",
       "parts",
       "placement",
-      "size"
+      "restoreFocus",
+      "size",
+      "translations",
+      "unmountOnExit"
     ],
     "popover": [
       "anchor",
+      "boundary",
       "closeOnEscape",
       "closeOnInteractOutside",
       "defaultOpen",
       "dir",
       "disabled",
+      "flip",
+      "initialFocus",
+      "lazyMount",
       "modal",
       "offset",
+      "onExitComplete",
       "onOpenChange",
       "open",
       "parts",
       "placement",
+      "restoreFocus",
       "size",
-      "translations"
+      "translations",
+      "unmountOnExit"
     ],
     "presence": [
       "lazyMount",
@@ -17137,12 +17160,15 @@
       "variant"
     ],
     "tooltip": [
+      "boundary",
       "closeDelay",
       "defaultOpen",
       "delegate",
       "dir",
       "disabled",
+      "flip",
       "followCursor",
+      "lazyMount",
       "offset",
       "onOpenChange",
       "open",
@@ -17152,7 +17178,8 @@
       "size",
       "skipDelay",
       "tone",
-      "translations"
+      "translations",
+      "unmountOnExit"
     ],
     "tour": [
       "autoScroll",
@@ -24706,11 +24733,14 @@
         "default-open",
         "dir",
         "disabled",
+        "flip",
+        "lazy-mount",
         "offset",
         "open",
         "open-delay",
         "placement",
-        "size"
+        "size",
+        "unmount-on-exit"
       ],
       "events": [
         "open-change"
@@ -25271,20 +25301,31 @@
     },
     "xh-popconfirm": {
       "attributes": [
+        "cancel-text",
         "close-on-escape",
         "close-on-interact-outside",
+        "confirm-text",
         "default-open",
+        "description",
         "dir",
         "disabled",
+        "flip",
+        "initial-focus",
+        "lazy-mount",
         "offset",
         "open",
         "placement",
-        "size"
+        "restore-focus",
+        "size",
+        "title-text",
+        "trigger-text",
+        "unmount-on-exit"
       ],
       "events": [
         "cancel-press",
         "confirm",
         "confirm-error",
+        "exit-complete",
         "open-change"
       ]
     },
@@ -25295,13 +25336,19 @@
         "default-open",
         "dir",
         "disabled",
+        "flip",
+        "initial-focus",
+        "lazy-mount",
         "modal",
         "offset",
         "open",
         "placement",
-        "size"
+        "restore-focus",
+        "size",
+        "unmount-on-exit"
       ],
       "events": [
+        "exit-complete",
         "open-change"
       ]
     },
@@ -26142,11 +26189,14 @@
     "xh-tooltip": {
       "attributes": [
         "close-delay",
+        "content",
         "default-open",
         "delegate",
         "dir",
         "disabled",
+        "flip",
         "follow-cursor",
+        "lazy-mount",
         "offset",
         "open",
         "open-delay",
@@ -26154,7 +26204,9 @@
         "platform",
         "size",
         "skip-delay",
-        "tone"
+        "tone",
+        "trigger-text",
+        "unmount-on-exit"
       ],
       "events": [
         "open-change"

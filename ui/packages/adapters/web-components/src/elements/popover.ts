@@ -5,7 +5,7 @@
 
 // 提供 popover 相关实现。
 
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size } from '@xihan-ui/core'
+import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, VirtualAnchor } from '@xihan-ui/core'
 import type { PopoverOpenChangeDetails, PopoverSchema, PopoverTranslations } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
@@ -17,6 +17,7 @@ import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
 import { createOverlayExit, withoutHidden } from '../overlay-exit'
+import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -37,11 +38,17 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @attr {number} offset - 浮层与锚点的间距（px），默认 8
  * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上
  * @attr {boolean} modal - 模态浮层陷入焦点并回绕 Tab，默认 false
+ * @attr {string} initial-focus - 展开后先聚焦到 content 内匹配此选择器的元素；没给或不匹配时落到第一个可聚焦元素
+ * @attr {boolean} restore-focus - 收起时把焦点归还给 trigger（或元素锚点），默认 true；写 "false" 关闭
+ * @attr {boolean} lazy-mount - 第一次打开时才挂载：content 里写一个 `<template>`，第一次打开才克隆、之后常驻。没写模板的作者节点始终常驻
+ * @attr {boolean} unmount-on-exit - 收起动画播完后撤走 content 里 `<template>` 克隆出的内容，下次打开重新克隆，默认 false
+ * @attr {boolean} flip - 空间不足时翻到对侧，默认 true；写 "false" 时守着 placement 那一侧
  * @attr {boolean} close-on-escape - Esc 关闭，默认 true；写 close-on-escape="false" 关闭
  * @attr {boolean} close-on-interact-outside - 层外交互关闭，默认 true；写 "false" 关闭
  * @attr {boolean} disabled - 浮层不可打开：触发器转原生 disabled，展开途中转为禁用即收起
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
+ * @fires exit-complete - 退场动画播完、本层资源全部释放；卸载和退场途中重开不派发
  * @csspart trigger - 触发按钮（aria-haspopup / aria-expanded / aria-controls 所在）；没给 anchor 时同时是定位锚点
  * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
  * @csspart content - 浮层内容（role=dialog；焦点域与消解层的根节点），收起时带 hidden
@@ -66,12 +73,18 @@ export class XhPopoverElement extends XhPortalHostElement {
     // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     modal: { converter: BOOLEAN_CONVERTER },
+    initialFocus: { converter: STRING_CONVERTER, attribute: 'initial-focus' },
+    restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },
+    lazyMount: { converter: BOOLEAN_CONVERTER, attribute: 'lazy-mount' },
+    unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
+    flip: { converter: BOOLEAN_CONVERTER },
     closeOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-escape' },
     closeOnInteractOutside: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-interact-outside' },
     disabled: { converter: BOOLEAN_CONVERTER },
     size: { converter: STRING_CONVERTER },
     // 对象值进不了属性，只作为 property 暴露
     anchor: { attribute: false },
+    boundary: { attribute: false },
     translations: { attribute: false },
   }
 
@@ -81,6 +94,11 @@ export class XhPopoverElement extends XhPortalHostElement {
   declare offset?: number
   declare direction?: Direction
   declare modal?: boolean
+  declare initialFocus?: string
+  declare restoreFocus?: boolean
+  declare lazyMount?: boolean
+  declare unmountOnExit?: boolean
+  declare flip?: boolean
   declare closeOnEscape?: boolean
   declare closeOnInteractOutside?: boolean
   declare disabled?: boolean
@@ -88,8 +106,11 @@ export class XhPopoverElement extends XhPortalHostElement {
   /**
    * 外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger；用于由别处的按钮受控打开浮层，此时通常不写 trigger。
    * 展开期间它带 aria-haspopup、aria-expanded、aria-controls，收起或换锚点时还原；点它算层内交互。只作为 property 暴露。
+   * 也收带 getBoundingClientRect() 的虚拟锚点（指针落点、文本选区），每次定位现读矩形，这时焦点归还给 trigger。
    */
-  declare anchor?: HTMLElement | null
+  declare anchor?: HTMLElement | VirtualAnchor | null
+  /** 碰撞边界：浮层只在这块区域与视口的交集里摆。收元素或带 getBoundingClientRect() 的对象，只作为 property 暴露。 */
+  declare boundary?: Element | VirtualAnchor | null
   /** 关闭按钮的无障碍名；connect 每帧重写 aria-label，作者写在节点上的值会被覆盖，只能从此处提供。 */
   declare translations?: Partial<PopoverTranslations>
 
@@ -99,6 +120,8 @@ export class XhPopoverElement extends XhPortalHostElement {
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
+  /** content 里 `<template>` 写的内容按 headless 的挂卸判定克隆进来或撤走；没写模板的作者节点照旧常驻 */
+  private readonly lazyContent = new LazyContent({ stash: false })
   private readonly portal = this.createAnchoredPortalController({
     name: 'Popover',
     config: () => this.config,
@@ -134,8 +157,14 @@ export class XhPopoverElement extends XhPortalHostElement {
       anchor: this.anchor,
       placement: this.placement,
       offset: this.offset,
+      flip: this.flip,
+      boundary: this.boundary,
       dir: this.direction,
       modal: this.modal,
+      initialFocus: this.initialFocus,
+      restoreFocus: this.restoreFocus,
+      lazyMount: this.lazyMount,
+      unmountOnExit: this.unmountOnExit,
       closeOnEscape: this.closeOnEscape,
       closeOnInteractOutside: this.closeOnInteractOutside,
       disabled: this.disabled,
@@ -144,6 +173,7 @@ export class XhPopoverElement extends XhPortalHostElement {
       // content 只引用作者写了的标题与说明
       parts: renderedTitleDescription(this.getPart('title'), this.getPart('description')),
       onOpenChange: this.notify,
+      onExitComplete: () => this.dispatchEvent(new CustomEvent('exit-complete', { bubbles: true, composed: true })),
     }
   }
 
@@ -183,7 +213,8 @@ export class XhPopoverElement extends XhPortalHostElement {
       // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，浮层等于关不掉。
       // 浮层壳一并记上：面板之外还浮着自绘滚动条，按住它拖动不该把面板消解掉。
       // 外部锚点同理：点它是交给打开它的那条命令去切换
-      branches: () => [this.getPart('trigger'), this.anchor, this.getPart('positioner')].filter(Boolean) as Element[],
+      // 虚拟锚点只给得出矩形，不是节点，不记
+      branches: () => [this.getPart('trigger'), (this.anchor as Partial<Node> | null | undefined)?.nodeType === 1 ? this.anchor : null, this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => this.ctrl.service.prop('modal') ?? false,
       // 非模态浮层不自带遮罩，没有"点它就该关本层"的表面
       surfaces: () => [],
@@ -250,6 +281,8 @@ export class XhPopoverElement extends XhPortalHostElement {
     exit.update(api.open)
     if (content)
       this.setPartHidden(content, !exit.visible, { attribute: true })
+    // 写在 content 里 <template> 中的内容按 headless 的判定克隆或撤走；新挂上的部件由部件观察器补一轮 wire 接上属性
+    this.lazyContent.sync(content, api.isContentMounted(exit.visible))
 
     this.bars.wire()
     this.portal.sync(exit.visible)

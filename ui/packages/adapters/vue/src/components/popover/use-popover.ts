@@ -41,6 +41,7 @@ export interface PopoverContext {
 export function usePopover(
   props: PopoverSchema['props'],
   onOpenChange?: PopoverSchema['props']['onOpenChange'],
+  onExitComplete?: PopoverSchema['props']['onExitComplete'],
 ): PopoverContext {
   const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)
@@ -50,7 +51,7 @@ export function usePopover(
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   const presence = useTitleDescriptionPresence()
-  const service = useMachine(popoverMachine, () => ({ ...props, parts: presence.parts.value, onOpenChange }), scope)
+  const service = useMachine(popoverMachine, () => ({ ...props, parts: presence.parts.value, onOpenChange, onExitComplete }), scope)
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
   let config: RuntimeConfig | null = null
@@ -69,7 +70,8 @@ export function usePopover(
       node: () => contentRef.value,
       // trigger 记为本层分支，点它算层内交互；外部锚点同理，点它交给打开它的那条命令去切换。
       // 浮层壳一并记上：面板之外还浮着自绘滚动条，按住它拖动不该把面板消解掉
-      branches: () => [triggerRef.value, props.anchor, positionerRef.value].filter(Boolean) as Element[],
+      // 虚拟锚点只给得出矩形，不是节点，不记
+      branches: () => [triggerRef.value, (props.anchor as Partial<Node> | null | undefined)?.nodeType === 1 ? props.anchor : null, positionerRef.value].filter(Boolean) as Element[],
       isModal: () => props.modal ?? false,
       surfaces: () => [],
     })

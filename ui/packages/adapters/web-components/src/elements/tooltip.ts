@@ -5,21 +5,26 @@
 
 // 提供 tooltip 相关实现。
 
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
+import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone, VirtualAnchor } from '@xihan-ui/core'
 import type { KbdPlatform } from '@xihan-ui/core/hotkey'
 import type { TooltipApi, TooltipGroup, TooltipOpenChangeDetails, TooltipSchema, TooltipTranslations } from '@xihan-ui/headless'
 import type { KeyedChildren } from '../dom/generated-nodes'
+import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectTooltip, createTooltipGroup, tooltipAnatomy, tooltipMachine, tooltipMeta } from '@xihan-ui/headless'
+import { connectTooltip, createTooltipGroup, tooltipAnatomy, tooltipMachine, tooltipMeta, tooltipStructure } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
-import { createGeneratedElement, reconcile, setText } from '../dom/generated-nodes'
+import { createGeneratedElement, GEN_ATTR, reconcile, setText } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { XhReactiveElement } from '../reactive'
+import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
+
+/** 委托模式下铺在 content 里的文字与快捷键用的生成标记，与标准结构的那一份分开。 */
+const DELEGATE_MARK = 'tooltip-delegate'
 
 // 字符串属性统一走这个转换器：属性缺席即 undefined，缺省值的唯一事实源留在机器。
 // Lit 默认转换器会在属性被移除时把值落成 null，那样就再也表达不了"没写过"。
@@ -40,11 +45,19 @@ const NUMBER_CONVERTER = {
  * 元素运行 tooltip 状态机并把 connect 产出接上。浮层坐标由本元素创建的定位引擎计算，
  * 经 refs 交给状态机的定位效应；引擎或角色节点缺席时状态机照常转移，只是不产出坐标。
  *
+ * 不写部件时元素按标准结构生成：trigger-text 属性（或宿主直接子节点上写 `slot="trigger"` 的节点）给出触发器，
+ * content 属性（或 `slot="content"` 的节点）给出提示文字，content 里末尾再生成箭头。
+ *
  * @customElement xh-tooltip
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {string} placement - 请求的浮层朝向（top / right / bottom / left，可带 -start / -end 后缀），默认 bottom；空间不足时由引擎避让
  * @attr {number} offset - 浮层与锚点的间距（px），默认 8
+ * @attr {boolean} flip - 空间不足时翻到对侧，默认 true；写 "false" 时守着 placement 那一侧
+ * @attr {boolean} lazy-mount - 第一次展开时才挂载：content 里写一个 `<template>`，第一次展开才克隆、之后常驻；委托模式下组件铺的文字与快捷键同样等到那时。没写模板的作者节点始终常驻
+ * @attr {boolean} unmount-on-exit - 收起动画播完后撤走 content 里 `<template>` 克隆出的内容（及委托模式下组件铺的文字与快捷键），下次展开重新铺，默认 false
+ * @attr {string} trigger-text - 标准结构里触发按钮的文字
+ * @attr {string} content - 标准结构里的提示文字
  * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上
  * @attr {number} open-delay - 悬停进入到展开的等待毫秒，默认 150
  * @attr {number} close-delay - 悬停移出到收起的等待毫秒，默认 100
@@ -69,6 +82,17 @@ export class XhTooltipElement extends XhPortalHostElement {
 
   static override partContract = { anatomy: tooltipAnatomy, meta: tooltipMeta }
 
+  static override structure: ElementStructure<XhTooltipElement> = {
+    rootless: true,
+    build: host => tooltipStructure({
+      ...(host.triggerText === undefined ? {} : { triggerText: host.triggerText }),
+      ...(host.content === undefined ? {} : { content: host.content }),
+      // 空串与没写一样，不进委托
+      delegated: Boolean(host.delegate),
+      slotted: (name, key) => host.slotted(name, key),
+    }),
+  }
+
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
 
@@ -78,6 +102,13 @@ export class XhTooltipElement extends XhPortalHostElement {
     defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
+    flip: { converter: BOOLEAN_CONVERTER },
+    lazyMount: { converter: BOOLEAN_CONVERTER, attribute: 'lazy-mount' },
+    unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
+    triggerText: { converter: STRING_CONVERTER, attribute: 'trigger-text' },
+    content: { converter: STRING_CONVERTER },
+    // 对象值进不了属性，只作为 property 暴露
+    boundary: { attribute: false },
     // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
     // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
@@ -97,6 +128,13 @@ export class XhTooltipElement extends XhPortalHostElement {
   declare defaultOpen?: boolean
   declare placement?: Placement
   declare offset?: number
+  declare flip?: boolean
+  declare lazyMount?: boolean
+  declare unmountOnExit?: boolean
+  declare triggerText?: string
+  declare content?: string
+  /** 碰撞边界：提示只在这块区域与视口的交集里摆。收元素或带 getBoundingClientRect() 的对象，只作为 property 暴露。 */
+  declare boundary?: Element | VirtualAnchor | null
   declare direction?: Direction
   declare openDelay?: number
   declare closeDelay?: number
@@ -112,6 +150,8 @@ export class XhTooltipElement extends XhPortalHostElement {
   private engine: PositionEnginePort | null = null
   /** 委托模式下生成在 content 里的 text 与 shortcut。 */
   private readonly generated: KeyedChildren = new WeakMap()
+  /** content 里 `<template>` 写的内容按 headless 的挂卸判定克隆进来或撤走；没写模板的作者节点照旧常驻 */
+  private readonly lazyContent = new LazyContent({ stash: false })
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly tooltipScope = createScope(() => this, this.idGen)
 
@@ -142,6 +182,10 @@ export class XhTooltipElement extends XhPortalHostElement {
       defaultOpen: this.defaultOpen ?? false,
       placement: this.placement,
       offset: this.offset,
+      flip: this.flip,
+      boundary: this.boundary,
+      lazyMount: this.lazyMount,
+      unmountOnExit: this.unmountOnExit,
       dir: this.direction,
       openDelay: this.openDelay,
       closeDelay: this.closeDelay,
@@ -235,9 +279,8 @@ export class XhTooltipElement extends XhPortalHostElement {
     // 才必须用内联样式盖过）。
     put('content', withoutHidden(api.getContentProps()))
     put('arrow', api.getArrowProps())
-    const shell = this.getPart('content')
-    if (shell)
-      this.syncDelegated(shell, api)
+    // 标准结构里装提示文字的 text；委托模式下的 text 由 syncDelegated 自己铺、自己接线
+    put('text', api.getTextProps())
 
     // 本仓自带的 tooltip.css 确实没给 content 设 display，但宿主不该指望作者装了这份样式：
     // 作者层只要给 content 来一句 display（Tailwind 的 flex/block 也算），
@@ -255,18 +298,26 @@ export class XhTooltipElement extends XhPortalHostElement {
     this.exit.update(api.open)
     if (content)
       this.setPartHidden(content, !this.exit.visible, { attribute: true })
+    // 写在 content 里 <template> 中的内容与委托模式下铺的文字、快捷键，都按 headless 的判定挂上或撤走
+    const mounted = api.isContentMounted(this.exit.visible)
+    this.lazyContent.sync(content, mounted)
+    if (content)
+      this.syncDelegated(content, api, mounted)
     this.portal.sync(this.exit.visible)
   }
 
-  /** 委托模式下在 content 里生成 text 与 shortcut，排在作者写的节点（箭头）之后；没有快捷键时不生成 shortcut，退出委托时都摘掉。 */
-  private syncDelegated(content: HTMLElement, api: TooltipApi): void {
-    const items: Array<'text' | 'shortcut'> = !api.delegated ? [] : api.shortcut === null ? ['text'] : ['text', 'shortcut']
+  /**
+   * 委托模式下在 content 里生成 text 与 shortcut，排在作者写的节点（箭头）之后；没有快捷键时不生成 shortcut，
+   * 退出委托或内容该卸时都摘掉。只认自己这一份生成标记：标准结构在 content 里生成的箭头不归这里管。
+   */
+  private syncDelegated(content: HTMLElement, api: TooltipApi, mounted: boolean): void {
+    const items: Array<'text' | 'shortcut'> = !api.delegated || !mounted ? [] : api.shortcut === null ? ['text'] : ['text', 'shortcut']
     reconcile(content, items, this.generated, item => item, (item, reuse) => {
-      const node = (reuse as HTMLElement | undefined) ?? createGeneratedElement(this.ownerDocument, 'span')
+      const node = (reuse as HTMLElement | undefined) ?? createGeneratedElement(this.ownerDocument, 'span', { [GEN_ATTR]: DELEGATE_MARK })
       this.spreader.spread(node, (item === 'text' ? api.getTextProps() : api.getShortcutProps()))
       setText(node, item === 'text' ? api.text : api.shortcut ?? '')
       return node
-    })
+    }, DELEGATE_MARK)
   }
 
   override disconnectedCallback(): void {

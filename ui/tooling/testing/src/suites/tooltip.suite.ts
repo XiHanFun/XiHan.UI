@@ -514,5 +514,19 @@ export const tooltipSuite: ConformanceSuite = {
         },
       ],
     },
+    {
+      name: '作者不写结构：三端都照 tooltipStructure 铺出触发器、content 里的提示文字与箭头；展开时触发器的描述指向 content',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ defaultStructure: true }),
+      props: { defaultOpen: true, triggerText: '保存', content: '写入草稿箱，不会发布' },
+      initial: {
+        order: ['trigger', 'positioner', 'content', 'text', 'arrow'],
+        counts: { trigger: 1, content: 1, text: 1, arrow: 1, shortcut: 0 },
+        parts: {
+          trigger: { 'type': 'button', 'aria-describedby': '@part(content)', 'data-state': 'open' },
+          content: { 'role': 'tooltip', 'data-state': 'open', 'hidden': null },
+        },
+      },
+    },
   ],
 }

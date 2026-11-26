@@ -8,6 +8,7 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { HoverCardApi, HoverCardSchema } from './hover-card.types'
 import { contains, dataAttr } from '@xihan-ui/core'
+import { disclosureContentMounted } from '../shared/disclosure-mount'
 import { overlayArrowVars, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { hoverCardAnatomy } from './hover-card.anatomy'
 import { HOVER_CARD_DEFAULT_PLACEMENT } from './hover-card.machine'
@@ -64,6 +65,13 @@ export function connectHoverCard<T extends PropTypes>(
   return {
     open,
     setOpen,
+    // 挂卸只管 content 里的内容：positioner 与 content 节点常驻，定位引擎总有节点可量
+    isContentMounted: present => disclosureContentMounted({
+      lazyMount: prop('lazyMount') ?? false,
+      unmountOnExit: prop('unmountOnExit') ?? false,
+      opened: context.get('opened'),
+      present,
+    }),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
