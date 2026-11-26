@@ -86,7 +86,7 @@ describe('菜单分隔线', () => {
     // 分隔线由连接层投影配方的标记位；这里照投影写好，只验皮肤与配方的接线
     host.innerHTML = `<div data-scope="${scope}" class="xh-scope-${scope}" data-part="separator" data-xh-collection-separator role="separator"></div>`
     host.style.setProperty(`--xh-${scope}-separator-my`, '6px')
-    host.style.setProperty(`--xh-${scope}-separator-color`, 'rgb(0, 128, 0)')
+    host.style.setProperty(`--xh-${scope}-separator-bg`, 'rgb(0, 128, 0)')
     host.style.setProperty(`--xh-${scope}-separator-thickness`, '3px')
     document.body.append(host)
     const style = getComputedStyle(host.firstElementChild!)
