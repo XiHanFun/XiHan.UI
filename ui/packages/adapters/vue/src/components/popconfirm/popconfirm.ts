@@ -35,6 +35,8 @@ export const XhPopconfirmRoot = defineComponent({
     defaultOpen: Boolean,
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
+    /** 交叉轴上再挪多少（px），缺省 0；正值往结束方向，RTL 下行内轴往左。 */
+    crossOffset: { type: Number },
     /** 空间不足时翻到对侧，默认 true；false 时守着 placement 那一侧。 */
     flip: { type: Boolean, default: undefined },
     /** 碰撞边界：浮层只在这块区域与视口的交集里摆。收元素或带 getBoundingClientRect() 的对象。 */

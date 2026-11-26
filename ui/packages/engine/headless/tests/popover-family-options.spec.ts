@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 // 浮层一族补上的几根轴：Popover 的 initialFocus / restoreFocus / onExitComplete、四个组件的 lazyMount / unmountOnExit、
-// 定位微调 flip / boundary 与 Popover 的虚拟锚点，以及 Tooltip / Popconfirm 的标准结构。
+// 定位微调 crossOffset / flip / boundary 与 Popover 的虚拟锚点，以及 Tooltip / Popconfirm 的标准结构。
 import type { Anchor, PositionEnginePort, PositionOptions } from '@xihan-ui/core'
 import type { ExitLease } from '@xihan-ui/core/presence'
 import type { HoverCardSchema, PopoverSchema, StructureChild, StructureNode, TooltipSchema } from '../src'
@@ -242,9 +242,10 @@ describe('定位微调与虚拟锚点', () => {
     return { calls, trigger }
   }
 
-  it('没写 flip / boundary 时不交给引擎，缺省留给引擎自己那一档', async () => {
+  it('没写 crossOffset / flip / boundary 时不交给引擎，缺省留给引擎自己那一档', async () => {
     const t = wire(popoverMachine, { defaultOpen: true })
     await settle()
+    expect(t.calls[0]!.options).not.toHaveProperty('crossOffset')
     expect(t.calls[0]!.options).not.toHaveProperty('flip')
     expect(t.calls[0]!.options).not.toHaveProperty('boundary')
   })
@@ -253,11 +254,12 @@ describe('定位微调与虚拟锚点', () => {
     ['popover', popoverMachine],
     ['hover-card', hoverCardMachine],
     ['tooltip', tooltipMachine],
-  ] as const)('%s：flip 与 boundary 原样交给引擎', async (_name, machine) => {
+  ] as const)('%s：crossOffset、flip 与 boundary 原样交给引擎', async (_name, machine) => {
     const boundary = document.createElement('section')
     document.body.append(boundary)
-    const t = wire(machine, { defaultOpen: true, flip: false, boundary })
+    const t = wire(machine, { defaultOpen: true, crossOffset: -6, flip: false, boundary })
     await settle()
+    expect(t.calls[0]!.options.crossOffset).toBe(-6)
     expect(t.calls[0]!.options.flip).toBe(false)
     expect(t.calls[0]!.options.boundary).toBe(boundary)
   })

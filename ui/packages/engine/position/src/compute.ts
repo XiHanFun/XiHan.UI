@@ -36,6 +36,11 @@ export interface ComputeInput {
   placement: Placement
   /** 浮层与锚点之间的主轴间距。 */
   offset: number
+  /**
+   * 交叉轴上再挪多少，缺省 0。正值往交叉轴的结束方向挪：上下两侧往行内结束方向（RTL 下向左），左右两侧往下。
+   * 算进每一侧的原始落点里，翻面与贴边挪位都在它之后。
+   */
+  crossOffset?: number
   flip: boolean
   shift: boolean
   /** shift 贴边时留出的余量。 */
@@ -114,15 +119,18 @@ function inlineAlign(align: Align, dir: Direction | undefined): Align {
 function coordsFor(input: ComputeInput, side: Side, align: Align): { x: number, y: number } {
   const { anchor, floating, offset } = input
   const inline = inlineAlign(align, input.dir)
+  const cross = input.crossOffset ?? 0
+  // 行内轴的结束方向随文字方向翻：RTL 下往左
+  const inlineCross = input.dir === 'rtl' ? -cross : cross
   switch (side) {
     case 'top':
-      return { x: alignOn(anchor.x, anchor.width, floating.width, inline), y: anchor.y - floating.height - offset }
+      return { x: alignOn(anchor.x, anchor.width, floating.width, inline) + inlineCross, y: anchor.y - floating.height - offset }
     case 'bottom':
-      return { x: alignOn(anchor.x, anchor.width, floating.width, inline), y: anchor.y + anchor.height + offset }
+      return { x: alignOn(anchor.x, anchor.width, floating.width, inline) + inlineCross, y: anchor.y + anchor.height + offset }
     case 'left':
-      return { x: anchor.x - floating.width - offset, y: alignOn(anchor.y, anchor.height, floating.height, align) }
+      return { x: anchor.x - floating.width - offset, y: alignOn(anchor.y, anchor.height, floating.height, align) + cross }
     case 'right':
-      return { x: anchor.x + anchor.width + offset, y: alignOn(anchor.y, anchor.height, floating.height, align) }
+      return { x: anchor.x + anchor.width + offset, y: alignOn(anchor.y, anchor.height, floating.height, align) + cross }
   }
 }
 

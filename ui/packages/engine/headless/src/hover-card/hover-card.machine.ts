@@ -199,7 +199,7 @@ export const hoverCardMachine = createMachine({
           // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
           size: true,
           // 作者写了的翻面开关与碰撞边界原样交给引擎
-          ...overlayPositioningOptions({ flip: prop('flip'), boundary: prop('boundary') }),
+          ...overlayPositioningOptions({ crossOffset: prop('crossOffset'), flip: prop('flip'), boundary: prop('boundary') }),
         }),
         onResult: result => context.set('position', result),
       }),

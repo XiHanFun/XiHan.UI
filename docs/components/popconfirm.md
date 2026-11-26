@@ -68,7 +68,7 @@ placement 是首选位，空间不足时引擎自行避让，实际落点写在 
 - 浮层是非模态 `dialog`：不捕获焦点、不锁定滚动、不隐藏页面其他内容。
 - 展开后焦点进入浮层：`initialFocus` 给一个选择器，焦点落在 content 里匹配它的元素上（破坏性操作想先落在确认钮上时用它），没给或不匹配时落在第一个可聚焦元素上；`restoreFocus` 为 false 时收起不归还焦点，缺省归还给触发器。
 - `lazyMount` / `unmountOnExit` 管 content 里的内容挂不挂、卸不卸，缺省常驻；退场动画播完、资源释放之后发出 `onExitComplete` / `exit-complete`。规则与[气泡卡片](./popover)相同。
-- `flip` 为 false 时不再自动翻面，守着 `placement` 那一侧，交叉轴贴边挪位照旧；`boundary` 给一块碰撞边界（元素或带 `getBoundingClientRect()` 的对象），浮层只在它与视口的交集里摆，翻面、贴边与可用空间都以交集为界。两项原样交给定位引擎，不写就留给引擎缺省。
+- `crossOffset` 沿交叉轴再挪一段：正值往结束方向，落在上下两侧时往行内结束方向（RTL 下向左），落在左右两侧时往下，箭头仍对着触发器中心。`flip` 为 false 时不再自动翻面，守着 `placement` 那一侧，交叉轴贴边挪位照旧；`boundary` 给一块碰撞边界（元素或带 `getBoundingClientRect()` 的对象），浮层只在它与视口的交集里摆，翻面、贴边与可用空间都以交集为界。三项原样交给定位引擎，不写就留给引擎缺省。
 - 位置、尺寸、语气三轴。
 - 内容与箭头使用与 Popover 同源的 frosted 表面：实体底、1px 描边与一层浮层投影，内衬与尺寸档同 Popover；强制色模式由系统色接管边界。
 - 标题、说明与末行操作按固定节奏排布，长文案可在可用宽度内断行；标题 14px / medium，说明 14px 次级色、与标题相距 4px，末行两颗钮与上面的文字相距 16px、彼此相距 8px。触发器与两个按钮走 Action Control 家族配方：确认是本浮层的主要动作，显式 solid 实心（语气随 content 的 `data-tone`）；取消是中性次要出口，outline 描边；触发器为 text 档中性描边。三者的按压反馈、粗指针命中区与焦点环由配方给出，Space / Enter 与触屏按住期间投影 `data-pressed`。
@@ -107,6 +107,7 @@ placement 是首选位，空间不足时引擎自行避让，实际落点写在 
 | `boundary` | `Element \| VirtualAnchor \| null` |  | 碰撞边界：浮层只在这块区域与视口的交集里摆，翻面、贴边挪位与可用空间都以交集为界。 收元素或带 getBoundingClientRect() 的对象；缺省只受视口与裁剪祖先约束。 |
 | `closeOnEscape` | `boolean` |  |  |
 | `closeOnInteractOutside` | `boolean` |  |  |
+| `crossOffset` | `number` |  | 交叉轴上再挪多少，缺省 0。正值往交叉轴的结束方向挪：落在上下两侧时往行内结束方向（RTL 下向左）， 落在左右两侧时往下；先于翻面与贴边挪位，箭头仍对着触发器中心。 |
 | `defaultOpen` | `boolean` |  |  |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `disabled` | `boolean` |  | 浮层不可打开：触发器转原生 disabled，点按与命令式 setOpen(true) 都不展开；展开途中转为禁用即收起。 与 Tooltip、HoverCard 的 disabled 同名同义：关掉的是浮层这件事。受控写回 open 仍按宿主的意思来。 |

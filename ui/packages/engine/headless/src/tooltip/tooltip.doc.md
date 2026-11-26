@@ -28,7 +28,7 @@
   - 提示文字与锚点的名字不同（写了 `data-xh-tooltip`）时，锚点的 `aria-describedby` 引用 `text`；相同就不引用，读屏不念两遍。快捷键只由锚点自己的 `aria-keyshortcuts` 报给读屏。
   - 原生禁用的按钮仍收得到指针事件，悬停照样出提示；键盘本来就停不到它。
 - 聚焦也能触发，键盘用户可以访问。
-- `flip` 为 false 时不再自动翻面，守着 `placement` 那一侧，交叉轴贴边挪位照旧；`boundary` 给一块碰撞边界（元素或带 `getBoundingClientRect()` 的对象），提示只在它与视口的交集里摆，翻面与贴边都以交集为界。两项原样交给定位引擎，不写就留给引擎缺省。
+- `crossOffset` 沿交叉轴再挪一段：正值往结束方向，落在上下两侧时往行内结束方向（RTL 下向左），落在左右两侧时往下，箭头仍对着触发器中心。`flip` 为 false 时不再自动翻面，守着 `placement` 那一侧，交叉轴贴边挪位照旧；`boundary` 给一块碰撞边界（元素或带 `getBoundingClientRect()` 的对象），提示只在它与视口的交集里摆，翻面与贴边都以交集为界。三项原样交给定位引擎，不写就留给引擎缺省。
 - content 里的内容缺省常驻、收起只隐藏。`lazyMount` 让它第一次展开时才挂载、之后常驻：表格、工具栏里成排的提示首屏只建触发器；`unmountOnExit` 让它在退场动画播完后卸载、下次展开重新挂载。委托模式下组件铺的 `text` 与 `shortcut` 一同挂卸。positioner 与 content 节点一向常驻；触发器只在展开期间指向 content，收起态的提示本来就不进描述。Web Components 写进 content 里一个 `<template>` 的内容按同一规则挂卸。
 - 收起时 `onOpenChange` 带上关闭原因 `reason`：指针移开、等过 `closeDelay` 与同组另一处提示露面把它顶掉报 `hover`；焦点离开、点在提示外报 `interact-outside`；按下触发器报 `close-trigger`；Escape 报 `esc`；`setOpen(false)` 报 `programmatic`。展开时不带。
 - 按下触发器即收起，让位给真正的操作；点击带来的那次聚焦不再把提示打开，指针移开再回来、或用键盘聚焦时照常出现。

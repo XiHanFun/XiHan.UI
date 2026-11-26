@@ -44,6 +44,11 @@ export interface HoverCardSchema extends MachineSchema {
     placement?: Placement
     /** 浮层与锚点的间距（px）。 */
     offset?: number
+    /**
+     * 交叉轴上再挪多少，缺省 0。正值往交叉轴的结束方向挪：落在上下两侧时往行内结束方向（RTL 下向左），
+     * 落在左右两侧时往下；先于翻面与贴边挪位，箭头仍对着触发器中心。
+     */
+    crossOffset?: number
     /** 空间不足时翻到对侧，默认 true；false 时守着 placement 那一侧，交叉轴贴边挪位照旧。 */
     flip?: boolean
     /**

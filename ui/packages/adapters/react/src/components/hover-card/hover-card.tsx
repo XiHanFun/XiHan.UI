@@ -30,6 +30,8 @@ export interface XhHoverCardRootProps extends Omit<ComponentPropsWithRef<'div'>,
   defaultOpen?: boolean
   placement?: Placement
   offset?: number
+  /** 交叉轴上再挪多少（px），缺省 0；正值往结束方向，RTL 下行内轴往左。 */
+  crossOffset?: number
   /** 空间不足时翻到对侧，默认 true；false 时守着 placement 那一侧。 */
   flip?: boolean
   /** 碰撞边界：卡片只在这块区域与视口的交集里摆。收元素或带 getBoundingClientRect() 的对象。 */
@@ -56,6 +58,7 @@ export function XhHoverCardRoot({
   defaultOpen,
   placement,
   offset,
+  crossOffset,
   flip,
   boundary,
   lazyMount,
@@ -74,6 +77,7 @@ export function XhHoverCardRoot({
     defaultOpen,
     placement,
     offset,
+    crossOffset,
     flip,
     boundary,
     lazyMount,

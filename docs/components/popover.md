@@ -100,7 +100,7 @@ anchor 交一个只给得出矩形的虚拟锚点，浮层就固定在刚点击�
 ### 特性
 
 - `placement` 只是首选位置，空间不足时定位引擎自动翻面。
-- `flip` 为 false 时不再自动翻面，守着 `placement` 那一侧，交叉轴贴边挪位照旧；`boundary` 给一块碰撞边界（元素或带 `getBoundingClientRect()` 的对象），浮层只在它与视口的交集里摆，翻面、贴边与可用空间都以交集为界。两项原样交给定位引擎，不写就留给引擎缺省。
+- `crossOffset` 沿交叉轴再挪一段：正值往结束方向，落在上下两侧时往行内结束方向（RTL 下向左），落在左右两侧时往下，箭头仍对着触发器中心。`flip` 为 false 时不再自动翻面，守着 `placement` 那一侧，交叉轴贴边挪位照旧；`boundary` 给一块碰撞边界（元素或带 `getBoundingClientRect()` 的对象），浮层只在它与视口的交集里摆，翻面、贴边与可用空间都以交集为界。三项原样交给定位引擎，不写就留给引擎缺省。
 - `modal` 可选：需要锁定下层时开启；展开期间可动态切换，模态档会锁定页面滚动并让背景失活。
 - `end` 等对齐是逻辑方向，跟随书写方向，不是物理左右。
 - `anchor` 换成外部锚点：由别处的按钮（工具栏命令等）受控打开时，把那颗按钮交给 `anchor`，浮层就贴着它定位、收起时焦点归还给它，可以不写触发器。展开期间这颗按钮带 `aria-haspopup`、`aria-expanded` 与 `aria-controls`，收起或换锚点时还原；点它算浮层内的交互，开合交给打开它的那条命令。
@@ -147,6 +147,7 @@ anchor 交一个只给得出矩形的虚拟锚点，浮层就固定在刚点击�
 | `defaultOpen` | `boolean` |  |  |
 | `anchor` | `HTMLElement \| VirtualAnchor \| null` |  | 外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger；用于由别处的按钮受控打开浮层，此时通常不渲染 trigger。 展开期间它带 aria-haspopup、aria-expanded、aria-controls，收起或换锚点时还原；点它算层内交互，不会先被判为层外交互关掉。 也收虚拟锚点：带 getBoundingClientRect() 的对象（指针落点、文本选区的 Range），每次定位现读它此刻的矩形， 页面滚动、视口改尺时跟着重算。虚拟锚点接不了焦点、也写不了读屏属性：收起时焦点归还给 trigger， 没有 trigger 时回到打开前的焦点持有者；换一个锚点对象即按新矩形重挂定位。 |
 | `placement` | `Placement` |  |  |
+| `crossOffset` | `number` |  | 交叉轴上再挪多少，缺省 0。正值往交叉轴的结束方向挪：落在上下两侧时往行内结束方向（RTL 下向左）， 落在左右两侧时往下；先于翻面与贴边挪位，箭头仍对着触发器中心。 |
 | `flip` | `boolean` |  | 空间不足时翻到对侧，默认 true；false 时守着 placement 那一侧，交叉轴贴边挪位照旧。 |
 | `boundary` | `Element \| VirtualAnchor \| null` |  | 碰撞边界：浮层只在这块区域与视口的交集里摆，翻面、贴边挪位与可用空间都以交集为界。 收元素或带 getBoundingClientRect() 的对象；缺省只受视口与裁剪祖先约束。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |

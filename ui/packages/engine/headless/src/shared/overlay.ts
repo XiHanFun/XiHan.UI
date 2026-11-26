@@ -34,6 +34,11 @@ export const OVERLAY_ARROW_PADDING = 8
  * 不写就不交，缺省落在引擎自己那一档：空间不足翻到对侧，只受视口与裁剪祖先约束。
  */
 export interface OverlayPositioningProps {
+  /**
+   * 交叉轴上再挪多少，缺省 0。正值往交叉轴的结束方向挪：落在上下两侧时往行内结束方向（RTL 下向左），
+   * 落在左右两侧时往下；先于翻面与贴边挪位，箭头仍对着锚点中心。
+   */
+  crossOffset?: number
   /** 空间不足时翻到对侧，缺省 true；false 时守着 placement 那一侧，交叉轴贴边挪位照旧。 */
   flip?: boolean
   /**
@@ -44,8 +49,10 @@ export interface OverlayPositioningProps {
 }
 
 /** 定位微调转成引擎参数：只带作者写了的那几项，没写的留给引擎缺省。 */
-export function overlayPositioningOptions(props: OverlayPositioningProps): Pick<PositionOptions, 'flip' | 'boundary'> {
-  const out: Pick<PositionOptions, 'flip' | 'boundary'> = {}
+export function overlayPositioningOptions(props: OverlayPositioningProps): Pick<PositionOptions, 'crossOffset' | 'flip' | 'boundary'> {
+  const out: Pick<PositionOptions, 'crossOffset' | 'flip' | 'boundary'> = {}
+  if (props.crossOffset)
+    out.crossOffset = props.crossOffset
   if (props.flip !== undefined)
     out.flip = props.flip
   if (props.boundary)

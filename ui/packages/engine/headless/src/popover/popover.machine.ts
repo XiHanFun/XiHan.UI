@@ -192,7 +192,7 @@ export const popoverMachine = createMachine({
           // 这台机器由 popconfirm 共用，落不落槽各自的 connect 说了算
           size: true,
           // 作者写了的翻面开关与碰撞边界原样交给引擎
-          ...overlayPositioningOptions({ flip: prop('flip'), boundary: prop('boundary') }),
+          ...overlayPositioningOptions({ crossOffset: prop('crossOffset'), flip: prop('flip'), boundary: prop('boundary') }),
         }),
         onResult: result => context.set('position', result),
       }),

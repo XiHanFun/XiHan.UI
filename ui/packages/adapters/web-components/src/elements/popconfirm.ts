@@ -48,6 +48,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @attr {boolean} close-on-escape - Esc 关闭，默认 true；写 close-on-escape="false" 关闭
  * @attr {boolean} close-on-interact-outside - 层外交互关闭，默认 true；写 "false" 关闭
  * @attr {'sm'|'md'|'lg'} size - 尺寸
+ * @attr {number} cross-offset - 交叉轴上再挪多少（px），默认 0；正值往结束方向，RTL 下行内轴往左
  * @attr {boolean} flip - 空间不足时翻到对侧，默认 true；写 "false" 时守着 placement 那一侧
  * @attr {string} initial-focus - 展开后先聚焦到 content 内匹配此选择器的元素；没给或不匹配时落到第一个可聚焦元素
  * @attr {boolean} restore-focus - 收起时把焦点归还给 trigger，默认 true；写 "false" 关闭
@@ -106,6 +107,7 @@ export class XhPopconfirmElement extends XhPortalHostElement {
     closeOnInteractOutside: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-interact-outside' },
     disabled: { converter: BOOLEAN_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    crossOffset: { converter: NUMBER_CONVERTER, attribute: 'cross-offset' },
     flip: { converter: BOOLEAN_CONVERTER },
     initialFocus: { converter: STRING_CONVERTER, attribute: 'initial-focus' },
     restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },
@@ -130,6 +132,7 @@ export class XhPopconfirmElement extends XhPortalHostElement {
   declare closeOnInteractOutside?: boolean
   declare disabled?: boolean
   declare size?: Size
+  declare crossOffset?: number
   declare flip?: boolean
   declare initialFocus?: string
   declare restoreFocus?: boolean
@@ -229,6 +232,7 @@ export class XhPopconfirmElement extends XhPortalHostElement {
       defaultOpen: this.defaultOpen ?? false,
       placement: this.placement,
       offset: this.offset,
+      crossOffset: this.crossOffset,
       flip: this.flip,
       boundary: this.boundary,
       dir: this.direction,

@@ -26,7 +26,7 @@ import '@xihan-ui/styles'
 
 // 浮层一族的挂载时机与定位微调要在真浏览器里验：退场动画得真播、定位引擎得真量。
 // lazyMount 第一次打开前不挂 content 里的内容；unmountOnExit 退场播完才卸，播的那一段内容照旧在；
-// 虚拟锚点按它给的矩形落位；flip 为 false 时守着请求的那一侧。
+// 虚拟锚点按它给的矩形落位；crossOffset 沿交叉轴挪开；flip 为 false 时守着请求的那一侧。
 
 let app: App | null = null
 
@@ -176,6 +176,29 @@ describe('定位微调与虚拟锚点', () => {
     anchor.value = { getBoundingClientRect: () => DOMRect.fromRect({ x: point.value.x, y: point.value.y, width: 0, height: 0 }) }
     await expect.poll(() => Math.round(rect().left)).toBe(240)
     expect(rect().top).toBeCloseTo(208, 0)
+  })
+
+  it('crossOffset：沿交叉轴挪开，正值往右、负值往左，主轴不变', async () => {
+    const anchor = { getBoundingClientRect: () => DOMRect.fromRect({ x: 200, y: 120, width: 0, height: 0 }) }
+    const placeWith = async (crossOffset: number | undefined): Promise<DOMRect> => {
+      app?.unmount()
+      document.body.innerHTML = ''
+      const host = document.createElement('div')
+      document.body.append(host)
+      app = createApp({
+        render: () => h(XhPopoverRoot, { open: true, anchor, placement: 'bottom-start', offset: 8, crossOffset }, () => [
+          h(XhPopoverPositioner, null, () => h(XhPopoverContent, { 'aria-label': '落点' }, () => h('p', '这一点'))),
+        ]),
+      })
+      app.mount(host)
+      await expect.poll(() => part('popover', 'positioner')!.hasAttribute('data-positioned')).toBe(true)
+      return part('popover', 'positioner')!.getBoundingClientRect()
+    }
+    expect((await placeWith(undefined)).left).toBeCloseTo(200, 0)
+    const right = await placeWith(24)
+    expect(right.left).toBeCloseTo(224, 0)
+    expect(right.top).toBeCloseTo(128, 0)
+    expect((await placeWith(-16)).left).toBeCloseTo(184, 0)
   })
 
   it('flip 为 false：触发器贴着视口底边时守着 bottom，缺省则翻到 top', async () => {

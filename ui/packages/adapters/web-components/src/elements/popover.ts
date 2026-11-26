@@ -42,6 +42,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @attr {boolean} restore-focus - 收起时把焦点归还给 trigger（或元素锚点），默认 true；写 "false" 关闭
  * @attr {boolean} lazy-mount - 第一次打开时才挂载：content 里写一个 `<template>`，第一次打开才克隆、之后常驻。没写模板的作者节点始终常驻
  * @attr {boolean} unmount-on-exit - 收起动画播完后撤走 content 里 `<template>` 克隆出的内容，下次打开重新克隆，默认 false
+ * @attr {number} cross-offset - 交叉轴上再挪多少（px），默认 0；正值往结束方向，RTL 下行内轴往左
  * @attr {boolean} flip - 空间不足时翻到对侧，默认 true；写 "false" 时守着 placement 那一侧
  * @attr {boolean} close-on-escape - Esc 关闭，默认 true；写 close-on-escape="false" 关闭
  * @attr {boolean} close-on-interact-outside - 层外交互关闭，默认 true；写 "false" 关闭
@@ -77,6 +78,7 @@ export class XhPopoverElement extends XhPortalHostElement {
     restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },
     lazyMount: { converter: BOOLEAN_CONVERTER, attribute: 'lazy-mount' },
     unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
+    crossOffset: { converter: NUMBER_CONVERTER, attribute: 'cross-offset' },
     flip: { converter: BOOLEAN_CONVERTER },
     closeOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-escape' },
     closeOnInteractOutside: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-interact-outside' },
@@ -98,6 +100,7 @@ export class XhPopoverElement extends XhPortalHostElement {
   declare restoreFocus?: boolean
   declare lazyMount?: boolean
   declare unmountOnExit?: boolean
+  declare crossOffset?: number
   declare flip?: boolean
   declare closeOnEscape?: boolean
   declare closeOnInteractOutside?: boolean
@@ -157,6 +160,7 @@ export class XhPopoverElement extends XhPortalHostElement {
       anchor: this.anchor,
       placement: this.placement,
       offset: this.offset,
+      crossOffset: this.crossOffset,
       flip: this.flip,
       boundary: this.boundary,
       dir: this.direction,

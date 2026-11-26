@@ -156,3 +156,14 @@ describe('content 里的 <template>：lazy-mount / unmount-on-exit', () => {
     expect(document.querySelector('[data-testid="body"]')).toBeNull()
   })
 })
+
+describe('定位微调属性', () => {
+  it.each(['xh-popover', 'xh-popconfirm', 'xh-hover-card', 'xh-tooltip'])('%s：cross-offset 按数值读进 crossOffset，撤掉属性即回到缺省', async (tag) => {
+    const el = mount(tag, { 'cross-offset': '-12' }) as OverlayHost & { crossOffset?: number }
+    await settle(el)
+    expect(el.crossOffset).toBe(-12)
+    el.removeAttribute('cross-offset')
+    await settle(el)
+    expect(el.crossOffset ?? 0).toBe(0)
+  })
+})

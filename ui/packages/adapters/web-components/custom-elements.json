@@ -38237,6 +38237,15 @@
             },
             {
               "kind": "field",
+              "name": "crossOffset",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "cross-offset"
+            },
+            {
+              "kind": "field",
               "name": "flip",
               "privacy": "public",
               "type": {
@@ -38507,6 +38516,14 @@
               "description": "浮层与锚点的间距（px），默认 8",
               "name": "offset",
               "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "交叉轴上再挪多少（px），默认 0；正值往结束方向，RTL 下行内轴往左",
+              "name": "cross-offset",
+              "fieldName": "crossOffset"
             },
             {
               "type": {
@@ -54338,6 +54355,15 @@
             },
             {
               "kind": "field",
+              "name": "crossOffset",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "cross-offset"
+            },
+            {
+              "kind": "field",
               "name": "flip",
               "privacy": "public",
               "type": {
@@ -54786,6 +54812,14 @@
             },
             {
               "type": {
+                "text": "number | undefined"
+              },
+              "description": "交叉轴上再挪多少（px），默认 0；正值往结束方向，RTL 下行内轴往左",
+              "name": "cross-offset",
+              "fieldName": "crossOffset"
+            },
+            {
+              "type": {
                 "text": "boolean | undefined"
               },
               "description": "空间不足时翻到对侧，默认 true；写 \"false\" 时守着 placement 那一侧",
@@ -55145,6 +55179,15 @@
             },
             {
               "kind": "field",
+              "name": "crossOffset",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "cross-offset"
+            },
+            {
+              "kind": "field",
               "name": "flip",
               "privacy": "public",
               "type": {
@@ -55480,6 +55523,14 @@
               "description": "收起动画播完后撤走 content 里 `<template>` 克隆出的内容，下次打开重新克隆，默认 false",
               "name": "unmount-on-exit",
               "fieldName": "unmountOnExit"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "交叉轴上再挪多少（px），默认 0；正值往结束方向，RTL 下行内轴往左",
+              "name": "cross-offset",
+              "fieldName": "crossOffset"
             },
             {
               "type": {
@@ -79547,6 +79598,15 @@
             },
             {
               "kind": "field",
+              "name": "crossOffset",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "cross-offset"
+            },
+            {
+              "kind": "field",
               "name": "flip",
               "privacy": "public",
               "type": {
@@ -79917,6 +79977,14 @@
               "description": "浮层与锚点的间距（px），默认 8",
               "name": "offset",
               "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "交叉轴上再挪多少（px），默认 0；正值往结束方向，RTL 下行内轴往左",
+              "name": "cross-offset",
+              "fieldName": "crossOffset"
             },
             {
               "type": {

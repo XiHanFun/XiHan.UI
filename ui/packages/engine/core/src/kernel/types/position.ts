@@ -67,6 +67,11 @@ export type PositionStrategy = 'absolute' | 'fixed'
 export interface PositionOptions {
   placement?: Placement
   offset?: number
+  /**
+   * 交叉轴上再挪多少，缺省 0。正值往交叉轴的结束方向挪：落在上下两侧时往行内结束方向（RTL 下向左），
+   * 落在左右两侧时往下。先于翻面与贴边挪位作用，箭头仍对着锚点中心。
+   */
+  crossOffset?: number
   /** 是否 flip/shift 自动避让。 */
   flip?: boolean
   shift?: boolean

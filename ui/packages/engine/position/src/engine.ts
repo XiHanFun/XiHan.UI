@@ -88,6 +88,7 @@ export function createPositionEngine(): PositionEnginePort {
           clip: edgesToFrame(clipViewport, frame),
           placement: options.placement ?? DEFAULTS.placement,
           offset: options.offset ?? DEFAULTS.offset,
+          crossOffset: options.crossOffset,
           flip: options.flip ?? DEFAULTS.flip,
           shift: options.shift ?? DEFAULTS.shift,
           padding: SHIFT_PADDING,

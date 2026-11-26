@@ -58,6 +58,7 @@ export function usePopconfirm(
     defaultOpen: props.defaultOpen,
     placement: props.placement,
     offset: props.offset,
+    crossOffset: props.crossOffset,
     flip: props.flip,
     boundary: props.boundary,
     dir: props.dir,

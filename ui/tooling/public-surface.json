@@ -15836,6 +15836,7 @@
     "hover-card": [
       "boundary",
       "closeDelay",
+      "crossOffset",
       "defaultOpen",
       "dir",
       "disabled",
@@ -16330,6 +16331,7 @@
       "boundary",
       "closeOnEscape",
       "closeOnInteractOutside",
+      "crossOffset",
       "defaultOpen",
       "dir",
       "disabled",
@@ -16355,6 +16357,7 @@
       "boundary",
       "closeOnEscape",
       "closeOnInteractOutside",
+      "crossOffset",
       "defaultOpen",
       "dir",
       "disabled",
@@ -17162,6 +17165,7 @@
     "tooltip": [
       "boundary",
       "closeDelay",
+      "crossOffset",
       "defaultOpen",
       "delegate",
       "dir",
@@ -24730,6 +24734,7 @@
     "xh-hover-card": {
       "attributes": [
         "close-delay",
+        "cross-offset",
         "default-open",
         "dir",
         "disabled",
@@ -25305,6 +25310,7 @@
         "close-on-escape",
         "close-on-interact-outside",
         "confirm-text",
+        "cross-offset",
         "default-open",
         "description",
         "dir",
@@ -25333,6 +25339,7 @@
       "attributes": [
         "close-on-escape",
         "close-on-interact-outside",
+        "cross-offset",
         "default-open",
         "dir",
         "disabled",
@@ -26190,6 +26197,7 @@
       "attributes": [
         "close-delay",
         "content",
+        "cross-offset",
         "default-open",
         "delegate",
         "dir",

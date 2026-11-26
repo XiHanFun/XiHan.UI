@@ -10,7 +10,7 @@ import type { PopoverOpenChangeDetails, PopoverSchema } from '../popover/popover
 
 /**
  * 开合与浮层部分与 popover 相同：气泡确认运行的即 popover 状态机，initialFocus / restoreFocus、
- * lazyMount / unmountOnExit 与 flip / boundary 一并沿用；两个开合回调 onOpenChange、onExitComplete 归 PopconfirmNotifiers。
+ * lazyMount / unmountOnExit 与 crossOffset / flip / boundary 一并沿用；两个开合回调 onOpenChange、onExitComplete 归 PopconfirmNotifiers。
  * 去除三项：modal（气泡确认不陷入焦点）、translations（popover 的那份是关闭钮的名字，气泡确认没有关闭钮；
  * 自己的文案见 PopconfirmTranslations）与 anchor（确认气泡总是贴着发起这次操作的触发器）。
  */

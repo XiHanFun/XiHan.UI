@@ -58,6 +58,38 @@ describe('贴边与对齐', () => {
   })
 })
 
+describe('交叉轴偏移', () => {
+  it('上下两侧沿横轴挪，正值往右，主轴不受影响', () => {
+    expect(place({ placement: 'bottom-start', crossOffset: 12 })).toMatchObject({ x: 112, y: 148 })
+    expect(place({ placement: 'top', crossOffset: -10 })).toMatchObject({ x: 110, y: 72 })
+  })
+
+  it('左右两侧沿纵轴挪，正值往下', () => {
+    expect(place({ placement: 'right-start', crossOffset: 6 })).toMatchObject({ x: 208, y: 106 })
+  })
+
+  it('rTL 下行内轴的结束方向在左，正值往左挪', () => {
+    expect(place({ placement: 'bottom-start', dir: 'rtl', crossOffset: 12 }).x).toBe(140 - 12)
+    // 块轴与文字方向无关
+    expect(place({ placement: 'left', dir: 'rtl', crossOffset: 6 }).y).toBe(116)
+  })
+
+  it('翻面之后照样带着偏移', () => {
+    const tight = { top: 0, right: 1000, bottom: 160, left: 0 }
+    expect(place({ placement: 'bottom-start', clip: tight, flip: true, crossOffset: 12 }))
+      .toMatchObject({ placement: 'top-start', x: 112, y: 72 })
+  })
+
+  it('偏移出界时贴边挪位把它挪回来', () => {
+    const narrow = { top: 0, right: 180, bottom: 1000, left: 0 }
+    expect(place({ placement: 'bottom-end', clip: narrow, shift: true, crossOffset: 40 }).x).toBe(180 - 4 - 60)
+  })
+
+  it('箭头仍对着锚点中心，不跟着偏移走', () => {
+    expect(place({ placement: 'bottom', crossOffset: 20, arrow: { size: 8 } }).arrow).toEqual({ x: 10 })
+  })
+})
+
 describe('翻面', () => {
   const TIGHT_TOP = { anchor: { x: 100, y: 0, width: 100, height: 40 }, flip: true }
 

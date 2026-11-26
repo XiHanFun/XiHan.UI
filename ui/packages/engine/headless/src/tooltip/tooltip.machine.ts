@@ -297,7 +297,7 @@ export const tooltipMachine = createMachine({
           // 引擎量不到箭头，尺寸与让开圆角的余量由这里交进去
           arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
           // 作者写了的翻面开关与碰撞边界原样交给引擎
-          ...overlayPositioningOptions({ flip: prop('flip'), boundary: prop('boundary') }),
+          ...overlayPositioningOptions({ crossOffset: prop('crossOffset'), flip: prop('flip'), boundary: prop('boundary') }),
         }),
         onResult: result => context.set('position', result),
       }),

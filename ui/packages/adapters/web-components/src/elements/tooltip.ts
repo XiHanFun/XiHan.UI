@@ -53,6 +53,7 @@ const NUMBER_CONVERTER = {
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {string} placement - 请求的浮层朝向（top / right / bottom / left，可带 -start / -end 后缀），默认 bottom；空间不足时由引擎避让
  * @attr {number} offset - 浮层与锚点的间距（px），默认 8
+ * @attr {number} cross-offset - 交叉轴上再挪多少（px），默认 0；正值往结束方向，RTL 下行内轴往左
  * @attr {boolean} flip - 空间不足时翻到对侧，默认 true；写 "false" 时守着 placement 那一侧
  * @attr {boolean} lazy-mount - 第一次展开时才挂载：content 里写一个 `<template>`，第一次展开才克隆、之后常驻；委托模式下组件铺的文字与快捷键同样等到那时。没写模板的作者节点始终常驻
  * @attr {boolean} unmount-on-exit - 收起动画播完后撤走 content 里 `<template>` 克隆出的内容（及委托模式下组件铺的文字与快捷键），下次展开重新铺，默认 false
@@ -102,6 +103,7 @@ export class XhTooltipElement extends XhPortalHostElement {
     defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
+    crossOffset: { converter: NUMBER_CONVERTER, attribute: 'cross-offset' },
     flip: { converter: BOOLEAN_CONVERTER },
     lazyMount: { converter: BOOLEAN_CONVERTER, attribute: 'lazy-mount' },
     unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
@@ -128,6 +130,7 @@ export class XhTooltipElement extends XhPortalHostElement {
   declare defaultOpen?: boolean
   declare placement?: Placement
   declare offset?: number
+  declare crossOffset?: number
   declare flip?: boolean
   declare lazyMount?: boolean
   declare unmountOnExit?: boolean
@@ -182,6 +185,7 @@ export class XhTooltipElement extends XhPortalHostElement {
       defaultOpen: this.defaultOpen ?? false,
       placement: this.placement,
       offset: this.offset,
+      crossOffset: this.crossOffset,
       flip: this.flip,
       boundary: this.boundary,
       lazyMount: this.lazyMount,
