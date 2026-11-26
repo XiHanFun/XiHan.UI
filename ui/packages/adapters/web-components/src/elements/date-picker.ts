@@ -134,6 +134,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {string} default-focused-value - 初始聚焦日，同时决定展开时先落在哪一页
  * @attr {boolean} disabled - 整个控件禁用：trigger 为原生 disabled，段位退出 Tab 序列
  * @attr {boolean} read-only - 只读：浮层照常展开、日历照常浏览，但选中值不可修改
+ * @attr {boolean} clearable - 清空能力，默认开启；写 "false" 关掉：不铺清空按钮，连接层的 clear() 也不生效
  * @attr {boolean} invalid - 校验失败标注；未提供时也会自行判定：已填齐但越界
  * @attr {boolean} required - 必填标注，写入每段的 aria-required
  * @attr {string} name - 表单字段名；提供后隐藏输入才带 name
@@ -244,6 +245,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
     defaultFocusedValue: { converter: STRING_CONVERTER, attribute: 'default-focused-value' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    clearable: { converter: BOOLEAN_CONVERTER },
     invalid: { converter: BOOLEAN_CONVERTER },
     required: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
@@ -290,6 +292,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
   declare defaultFocusedValue?: string
   declare disabled?: boolean
   declare readOnly?: boolean
+  declare clearable?: boolean
   declare invalid?: boolean
   declare required?: boolean
   declare name?: string
@@ -445,6 +448,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
       isDateUnavailable: this.isDateUnavailable,
       disabled: control.disabled,
       readOnly: control.readOnly,
+      clearable: this.clearable,
       invalid: control.invalid,
       required: control.required,
       name: this.name,

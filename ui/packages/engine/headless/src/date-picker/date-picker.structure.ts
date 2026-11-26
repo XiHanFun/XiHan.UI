@@ -53,7 +53,7 @@ export interface DatePickerStructureOptions {
   slotted?: StructureSlotted
 }
 
-type DatePickerStructureModel = Pick<DatePickerApi, 'multiple' | 'tags' | 'field' | 'presets' | 'showTime' | 'timeColumns' | 'getTimeItemText' | 'translations'> & {
+type DatePickerStructureModel = Pick<DatePickerApi, 'multiple' | 'tags' | 'clearable' | 'field' | 'presets' | 'showTime' | 'timeColumns' | 'getTimeItemText' | 'translations'> & {
   calendar: Pick<DatePickerApi['calendar'], 'panels' | 'weekDays' | 'headingOrder'>
 }
 
@@ -65,6 +65,8 @@ type DatePickerStructureModel = Pick<DatePickerApi, 'multiple' | 'tags' | 'field
  *   浮层里这几块直接并排，横排与换行由皮肤按在场的部件排。
  */
 export function datePickerStructure(model: DatePickerStructureModel, options: DatePickerStructureOptions = {}): DatePickerNode[] {
+  // 关掉 clearable 就不铺清空钮
+  const clearTrigger: DatePickerNode[] = model.clearable ? [{ key: 'clear-trigger', tag: 'button', part: 'clear-trigger' }] : []
   const multiple = model.multiple
   const nodes: DatePickerNode[] = []
   if (options.slotted?.('label'))
@@ -143,7 +145,7 @@ export function datePickerStructure(model: DatePickerStructureModel, options: Da
       part: 'control',
       children: [
         entry,
-        { key: 'clear-trigger', tag: 'button', part: 'clear-trigger' },
+        ...clearTrigger,
         { key: 'trigger', tag: 'button', part: 'trigger' },
       ],
     },

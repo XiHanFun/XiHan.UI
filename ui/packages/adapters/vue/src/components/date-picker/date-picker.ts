@@ -142,6 +142,8 @@ export const XhDatePickerRoot = defineComponent({
     isDateUnavailable: { type: Function as PropType<(value: string) => boolean> },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
+    /** 清空能力，缺省开启；写 false 时不铺清空按钮，api.clear() 也不生效。 */
+    clearable: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
     name: { type: String },

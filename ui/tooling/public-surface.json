@@ -15272,6 +15272,7 @@
     "date-picker": [
       "activeView",
       "ariaLabel",
+      "clearable",
       "closeOnSelect",
       "defaultFocusedValue",
       "defaultOpen",
@@ -24149,6 +24150,7 @@
     "xh-date-picker": {
       "attributes": [
         "active-view",
+        "clearable",
         "close-on-select",
         "default-focused-value",
         "default-open",

@@ -2057,3 +2057,28 @@ describe('datePickerMachine 关闭原因', () => {
     expect(onOpenChange.mock.calls.map(c => c[0]).filter(d => d.open)).toEqual([{ open: true }])
   })
 })
+
+describe('clearable', () => {
+  const partsOf = (nodes: readonly unknown[]): string[] => nodes.map(node => (node && typeof node === 'object' && 'part' in node ? String(node.part) : ''))
+  const controlParts = (nodes: readonly unknown[]): string[] => {
+    const control = nodes.find(node => node && typeof node === 'object' && 'part' in node && node.part === 'control') as { children?: readonly unknown[] } | undefined
+    return partsOf(control?.children ?? [])
+  }
+
+  it('写 false：有值也收起清空钮、clear() 拦下、标准结构不铺；setValue([]) 照旧清得掉', () => {
+    const h = mount({ defaultValue: '2026-07-28', clearable: false })
+    expect(h.clear.hidden).toBe(true)
+    expect([h.api().clearable, h.api().canClear]).toEqual([false, false])
+    h.api().clear()
+    expect(h.value()).toEqual(['2026-07-28'])
+    expect(controlParts(datePickerStructure(h.api()))).toEqual(['segment-group', 'trigger'])
+    h.api().setValue([])
+    expect(h.value()).toEqual([])
+  })
+
+  it('缺省开着，与写 true 一样', () => {
+    const h = mount({ defaultValue: '2026-07-28', clearable: true })
+    expect(h.clear.hidden).toBe(false)
+    expect(controlParts(datePickerStructure(mount({ defaultValue: '2026-07-28' }).api()))).toEqual(['segment-group', 'clear-trigger', 'trigger'])
+  })
+})

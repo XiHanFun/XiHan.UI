@@ -107,6 +107,7 @@ multiple 时选中的日期在输入行里排成标签，点标签上的叉或�
 - 填齐了但越界即整个字段标为不合法，也可以用 `invalid` 显式声明。
 - 切换粒度会清空旧选择，输入段、网格和周期边界随后一起切换，不做隐式转换。
 - 空值时显示日历入口；有值且渲染了清空按钮时，指针落在盒上（或焦点在盒内）由清空按钮原位接替日历图标，触屏上有值即接替；焦点正在日历钮上时它不让位。
+- `clearable` 缺省开启；写 false 即关掉清空能力：有值也不露清空按钮、标准结构不再铺它，盒上只留日历钮，`api.clear()` 也被拦下；段位上按退格逐段清值照旧。必选的字段用它去掉清空钮。
 - 聚焦边界、段位强调与日期格按压都使用短过渡；减弱动效仍由全局动效轴收敛。
 - 浮层收起时 `onOpenChange` 带上关闭原因 `reason`：Escape 报 `esc`，点在浮层外或焦点移出浮层报 `interact-outside`；再点一次日历钮或输入行、在段位上按 Enter、按确认钮报 `close-trigger`；选中日期或快捷选项随之收起报 `selection`；`setOpen(false)` 报 `programmatic`。展开时不带。
 
@@ -166,6 +167,7 @@ multiple 时选中的日期在输入行里排成标签，点标签上的叉或�
 | `isDateUnavailable` | `(value: string) => boolean` |  | 不可用判定，接收 ISO 串。界外与判定为真的日期同等处理。 |
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 为原生 disabled，段位退出 Tab 序列，日历格子全部为 aria-disabled。 |
 | `readOnly` | `boolean` |  | 只读：浮层照常展开、日历照常翻月浏览，但选中值不可修改。 |
+| `clearable` | `boolean` |  | 清空能力，默认开启：有值且改得动时露出清空按钮。 写 false 即关掉：清空按钮恒带 hidden 收起、标准结构不再铺它，api.clear() 也被拦下；段位上按退格逐段清值照旧。 |
 | `invalid` | `boolean` |  | 校验失败：段位报告 aria-invalid，各角色节点带 data-invalid。 未提供时也会自行判定：已填齐但越界。 |
 | `required` | `boolean` |  | 必填标注，写入每一段的 aria-required。 |
 | `name` | `string` |  | 表单字段名；提供后隐藏输入才带 name，ISO 串随表单一并提交。 |
@@ -300,13 +302,14 @@ multiple 时选中的日期在输入行里排成标签，点标签上的叉或�
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` | 校验失败：作者标记的或越界。 |
 | `canClear` | `boolean` | 清空按钮当前是否可按。 |
+| `clearable` | `boolean` | 清空能力是否开启（clearable 没写成 false）。 |
 | `tags` | `DatePickerTagMeta[]` | 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组。 |
 | `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
 | `overflowText` | `string` | +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 |
 | `deselect` | `(value: string) => void` | 多选时摘掉一个选中值。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string[]) => void` |  |
-| `clear` | `() => void` |  |
+| `clear` | `() => void` | 发起清空；关掉 clearable 时不生效，无条件清空用 setValue([])。 |
 | `setActiveView` | `(next: CalendarView) => void` | 直接切换到某一层级。 |
 | `presets` | `readonly DatePickerPresetState[]` | 快捷选项逐条的状态，数据顺序。未提供 presets 时为空数组。 |
 | `showTime` | `boolean` | showTime 生效（已开启且为单选模式）。 |

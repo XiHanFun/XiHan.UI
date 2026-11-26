@@ -1188,6 +1188,16 @@ export const datePickerSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'clearable 写 false：有值也不露清空钮、标准结构不铺；改回 true 即铺出并露面',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { ...BASE_PROPS, clearable: false },
+      initial: { counts: { 'clear-trigger': 0 } },
+      steps: [
+        { kind: 'setProps', props: { clearable: true }, expect: { parts: { 'clear-trigger': { hidden: null } } } },
+      ],
+    },
+    {
       name: '作者不写结构：三端都照 datePickerStructure 铺出标题、盒里的段组与两颗钮、表单影子与浮层里的日历',
       spec: { apg: APG },
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),

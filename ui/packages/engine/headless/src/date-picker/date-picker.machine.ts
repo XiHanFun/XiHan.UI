@@ -263,7 +263,7 @@ export const datePickerMachine = createMachine({
   watch: ({ track, prop, context, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
     // 按住途中转入禁用 / 只读或值被清空：触发钮随即 disabled、清空钮藏起，不会再来 keyup，按压面由机器自己收
-    track([() => prop('disabled'), () => prop('readOnly'), context.dep('value')], () => action(['releaseWhenInert']))
+    track([() => prop('disabled'), () => prop('readOnly'), () => prop('clearable'), context.dep('value')], () => action(['releaseWhenInert']))
     // 选中值变了：选中换了格的时间列平滑滚过去（打开时的那一下由展开态的 effect 直接到位）
     track([context.dep('value')], () => action(['followColumnSelection']))
   },
@@ -387,7 +387,7 @@ export const datePickerMachine = createMachine({
         if (pressed == null)
           return
         const readOnlyHit = prop('readOnly') && pressed !== 'trigger' && pressed !== 'confirm'
-        if (prop('disabled') || readOnlyHit || (pressed === 'clear' && context.get('value').length === 0))
+        if (prop('disabled') || readOnlyHit || (pressed === 'clear' && (context.get('value').length === 0 || prop('clearable') === false)))
           context.set('pressed', null)
       },
 
