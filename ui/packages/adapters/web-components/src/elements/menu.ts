@@ -17,6 +17,7 @@ import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { withoutHidden } from '../overlay-exit'
+import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { findMenuSubmenuOwner, setMenuSubmenuOwner } from '../runtime/menu-submenu-owner'
 import { OverlayController } from '../runtime/overlay-controller'
@@ -45,6 +46,8 @@ import { XhIconElement } from './icon'
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} typeahead - 首字符连打检索，默认开启；写 typeahead="false" 关闭
+ * @attr {boolean} lazy-mount - 第一次展开时才挂载条目：按数据铺的条目第一次展开才生成；手写的条目写进 content 里的一个 `<template>`，第一次展开才克隆、之后常驻。没写模板的手写条目始终常驻
+ * @attr {boolean} unmount-on-exit - 收起动画播完后撤走条目（按数据铺的与 `<template>` 克隆出的），下次展开重新铺，默认 false
  * @attr {boolean} disabled - 整张菜单禁用：触发器不再展开，条目全部为 aria-disabled
  * @attr {string} label - 生成结构时的触发器文字：根菜单是按钮里的文字（没写 slot="trigger" 时），子菜单是触发条目的文字；手写部件时不使用它
  * @attr {string} value - 子菜单在父菜单里的条目身份：生成结构时写在触发条目上；手写部件时写在触发条目自己身上
@@ -82,6 +85,8 @@ export class XhMenuElement extends XhPortalHostElement {
     build: host => host.ctrl.service
       ? menuStructure(connectMenu(host.ctrl.service, wcNormalize), {
           submenu: host.submenu ?? false,
+          // 结构排在 wire() 之前，闸门这一轮还没跟上 open：展开中或退场没播完都算在场，退场播完由闸门叫的那一轮撤掉条目
+          contentMounted: host.contentMounted(),
           anchored: host.anchor !== undefined,
           ...(host.value === undefined ? {} : { value: host.value }),
           ...(host.label === undefined ? {} : { label: host.label }),
@@ -112,6 +117,8 @@ export class XhMenuElement extends XhPortalHostElement {
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     typeahead: { converter: BOOLEAN_CONVERTER },
+    lazyMount: { converter: BOOLEAN_CONVERTER, attribute: 'lazy-mount' },
+    unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
     disabled: { converter: BOOLEAN_CONVERTER },
     // 文案是对象，只走 property
     translations: { attribute: false },
@@ -146,6 +153,8 @@ export class XhMenuElement extends XhPortalHostElement {
   declare tone?: Tone
   declare size?: Size
   declare typeahead?: boolean
+  declare lazyMount?: boolean
+  declare unmountOnExit?: boolean
   declare disabled?: boolean
   declare translations?: Partial<MenuTranslations>
   declare submenu?: boolean
@@ -268,6 +277,15 @@ export class XhMenuElement extends XhPortalHostElement {
     props: () => ({ size: 'sm' }),
   })
 
+  /** content 里 `<template>` 写的条目按 headless 的挂卸判定克隆进来或撤走；没写模板的作者节点照旧常驻 */
+  private readonly lazyContent = new LazyContent({ stash: false })
+
+  /** 生成结构时 content 里铺不铺条目。 */
+  private contentMounted(): boolean {
+    const api = connectMenu(this.ctrl.service, wcNormalize)
+    return api.isContentMounted(api.open || this.overlay.visible)
+  }
+
   /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。 */
   private readonly declaredDisabled = createDisabledDeclarations()
 
@@ -288,6 +306,8 @@ export class XhMenuElement extends XhPortalHostElement {
       tone: this.tone,
       size: this.size,
       typeahead: this.typeahead,
+      lazyMount: this.lazyMount,
+      unmountOnExit: this.unmountOnExit,
       disabled: this.disabled,
       translations: this.translations,
       submenu: this.submenu,
@@ -523,6 +543,8 @@ export class XhMenuElement extends XhPortalHostElement {
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     const visible = this.overlay.sync(api.open, content)
     this.setPartHidden(content, !visible, { attribute: true })
+    // 手写在 content 里 <template> 中的条目按 headless 的判定克隆或撤走；新挂上的部件由部件观察器补一轮 wire 接上属性
+    this.lazyContent.sync(content, api.isContentMounted(visible))
 
     this.bars.wire()
     this.portal.sync(visible)

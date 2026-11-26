@@ -45,7 +45,10 @@ export interface PartContract {
   readonly fulfilledBy?: Readonly<Record<string, string>>
 }
 
-/** 必需部件在场：作者写了这个角色节点，或宿主子树里有契约登记的顶替元素。 */
+/**
+ * 必需部件在场：作者写了这个角色节点，或宿主子树里有契约登记的顶替元素，
+ * 或它写在某个部件直属的 `<template>` 里——lazy-mount 的内容等挂载判定到了才克隆进来，此刻不在不是漏写。
+ */
 export function requiredPartPresent(
   contract: PartContract,
   part: string,
@@ -55,7 +58,22 @@ export function requiredPartPresent(
   if (parts.has(part))
     return true
   const selector = contract.fulfilledBy?.[part]
-  return selector != null && host.querySelector(selector) != null
+  if (selector != null && host.querySelector(selector) != null)
+    return true
+  return heldInTemplate(part, parts)
+}
+
+/** 部件直属的 `<template>`（LazyContent 认的那一格）里写着这个角色节点。按标签名认，跨 realm 的模板也算。 */
+function heldInTemplate(part: string, parts: ReadonlyMap<string, readonly HTMLElement[]>): boolean {
+  for (const els of parts.values()) {
+    for (const el of els) {
+      for (const child of el.children) {
+        if (child.localName === 'template' && (child as HTMLTemplateElement).content.querySelector(`[data-xh-part="${part}"]`))
+          return true
+      }
+    }
+  }
+  return false
 }
 
 /**

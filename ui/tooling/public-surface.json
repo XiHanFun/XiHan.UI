@@ -16125,6 +16125,7 @@
       "dir",
       "disabled",
       "fitAvailableHeight",
+      "lazyMount",
       "loop",
       "offset",
       "onCheckboxValueChange",
@@ -16140,7 +16141,8 @@
       "submenu",
       "tone",
       "translations",
-      "typeahead"
+      "typeahead",
+      "unmountOnExit"
     ],
     "menubar": [
       "checkboxValue",
@@ -25077,6 +25079,7 @@
         "disabled",
         "fit-available-height",
         "label",
+        "lazy-mount",
         "loop",
         "offset",
         "open",
@@ -25087,6 +25090,7 @@
         "submenu",
         "tone",
         "typeahead",
+        "unmount-on-exit",
         "value"
       ],
       "events": [

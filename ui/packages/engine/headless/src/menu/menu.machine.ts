@@ -9,6 +9,7 @@ import type { Layer, Placement, PositionResult } from '@xihan-ui/core'
 import type { MenuFocusIntent, MenuSchema } from './menu.types'
 import { createTypeahead, DIAGNOSTIC_CODES, itemValue, navigateItems, queryItems, reportDiagnostic, setup, trackHoverIntent } from '@xihan-ui/core'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
+import { markOpened, openedCell } from '../shared/disclosure-mount'
 import { trackExternalAnchorAria } from '../shared/external-anchor'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { equalMenuRadioValue, setMenuRadioValue, toggleMenuCheckboxValue } from '../shared/menu-choice'
@@ -41,6 +42,8 @@ export const menuMachine = createMachine({
   context: ({ cell, prop }) => ({
     // 首帧标记：挂载时开着、还没收起过
     openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
+    // 首帧即展开也算展开过：lazyMount 下条目照常首屏就在
+    opened: openedCell(cell, openAtMount(prop)),
     // 位置结果由 trackPosition 回填
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     // 焦点锚点，服务 roving tabindex 与方向键起点
@@ -111,8 +114,8 @@ export const menuMachine = createMachine({
       },
     },
     open: {
-      // 进入展开态时挑好锚点，由它认领 tabindex=0
-      entry: ['setInitialFocusedValue'],
+      // 进入展开态时挑好锚点，由它认领 tabindex=0。lazyMount 下条目这一帧才挂上，挑锚点靠下面推迟一帧的补挑
+      entry: ['markOpened', 'setInitialFocusedValue'],
       // 收起即松开：按住 Enter 选中条目后菜单收起，条目随内容一起藏起，不会再来 keyup 或 blur
       exit: ['clearFocusedValue', 'clearTypeahead', 'releasePress'],
       // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
@@ -156,6 +159,7 @@ export const menuMachine = createMachine({
     actions: {
       ...controlledOpenActions<MenuSchema>({ reason: true }),
       clearOpenedAtMount,
+      markOpened,
       reanchor: ({ refs }) => refs.get('reanchor')?.(),
       startPress: ({ context, event }) => {
         const e = event.current()

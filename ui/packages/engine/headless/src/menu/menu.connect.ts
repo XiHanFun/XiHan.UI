@@ -8,6 +8,7 @@
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { MenuAnyItemProps, MenuApi, MenuCheckboxItemProps, MenuItemProps, MenuNodeMeta, MenuRadioItemProps, MenuSchema } from './menu.types'
 import { createPressTracker, dataAttr, focusItem, focusSafely, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { overlayContentMounted } from '../shared/disclosure-mount'
 import { menuChoiceCloses } from '../shared/menu-choice'
 import { overlayArrowVars, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { menuAnatomy, menuItemQuery, menuItemText } from './menu.anatomy'
@@ -233,6 +234,8 @@ export function connectMenu<T extends PropTypes>(
     open,
     disabled: menuDisabled,
     collection,
+    // 挂卸只管 content 里的条目：positioner 与 content 节点常驻，aria-controls 始终指得到它，定位引擎也总有节点可量
+    isContentMounted: overlayContentMounted(prop, context.get('opened')),
     focusedValue: anchor,
     checkboxValue,
     radioValue,

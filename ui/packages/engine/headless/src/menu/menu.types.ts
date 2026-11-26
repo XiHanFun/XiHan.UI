@@ -206,6 +206,13 @@ export interface MenuSchema extends MachineSchema {
     fitAvailableHeight?: boolean
     /** 首字符连打检索，默认开启。 */
     typeahead?: boolean
+    /**
+     * 第一次展开时才挂载 content 里的条目，默认 false。页面上菜单很多（表格每行一个操作菜单）时，
+     * 收起态每个实例背着的整份条目是挂载开销的大头。positioner 与 content 节点照旧常驻，trigger 的 aria-controls 始终指得到它。
+     */
+    lazyMount?: boolean
+    /** 收起动画播完后卸载 content 里的条目，默认 false；下次展开重新挂载。 */
+    unmountOnExit?: boolean
     /** 整张菜单禁用：触发器不再展开，条目全部为 aria-disabled。 */
     disabled?: boolean
     translations?: Partial<MenuTranslations>
@@ -233,6 +240,8 @@ export interface MenuSchema extends MachineSchema {
      * 第一次收起时清掉，之后的每一次打开照常进场。
      */
     openedAtMount: boolean
+    /** 挂载之后展开过没有（含首帧即展开）。lazyMount 下 content 里的条目从第一次展开起才挂载。 */
+    opened: boolean
     /** 定位引擎回填的最新结果。 */
     position: PositionResult | null
     /** roving tabindex 的锚点，同时是方向键的起点；收起即清空。 */
@@ -288,6 +297,7 @@ export interface MenuSchema extends MachineSchema {
     | 'setCheckboxValue'
     | 'setRadioValue'
     | 'clearOpenedAtMount'
+    | 'markOpened'
     | 'reanchor'
   effect: 'trackPosition' | 'trackLayer' | 'trackHover' | 'trackAnchorAria'
 }
@@ -331,6 +341,12 @@ export interface MenuApi<T extends PropTypes = PropTypes> {
   getRadioGroupProps: (props: MenuGroupProps) => T['element']
   getGroupLabelProps: (props: MenuGroupProps) => T['element']
   getArrowProps: () => T['element']
+  /**
+   * content 里的条目此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。
+   * 缺省恒为真；lazyMount 下没展开过为假；unmountOnExit 下闸门落下（退场播完）即为假。
+   * positioner 与 content 节点不受它管，一向常驻。
+   */
+  isContentMounted: (present: boolean) => boolean
 }
 
 /** 读屏文案，默认英文。 */
@@ -356,6 +372,11 @@ export interface MenuStructureOptions {
   icon?: IconRecord | null
   /** 根菜单锚在外部元素上（写了 anchor）：不铺触发按钮。 */
   anchored?: boolean
+  /**
+   * content 里的条目这一刻铺不铺，缺省铺；取 isContentMounted 的判定。Web Components 生成节点时按它增删条目，
+   * Vue / React 由 content 部件自己按判定渲不渲子节点，不必传。
+   */
+  contentMounted?: boolean
   /**
    * 作者给了哪些插槽的内容：trigger（根菜单的触发按钮）；item（整条接管）、item-prefix（行首那一格 item-icon，压过 icon）、
    * item-suffix（行尾），后三个按条目的值带 key。子菜单的触发条目也认 item。

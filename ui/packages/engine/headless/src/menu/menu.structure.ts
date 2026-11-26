@@ -161,7 +161,8 @@ export function menuStructure(model: Pick<MenuApi, 'collection'>, options: MenuS
       key: 'positioner',
       tag: 'div',
       part: 'positioner',
-      children: [{ key: 'content', tag: 'div', part: 'content', children: menuNodesStructure(model.collection, slotted) }],
+      // lazyMount / unmountOnExit 判为不挂时 content 节点照旧在，里面不铺条目
+      children: [{ key: 'content', tag: 'div', part: 'content', children: options.contentMounted === false ? [] : menuNodesStructure(model.collection, slotted) }],
     },
   ]
 }

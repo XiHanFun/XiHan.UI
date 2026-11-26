@@ -77,6 +77,7 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 - 支持方向键、首字符检索、禁用条目和多级子菜单。数据驱动时节点写 `children` 即为子菜单入口，Vue / React 的默认树按 `children` 递归铺出下一层，深度不限，路由菜单这类按数据生成的多级菜单不必手写 `Sub` 部件；子层与本层同用 `item` / `item-prefix` / `item-suffix` 插槽，叶子的选中汇到根级 `item-select`。入口只能是普通条目，勾选与单选条目带 `children` 直接报错。子菜单那一层的勾选值与单选值写在带 `children` 的条目上（`checkboxValue` / `radioValue`），与子菜单自己的同名属性同义，写了即受控；按数据铺时子层的勾选改动不另外上报，勾选条目写 `closeOnSelect`，由根上的 `item-select` 得知。
 - 子菜单使用安全三角避免指针斜向移动时误关闭。
 - 内容高度缺省以 20rem 一档封顶，`--xh-menu-max-h` 可改；写 `fitAvailableHeight` 则只按落定那一侧的可用高度封顶，菜单栏的子菜单由菜单栏自动带上。
+- content 里的条目缺省常驻、收起只隐藏。`lazyMount` 让它们第一次展开时才挂载、之后常驻：表格每行一个操作菜单时，收起态每个实例背着的整份条目是挂载开销的大头；`unmountOnExit` 让它们在退场动画播完后卸载、下次展开重新挂载。两项只写在根菜单上，子菜单随父层的条目一起挂卸。positioner 与 content 节点一向常驻。Web Components 按数据铺的条目照同一规则增删；手写的条目写进 content 里一个 `<template>`，按同一规则克隆或撤走。
 - 条目可组合图标、文字、说明和快捷键提示。
 - `CheckboxItem` 与 `RadioGroup / RadioItem` 表达菜单内的持久选项，值分别由 `checkboxValue` 与 `radioValue` 控制；默认切换后保持展开，逐条可用 `closeOnSelect` 改为收起。
 - 行首与行尾两格各有逐条钩子，只想加个图标不必把整条重搭；`item` 插槽仍是整条的接管口。
@@ -130,6 +131,8 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 |
 | `fitAvailableHeight` | `boolean` |  | 内容只按落定那一侧的可用高度封顶，不叠菜单的固定上限（20rem 一档）；作者写的 `--xh-menu-max-h` 照样生效。 菜单栏的子菜单由菜单栏传入，再往下一层跟着上一层；单独用的菜单一般不写。 |
 | `typeahead` | `boolean` |  | 首字符连打检索，默认开启。 |
+| `lazyMount` | `boolean` |  | 第一次展开时才挂载 content 里的条目，默认 false。页面上菜单很多（表格每行一个操作菜单）时， 收起态每个实例背着的整份条目是挂载开销的大头。positioner 与 content 节点照旧常驻，trigger 的 aria-controls 始终指得到它。 |
+| `unmountOnExit` | `boolean` |  | 收起动画播完后卸载 content 里的条目，默认 false；下次展开重新挂载。 |
 | `disabled` | `boolean` |  | 整张菜单禁用：触发器不再展开，条目全部为 aria-disabled。 |
 | `translations` | `Partial<MenuTranslations>` |  |  |
 | `submenu` | `boolean` |  | 本菜单是另一张菜单的子菜单：触发器渲染为父菜单的条目形态 （经 getSubmenuTriggerProps），默认落位改为侧向，悬停触发默认开启。 |
@@ -284,6 +287,7 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 | `getRadioGroupProps` | `(props: MenuGroupProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: MenuGroupProps) => T['element']` |  |
 | `getArrowProps` | `() => T['element']` |  |
+| `isContentMounted` | `(present: boolean) => boolean` | content 里的条目此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。 缺省恒为真；lazyMount 下没展开过为假；unmountOnExit 下闸门落下（退场播完）即为假。 positioner 与 content 节点不受它管，一向常驻。 |
 
 ## 无障碍
 

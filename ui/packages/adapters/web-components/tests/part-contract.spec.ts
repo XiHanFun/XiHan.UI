@@ -108,6 +108,22 @@ describe('角色节点契约', () => {
     expect(hits[0]!.node).toBe(host)
   })
 
+  it('必需 part 写在部件直属的 <template> 里（lazy-mount 等着克隆）不算漏写；模板里也没有照报', async () => {
+    const menu = (inner: string): Updatable => {
+      const host = document.createElement('xh-menu') as Updatable
+      host.setAttribute('lazy-mount', '')
+      host.innerHTML = `<button data-xh-part="trigger">操作</button><div data-xh-part="positioner"><div data-xh-part="content"><template>${inner}</template></div></div>`
+      document.body.append(host)
+      return host
+    }
+    const held = menu('<div data-xh-part="item" value="copy">复制</div>')
+    await held.updateComplete
+    expect(codes(DIAGNOSTIC_CODES.wcMissingPart)).toEqual([])
+    const empty = menu('<p>没有条目</p>')
+    await empty.updateComplete
+    expect(codes(DIAGNOSTIC_CODES.wcMissingPart)).toMatchObject([{ scope: 'menu', part: 'item' }])
+  })
+
   it('解剖外的 part 名报 warn 并指向那个节点', async () => {
     const stray = part('conten')
     await mountDialog([part('trigger', 'button'), part('content'), stray])

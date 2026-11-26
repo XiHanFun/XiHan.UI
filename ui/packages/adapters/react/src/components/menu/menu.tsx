@@ -74,6 +74,10 @@ export interface XhMenuRootProps {
   /** 内容只按可用高度封顶，不叠 20rem 的固定上限。 */
   fitAvailableHeight?: boolean
   typeahead?: boolean
+  /** 第一次展开时才挂载 content 里的条目，默认 false。 */
+  lazyMount?: boolean
+  /** 收起动画播完后卸载 content 里的条目，默认 false；下次展开重新挂载。 */
+  unmountOnExit?: boolean
   disabled?: boolean
   translations?: Partial<MenuTranslations>
   openOnHover?: boolean
@@ -195,7 +199,8 @@ export function XhMenuContent({ children, ...rest }: XhMenuContentProps): ReactN
         },
       )}
     >
-      {children}
+      {/* content 节点常驻；里面的条目挂不挂由 headless 按 lazyMount / unmountOnExit 判，手写与按数据铺的都走这一处 */}
+      {ctx.api.isContentMounted(ctx.rendered) ? children : null}
     </div>
   )
 }
