@@ -959,6 +959,27 @@ export const tagsInputSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'clearable 写 false：有标签也不露清空按钮，按住不进入按压面；打开后照常露出',
+      spec: { apg: APG },
+      fixture: withTags('vue'),
+      props: { defaultValue: ['vue'], clearable: false },
+      initial: { parts: { 'root': { 'data-empty': null }, 'clear-trigger': { hidden: '' } } },
+      steps: [
+        heldPressIgnored('tags-input', 'clear-trigger', '关掉 clearable 时清空钮藏着，不接受按压'),
+        { kind: 'setProps', props: { clearable: true }, expect: { parts: { 'clear-trigger': { hidden: null } } } },
+      ],
+    },
+    {
+      name: '作者不写结构、关掉 clearable：标准结构不铺清空按钮',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { label: '技术栈', defaultValue: ['vue'], clearable: false },
+      initial: {
+        order: ['root', 'label', 'control', 'item', 'input', 'hidden-input'],
+        counts: { 'clear-trigger': 0 },
+      },
+    },
+    {
       name: '作者不写结构：三端都照 tagsInputStructure 铺出标题、按值铺的标签（带编辑框）、输入框、清空钮、计数与表单影子',
       spec: { apg: APG },
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),

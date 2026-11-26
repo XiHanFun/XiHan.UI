@@ -69,6 +69,8 @@ export interface XhTagsInputRootProps extends Omit<ComponentPropsWithRef<'div'>,
   readOnly?: boolean
   required?: boolean
   invalid?: boolean
+  /** 清空能力，缺省开启；写 false 时不铺清空按钮，api.clear() 也不生效。 */
+  clearable?: boolean
   showCount?: boolean
   /** 表单字段名；提供后隐藏输入才带 name 并参与提交。 */
   name?: string
@@ -107,6 +109,7 @@ export function XhTagsInputRoot({
   readOnly,
   required,
   invalid,
+  clearable,
   showCount,
   name,
   placeholder,
@@ -138,6 +141,7 @@ export function XhTagsInputRoot({
     readOnly,
     required,
     invalid,
+    clearable,
     showCount,
     name,
     placeholder,

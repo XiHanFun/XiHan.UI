@@ -86,7 +86,8 @@ validate 逐个判定新标签，返回拒绝码即拒收：这一次提交整�
 
 ### 特性
 
-- 不写结构时按标准结构铺出标题、盒里按当前值铺的标签与输入框、清空按钮、计数与表单影子（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，开了 `editable` 每个标签带编辑框，开了 `showCount` 才铺计数。标签文本缺省就是它的值，Vue 的 `item` 插槽、React 的 `renderItem`、Web Components 宿主直接子节点上的 `slot="item:<值>"` 可以接管；标题在 Web Components 里用 `slot="label"` 接管。
+- 清空按钮缺省开着：有标签或框里有文本、且可编辑时露出，一下清掉全部标签与文本；`clearable` 写 `false` 即关掉，按钮恒收起、标准结构不再铺它，`api.clear()` 也被拦下，逐个删除照旧可用。
+- 不写结构时按标准结构铺出标题、盒里按当前值铺的标签与输入框、清空按钮（关掉 `clearable` 时不铺）、计数与表单影子（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，开了 `editable` 每个标签带编辑框，开了 `showCount` 才铺计数。标签文本缺省就是它的值，Vue 的 `item` 插槽、React 的 `renderItem`、Web Components 宿主直接子节点上的 `slot="item:<值>"` 可以接管；标题在 Web Components 里用 `slot="label"` 接管。
 - `delimiter` 与 `addOnPaste` 一起处理粘贴拆分；`delimiter` 给一组时其中任何一个都断词（如半角与全角逗号），提交串用第一个。
 - `validate` 逐个判定新标签，返回拒绝码即拒收：这一次提交整体不生效、文本留在框里；拒收的标签连同原因（重复、放不下或自定义码）经 `onTagReject` 报告。
 - 标签是一个集合：已有的标签再输入一次照常被消费、值不变，只报一笔 `duplicate`。
@@ -140,6 +141,7 @@ validate 逐个判定新标签，返回拒绝码即拒收：这一次提交整�
 | `readOnly` | `boolean` |  |  |
 | `required` | `boolean` |  | 必填标注：经 aria-required 上报，星号由外层的字段壳绘制。 |
 | `invalid` | `boolean` |  |  |
+| `clearable` | `boolean` |  | 清空能力，默认开启：有标签或框里有文本、且可编辑时露出清空按钮。 写 false 即关掉：清空按钮恒带 hidden 收起、标准结构不再铺它，api.clear() 也被拦下；逐个删除照旧可用。 |
 | `showCount` | `boolean` |  | 显示计数部件：关闭时 count 部件带 hidden 收起。 |
 | `name` | `string` |  | 表单字段名；提供后 hidden-input 才带 name，此时整份标签按 delimiter 拼接为一串提交。 |
 | `placeholder` | `string` |  |  |
@@ -199,7 +201,7 @@ validate 逐个判定新标签，返回拒绝码即拒收：这一次提交整�
 
 **事件**：`VALUE.SET` · `TAG.ADD` · `VALUE.CLEAR` · `INPUT.CHANGE` · `INPUT.COMMIT` · `INPUT.BLUR` · `TAG.HIGHLIGHT` · `TAG.DELETE` · `TAG.EDIT` · `EDIT.CHANGE` · `EDIT.SUBMIT` · `EDIT.CANCEL` · `ITEM.FOCUS_LOST` · `FORM.RESET` · `PRESS.START` · `PRESS.END` · `LIST.TRACKED`
 
-**判据**：`canEdit` · `canEditTag` · `canDeleteWithPrev` · `hasHighlightTarget` · `canPress` · `isEditRejected` · `isBlurEditRejected`
+**判据**：`canEdit` · `canClear` · `canEditTag` · `canDeleteWithPrev` · `hasHighlightTarget` · `canPress` · `isEditRejected` · `isBlurEditRejected`
 
 ### connect API
 
@@ -219,13 +221,14 @@ validate 逐个判定新标签，返回拒绝码即拒收：这一次提交整�
 | `showCount` | `boolean` | 计数部件当前是否显示（开启了 showCount）。 |
 | `atMax` | `boolean` | 已到达 maxTags：无法再添加（allowOverflow 开启时只是提示，不拦截）。 |
 | `overflow` | `boolean` | 已超过 maxTags（只有 allowOverflow 开启时才可能为真）。 |
+| `clearable` | `boolean` | 清空能力是否开启（clearable 没写成 false）。 |
 | `highlightedValue` | `string \| null` | 光标停留的标签；不在标签间移动时为 null。 |
 | `editedValue` | `string \| null` | 正被就地改写的标签；不在编辑态时为 null。 |
-| `canClear` | `boolean` | 清空按钮当前是否可用（可编辑，且标签或输入文本至少有一项）。 |
+| `canClear` | `boolean` | 清空按钮当前是否可用（开着 clearable、可编辑，且标签或输入文本至少有一项）。 |
 | `setValue` | `(next: string[]) => void` | 整份替换，去重去空白，不受 maxTags 约束。 |
 | `addValue` | `(next: string) => void` | 追加一个标签，受 maxTags、allowOverflow 与 validate 约束。 |
 | `deleteValue` | `(value: string) => void` |  |
-| `clear` | `() => void` |  |
+| `clear` | `() => void` | 发起清空意图，受 canClear 约束；无条件清空用 setValue([]) 与 setInputValue('')。 |
 | `setInputValue` | `(next: string) => void` |  |
 | `highlight` | `(value: string \| null) => void` | 把光标移到某个标签上；传 null 即交回输入框。 |
 | `edit` | `(value: string) => void` | 进入就地编辑；未开启 editable 时被守卫拦截。 |
@@ -263,7 +266,7 @@ validate 逐个判定新标签，返回拒绝码即拒收：这一次提交整�
 | `Enter` | 已有标签被高亮, editable 开启 | 就地编辑这个标签，焦点进编辑框并整段选中 |
 | `Enter` | focus in item-input（就地编辑中） | 提交改写；改成空白等于删掉这个标签，改成另一个已有标签则并成一个。焦点交回输入框；被 validate 拒收时留在编辑框里 |
 | `Escape` | focus in item-input（就地编辑中） | 撤销这次改写，标签保持原样，焦点交回输入框 |
-| `Enter` / `Space` | held in clear-trigger, 有标签或框里有文本, not disabled/readOnly | 按住期间清空按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，清空后按钮藏起一并撤下。清空按钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面 |
+| `Enter` / `Space` | held in clear-trigger, 有标签或框里有文本, clearable 未关, not disabled/readOnly | 按住期间清空按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，清空后按钮藏起一并撤下。清空按钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面 |
 
 ### ARIA
 

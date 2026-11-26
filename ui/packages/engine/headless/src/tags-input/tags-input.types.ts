@@ -105,6 +105,11 @@ export interface TagsInputSchema extends MachineSchema {
     /** 必填标注：经 aria-required 上报，星号由外层的字段壳绘制。 */
     required?: boolean
     invalid?: boolean
+    /**
+     * 清空能力，默认开启：有标签或框里有文本、且可编辑时露出清空按钮。
+     * 写 false 即关掉：清空按钮恒带 hidden 收起、标准结构不再铺它，api.clear() 也被拦下；逐个删除照旧可用。
+     */
+    clearable?: boolean
     /** 显示计数部件：关闭时 count 部件带 hidden 收起。 */
     showCount?: boolean
     /** 表单字段名；提供后 hidden-input 才带 name，此时整份标签按 delimiter 拼接为一串提交。 */
@@ -170,7 +175,7 @@ export interface TagsInputSchema extends MachineSchema {
     | { type: 'VALUE.SET', value: string[] }
     /** 追加一批标签，不修改输入框（粘贴与公开 API 经过它）。 */
     | { type: 'TAG.ADD', values: string[] }
-    /** 清空标签与输入框。 */
+    /** 清空标签与输入框；关掉 clearable、禁用或只读时被守卫拦截。 */
     | { type: 'VALUE.CLEAR' }
     /** 用户输入或作者调用 setInputValue；文本中含 delimiter 时在这里断词。 */
     | { type: 'INPUT.CHANGE', value: string }
@@ -189,14 +194,14 @@ export interface TagsInputSchema extends MachineSchema {
     /** 适配器补报：承载焦点的标签节点被移出 DOM，浏览器不会为此派发 focusout。 */
     | { type: 'ITEM.FOCUS_LOST' }
     | { type: 'FORM.RESET' }
-    /** 清空按钮被 Space / Enter 或触屏按住；清不了（禁用、只读，或既无标签也无文本）时被守卫拦截。 */
+    /** 清空按钮被 Space / Enter 或触屏按住；清不了（关掉了 clearable、禁用、只读，或既无标签也无文本）时被守卫拦截。 */
     | { type: 'PRESS.START' }
     /** 按住的清空按钮抬起、失焦或指针取消。 */
     | { type: 'PRESS.END' }
     /** 列表动效接上了标签容器（机器自己发）。 */
     | { type: 'LIST.TRACKED' }
   tag: never
-  guard: 'canEdit' | 'canEditTag' | 'canDeleteWithPrev' | 'hasHighlightTarget' | 'canPress' | 'isEditRejected' | 'isBlurEditRejected'
+  guard: 'canEdit' | 'canClear' | 'canEditTag' | 'canDeleteWithPrev' | 'hasHighlightTarget' | 'canPress' | 'isEditRejected' | 'isBlurEditRejected'
   action:
     | 'setValue'
     | 'addTags'
@@ -239,17 +244,20 @@ export interface TagsInputApi<T extends PropTypes = PropTypes> {
   atMax: boolean
   /** 已超过 maxTags（只有 allowOverflow 开启时才可能为真）。 */
   overflow: boolean
+  /** 清空能力是否开启（clearable 没写成 false）。 */
+  clearable: boolean
   /** 光标停留的标签；不在标签间移动时为 null。 */
   highlightedValue: string | null
   /** 正被就地改写的标签；不在编辑态时为 null。 */
   editedValue: string | null
-  /** 清空按钮当前是否可用（可编辑，且标签或输入文本至少有一项）。 */
+  /** 清空按钮当前是否可用（开着 clearable、可编辑，且标签或输入文本至少有一项）。 */
   canClear: boolean
   /** 整份替换，去重去空白，不受 maxTags 约束。 */
   setValue: (next: string[]) => void
   /** 追加一个标签，受 maxTags、allowOverflow 与 validate 约束。 */
   addValue: (next: string) => void
   deleteValue: (value: string) => void
+  /** 发起清空意图，受 canClear 约束；无条件清空用 setValue([]) 与 setInputValue('')。 */
   clear: () => void
   setInputValue: (next: string) => void
   /** 把光标移到某个标签上；传 null 即交回输入框。 */

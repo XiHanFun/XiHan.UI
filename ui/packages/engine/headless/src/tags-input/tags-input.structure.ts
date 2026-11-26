@@ -67,25 +67,23 @@ function itemStructure(value: string, editable: boolean, slotted: StructureSlott
 
 /**
  * 标签输入框在 root 里的标准结构，次序是标题、盒、计数、表单影子。
- * 盒里先是按当前值铺的标签，再是输入框，最后是清空按钮（没东西可清时由组件收起）；开了 showCount 才铺计数。
+ * 盒里先是按当前值铺的标签，再是输入框，最后是清空按钮（没东西可清时由组件收起，关掉 clearable 就不铺）；
+ * 开了 showCount 才铺计数。
  */
-export function tagsInputStructure(model: Pick<TagsInputApi, 'value' | 'showCount'>, options: TagsInputStructureOptions = {}): TagsInputNode[] {
+export function tagsInputStructure(model: Pick<TagsInputApi, 'value' | 'showCount' | 'clearable'>, options: TagsInputStructureOptions = {}): TagsInputNode[] {
   const slotted = options.slotted ?? NOTHING_SLOTTED
   const nodes: TagsInputNode[] = []
   if (slotted('label'))
     nodes.push({ key: 'label', tag: 'label', part: 'label', slot: { name: 'label' } })
   else if (options.label != null)
     nodes.push({ key: 'label', tag: 'label', part: 'label', text: options.label })
-  nodes.push({
-    key: 'control',
-    tag: 'div',
-    part: 'control',
-    children: [
-      ...model.value.map(value => itemStructure(value, options.editable ?? false, slotted)),
-      { key: 'input', tag: 'input', part: 'input' },
-      { key: 'clear-trigger', tag: 'button', part: 'clear-trigger' },
-    ],
-  })
+  const control: TagsInputNode[] = [
+    ...model.value.map(value => itemStructure(value, options.editable ?? false, slotted)),
+    { key: 'input', tag: 'input', part: 'input' },
+  ]
+  if (model.clearable)
+    control.push({ key: 'clear-trigger', tag: 'button', part: 'clear-trigger' })
+  nodes.push({ key: 'control', tag: 'div', part: 'control', children: control })
   if (model.showCount)
     nodes.push({ key: 'count', tag: 'span', part: 'count' })
   nodes.push({ key: 'hidden-input', tag: 'input', part: 'hidden-input' })

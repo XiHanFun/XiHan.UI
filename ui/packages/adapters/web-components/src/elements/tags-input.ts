@@ -60,6 +60,7 @@ const ARRAY_CONVERTER = {
  * @attr {boolean} disabled - 禁用：输入框与各按钮都不可用
  * @attr {boolean} read-only - 只读：仍可聚焦与复制，增删改都不可用
  * @attr {boolean} required - 必填标注：经 aria-required 上报，星号由外层的字段壳绘制
+ * @attr {boolean} clearable - 清空能力，默认开启；写 "false" 关掉：不铺清空按钮，clear() 也不生效
  * @attr {boolean} show-count - 显示计数部件；关闭时该部件收起
  * @attr {boolean} invalid - 校验失败标注
  * @attr {string} name - 表单字段名；提供后 hidden-input 才参与提交（按 delimiter 拼接为一串）
@@ -120,6 +121,7 @@ export class XhTagsInputElement extends XhElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     required: { converter: BOOLEAN_CONVERTER },
+    clearable: { converter: BOOLEAN_CONVERTER },
     showCount: { converter: BOOLEAN_CONVERTER, attribute: 'show-count' },
     invalid: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
@@ -147,6 +149,7 @@ export class XhTagsInputElement extends XhElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare required?: boolean
+  declare clearable?: boolean
   declare showCount?: boolean
   declare invalid?: boolean
   declare name?: string
@@ -205,6 +208,7 @@ export class XhTagsInputElement extends XhElement {
       disabled: control.disabled,
       readOnly: control.readOnly,
       required: control.required,
+      clearable: this.clearable,
       showCount: this.showCount ?? false,
       invalid: control.invalid,
       name: this.name,

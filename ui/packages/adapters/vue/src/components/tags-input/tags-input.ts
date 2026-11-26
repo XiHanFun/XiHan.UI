@@ -65,6 +65,8 @@ export const XhTagsInputRoot = defineComponent({
     readOnly: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
+    /** 清空能力，缺省开启；写 false 时不铺清空按钮，api.clear() 也不生效。 */
+    clearable: { type: Boolean, default: undefined },
     showCount: Boolean,
     name: { type: String },
     placeholder: { type: String },

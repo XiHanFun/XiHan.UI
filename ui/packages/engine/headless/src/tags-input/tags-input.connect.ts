@@ -56,7 +56,9 @@ export function connectTagsInput<T extends PropTypes>(
   const atMax = isAtMax(count, maxTags)
   const overflow = isOverflow(count, maxTags)
   const empty = count === 0
-  const canClear = editable && (count > 0 || inputValue !== '')
+  // 清空能力缺省开着；与机器里 canClear / canPress 守卫同一口径，这里决定按钮露不露，那里挡住绕过 DOM 的调用
+  const clearable = prop('clearable') !== false
+  const canClear = clearable && editable && (count > 0 || inputValue !== '')
   // 清空按钮的按压通道：键盘 / 触屏按住期间的按压面，指针按住由 :active 表出，皮肤两者同一档
   const press = pressHandlers(service)
 
@@ -166,6 +168,7 @@ export function connectTagsInput<T extends PropTypes>(
     showCount,
     atMax,
     overflow,
+    clearable,
     highlightedValue,
     editedValue,
     canClear,
@@ -466,7 +469,7 @@ export function connectTagsInput<T extends PropTypes>(
       'aria-label': label.clearTrigger,
       // 不占 Tab 位，键盘用户走 Backspace 逐个删
       'tabindex': -1,
-      // 没值、只读或禁用就整个收起，不灰留位：有值才出现，出现即可用
+      // 关掉 clearable、没值、只读或禁用就整个收起，不灰留位：有值才出现，出现即可用
       'hidden': !canClear || undefined,
       'onPointerDown': (event: PointerEvent) => {
         // 主键拦默认聚焦，焦点留在输入框，清完还能接着打字；触屏按下仍要进按压通道

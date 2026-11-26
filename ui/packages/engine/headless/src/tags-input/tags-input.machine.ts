@@ -220,17 +220,17 @@ export const tagsInputMachine = createMachine({
   refs: () => ({ getControlEl: () => null }),
   initialState: () => 'idle',
   effects: ['trackListMotion'],
-  // 按住途中转入禁用 / 只读，或标签与文本都被清空：清空按钮随即藏起，不会再来 keyup，按压面由机器自己收
+  // 按住途中转入禁用 / 只读、关掉 clearable，或标签与文本都被清空：清空按钮随即藏起，不会再来 keyup，按压面由机器自己收
   watch: ({ track, prop, context, action }) => {
-    track([() => prop('disabled'), () => prop('readOnly'), context.dep('value'), context.dep('inputValue')], () => action(['releaseWhenInert']))
+    track([() => prop('disabled'), () => prop('readOnly'), () => prop('clearable'), context.dep('value'), context.dep('inputValue')], () => action(['releaseWhenInert']))
   },
   // 这几条从哪个状态发出都一样，挂根级
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue'] },
     'TAG.ADD': { guard: 'canEdit', actions: ['addTags'] },
-    'VALUE.CLEAR': { guard: 'canEdit', target: 'idle', actions: ['clearAll'] },
-    // 清空按钮的按压与 connect 里它的显隐同一口径：可编辑且有标签或有文本；藏起的按钮不该有按下的回执
+    'VALUE.CLEAR': { guard: 'canClear', target: 'idle', actions: ['clearAll'] },
+    // 清空按钮的按压与 connect 里它的显隐同一口径：开着 clearable、可编辑且有标签或有文本；藏起的按钮不该有按下的回执
     'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
     'PRESS.END': { actions: ['endPress'] },
     // 承载焦点的标签节点没了，一律退回输入框
@@ -288,6 +288,8 @@ export const tagsInputMachine = createMachine({
   implementations: {
     guards: {
       canEdit: ({ prop }) => !prop('disabled') && !prop('readOnly'),
+      // 清空能力缺省开着，写 false 才关；关掉后按钮收起，绕过 DOM 的 api.clear() 也在这里挡下
+      canClear: ({ prop }) => prop('clearable') !== false && !prop('disabled') && !prop('readOnly'),
       // 就地编辑要三个条件：能改、开了 editable、且这个标签真的在列表里
       canEditTag: ({ prop, context, event }) => {
         if (prop('disabled') || prop('readOnly') || !prop('editable'))
@@ -306,7 +308,7 @@ export const tagsInputMachine = createMachine({
         return e.type === 'TAG.HIGHLIGHT' && e.value != null
       },
       canPress: ({ prop, context }) =>
-        !prop('disabled') && !prop('readOnly') && (context.get('value').length > 0 || context.get('inputValue') !== ''),
+        prop('clearable') !== false && !prop('disabled') && !prop('readOnly') && (context.get('value').length > 0 || context.get('inputValue') !== ''),
       isEditRejected: params => pendingEditRejection(params) != null,
       isBlurEditRejected: (params) => {
         const e = params.event.current()
@@ -451,7 +453,7 @@ export const tagsInputMachine = createMachine({
       endPress: ({ context }) => context.set('pressed', false),
       markListTracked: ({ context }) => context.set('listTracked', true),
       releaseWhenInert: ({ context, prop }) => {
-        if (prop('disabled') || prop('readOnly') || (context.get('value').length === 0 && context.get('inputValue') === ''))
+        if (prop('clearable') === false || prop('disabled') || prop('readOnly') || (context.get('value').length === 0 && context.get('inputValue') === ''))
           context.set('pressed', false)
       },
     },
