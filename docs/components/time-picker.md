@@ -119,6 +119,7 @@ multiple 时各列拼出的是草稿，按「添加」收进值、浮层不收�
 - 输入框走 Field Chrome 描边式；浮层为 floating 实体面（border-default + floating 海拔）；时分秒与快捷列各自接自绘条。
 - 浮层走弹层那一套进出场：按实际弹出方向短移、淡入放大，退场缩小淡出；减弱动效和增强对比度沿用主题设置。
 - 空值时显示时钟入口；有值且渲染了清空按钮时，指针落在盒上（或焦点在盒内）由清空按钮原位接替时钟图标，触屏上有值即接替；焦点正在时钟钮上时它不让位。
+- `clearable` 缺省开启；写 false 即关掉清空能力：有值也不露清空按钮、标准结构不再铺它，盒上只留时钟钮，`api.clear()` 也被拦下；段位上按退格逐段清值照旧。必选的字段用它去掉清空钮。
 - 聚焦边界与当前段位使用短过渡，不以瞬时跳色表达焦点。
 - 浮层收起时 `onOpenChange` 带上关闭原因 `reason`：Escape 报 `esc`，点在浮层外或焦点移出浮层报 `interact-outside`；再点一次时钟钮或输入行、在段位上按 Enter 报 `close-trigger`；点快捷选项随之收起报 `selection`（在列里挑时分秒不收起）；`setOpen(false)` 报 `programmatic`。展开时不带。
 
@@ -173,6 +174,7 @@ multiple 时各列拼出的是草稿，按「添加」收进值、浮层不收�
 | `presets` | `TimePickerPreset[]` |  | 快捷选项（「当前时刻」「上午 9 点」等）。提供后浮层中多出一列，点击即整份写入值并收起。 时刻需计算后传入：连接层每帧求值，把当前时刻放进渲染期会每帧得出一个新结果。 无法解析或落在 min / max 之外的选项自动不可按下；带秒的时刻按 granularity 归一后再比较与写入。 |
 | `disabled` | `boolean` |  | 禁用：分段输入整组退出 Tab 序列、触发器使用原生 disabled，隐藏输入不参与提交。 |
 | `readOnly` | `boolean` |  | 只读：浮层照常展开、列表照常浏览，但值不可修改也不可清空。 |
+| `clearable` | `boolean` |  | 清空能力，默认开启：有值且改得动时露出清空按钮。 写 false 即关掉：清空按钮恒带 hidden 收起、标准结构不再铺它，api.clear() 也被拦下；段位上按退格逐段清值照旧。 |
 | `invalid` | `boolean` |  | 校验失败标注。 |
 | `required` | `boolean` |  | 必填标注（写入每段的 aria-required）。 |
 | `name` | `string` |  | 表单字段名；提供后隐藏输入才带 name，值随表单一并提交。 |
@@ -286,6 +288,7 @@ multiple 时各列拼出的是草稿，按「添加」收进值、浮层不收�
 | `focusedItem` | `string \| null` |  |
 | `presets` | `readonly TimePickerPresetState[]` | 快捷选项逐条的状态，数据顺序。未提供 presets 时为空数组。 |
 | `canClear` | `boolean` | 清空按钮当前是否可按。 |
+| `clearable` | `boolean` | 清空能力是否开启（clearable 没写成 false）。 |
 | `canAdd` | `boolean` | 多选时「添加」此刻可按：草稿填全、在 min / max 之内、还没选过、也没到 maxSelected。 |
 | `tags` | `TimePickerTagMeta[]` | 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组。 |
 | `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
@@ -297,7 +300,7 @@ multiple 时各列拼出的是草稿，按「添加」收进值、浮层不收�
 | `isItemDisabled` | `(props: TimePickerItemProps) => boolean` | 落在 min / max 之外（或整个控件禁用）：仍在列表中，但不可选、方向键跳过。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string[]) => void` |  |
-| `clear` | `() => void` |  |
+| `clear` | `() => void` | 发起清空；关掉 clearable 时不生效，无条件清空用 setValue([])。 |
 | `add` | `() => void` | 多选：把草稿收进值（与按「添加」同一条路）。 |
 | `deselect` | `(value: string) => void` | 多选：摘掉一个选中值。 |
 | `getRootProps` | `() => T['element']` |  |

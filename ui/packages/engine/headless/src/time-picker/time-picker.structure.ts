@@ -52,7 +52,7 @@ export interface TimePickerStructureOptions {
   slotted?: StructureSlotted
 }
 
-type TimePickerStructureModel = Pick<TimePickerApi, 'multiple' | 'tags' | 'segments' | 'presets' | 'columns' | 'getItemText' | 'translations'>
+type TimePickerStructureModel = Pick<TimePickerApi, 'multiple' | 'tags' | 'clearable' | 'segments' | 'presets' | 'columns' | 'getItemText' | 'translations'>
 
 /** 前后两段之间的分隔符：时、分、秒之间是冒号，挨着上下午段的是空格。 */
 function literalBetween(before: TimeSegmentType, after: TimeSegmentType): string {
@@ -78,6 +78,8 @@ export function timeSegmentGroupChildren(segments: readonly TimeSegmentType[]): 
  * - 浮层：有快捷选项时先铺快捷选项列；各时间列按当前精度与小时制铺；多选时再铺底栏的添加钮。
  */
 export function timePickerStructure(model: TimePickerStructureModel, options: TimePickerStructureOptions = {}): TimePickerNode[] {
+  // 关掉 clearable 就不铺清空钮
+  const clearTrigger: TimePickerNode[] = model.clearable ? [{ key: 'clear-trigger', tag: 'button', part: 'clear-trigger' }] : []
   const multiple = model.multiple
   const nodes: TimePickerNode[] = []
   if (options.slotted?.('label'))
@@ -151,7 +153,7 @@ export function timePickerStructure(model: TimePickerStructureModel, options: Ti
       part: 'control',
       children: [
         entry,
-        { key: 'clear-trigger', tag: 'button', part: 'clear-trigger' },
+        ...clearTrigger,
         { key: 'trigger', tag: 'button', part: 'trigger' },
       ],
     },

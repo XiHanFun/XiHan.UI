@@ -93,6 +93,7 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  * @prop {TimePickerPreset[]} presets - 快捷选项（数组只能通过 property 设置）：提供后浮层中多出一列
  * @attr {boolean} disabled - 禁用：段整组退出 Tab 序列，触发器使用原生 disabled，隐藏输入不参与提交
  * @attr {boolean} read-only - 只读：浮层照常展开与浏览，但值不可修改也不可清空
+ * @attr {boolean} clearable - 清空能力，默认开启；写 "false" 关掉：不铺清空按钮，连接层的 clear() 也不生效
  * @attr {boolean} invalid - 校验失败标注
  * @attr {boolean} required - 必填标注，写入每段的 aria-required
  * @attr {string} name - 表单字段名；提供后隐藏输入才带 name
@@ -169,6 +170,7 @@ export class XhTimePickerElement extends XhPortalHostElement {
     presets: { attribute: false },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    clearable: { converter: BOOLEAN_CONVERTER },
     invalid: { converter: BOOLEAN_CONVERTER },
     translations: { attribute: false },
     isTimeUnavailable: { attribute: false },
@@ -202,6 +204,7 @@ export class XhTimePickerElement extends XhPortalHostElement {
   declare presets?: TimePickerPreset[]
   declare disabled?: boolean
   declare readOnly?: boolean
+  declare clearable?: boolean
   declare invalid?: boolean
   declare translations?: TimePickerSchema['props']['translations']
   declare isTimeUnavailable?: TimePickerSchema['props']['isTimeUnavailable']
@@ -276,6 +279,7 @@ export class XhTimePickerElement extends XhPortalHostElement {
       presets: this.presets,
       disabled: control.disabled,
       readOnly: control.readOnly,
+      clearable: this.clearable,
       invalid: control.invalid,
       translations: this.translations,
       isTimeUnavailable: this.isTimeUnavailable,

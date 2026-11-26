@@ -189,7 +189,7 @@ export const timePickerMachine = createMachine({
     // 只兜宿主侧的写入，内部提交当场已把缓冲一起更新
     track([context.dep('value')], () => action(['syncDraft']))
     // 按住途中转入禁用 / 只读或值被清空：触发钮随即 disabled、清空钮藏起，不会再来 keyup，按压面由机器自己收
-    track([() => prop('disabled'), () => prop('readOnly'), context.dep('value'), context.dep('draft')], () => action(['releaseWhenInert']))
+    track([() => prop('disabled'), () => prop('readOnly'), () => prop('clearable'), context.dep('value'), context.dep('draft')], () => action(['releaseWhenInert']))
     // 选中值变了：选中换了格的时间列平滑滚过去（打开时的那一下由展开态的 effect 直接到位）
     track([context.dep('value'), context.dep('draft')], () => action(['followColumnSelection']))
   },
@@ -328,7 +328,7 @@ export const timePickerMachine = createMachine({
         const draft = context.get('draft')
         const dirty = context.get('value').length > 0 || draft.hour != null || draft.minute != null
           || draft.second != null || draft.dayPeriod != null
-        if (pressed === 'clear' && !dirty)
+        if (pressed === 'clear' && (!dirty || prop('clearable') === false))
           context.set('pressed', null)
       },
 

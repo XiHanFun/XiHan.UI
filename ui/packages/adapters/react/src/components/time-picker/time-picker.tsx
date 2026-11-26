@@ -94,6 +94,8 @@ export interface XhTimePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   /** 逐格可选性：时列按 24 小时制给值，第三个参数带已选的时与分。 */
   isTimeUnavailable?: TimeUnavailablePredicate
   readOnly?: boolean
+  /** 清空能力，缺省开启；写 false 时不铺清空按钮，api.clear() 也不生效。 */
+  clearable?: boolean
   invalid?: boolean
   required?: boolean
   name?: string
@@ -137,6 +139,7 @@ export function XhTimePickerRoot({
   translations,
   isTimeUnavailable,
   readOnly,
+  clearable,
   invalid,
   required,
   name,
@@ -173,6 +176,7 @@ export function XhTimePickerRoot({
     translations,
     isTimeUnavailable,
     readOnly,
+    clearable,
     invalid,
     required,
     name,

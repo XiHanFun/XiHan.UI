@@ -104,6 +104,8 @@ export const XhTimePickerRoot = defineComponent({
     /** 逐格可选性：时列按 24 小时制给值，第三个参数带已选的时与分。 */
     isTimeUnavailable: { type: Function as PropType<TimeUnavailablePredicate> },
     readOnly: { type: Boolean, default: undefined },
+    /** 清空能力，缺省开启；写 false 时不铺清空按钮，api.clear() 也不生效。 */
+    clearable: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
     name: { type: String },

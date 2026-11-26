@@ -194,6 +194,11 @@ export interface TimePickerSchema extends MachineSchema {
     disabled?: boolean
     /** 只读：浮层照常展开、列表照常浏览，但值不可修改也不可清空。 */
     readOnly?: boolean
+    /**
+     * 清空能力，默认开启：有值且改得动时露出清空按钮。
+     * 写 false 即关掉：清空按钮恒带 hidden 收起、标准结构不再铺它，api.clear() 也被拦下；段位上按退格逐段清值照旧。
+     */
+    clearable?: boolean
     /** 校验失败标注。 */
     invalid?: boolean
     /** 必填标注（写入每段的 aria-required）。 */
@@ -384,6 +389,8 @@ export interface TimePickerApi<T extends PropTypes = PropTypes> {
   presets: readonly TimePickerPresetState[]
   /** 清空按钮当前是否可按。 */
   canClear: boolean
+  /** 清空能力是否开启（clearable 没写成 false）。 */
+  clearable: boolean
   /** 多选时「添加」此刻可按：草稿填全、在 min / max 之内、还没选过、也没到 maxSelected。 */
   canAdd: boolean
   /** 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组。 */
@@ -406,6 +413,7 @@ export interface TimePickerApi<T extends PropTypes = PropTypes> {
   isItemDisabled: (props: TimePickerItemProps) => boolean
   setOpen: (next: boolean) => void
   setValue: (next: string[]) => void
+  /** 发起清空；关掉 clearable 时不生效，无条件清空用 setValue([])。 */
   clear: () => void
   /** 多选：把草稿收进值（与按「添加」同一条路）。 */
   add: () => void

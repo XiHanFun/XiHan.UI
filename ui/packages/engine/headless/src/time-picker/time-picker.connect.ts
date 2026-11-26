@@ -112,7 +112,9 @@ export function connectTimePicker<T extends PropTypes>(
   const dirty = multiple
     ? values.length > 0
     : value !== '' || draft.hour != null || draft.minute != null || draft.second != null || draft.dayPeriod != null
-  const canClear = editable && dirty
+  // 清空钮缺省开着；写 false 即收起、标准结构不铺，clear() 一并拦下
+  const clearable = prop('clearable') !== false
+  const canClear = clearable && editable && dirty
   const placeholder = prop('placeholder')
   const placeholderText = placeholder != null && placeholder !== '' ? placeholder : undefined
   const maxSelected = resolveMaxSelected(prop('maxSelected'))
@@ -358,6 +360,7 @@ export function connectTimePicker<T extends PropTypes>(
     focusedItem,
     presets,
     canClear,
+    clearable,
     canAdd,
     tags,
     overflowCount,
@@ -372,7 +375,10 @@ export function connectTimePicker<T extends PropTypes>(
         send(next ? { type: 'OPEN' } : { type: 'CLOSE' })
     },
     setValue: next => send({ type: 'VALUE.SET', value: next }),
-    clear: () => send({ type: 'VALUE.CLEAR' }),
+    clear: () => {
+      if (clearable)
+        send({ type: 'VALUE.CLEAR' })
+    },
     add: () => send({ type: 'VALUE.ADD' }),
     deselect: v => send({ type: 'VALUE.REMOVE', value: v }),
 

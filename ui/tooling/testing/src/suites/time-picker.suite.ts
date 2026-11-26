@@ -1447,6 +1447,16 @@ export const timePickerSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'clearable 写 false：有值也不露清空钮、标准结构不铺；改回 true 即铺出并露面',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { ...BASE, defaultValue: '09:30', clearable: false },
+      initial: { counts: { 'clear-trigger': 0 } },
+      steps: [
+        { kind: 'setProps', props: { clearable: true }, expect: { parts: { 'clear-trigger': { hidden: null } } } },
+      ],
+    },
+    {
       name: '作者不写结构：三端都照 timePickerStructure 铺出标题、段组与两颗钮、表单影子与浮层里的各列',
       spec: { apg: APG },
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
