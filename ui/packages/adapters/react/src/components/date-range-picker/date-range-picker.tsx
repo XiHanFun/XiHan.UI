@@ -150,6 +150,8 @@ export interface XhDateRangePickerRootProps extends Omit<ComponentPropsWithRef<'
   allowNonContiguousRanges?: boolean
   disabled?: boolean
   readOnly?: boolean
+  /** 清空能力，缺省开启；写 false 时不铺清空按钮，api.clear() 也不生效。 */
+  clearable?: boolean
   invalid?: boolean
   required?: boolean
   name?: string
@@ -221,6 +223,7 @@ export function XhDateRangePickerRoot({
   allowNonContiguousRanges,
   disabled,
   readOnly,
+  clearable,
   invalid,
   required,
   name,
@@ -274,6 +277,7 @@ export function XhDateRangePickerRoot({
     allowNonContiguousRanges,
     disabled,
     readOnly,
+    clearable,
     invalid,
     required,
     name,

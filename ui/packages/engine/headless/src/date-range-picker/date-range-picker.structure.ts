@@ -55,7 +55,7 @@ export interface DateRangePickerStructureOptions {
   slotted?: StructureSlotted
 }
 
-type DateRangePickerStructureModel = Pick<DateRangePickerApi, 'field' | 'fieldEnd' | 'presets' | 'showTime' | 'timeColumnGroups' | 'getTimeItemText' | 'translations'> & {
+type DateRangePickerStructureModel = Pick<DateRangePickerApi, 'clearable' | 'field' | 'fieldEnd' | 'presets' | 'showTime' | 'timeColumnGroups' | 'getTimeItemText' | 'translations'> & {
   calendar: Pick<DateRangePickerApi['calendar'], 'panels' | 'weekDays' | 'headingOrder'>
 }
 
@@ -94,6 +94,8 @@ function columnGroupNode(model: DateRangePickerStructureModel, group: DateRangeP
  *   浮层里这几块直接并排，横排与换行由皮肤按在场的部件排。
  */
 export function dateRangePickerStructure(model: DateRangePickerStructureModel, options: DateRangePickerStructureOptions = {}): DateRangePickerNode[] {
+  // 关掉 clearable 就不铺清空钮
+  const clearTrigger: DateRangePickerNode[] = model.clearable ? [{ key: 'clear-trigger', tag: 'button', part: 'clear-trigger' }] : []
   const nodes: DateRangePickerNode[] = []
   if (options.slotted?.('label'))
     nodes.push({ key: 'label', tag: 'span', part: 'label', slot: { name: 'label' } })
@@ -139,7 +141,7 @@ export function dateRangePickerStructure(model: DateRangePickerStructureModel, o
         { key: 'segment-group:0', tag: 'div', part: 'segment-group', attrs: { index: '0' }, children: dateSegmentGroupChildren(model.field, 'date-field') },
         { key: 'range-separator', tag: 'span', part: 'range-separator', text: '-' },
         { key: 'segment-group:1', tag: 'div', part: 'segment-group', attrs: { index: '1' }, children: dateSegmentGroupChildren(model.fieldEnd, 'date-field') },
-        { key: 'clear-trigger', tag: 'button', part: 'clear-trigger' },
+        ...clearTrigger,
         { key: 'trigger', tag: 'button', part: 'trigger' },
       ],
     },

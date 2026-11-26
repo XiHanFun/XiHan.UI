@@ -78,6 +78,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 
 - 值始终为区间两端 `[start, end]`，按位存放：只填了终点时是 `['', 终点]`，受控回写按同一下标对应。
 - 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：标题（`label` 给文字），盒里的起止两组段位、分隔符、清空钮与日历钮，起止两份表单影子，浮层里依次是快捷选项列、每个面板一份日历、`showTime` 的起止两组时间列（各带小标题）与底栏的确认钮（文字取 `translations.confirmTrigger`）。翻月、换层级与选中变化时结构随之重铺。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。自己写结构时，Vue / React 的时间列可以用 `XhDateRangePickerTimePanel` 整组铺，也可以逐组写 `XhDateRangePickerColumnGroup`（`index`），组里不写内容时铺小标题 `XhDateRangePickerColumnGroupLabel` 与各列 `XhDateRangePickerTimeColumn`（`unit`），列里不写内容时按可选值铺 `XhDateRangePickerTimeItem`。
+- `clearable` 缺省开启；写 false 即关掉清空能力：有值也不露清空按钮、标准结构不再铺它，盒上只留日历钮，`api.clear()` 也被拦下；段位上按退格逐段清值照旧。必选的字段用它去掉清空钮。
 - 起止各一组段位，`range-separator` 隔在中间；方向键换段不跨组，`name` 与 `endName` 各自决定两份隐藏输入参不参与提交。
 - 输入行与别的字段同取缺省宽 `--xh-control-w`。起止两组按日带时刻放不进时，两组按各自内容宽一起收、各在组内裁掉放不下的段位，键盘走到被裁的段位时组跟着滚过去；分隔符与日历钮始终留在框里。要整段露出，经 `--xh-date-range-picker-control-w` 钉宽。
 - `startPlaceholder` / `endPlaceholder` 是两组段位各自的整条占位：哪一端一段都没填、焦点也不在它的段上，就在那一组显示这句文字（「开始日期」「结束日期」）；`placeholder` 是两端共用的逐段占位串。
@@ -150,6 +151,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `allowNonContiguousRanges` | `boolean` |  | 区间允许跨过不可用的日期，默认关闭；关闭时落下起点之后只能选到两侧最近的不可用日为止。 |
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 为原生 disabled，段位退出 Tab 序列，日历格子全部为 aria-disabled。 |
 | `readOnly` | `boolean` |  | 只读：浮层照常展开、日历照常翻月浏览，但选中值不可修改。 |
+| `clearable` | `boolean` |  | 清空能力，默认开启：有值且改得动时露出清空按钮。 写 false 即关掉：清空按钮恒带 hidden 收起、标准结构不再铺它，api.clear() 也被拦下；段位上按退格逐段清值照旧。 |
 | `invalid` | `boolean` |  | 校验失败：段位报告 aria-invalid，各角色节点带 data-invalid。 未提供时也会自行判定：任一端越界，或终点早于起点。 |
 | `required` | `boolean` |  | 必填标注，写入每一段的 aria-required。 |
 | `name` | `string` |  | 起点隐藏输入的表单字段名；提供后才带 name，ISO 串随表单一并提交。 |
@@ -285,9 +287,10 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` | 校验失败：作者标记的、任一端越界，或终点早于起点。 |
 | `canClear` | `boolean` | 清空按钮当前是否可按。 |
+| `clearable` | `boolean` | 清空能力是否开启（clearable 没写成 false）。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string[]) => void` |  |
-| `clear` | `() => void` |  |
+| `clear` | `() => void` | 发起清空；关掉 clearable 时不生效，无条件清空用 setValue([])。 |
 | `setActiveView` | `(next: CalendarView) => void` | 直接切换到某一层级。 |
 | `presets` | `readonly DateRangePickerPresetState[]` | 快捷选项逐条的状态，数据顺序。未提供 presets 时为空数组。 |
 | `activeIndex` | `DateRangePickerEndIndex` | 当前编辑区间的哪一端。 |

@@ -73,7 +73,9 @@ export function connectDateRangePicker<T extends PropTypes>(
   const invalid = !!prop('invalid')
   // 只读与禁用都改不了选中值，禁用还额外展不开浮层
   const interactive = !disabled && !readOnly
-  const canClear = interactive && filled.length > 0
+  // 清空钮缺省开着；写 false 即收起、标准结构不铺，clear() 一并拦下
+  const clearable = prop('clearable') !== false
+  const canClear = clearable && interactive && filled.length > 0
   const stateAttr = open ? 'open' : 'closed'
 
   // 按压通道：三类可按部件各自合成一份跟踪器，真源是编排机器 context 里「正被按住的那一个」；
@@ -390,6 +392,7 @@ export function connectDateRangePicker<T extends PropTypes>(
     // 与根节点的 data-invalid 同一口径：作者标的、越界的、终点早于起点的都算
     invalid: flagged,
     canClear,
+    clearable,
     presets,
     activeIndex,
     setActiveIndex: activate,
@@ -409,7 +412,10 @@ export function connectDateRangePicker<T extends PropTypes>(
         send({ type: next ? 'OPEN' : 'CLOSE' })
     },
     setValue: next => send({ type: 'VALUE.SET', value: next, src: 'api' }),
-    clear: () => send({ type: 'VALUE.CLEAR' }),
+    clear: () => {
+      if (clearable)
+        send({ type: 'VALUE.CLEAR' })
+    },
     setActiveView: next => send({ type: 'VIEW.SET', activeView: next }),
 
     getRootProps: () => normalize.element({

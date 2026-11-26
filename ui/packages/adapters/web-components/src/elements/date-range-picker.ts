@@ -144,6 +144,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {string} default-focused-value - 初始聚焦日，同时决定展开时先落在哪一页
  * @attr {boolean} disabled - 整个控件禁用：trigger 为原生 disabled，段位退出 Tab 序列
  * @attr {boolean} read-only - 只读：浮层照常展开、日历照常浏览，但选中值不可修改
+ * @attr {boolean} clearable - 清空能力，默认开启；写 "false" 关掉：不铺清空按钮，连接层的 clear() 也不生效
  * @attr {boolean} invalid - 校验失败标注；未提供时也会自行判定：任一端越界，或终点早于起点
  * @attr {boolean} allow-non-contiguous-ranges - 允许跨过不可用的日期；默认关闭，落下起点后只能选到两侧最近的不可用日为止
  * @attr {boolean} required - 必填标注，写入每段的 aria-required
@@ -257,6 +258,7 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
     defaultFocusedValue: { converter: STRING_CONVERTER, attribute: 'default-focused-value' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    clearable: { converter: BOOLEAN_CONVERTER },
     invalid: { converter: BOOLEAN_CONVERTER },
     allowNonContiguousRanges: { converter: BOOLEAN_CONVERTER, attribute: 'allow-non-contiguous-ranges' },
     required: { converter: BOOLEAN_CONVERTER },
@@ -307,6 +309,7 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
   declare defaultFocusedValue?: string
   declare disabled?: boolean
   declare readOnly?: boolean
+  declare clearable?: boolean
   declare invalid?: boolean
   declare allowNonContiguousRanges?: boolean
   declare required?: boolean
@@ -482,6 +485,7 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
       allowNonContiguousRanges: this.allowNonContiguousRanges,
       disabled: control.disabled,
       readOnly: control.readOnly,
+      clearable: this.clearable,
       invalid: control.invalid,
       required: control.required,
       name: this.name,

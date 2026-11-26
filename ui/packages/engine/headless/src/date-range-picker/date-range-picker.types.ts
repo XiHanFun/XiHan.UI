@@ -205,6 +205,11 @@ export interface DateRangePickerSchema extends MachineSchema {
     /** 只读：浮层照常展开、日历照常翻月浏览，但选中值不可修改。 */
     readOnly?: boolean
     /**
+     * 清空能力，默认开启：有值且改得动时露出清空按钮。
+     * 写 false 即关掉：清空按钮恒带 hidden 收起、标准结构不再铺它，api.clear() 也被拦下；段位上按退格逐段清值照旧。
+     */
+    clearable?: boolean
+    /**
      * 校验失败：段位报告 aria-invalid，各角色节点带 data-invalid。
      * 未提供时也会自行判定：任一端越界，或终点早于起点。
      */
@@ -439,8 +444,11 @@ export interface DateRangePickerApi<T extends PropTypes = PropTypes> {
   invalid: boolean
   /** 清空按钮当前是否可按。 */
   canClear: boolean
+  /** 清空能力是否开启（clearable 没写成 false）。 */
+  clearable: boolean
   setOpen: (next: boolean) => void
   setValue: (next: string[]) => void
+  /** 发起清空；关掉 clearable 时不生效，无条件清空用 setValue([])。 */
   clear: () => void
   /** 直接切换到某一层级。 */
   setActiveView: (next: CalendarView) => void

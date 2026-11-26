@@ -2171,3 +2171,26 @@ describe('dateRangePickerMachine 关闭原因', () => {
     expect(onOpenChange.mock.calls.map(c => c[0]).filter(d => d.open)).toEqual([{ open: true }])
   })
 })
+
+describe('clearable', () => {
+  const partsOf = (nodes: readonly unknown[]): string[] => nodes.map(node => (node && typeof node === 'object' && 'part' in node ? String(node.part) : ''))
+  const controlParts = (nodes: readonly unknown[]): string[] => {
+    const control = nodes.find(node => node && typeof node === 'object' && 'part' in node && node.part === 'control') as { children?: readonly unknown[] } | undefined
+    return partsOf(control?.children ?? [])
+  }
+
+  it('写 false：两端有值也收起清空钮、clear() 拦下、标准结构不铺；setValue([]) 照旧清得掉', () => {
+    const h = mount({ defaultValue: ['2026-07-01', '2026-07-05'], clearable: false })
+    expect(h.clear.hidden).toBe(true)
+    expect([h.api().clearable, h.api().canClear]).toEqual([false, false])
+    h.api().clear()
+    expect(h.value()).toEqual(['2026-07-01', '2026-07-05'])
+    expect(controlParts(dateRangePickerStructure(h.api()))).toEqual(['segment-group', 'range-separator', 'segment-group', 'trigger'])
+    h.api().setValue([])
+    expect(h.value()).toEqual([])
+  })
+
+  it('缺省开着', () => {
+    expect(mount({ defaultValue: ['2026-07-01', '2026-07-05'] }).clear.hidden).toBe(false)
+  })
+})
