@@ -10,6 +10,7 @@ import type { DragAnnounceKind } from '../shared/drag'
 import type { TableRowMove } from './table.drag'
 import type { TableLayoutNeeds } from './table.layout'
 import type {
+  TableCellHint,
   TableColumnPreference,
   TableDropTarget,
   TableFilterValue,
@@ -34,7 +35,7 @@ import { createCellWidgetLock } from './table.cell-widgets'
 import { orderColumnIds, resolveTableColumns, tableLeafColumns } from './table.columns'
 import { canOwnChildren, draggableColumnIds, reorderTableRows, tableRowMoveOf, toColumnPreferenceIndex } from './table.drag'
 import { measureTableLayout, sameTableLayout, TABLE_EMPTY_LAYOUT, tableLayoutNeeds, tableScrollEdges } from './table.layout'
-import { tableRowDefs } from './table.pipeline'
+import { TABLE_DEFAULT_PAGE_SIZE, tableRowDefs } from './table.pipeline'
 import { expandableTableRows, flattenTableRows, tableCascadeRoots, tableCascadeSelectableLeaves, tableRowCanExpand, tableSelectableRowIds, tableSelectionIds, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
 import { tableNormalizeSort, tableToggleSort } from './table.sort'
 
@@ -115,6 +116,17 @@ export const tableMachine = createMachine({
       defaultValue: prop('defaultPage') ?? 1,
       onChange: value => prop('onPageChange')?.({ value }),
     })),
+    // 只给数据驱动模式的分页用：手写结构的序号照旧看 prop，没给 pageSize 时退回可见序
+    pageSize: cell<number>(() => ({
+      value: prop('pageSize'),
+      defaultValue: prop('defaultPageSize') ?? TABLE_DEFAULT_PAGE_SIZE,
+      onChange: value => prop('onPageSizeChange')?.({ value }),
+    })),
+    // 截断格子的原生提示：只记指针停着的那一格，值没变不写，移进没被裁掉的格子不重渲
+    cellHint: cell<TableCellHint | null>(() => ({
+      defaultValue: null,
+      isEqual: (a, b) => b !== undefined && (a === b || (a != null && b != null && a.cell === b.cell && a.text === b.text)),
+    })),
     selection: cell<TableSelection>(() => ({
       value: prop('selection'),
       defaultValue: prop('defaultSelection') ?? [],
@@ -163,6 +175,8 @@ export const tableMachine = createMachine({
     track([() => prop('loading')], () => action(['releaseWhenInert']))
     track([() => prop('navigation')], () => action(['syncCellWidgets']))
     track([() => prop('rows')], () => action(['seedExpandAll']))
+    // 行换了一批（翻页、重新取数），指针底下那一格的字也许已经不是记下的那段，原生提示先撤掉，等指针再移进来重量
+    track([() => prop('rows'), () => prop('data')], () => action(['clearCellHint']))
   },
   refs: ({ prop }) => ({
     expandAllPending: prop('defaultExpandAll') === true
@@ -196,6 +210,8 @@ export const tableMachine = createMachine({
         'SORT.TOGGLE': { actions: ['toggleSort'] },
         'FILTER.SET': { actions: ['setFilter'] },
         'PAGE.SET': { actions: ['setPage'] },
+        'PAGE_SIZE.SET': { actions: ['setPageSize'] },
+        'CELL.HINT': { actions: ['setCellHint'] },
         'SELECTION.SET': { actions: ['setSelection'] },
         'ROW.SELECT': { actions: ['selectRow'] },
         'SELECTION.ALL_TOGGLE': { actions: ['toggleSelectAll'] },
@@ -781,6 +797,23 @@ export const tableMachine = createMachine({
           return
         context.set('page', Math.max(1, Math.trunc(e.value)))
       },
+      // 换档连页码一起改：先写页码再写档位，两条回调发出去时看到的是同一份新状态
+      setPageSize: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PAGE_SIZE.SET' || !Number.isFinite(e.value))
+          return
+        const next = Math.max(1, Math.trunc(e.value))
+        if (next === context.get('pageSize'))
+          return
+        context.set('page', Math.max(1, Math.trunc(e.page) || 1))
+        context.set('pageSize', next)
+      },
+      setCellHint: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'CELL.HINT')
+          context.set('cellHint', e.value)
+      },
+      clearCellHint: ({ context }) => context.set('cellHint', null),
       setSelection: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'SELECTION.SET')

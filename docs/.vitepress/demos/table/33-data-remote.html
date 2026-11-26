@@ -1,0 +1,88 @@
+<!-- 远程模式 | 开 remote 后表格只铺服务端交来的这一页：排序钮、筛选菜单与分页照常可点，只改写状态、发事件，取数归宿主；分页按 recordCount 算页数，取数在途时表体照留、根上报 aria-busy -->
+<div style="width: 100%; max-width: 640px; display: grid; gap: 12px">
+  <!-- 只写 root：表头、表体与空态由元素照标准结构生成，分页生成在 root 之后 -->
+  <xh-table id="table-data-remote" remote pagination page-size="8">
+    <div data-xh-part="root" aria-label="订单"></div>
+  </xh-table>
+  <span id="table-data-remote-value" data-demo-output></span>
+</div>
+
+<script type="module">
+  const statuses = ["待付款", "已发货", "已完成"];
+  const PAGE_SIZE = 8;
+
+  // 模拟服务端：整份数据只在这里，按排序、筛选与页码切好一页再交出去
+  const orders = Array.from({ length: 57 }, (_, i) => ({
+    id: `o${i + 1}`,
+    customer: `客户 ${String(i + 1).padStart(2, "0")}`,
+    status: statuses[i % statuses.length],
+    amount: ((i * 37) % 900) + 100,
+  }));
+
+  function fetchOrders({ page, sort, filterValue }) {
+    const picked = filterValue.status ?? [];
+    const hit = orders.filter((order) => picked.length === 0 || picked.includes(order.status));
+    const [by] = sort;
+    if (by) {
+      const sign = by.direction === "asc" ? 1 : -1;
+      hit.sort((a, b) => sign * (by.id === "amount" ? a.amount - b.amount : a.customer.localeCompare(b.customer)));
+    }
+    const rows = hit.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+    return new Promise((resolve) => setTimeout(resolve, 400, { rows, total: hit.length }));
+  }
+
+  const table = document.getElementById("table-data-remote");
+  const readout = document.getElementById("table-data-remote-value");
+
+  table.columns = [
+    { id: "customer", label: "客户", sortable: true },
+    { id: "status", label: "状态", filterOptions: statuses.map((value) => ({ value })) },
+    { id: "amount", label: "金额", sortable: true, align: "end", format: (value) => `¥ ${value}` },
+  ];
+  // 第一页到之前先给一份空数据：表格一开始就在数据驱动模式里，在途占位与分页立刻铺好
+  table.data = [];
+
+  const query = { page: 1, sort: [], filterValue: {} };
+  let total = 0;
+  let ticket = 0;
+  let queued = false;
+
+  const show = () => {
+    readout.textContent = `第 ${query.page} 页 · 共 ${total} 条${table.loading ? " · 取数中" : ""}`;
+  };
+
+  // 筛选一变表格自己回到第 1 页，两个事件接连派发：排到同一个微任务里只取一次数；晚到的旧请求不覆盖新结果
+  function load() {
+    if (queued)
+      return;
+    queued = true;
+    queueMicrotask(async () => {
+      queued = false;
+      const mine = ++ticket;
+      table.loading = true;
+      show();
+      const result = await fetchOrders(query);
+      if (mine !== ticket)
+        return;
+      table.data = result.rows;
+      table.recordCount = result.total;
+      total = result.total;
+      table.loading = false;
+      show();
+    });
+  }
+
+  table.addEventListener("page-change", (event) => {
+    query.page = event.detail.value;
+    load();
+  });
+  table.addEventListener("sort-change", (event) => {
+    query.sort = event.detail.value;
+    load();
+  });
+  table.addEventListener("filter-value-change", (event) => {
+    query.filterValue = event.detail.value;
+    load();
+  });
+  load();
+</script>

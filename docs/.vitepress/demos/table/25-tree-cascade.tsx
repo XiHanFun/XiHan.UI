@@ -16,7 +16,6 @@ import {
 import { useState } from "react";
 
 const columns = [
-  { id: "select", width: "3rem" },
   { id: "name", label: "组织", width: "13rem" },
   { id: "owner", label: "负责人" },
 ];
@@ -39,6 +38,7 @@ export default function Demo(): ReactNode {
     <div style={{ width: "100%", maxWidth: 560, display: "grid", gap: 12 }}>
       <XhTableRoot
         columns={columns}
+        prefixColumns={["select"]}
         rows={rows}
         defaultExpandedValue={["rd", "ops"]}
         selectionMode="multiple"
@@ -50,7 +50,8 @@ export default function Demo(): ReactNode {
           <>
             <XhTableHeader>
               <XhTableRow>
-                <XhTableColumnHeader value="select"><XhTableSelectAllTrigger /></XhTableColumnHeader>
+                {/* 前缀列的列 id 由库定，两侧带下划线，与作者自己的列 id 分得开 */}
+                <XhTableColumnHeader value="__select__"><XhTableSelectAllTrigger /></XhTableColumnHeader>
                 <XhTableColumnHeader value="name"><XhTableColumnLabel>组织</XhTableColumnLabel></XhTableColumnHeader>
                 <XhTableColumnHeader value="owner"><XhTableColumnLabel>负责人</XhTableColumnLabel></XhTableColumnHeader>
               </XhTableRow>
@@ -58,7 +59,7 @@ export default function Demo(): ReactNode {
             <XhTableBody>
               {visibleRows.filter(item => item.kind === "data").map(row => (
                 <XhTableRow key={row.id} value={row.id}>
-                  <XhTableCell value="select"><XhTableRowSelectTrigger /></XhTableCell>
+                  <XhTableCell value="__select__"><XhTableRowSelectTrigger /></XhTableCell>
                   <XhTableCell value="name" style={{ paddingInlineStart: `${row.level * 16}px` }}>
                     {row.level === 1 ? <XhTableExpandTrigger /> : null}
                     {byId.get(row.id)?.label}

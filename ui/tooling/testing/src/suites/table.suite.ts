@@ -1624,5 +1624,47 @@ export const tableSuite: ConformanceSuite = {
         },
       ],
     },
+    {
+      name: '远程模式：data 原样就是这一页，分页按 recordCount 算页数；点排序钮只改排序链，行序不动',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { columns: DATA_COLUMNS, data: DATA_RECORDS, remote: true, pagination: true, recordCount: 30, pageSize: 3 },
+      initial: {
+        counts: { row: 4, cell: 6 },
+        parts: { 'row[1]': { 'data-value': 'f1' }, 'row[3]': { 'data-value': 'f3' } },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '分页是 root 的兄弟、戴 pagination 的 scope，不进本组件的属性快照；30 条每页 3 条是 10 页',
+          run: async ({ doc, flush }) => {
+            await until(() => paginationAfterRoot(doc)?.querySelector('[data-scope="pagination"][data-part="item"][data-value="10"]') != null, flush, '分页按 recordCount 铺到第 10 页')
+          },
+        },
+        {
+          kind: 'click',
+          part: 'sort-trigger',
+          expect: {
+            // 本地模式下 alpha 会排到第一行；远程模式交给服务端排，这一页原样不动
+            parts: { 'column-header[0]': { 'aria-sort': 'ascending' }, 'row[1]': { 'data-value': 'f1' }, 'row[2]': { 'data-value': 'f2' }, 'row[3]': { 'data-value': 'f3' } },
+          },
+        },
+      ],
+    },
+    {
+      name: '列的 truncate：这一列的格子写 data-truncate，别的列与列头不写',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { columns: [{ id: 'name', label: 'Name' }, { id: 'size', label: 'Size', truncate: true }], data: DATA_RECORDS },
+      initial: {
+        counts: { row: 4, cell: 6 },
+        parts: {
+          'column-header[1]': { 'data-value': 'size', 'data-truncate': null },
+          'cell[0]': { 'data-value': 'name', 'data-truncate': null },
+          'cell[1]': { 'data-value': 'size', 'data-truncate': '' },
+          'cell[5]': { 'data-value': 'size', 'data-truncate': '' },
+        },
+      },
+    },
   ],
 }

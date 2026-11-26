@@ -12,9 +12,7 @@ import {
 } from "@xihan-ui/react";
 import { useState } from "react";
 
-// 单选下全选把手不生效，表头那一格空着即可
 const columns = [
-  { id: "select", width: "3rem" },
   { id: "plan", label: "套餐", width: "8rem" },
   { id: "price", label: "价格" },
 ];
@@ -35,13 +33,16 @@ export default function Demo(): ReactNode {
       <XhTableRoot
         selection={selection}
         columns={columns}
+        prefixColumns={["select"]}
         rows={rows}
         selectionMode="single"
         onSelectionChange={details => setSelection(Array.isArray(details.value) ? details.value : [])}
       >
         <XhTableHeader>
           <XhTableRow>
-            <XhTableColumnHeader value="select" />
+            {/* 前缀列的列 id 由库定，两侧带下划线，与作者自己的列 id 分得开 */}
+            {/* 单选下全选把手不生效，表头那一格空着即可 */}
+            <XhTableColumnHeader value="__select__" />
             <XhTableColumnHeader value="plan"><XhTableColumnLabel>套餐</XhTableColumnLabel></XhTableColumnHeader>
             <XhTableColumnHeader value="price"><XhTableColumnLabel>价格</XhTableColumnLabel></XhTableColumnHeader>
           </XhTableRow>
@@ -49,7 +50,7 @@ export default function Demo(): ReactNode {
         <XhTableBody>
           {plans.map(p => (
             <XhTableRow key={p.id} value={p.id}>
-              <XhTableCell value="select">
+              <XhTableCell value="__select__">
                 <XhTableRowSelectTrigger />
               </XhTableCell>
               <XhTableCell value="plan">{p.plan}</XhTableCell>

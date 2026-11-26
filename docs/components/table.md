@@ -32,7 +32,7 @@ columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一�
 
 ### 多选
 
-selectionMode 默认 none，声明 multiple 才有选择机制；选择列也要在 columns 中占一条，否则右侧列号错位。按住 Shift 点击勾选框选中一段，焦点落在表体中按 Ctrl/Cmd + A 全选，禁用行占据顺序位置但不被选入
+selectionMode 默认 none，声明 multiple 才有选择机制；选择列写进 prefixColumns，由库插在最前面并占住列号，columns 里不另写一列。按住 Shift 点击勾选框选中一段，焦点落在表体中按 Ctrl/Cmd + A 全选，禁用行占据顺序位置但不被选入
 
 <XhDemo src="table/03-selection" />
 
@@ -198,6 +198,30 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 
 <XhDemo src="table/32-data-virtual" />
 
+### 远程模式
+
+开 remote 后表格只铺服务端交来的这一页：排序钮、筛选菜单与分页照常可点，只改写状态、发事件，取数归宿主；分页按 recordCount 算页数，取数在途时表体照留、根上报 aria-busy
+
+<XhDemo src="table/33-data-remote" />
+
+### 单元格省略
+
+列上标 truncate：放不下的字收成一行省略号，指针停在被裁掉的格子上时原生提示给出全文；放得下的格子不出提示，读屏照旧念全文
+
+<XhDemo src="table/34-data-truncate" />
+
+### 单选筛选
+
+列写 filterMode: "single"，列头的筛选菜单换成单选：选一项即收起，换一项就替换，再选一次已选的那一项撤掉这一列的筛选
+
+<XhDemo src="table/35-data-filter-single" />
+
+### 自定义筛选面板
+
+列写 filterMode: "custom"，列头上筛选那一格交给 filter 插槽：这里放一个气泡卡片，里面的文本框按关键字筛；筛选值仍是字符串数组，命中由列的 filter 判
+
+<XhDemo src="table/36-data-filter-custom" />
+
 ## 设计指引
 
 ### 何时使用
@@ -230,7 +254,11 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 - 冻结列不必都写数字宽度：同侧多列冻结时，数字宽度直接累加，其余（没写、百分比、`fr`）取挂载后实测的列头宽度；量到之前那一侧从该列起暂时贴边。
 - 冻结列不挡滚进来的格子：滚动容器按两侧冻结列的总宽留出滚动内距，`scrollIntoView`、焦点移入与引导的自动滚动都让目标落在冻结列之外。放进滚动区的表格改由不冻结的列头与格子带滚动外距，效果相同。
 - 行数很大时只渲染窗口内的行：把[虚拟滚动](./virtualizer)的 `collectionVirtualizer` 交给 `virtualizer`，虚拟滚动写 `scrollContainer="ancestor"`，表体里放它的视口（不定高），每个虚拟条目装一行数据行（`count` 等于可见数据行的条数，展开的详情行跟在同一个条目里）。行间线与普通表体一样画在行与行之间：按完整行序判，第一行不画，滚动换批时每一行的高度不变。行号与 `aria-rowcount` 照旧按完整行序报；上下键与 Home / End 按完整行序求落点，落点不在窗口里时先把它滚进来再交焦点。窗口外的行没有落点，接上后行拖动换位不可用（`rowReorderDisabledReason` 为 `virtualized`）。Web Components 下行隔着一层 `xh-virtualizer`，行节点写 `data-xh-part-owner="table"` 归表格。表格根节点保留皮肤给的限高与滚动，表头吸顶、冻结列、横向溢出与行都在这一个滚动面里，列宽之和超过容器时表头与行照样对齐；视口不滚动，也就不占 Tab 位。表体里的视口自己滚时，表头与冻结列落在另一个滚动面上，开发模式下会提醒一次。
-- 数据驱动模式：给了 `data`（连同 `columns`），表格自己按排序链、筛选值与页码算出当前页的记录，行定义随之推出，`rows` 不再读。列 id 即字段名，行 id 缺省取 `id` 字段（`rowKey` 可换成别的字段或取值函数）。排序按字段值比：数字与日期按大小，字符串按数值序（第 10 项排在第 9 项之后），空值无论升降都排最后；列给了 `compare` 就用它。列给了 `filterOptions` 时列头铺一颗筛选钮，点开是一张勾选型[菜单](./menu)，钮里只有漏斗，名字取 `translations.filter(列名)`；勾了几项就只留下命中的行，一项都不勾即不筛，勾选值存在 `filterValue` 里（可受控），列的 `filter` 可以换掉缺省的比法（字段值转字符串后在勾选值里，字段是数组时有一项在里面就算）。`pagination` 打开切页：按 `page` 与 `pageSize`（缺省 10）切出当前页，表后铺一组[分页](./pagination)，按筛过的总条数算页数；筛选值一变回到第 1 页，数据变短时页码夹到最后一页，序号跨页连续。格子里的文字取列的 `format`，没有就是字段值；要放标签、链接这类内容时用 `cell` 插槽接管那一格（React 是 `renderCell`，Web Components 在宿主的直接子节点上写 `slot="cell:<行 id>:<列 id>"`），参数里有记录、字段值与本来要显示的文字。每一行是各自伸缩的一行，没写宽度的列按内容定基准时列头（多了排序钮与筛选钮）与格子对不齐，所以数据驱动模式下没写宽度的数据列以 8rem、序号列以 4rem 为伸缩基准，各行同一个，再照常一起分剩余空间。远程排序、远程分页这类只交一页数据进来的表格仍用 `rows` 手写结构。
+- 数据驱动模式：给了 `data`（连同 `columns`），表格自己按排序链、筛选值与页码算出当前页的记录，行定义随之推出，`rows` 不再读。列 id 即字段名，行 id 缺省取 `id` 字段（`rowKey` 可换成别的字段或取值函数）。排序按字段值比：数字与日期按大小，字符串按数值序（第 10 项排在第 9 项之后），空值无论升降都排最后；列给了 `compare` 就用它。列给了 `filterOptions` 时列头铺一颗筛选钮，点开是一张勾选型[菜单](./menu)，钮里只有漏斗，名字取 `translations.filter(列名)`；勾了几项就只留下命中的行，一项都不勾即不筛，勾选值存在 `filterValue` 里（可受控），列的 `filter` 可以换掉缺省的比法（字段值转字符串后在勾选值里，字段是数组时有一项在里面就算）。`pagination` 打开切页：按 `page` 与 `pageSize`（缺省 10）切出当前页，表后铺一组[分页](./pagination)，按筛过的总条数算页数；筛选值一变回到第 1 页，数据变短时页码夹到最后一页，序号跨页连续。格子里的文字取列的 `format`，没有就是字段值；要放标签、链接这类内容时用 `cell` 插槽接管那一格（React 是 `renderCell`，Web Components 在宿主的直接子节点上写 `slot="cell:<行 id>:<列 id>"`），参数里有记录、字段值与本来要显示的文字。每一行是各自伸缩的一行，没写宽度的列按内容定基准时列头（多了排序钮与筛选钮）与格子对不齐，所以数据驱动模式下没写宽度的数据列以 8rem、序号列以 4rem 为伸缩基准，各行同一个，再照常一起分剩余空间。
+- 远程模式：服务端排序、筛选与分页的表格开 `remote`，`data` 就是服务端排好、筛好、切好的这一页，表格原样铺出、不再自己排序、筛选与切页。排序钮、筛选菜单与分页照常可点，只改写排序链、筛选值、页码与每页条数并发出 `onSortChange` / `onFilterValueChange` / `onPageChange` / `onPageSizeChange`（四个都可受控），宿主据此取数、写回新的 `data`；筛选值一变照样回到第 1 页。开了 `pagination` 时页数按 `recordCount`（服务端报的总条数，缺省取 `data` 的条数，Web Components 为 `record-count`）算，序号仍按页码跨页连续。取数在途时置 `loading`：表体原样保留、照常可操作，根上报 `aria-busy`。
+- 每页条数：数据驱动模式开了 `pagination` 时给 `pageSizeOptions`，档位交给表后的分页，铺出每页条数下拉；`pageSize` 可受控（写入只发 `onPageSizeChange`），非受控的初始值是 `defaultPageSize`（缺省 10）。换档时页码按改档前的第一条换算，与[分页](./pagination)同一种算法，第一条仍留在页内。
+- 列筛选的形态由列的 `filterMode` 决定。缺省 `multiple` 是勾选型菜单，勾任意几项；`single` 换成单选型菜单，选一项即收起，换一项就替换，再选一次已选的那一项撤掉这一列的筛选。`custom` 把列头上筛选的那一格交给作者，文本、日期、数值区间这类筛选靠它：Vue 用 `filter` 插槽、React 用 `renderFilter`，参数里有这一列（`column`）、它此刻的筛选值（`value`）、写回方法（`setValue`，空数组即撤掉）与内建筛选钮会用的名字（`label`，取 `translations.filter(列名)`）；Web Components 在宿主的直接子节点上写 `slot="filter:<列 id>"`，节点挪进那一列的列头，写回调元素的 `setFilter(列 id, 值)`。触发钮与面板都由作者摆（如一个[气泡卡片](./popover)里放文本框），筛选值仍是字符串数组、按列 id 记在 `filterValue` 里，命中由列的 `filter` 判；远程模式下只发事件。
+- 列的 `truncate`：这一列的格子单行省略，放不下的字收成省略号（格子写 `data-truncate`，换成块容器，省略号才落得到格子里的字上，纵向仍居中）。指针移进格子时量一次，真被裁掉了才把整段文字交给平台的原生提示（`title`），移出即撤，行换了一批也撤；不挂观察器，几百格不各盯一份尺寸。读屏照旧念全文。表体与表尾的格子都认，列头的省略照旧由 `column-label` 出。
 - 列的 `field`：数据驱动模式下列读记录里的哪个字段，缺省即列 id。列 id 想另起名字（同一个字段铺两列）时写 `field: "字段名"`；写 `field: null` 是不读字段的列（操作列、由几个字段拼出来的列），值恒为 `undefined`，格子的文字靠 `format` 或 `cell` 插槽，排序与筛选靠 `compare` 与 `filter`。排序链与筛选值仍按列 id 记。
 - 行类型泛型：根组件按 `data` 的元素类型推断行类型，数据列的 id 与 `field`、`rowKey` 只能写它的字段，写错编译即报错；`format` 的 `value` 是那个字段的类型，`compare`、`filter`、`format` 与 `cell` 插槽（React 是 `renderCell`）的记录都是那一行的类型，插槽参数按 `field` 判出字段后 `value` 也跟着收窄。列定义另写成常量时标成 `TableColumnDef<行类型>[]`。行类型只从 `data` 推断，没给 `data` 的手写结构表格是宽松的 `TableRecord`，什么列名都收。Vue 在模板里由 Volar 推断，`h()` 推断不了泛型，那里按宽松的记录检查；Web Components 写 `querySelector<XhTableElement<行类型>>("xh-table")`。
 - 不写结构（Vue 不写默认插槽、React 不给 children、Web Components 只写 `root` 或什么都不写）时按标准结构铺出表头、表体、在途与空态占位，三端出自同一个结构函数。前缀列照样铺：多选时序号列与选择列的列头分别是 `#` 与全选把手，格子是序号与行选把手；可排序的列铺排序钮，声明了 `resizable` 与 `reorderable` 的列铺改宽与拖拽把手。空态的字取 `translations.empty`，`empty` 插槽（React 是 `renderEmpty`）可以接管。标准结构只铺数据行：展开详情、表尾、标题、工具条与列设置区跟着手写结构走。
@@ -280,11 +308,13 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `captioned` | `boolean` |  | 作者渲染了 caption 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时根不输出 aria-labelledby：指向未渲染的 id 是无效引用，作者写在根上的 aria-label / aria-labelledby 也会被它压住。 |
 | `columns` | `TableColumnDef<TRow>[]` |  | 列定义，列号与列总数的唯一事实源。默认为空表。 |
 | `rows` | `TableRowDef[]` |  | 行定义，行序与行号的唯一事实源。默认为空表。给了 data 时不再读它，行定义由 data 推出。 |
-| `data` | `readonly TRow[]` |  | 数据驱动模式：给了它，表格自己按排序链、筛选值与页码算出当前页的记录，行定义随之推出（rows 不再读）。 列 id 即记录里的字段名（或列的 field）；不写结构时按标准结构铺出表头、表体与空态，格子的文字取 format 或字段值。 远程分页、远程排序这类只交一页数据进来的表格仍用 rows 手写结构。 |
+| `data` | `readonly TRow[]` |  | 数据驱动模式：给了它，表格自己按排序链、筛选值与页码算出当前页的记录，行定义随之推出（rows 不再读）。 列 id 即记录里的字段名（或列的 field）；不写结构时按标准结构铺出表头、表体与空态，格子的文字取 format 或字段值。 服务端排序、筛选与分页这类只交一页数据进来的表格开 remote。 |
+| `remote` | `boolean` |  | 远程模式：data 就是服务端排好、筛好、切好的这一页，表格不再自己排序、筛选与切页，原样铺出； 排序钮、筛选菜单与分页照常可用，只改写排序链、筛选值、页码与每页条数并发出 onSortChange / onFilterValueChange / onPageChange / onPageSizeChange，取数归宿主。开了 pagination 时页数按 recordCount 算。只在数据驱动模式下生效，缺省 false。 |
+| `recordCount` | `number` |  | 远程模式下服务端报的总条数（筛过之后的），分页按它算页数；缺省取 data 的条数。本地模式不读它。 |
 | `rowKey` | `TableField<TRow> \| ((record: TableRecordOf<TRow>) => string)` |  | 数据驱动模式下记录的行 id：字段名或取值函数，缺省取 id 字段；记录里没有时退回它在 data 里的下标。 |
 | `filterValue` | `TableFilterValue` |  | 筛选值（列 id → 勾选的值）。提供即受控：写入只发 onFilterValueChange。只在数据驱动模式下参与计算。 |
 | `defaultFilterValue` | `TableFilterValue` |  |  |
-| `pagination` | `boolean` |  | 数据驱动模式下分页：按 page 与 pageSize 切出当前页，表后铺一组分页按筛过的总条数算页数。 筛选值一变回到第 1 页；数据变短时页码夹到最后一页。 |
+| `pagination` | `boolean` |  | 数据驱动模式下分页：按 page 与 pageSize 切出当前页，表后铺一组分页按筛过的总条数算页数。 筛选值一变回到第 1 页；数据变短时页码夹到最后一页。远程模式下不切片，页数按 recordCount 算。 |
 | `defaultPage` | `number` |  | 非受控初始页码，默认 1。 |
 | `sort` | `TableSortDescriptor[]` |  | 排序链。提供即受控：cell 直读 prop，写入只发 onSortChange 不落内部值。 |
 | `defaultSort` | `TableSortDescriptor[]` |  |  |
@@ -303,8 +333,10 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `prefixColumns` | `TableColumnKind[]` |  | 需要的前缀列，按给定顺序插在最前面，默认不插入任何列。 它们由库插入并占用列号：不占用时右侧所有列的 aria-colindex 会整体错位， 这正是使用者手工向 columns 中添加假列的原因。作者按 `api.columns` 渲染即可， 每一项都声明 `kind`。 |
 | `columnPreference` | `TableColumnPreference` |  | 列偏好。提供即受控：内部不自行修改，写入只发 onColumnPreferenceChange。 持久化归使用者：库只负责把它计算进生效列。 |
 | `defaultColumnPreference` | `TableColumnPreference` |  |  |
-| `page` | `number` |  | 当前页码与每页条数。手写结构时只用于计算序号，不参与切片：切片归调用方（或分页组件的 `api.slice`）， 都未提供时序号回退为可见序。数据驱动模式开了 pagination 时表格按它们切片，pageSize 缺省 10； page 提供即受控，写入只发 onPageChange。 |
+| `page` | `number` |  | 当前页码与每页条数。手写结构时只用于计算序号，不参与切片：切片归调用方（或分页组件的 `api.slice`）， 都未提供时序号回退为可见序。数据驱动模式开了 pagination 时表格按它们切片，pageSize 缺省 10； 两个都是提供即受控，写入只发 onPageChange / onPageSizeChange。 |
 | `pageSize` | `number` |  |  |
+| `defaultPageSize` | `number` |  | 数据驱动模式开了 pagination 时的非受控初始每页条数，默认 10。 |
+| `pageSizeOptions` | `number[]` |  | 数据驱动模式开了 pagination 时表后分页里可选的每页条数档位，与分页组件的同名属性同义； 给了才铺每页条数下拉，换档时页码按改档前的第一条换算，第一条仍留在页内。 |
 | `loading` | `boolean` |  | 数据加载中：root 报告 aria-busy；表体为空时加载态节点显示，已有行时表体原样保留、照常可操作。 |
 | `empty` | `boolean` |  | 显式声明表体为空；未提供时按 rows 是否为空推导。 |
 | `stickyHeader` | `boolean` |  | 表头吸顶：只写 data-fixed（布尔），固定的实现归皮肤。列冻结使用 data-frozen，两者不同名。 |
@@ -325,6 +357,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `onSortChange` | `(details: TableSortChangeDetails) => void` |  |  |
 | `onFilterValueChange` | `(details: TableFilterValueChangeDetails) => void` |  |  |
 | `onPageChange` | `(details: TablePageChangeDetails) => void` |  |  |
+| `onPageSizeChange` | `(details: TablePageSizeChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TableSelectionChangeDetails) => void` |  |  |
 | `onExpandedValueChange` | `(details: TableExpandedValueChangeDetails) => void` |  |  |
 | `onAction` | `(details: TableActionDetails) => void` |  | 行主操作：指针主键点在数据行上（column 是点中那一格的列 id），或焦点停在行上按 Enter（column 为 null）。 点在行内的交互控件与表格自己的把手上、行拖动松手的那一次点击、禁用行、详情行、表头与脚注都不触发； 选中、展开与 Space 的语义不变。 |
@@ -350,7 +383,9 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `rowHeader` | `boolean \| ((row: TableRowDef, rowIndex: number) => boolean)` |  | 行表头列：表体与脚注里这一列的格子写 role="rowheader"，读屏报某一格时连着念出它所在行的表头 （交叉表的行维度、分组标签、合计行的标题格）。列头不受影响，仍是 columnheader；合并格的起点跟着所在的列走。 给函数时按行决定：表体里这一列的格子问一次，入参是行定义与它在可见数据行里的序号（0 起算，与 cellSpan 的 rowIndex 相同），返回 true 才报 rowheader。分组报表只让组头行与小计行的分组格报行表头，明细行照旧是 gridcell。 表尾格子没有行定义，函数不调用，按行表头处理。 |
 | `compare` | `(a: TableRecordOf<TRow>, b: TableRecordOf<TRow>) => number` |  | 数据驱动模式（给了 data）下这一列的升序比较，两条记录比大小：负数排前、正数排后。降序由表格倒过来用。 不给时按这一列的字段值比：数字与日期按大小，其余按字符串（数字串按数值序），空值无论升降都排最后。 只在列声明了 sortable 时用到。 |
 | `filterOptions` | `TableFilterOption[]` |  | 数据驱动模式下的筛选项：给了它，列头铺一颗筛选钮，点开是一组勾选项；勾了几项就只留下命中的行， 一项都不勾即不筛。勾选值存在 filterValue 里，按列 id 分开。 |
-| `filter` | `(record: TableRecordOf<TRow>, values: readonly string[]) => boolean` |  | 数据驱动模式下一条记录是否命中这一列勾选的筛选值（values 至少一项）。 不给时把这一列的字段值转成字符串，在 values 里即命中；字段是数组时有一项在里面就算。 |
+| `filterMode` | `TableFilterMode` |  | 数据驱动模式下这一列的筛选形态，缺省 multiple，见 TableFilterMode。 |
+| `filter` | `(record: TableRecordOf<TRow>, values: readonly string[]) => boolean` |  | 数据驱动模式下一条记录是否命中这一列的筛选值（values 至少一项）。 不给时把这一列的字段值转成字符串，在 values 里即命中；字段是数组时有一项在里面就算。 自定义面板（filterMode 为 custom）的筛选值由作者编码，命中靠它来判。 |
+| `truncate` | `boolean` |  | 这一列的格子单行省略：放不下的字收成省略号，格子写 data-truncate。指针移进格子时量一次， 真被裁掉了才把整段文字交给平台的原生提示（title），移出即撤；读屏照旧念全文。 |
 | `format` | `(value: TValue, record: TableRecordOf<TRow>) => string` |  | 数据驱动模式下格子里显示的文字，value 是这一列的字段值（不读字段的列恒为 undefined）。 不给时把字段值转成字符串，空值显示为空。要放图标、徽标这类内容时改用 cell 插槽。 |
 
 ### TableRowDef
@@ -382,6 +417,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `sort-change` | `TableSortChangeDetails` | 排序链变化；detail 为 `{ value: { id, direction }[] }` |
 | `filter-value-change` | `TableFilterValueChangeDetails` | 筛选值变化（数据驱动模式）；detail 为 `{ value: Record&lt;列 id, string[]&gt; }` |
 | `page-change` | `TablePageChangeDetails` | 页码变化（数据驱动模式开了分页）；detail 为 `{ value: number }` |
+| `page-size-change` | `TablePageSizeChangeDetails` | 每页条数变化（数据驱动模式开了分页、给了 pageSizeOptions）；detail 为 `{ value: number }` |
 | `column-preference-change` | `TableFooterCellSpanDetails` | 列偏好变化；detail 为 `{ value: TableColumnPreference }` |
 | `selection-change` | `TableSelectionChangeDetails` | 选中集合变化；detail 为 `{ value: string[] \| 'all' }` |
 | `expanded-value-change` | `TableExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
@@ -397,6 +433,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `XhTableRoot` | `default` | `TableRootSlotProps` |  |
 | `XhTableRoot` | `toolbar` | `TableToolbarSlotProps` | 工具条槽：搜索、筛选、密度与列设置等作用于整张表的控件写在这里。 它渲染为 root 的兄弟排在表前：root 是 grid 系角色，子节点只能是 row 与 rowgroup。 |
 | `XhTableRoot` | `cell` | `TableCellSlotData` | 标准结构里一格的内容：参数里有记录、字段值与本来要显示的文字，别的列交出 text 即可。 |
+| `XhTableRoot` | `filter` | `TableFilterSlotData` | 标准结构里 filterMode 为 custom 的列头上筛选的那一格：触发钮与面板都由作者摆， 参数里有这一列、它的筛选值、写回方法与内建筛选钮会用的名字；几列共用时按 column.id 分开。 |
 | `XhTableRoot` | `empty` | — | 标准结构里空态占位的内容。 |
 
 ### React 适配器 props
@@ -414,6 +451,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `XhTableRoot` | `virtual` | `boolean` |  | 标准结构的虚拟化开关：表体只铺滚到的那一屏行，滚的是表格根节点（吸顶表头、冻结列与行在同一个滚动面里）。 Virtualizer 那一块开了才加载；给了 children 时不用它，照旧自己套 Virtualizer。 |
 | `XhTableRoot` | `estimateSize` | `number` |  | 开了 virtual 时数据行的预估高度（px），缺省 40；还没量到的行按已量到的平均高度估。 |
 | `XhTableRoot` | `renderCell` | `(cell: TableCellSlotData<TRow>) => ReactNode` |  | 标准结构里一格的内容：参数里有记录、字段值与本来要显示的文字，别的列交出 text 即可。 |
+| `XhTableRoot` | `renderFilter` | `(filter: TableFilterSlotData) => ReactNode` |  | 标准结构里 filterMode 为 custom 的列头上筛选的那一格：触发钮与面板都由作者摆， 参数里有这一列、它的筛选值、写回方法与内建筛选钮会用的名字；几列共用时按 column.id 分开。 |
 | `XhTableRoot` | `renderEmpty` | `() => ReactNode` |  | 标准结构里空态占位的内容。 |
 | `XhTableRoot` | `toolbar` | `SlotChildren<TableToolbarSlotProps>` |  | 工具条槽：搜索、筛选、密度与列设置等作用于整张表的控件写在这里。 它渲染为 root 的兄弟排在表前：root 是 grid 系角色，子节点只能是 row 与 rowgroup。 |
 | `XhTableRoot` | `children` | `SlotChildren<TableRootSlotProps>` |  |  |
@@ -437,7 +475,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 
 **状态**：`idle` · `resizing` · `columnDragging` · `rowDragging`
 
-**事件**：`SORT.SET` · `SORT.TOGGLE` · `FILTER.SET` · `PAGE.SET` · `COLUMN_PREF.SET` · `COLUMN_RESIZE.START` · `COLUMN_RESIZE.MOVE` · `COLUMN_RESIZE.END` · `COLUMN_RESIZE.CANCEL` · `COLUMN_RESIZE.STEP` · `COLUMN_DRAG.START` · `COLUMN_DRAG.MOVE` · `COLUMN_DRAG.END` · `COLUMN_DRAG.CANCEL` · `COLUMN.MOVE_BY` · `ROW_DRAG.START` · `ROW_DRAG.MOVE` · `ROW_DRAG.END` · `ROW_DRAG.CANCEL` · `ROW.MOVE_BY` · `ROW.REORDER_BLOCKED` · `COLUMN_PREF.PATCH` · `SELECTION.SET` · `ROW.SELECT` · `SELECTION.ALL_TOGGLE` · `EXPANDED.SET` · `ROW.EXPAND` · `ROW.COLLAPSE` · `ROW.EXPAND_TOGGLE` · `ROW_MOTION.TRACKED` · `ROW.FOCUS` · `CELL.FOCUS` · `TABLE.BLUR` · `PRESS.START` · `PRESS.END`
+**事件**：`SORT.SET` · `SORT.TOGGLE` · `FILTER.SET` · `PAGE.SET` · `PAGE_SIZE.SET` · `CELL.HINT` · `COLUMN_PREF.SET` · `COLUMN_RESIZE.START` · `COLUMN_RESIZE.MOVE` · `COLUMN_RESIZE.END` · `COLUMN_RESIZE.CANCEL` · `COLUMN_RESIZE.STEP` · `COLUMN_DRAG.START` · `COLUMN_DRAG.MOVE` · `COLUMN_DRAG.END` · `COLUMN_DRAG.CANCEL` · `COLUMN.MOVE_BY` · `ROW_DRAG.START` · `ROW_DRAG.MOVE` · `ROW_DRAG.END` · `ROW_DRAG.CANCEL` · `ROW.MOVE_BY` · `ROW.REORDER_BLOCKED` · `COLUMN_PREF.PATCH` · `SELECTION.SET` · `ROW.SELECT` · `SELECTION.ALL_TOGGLE` · `EXPANDED.SET` · `ROW.EXPAND` · `ROW.COLLAPSE` · `ROW.EXPAND_TOGGLE` · `ROW_MOTION.TRACKED` · `ROW.FOCUS` · `CELL.FOCUS` · `TABLE.BLUR` · `PRESS.START` · `PRESS.END`
 
 **判据**：`canPress`
 
@@ -455,9 +493,10 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `rows` | `readonly TableRowDef[]` | 作者提供的行定义。 |
 | `visibleRows` | `readonly TableVisibleRow[]` | 展开展平后的可见行序列（详情行插在所属数据行之后）。 |
 | `sort` | `TableSortDescriptor[]` |  |
-| `dataDriven` | `boolean` | 给了 data，表格自己算排序、筛选与分页。 |
-| `records` | `readonly TableRecord[]` | 数据驱动模式下当前页的记录，排过序、筛过，与表体的数据行一一对应；手写结构时为空数组。 |
-| `recordCount` | `number` | 数据驱动模式下筛过之后的总条数，分页按它算页数；手写结构时为可见数据行的条数。 |
+| `dataDriven` | `boolean` | 给了 data，表格自己算排序、筛选与分页（远程模式下这三样归服务端）。 |
+| `remote` | `boolean` | 数据驱动模式开了 remote：data 原样就是这一页，表格只改写状态、发事件。 |
+| `records` | `readonly TableRecord[]` | 数据驱动模式下当前页的记录，排过序、筛过，与表体的数据行一一对应；远程模式下就是 data；手写结构时为空数组。 |
+| `recordCount` | `number` | 数据驱动模式下筛过之后的总条数，分页按它算页数：本地模式是表格自己筛出来的，远程模式是 recordCount（缺省 data 的条数）； 手写结构时为可见数据行的条数。 |
 | `recordOf` | `(rowId: string) => TableRecord \| undefined` | 一行的记录（整份 data 里的，不止当前页）；手写结构时恒为 undefined。 |
 | `cellText` | `(rowId: string, columnId: string) => string` | 某一行某一列格子里显示的文字：列的 format，没有就取字段值转字符串；手写结构时为空串。 |
 | `filterValue` | `TableFilterValue` |  |
@@ -466,7 +505,9 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `page` | `number` | 当前页码：开了分页时已夹到有效范围；否则为 page 的原值，缺省 1。 |
 | `pageSize` | `number` | 每页条数：开了分页时缺省 10；否则为 pageSize 的原值，没给时为 0。 |
 | `pageCount` | `number` | 总页数：开了分页时按筛过的总条数算，至少 1；否则为 1。 |
+| `pageSizeOptions` | `readonly number[] \| null` | 表后分页里的每页条数档位，作者给了 pageSizeOptions 才有；没给时为 null，分页不铺每页条数下拉。 |
 | `setPage` | `(page: number) => void` |  |
+| `setPageSize` | `(pageSize: number) => void` | 换每页条数：页码按改档前的第一条换算，第一条仍留在页内。 |
 | `translations` | `TableTranslations` | 解析后的文案：排序钮、筛选钮的名字，空态与在途占位的字。 |
 | `selection` | `TableSelection` |  |
 | `selectionState` | `TableSelectionState` | 全选把手的三态，只按可选行（未禁用）计算。 |
@@ -717,6 +758,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `cell` | `data-frozen-edge` | ''（条件成立时才出现） |
 | `cell` | `data-row-span` | ''（条件成立时才出现） |
 | `cell` | `data-selected` | ''（条件成立时才出现） \| undefined |
+| `cell` | `data-truncate` | ''（条件成立时才出现） |
 | `toolbar` | `data-size` | props.size |
 | `column-list` | `data-size` | props.size |
 | `column-visibility-trigger` | `data-disabled` | ''（条件成立时才出现） |

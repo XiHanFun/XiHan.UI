@@ -220,11 +220,19 @@ export interface TableColumnBase<TRow extends object = TableRecord, TValue = unk
    * 一项都不勾即不筛。勾选值存在 filterValue 里，按列 id 分开。
    */
   filterOptions?: TableFilterOption[]
+  /** 数据驱动模式下这一列的筛选形态，缺省 multiple，见 TableFilterMode。 */
+  filterMode?: TableFilterMode
   /**
-   * 数据驱动模式下一条记录是否命中这一列勾选的筛选值（values 至少一项）。
+   * 数据驱动模式下一条记录是否命中这一列的筛选值（values 至少一项）。
    * 不给时把这一列的字段值转成字符串，在 values 里即命中；字段是数组时有一项在里面就算。
+   * 自定义面板（filterMode 为 custom）的筛选值由作者编码，命中靠它来判。
    */
   filter?: (record: TableRecordOf<TRow>, values: readonly string[]) => boolean
+  /**
+   * 这一列的格子单行省略：放不下的字收成省略号，格子写 data-truncate。指针移进格子时量一次，
+   * 真被裁掉了才把整段文字交给平台的原生提示（title），移出即撤；读屏照旧念全文。
+   */
+  truncate?: boolean
   /**
    * 数据驱动模式下格子里显示的文字，value 是这一列的字段值（不读字段的列恒为 undefined）。
    * 不给时把字段值转成字符串，空值显示为空。要放图标、徽标这类内容时改用 cell 插槽。
@@ -256,6 +264,15 @@ export interface TableFilterOption {
   label?: string
 }
 
+/**
+ * 列头筛选的形态：
+ * - multiple（缺省）：一张勾选型菜单，按 filterOptions 勾任意几项；
+ * - single：一张单选型菜单，按 filterOptions 选一项，选完即收起；再选一次已选的那一项就撤掉这一列的筛选；
+ * - custom：列头里筛选的那一格交给作者（Vue 的 filter 插槽、React 的 renderFilter、Web Components 宿主直接子节点上的
+ *   `slot="filter:<列 id>"`），触发钮与面板都由作者摆，文本、日期、数值区间这类筛选靠它；筛选值仍是字符串数组，命中由列的 filter 判。
+ */
+export type TableFilterMode = 'multiple' | 'single' | 'custom'
+
 /** 筛选值：列 id → 这一列勾选的值。没有条目或数组为空即这一列不筛。 */
 export type TableFilterValue = Record<string, string[]>
 
@@ -265,6 +282,17 @@ export interface TableFilterValueChangeDetails {
 
 export interface TablePageChangeDetails {
   value: number
+}
+
+export interface TablePageSizeChangeDetails {
+  value: number
+}
+
+/** 指针停在一格上、它的字又真被裁掉了：交给原生提示的那段全文，只记这一格。 */
+export interface TableCellHint {
+  /** 哪一格：表体格子是 `行 id + 列 id`，表尾格子是 `第几行表尾 + 列 id`，由连接层拼。 */
+  cell: string
+  text: string
 }
 
 /**
@@ -502,9 +530,17 @@ export interface TableSchema<TRow extends object = TableRecord> extends MachineS
     /**
      * 数据驱动模式：给了它，表格自己按排序链、筛选值与页码算出当前页的记录，行定义随之推出（rows 不再读）。
      * 列 id 即记录里的字段名（或列的 field）；不写结构时按标准结构铺出表头、表体与空态，格子的文字取 format 或字段值。
-     * 远程分页、远程排序这类只交一页数据进来的表格仍用 rows 手写结构。
+     * 服务端排序、筛选与分页这类只交一页数据进来的表格开 remote。
      */
     data?: readonly TRow[]
+    /**
+     * 远程模式：data 就是服务端排好、筛好、切好的这一页，表格不再自己排序、筛选与切页，原样铺出；
+     * 排序钮、筛选菜单与分页照常可用，只改写排序链、筛选值、页码与每页条数并发出 onSortChange / onFilterValueChange /
+     * onPageChange / onPageSizeChange，取数归宿主。开了 pagination 时页数按 recordCount 算。只在数据驱动模式下生效，缺省 false。
+     */
+    remote?: boolean
+    /** 远程模式下服务端报的总条数（筛过之后的），分页按它算页数；缺省取 data 的条数。本地模式不读它。 */
+    recordCount?: number
     /** 数据驱动模式下记录的行 id：字段名或取值函数，缺省取 id 字段；记录里没有时退回它在 data 里的下标。 */
     rowKey?: TableField<TRow> | ((record: TableRecordOf<TRow>) => string)
     /** 筛选值（列 id → 勾选的值）。提供即受控：写入只发 onFilterValueChange。只在数据驱动模式下参与计算。 */
@@ -512,7 +548,7 @@ export interface TableSchema<TRow extends object = TableRecord> extends MachineS
     defaultFilterValue?: TableFilterValue
     /**
      * 数据驱动模式下分页：按 page 与 pageSize 切出当前页，表后铺一组分页按筛过的总条数算页数。
-     * 筛选值一变回到第 1 页；数据变短时页码夹到最后一页。
+     * 筛选值一变回到第 1 页；数据变短时页码夹到最后一页。远程模式下不切片，页数按 recordCount 算。
      */
     pagination?: boolean
     /** 非受控初始页码，默认 1。 */
@@ -584,10 +620,17 @@ export interface TableSchema<TRow extends object = TableRecord> extends MachineS
     /**
      * 当前页码与每页条数。手写结构时只用于计算序号，不参与切片：切片归调用方（或分页组件的 `api.slice`），
      * 都未提供时序号回退为可见序。数据驱动模式开了 pagination 时表格按它们切片，pageSize 缺省 10；
-     * page 提供即受控，写入只发 onPageChange。
+     * 两个都是提供即受控，写入只发 onPageChange / onPageSizeChange。
      */
     page?: number
     pageSize?: number
+    /** 数据驱动模式开了 pagination 时的非受控初始每页条数，默认 10。 */
+    defaultPageSize?: number
+    /**
+     * 数据驱动模式开了 pagination 时表后分页里可选的每页条数档位，与分页组件的同名属性同义；
+     * 给了才铺每页条数下拉，换档时页码按改档前的第一条换算，第一条仍留在页内。
+     */
+    pageSizeOptions?: number[]
     /** 数据加载中：root 报告 aria-busy；表体为空时加载态节点显示，已有行时表体原样保留、照常可操作。 */
     loading?: boolean
     /** 显式声明表体为空；未提供时按 rows 是否为空推导。 */
@@ -631,6 +674,7 @@ export interface TableSchema<TRow extends object = TableRecord> extends MachineS
     onSortChange?: (details: TableSortChangeDetails) => void
     onFilterValueChange?: (details: TableFilterValueChangeDetails) => void
     onPageChange?: (details: TablePageChangeDetails) => void
+    onPageSizeChange?: (details: TablePageSizeChangeDetails) => void
     onSelectionChange?: (details: TableSelectionChangeDetails) => void
     onExpandedValueChange?: (details: TableExpandedValueChangeDetails) => void
     /**
@@ -647,6 +691,10 @@ export interface TableSchema<TRow extends object = TableRecord> extends MachineS
     filterValue: TableFilterValue
     /** 当前页码（未夹到有效范围的原值）。受控（page 提供）时 cell 直读 prop。 */
     page: number
+    /** 数据驱动模式分页用的每页条数（未归一的原值）。受控（pageSize 提供）时 cell 直读 prop；手写结构的序号照旧读 prop。 */
+    pageSize: number
+    /** 指针停着、字又被裁掉的那一格（列开了 truncate），title 只写给它；没有时为 null。 */
+    cellHint: TableCellHint | null
     /** 选中集合，可能是裸 'all'。单选时长度 ≤ 1。 */
     selection: TableSelection
     /** 展开集合，恒为数组。 */
@@ -764,6 +812,10 @@ export interface TableSchema<TRow extends object = TableRecord> extends MachineS
     | { type: 'FILTER.SET', column: string, value: string[] }
     /** 翻到某一页。 */
     | { type: 'PAGE.SET', value: number }
+    /** 换每页条数；page 是换算好的新页码（改档前的第一条仍在页内），由连接层按此刻生效的页码算好带入。 */
+    | { type: 'PAGE_SIZE.SET', value: number, page: number }
+    /** 指针移进 / 移出开了 truncate 的一格：带全文的是真被裁掉了，null 撤掉。 */
+    | { type: 'CELL.HINT', value: TableCellHint | null }
     /** 整体改写列偏好；value 缺席即清空，回到作者定义的原样。 */
     | { type: 'COLUMN_PREF.SET', value?: TableColumnPreference }
     /**
@@ -837,6 +889,9 @@ export interface TableSchema<TRow extends object = TableRecord> extends MachineS
     | 'toggleSort'
     | 'setFilter'
     | 'setPage'
+    | 'setPageSize'
+    | 'setCellHint'
+    | 'clearCellHint'
     | 'setSelection'
     | 'selectRow'
     | 'toggleSelectAll'
@@ -899,11 +954,16 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   /** 展开展平后的可见行序列（详情行插在所属数据行之后）。 */
   visibleRows: readonly TableVisibleRow[]
   sort: TableSortDescriptor[]
-  /** 给了 data，表格自己算排序、筛选与分页。 */
+  /** 给了 data，表格自己算排序、筛选与分页（远程模式下这三样归服务端）。 */
   dataDriven: boolean
-  /** 数据驱动模式下当前页的记录，排过序、筛过，与表体的数据行一一对应；手写结构时为空数组。 */
+  /** 数据驱动模式开了 remote：data 原样就是这一页，表格只改写状态、发事件。 */
+  remote: boolean
+  /** 数据驱动模式下当前页的记录，排过序、筛过，与表体的数据行一一对应；远程模式下就是 data；手写结构时为空数组。 */
   records: readonly TableRecord[]
-  /** 数据驱动模式下筛过之后的总条数，分页按它算页数；手写结构时为可见数据行的条数。 */
+  /**
+   * 数据驱动模式下筛过之后的总条数，分页按它算页数：本地模式是表格自己筛出来的，远程模式是 recordCount（缺省 data 的条数）；
+   * 手写结构时为可见数据行的条数。
+   */
   recordCount: number
   /** 一行的记录（整份 data 里的，不止当前页）；手写结构时恒为 undefined。 */
   recordOf: (rowId: string) => TableRecord | undefined
@@ -920,7 +980,11 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   pageSize: number
   /** 总页数：开了分页时按筛过的总条数算，至少 1；否则为 1。 */
   pageCount: number
+  /** 表后分页里的每页条数档位，作者给了 pageSizeOptions 才有；没给时为 null，分页不铺每页条数下拉。 */
+  pageSizeOptions: readonly number[] | null
   setPage: (page: number) => void
+  /** 换每页条数：页码按改档前的第一条换算，第一条仍留在页内。 */
+  setPageSize: (pageSize: number) => void
   /** 解析后的文案：排序钮、筛选钮的名字，空态与在途占位的字。 */
   translations: TableTranslations
   selection: TableSelection

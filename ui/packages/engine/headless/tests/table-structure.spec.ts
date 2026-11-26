@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import type { StructureChild, StructureInstanceNode, StructureNode } from '../src/shared/structure'
-import type { TableColumnDef, TableRecord, TableSchema } from '../src/table'
+import type { StructureChild, StructureInstanceNode, StructureNode, StructureOutletNode } from '../src/shared/structure'
+import type { TableColumnDef, TableFilterSlotData, TableRecord, TableSchema } from '../src/table'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it, vi } from 'vitest'
@@ -66,6 +66,50 @@ describe('tableStructure', () => {
     })
     ;(menu.props!.onCheckboxValueChange as (details: { value: string[] }) => void)({ value: ['fe', 'pf'] })
     expect(onFilterValueChange).toHaveBeenLastCalledWith({ value: { dept: ['fe', 'pf'] } })
+  })
+
+  it('单选筛选：单选型菜单、选完即收起；选另一项替换，再选已选的那一项撤掉这一列的筛选', () => {
+    const onFilterValueChange = vi.fn()
+    const columns: TableColumnDef[] = [{ id: 'dept', label: '部门', filterMode: 'single', filterOptions: [{ value: 'fe', label: '前端' }, { value: 'pf' }] }]
+    const menuOf = (model: ReturnType<typeof api>): StructureInstanceNode => {
+      const header = tableStructure(model)[0] as StructureNode
+      const dept = ((header.children as StructureNode[])[0]!.children as StructureNode[])[0]!
+      return dept.children![1] as StructureInstanceNode
+    }
+    const empty = menuOf(api({ columns, data: DATA, onFilterValueChange }))
+    expect(empty.props).toMatchObject({
+      collection: [{ value: 'fe', label: '前端', kind: 'radio', group: 'filter', closeOnSelect: true }, { value: 'pf', label: 'pf', kind: 'radio' }],
+      radioValue: {},
+      translations: { trigger: 'Filter 部门' },
+    })
+    ;(empty.props!.onItemSelect as (details: { value: string }) => void)({ value: 'fe' })
+    expect(onFilterValueChange).toHaveBeenLastCalledWith({ value: { dept: ['fe'] } })
+
+    const picked = menuOf(api({ columns, data: DATA, defaultFilterValue: { dept: ['fe'] }, onFilterValueChange }))
+    expect(picked.props!.radioValue).toEqual({ filter: 'fe' })
+    ;(picked.props!.onItemSelect as (details: { value: string }) => void)({ value: 'pf' })
+    expect(onFilterValueChange).toHaveBeenLastCalledWith({ value: { dept: ['pf'] } })
+    ;(picked.props!.onItemSelect as (details: { value: string }) => void)({ value: 'fe' })
+    expect(onFilterValueChange).toHaveBeenLastCalledWith({ value: {} })
+  })
+
+  it('自定义筛选：列头里筛选那一格是 filter 插槽的出口，参数里有这一列的筛选值、写回方法与名字；不要 filterOptions', () => {
+    const onFilterValueChange = vi.fn()
+    const columns: TableColumnDef[] = [{ id: 'name', label: '姓名', sortable: true, filterMode: 'custom', filter: (record, values) => String(record.name).includes(values[0] ?? '') }]
+    const model = api({ columns, data: DATA, defaultFilterValue: { name: ['赵'] }, onFilterValueChange })
+    const header = tableStructure(model)[0] as StructureNode
+    const name = ((header.children as StructureNode[])[0]!.children as StructureNode[])[0]!
+    const outlet = name.children![2] as StructureOutletNode
+    expect(parts(name.children!.slice(0, 2))).toEqual(['column-label', 'sort-trigger'])
+    expect(outlet).toMatchObject({ key: 'filter', outlet: true, slot: { name: 'filter', key: 'name' } })
+    const data = outlet.data as TableFilterSlotData
+    expect(data.value).toEqual(['赵'])
+    expect(data.label).toBe('Filter 姓名')
+    expect(data.column.id).toBe('name')
+    data.setValue(['钱'])
+    expect(onFilterValueChange).toHaveBeenLastCalledWith({ value: { name: ['钱'] } })
+    // 筛选照常按列的 filter 判
+    expect(model.recordCount).toBe(1)
   })
 
   it('手写结构（没给 data）时列头不铺筛选菜单：筛选只在数据驱动模式下由表格自己算', () => {
@@ -138,5 +182,21 @@ describe('tablePaginationStructure', () => {
     expect(node).toMatchObject({ instance: 'pagination', props: { count: 12, page: 1, pageSize: 10 } })
     ;(node!.props!.onPageChange as (details: { page: number, pageSize: number }) => void)({ page: 2, pageSize: 10 })
     expect(onPageChange).toHaveBeenLastCalledWith({ value: 2 })
+    // 没给档位时不交 pageSizeOptions，分页不铺每页条数下拉
+    expect(node!.props).not.toHaveProperty('pageSizeOptions')
+  })
+
+  it('给了 pageSizeOptions 才把档位交给分页；分页换档写回表格的每页条数', () => {
+    const onPageSizeChange = vi.fn()
+    const data = Array.from({ length: 25 }, (_, i) => ({ id: `r${i}` }))
+    const [node] = tablePaginationStructure(api({ columns: COLUMNS, data, pagination: true, pageSizeOptions: [10, 20], onPageSizeChange }))
+    expect(node!.props).toMatchObject({ pageSizeOptions: [10, 20], pageSize: 10 })
+    ;(node!.props!.onPageSizeChange as (details: { page: number, pageSize: number }) => void)({ page: 1, pageSize: 20 })
+    expect(onPageSizeChange).toHaveBeenLastCalledWith({ value: 20 })
+  })
+
+  it('远程模式：分页的总条数取 recordCount', () => {
+    const [node] = tablePaginationStructure(api({ columns: COLUMNS, data: DATA, remote: true, recordCount: 87, pagination: true, page: 3 }))
+    expect(node).toMatchObject({ instance: 'pagination', props: { count: 87, page: 3, pageSize: 10 } })
   })
 })

@@ -20,6 +20,7 @@ import type {
   TableFilterValueChangeDetails,
   TableNavigation,
   TablePageChangeDetails,
+  TablePageSizeChangeDetails,
   TableRecord,
   TableRowDef,
   TableRowProps,
@@ -100,6 +101,9 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @attr {'row'|'cell'} navigation - 表体的键盘导航粒度：row（缺省）只落在行上；cell 时格子也是焦点落点（treegrid），Enter / F2 进格内编辑、Esc 退回格子
  * @attr {boolean} pagination - 数据驱动模式（给了 data）下分页：按 page 与 page-size 切片，元素在 root 之后生成一个 xh-pagination；筛选一变回到第 1 页
  * @attr {number} default-page - 非受控初始页码，默认 1
+ * @attr {number} default-page-size - 开了 pagination 时的非受控初始每页条数，默认 10
+ * @attr {boolean} remote - 远程模式：data 就是服务端排好、筛好、切好的这一页，元素不再自己排序、筛选与切页，只改写排序链、筛选值、页码与每页条数并派发对应事件；开了 pagination 时页数按 record-count 算
+ * @attr {number} record-count - 远程模式下服务端报的总条数，分页按它算页数；缺省取 data 的条数
  * @attr {boolean} virtual - 标准结构的虚拟化开关：只写 root（或什么都不写）时表体只铺滚到的那一屏行，滚的是 root；Virtualizer 那一块开了才加载
  * @attr {number} estimate-size - 开了 virtual 时数据行的预估高度（px），缺省 40；还没量到的行按已量到的平均高度估
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开 / 收起语义，默认 ltr
@@ -107,7 +111,9 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @fires sort-change - 排序链变化；detail 为 `{ value: { id, direction }[] }`
  * @fires filter-value-change - 筛选值变化（数据驱动模式）；detail 为 `{ value: Record<列 id, string[]> }`
  * @fires page-change - 页码变化（数据驱动模式开了分页）；detail 为 `{ value: number }`
- * @prop {TableRecord[]} data - 数据驱动模式：给了它，元素自己按排序链、筛选值与页码算出当前页的记录（rows 不再读）；只写 root 时按标准结构生成表头、表体与空态，列 id 即字段名，某一格可用宿主直接子节点 `slot="cell:<行 id>:<列 id>"` 接管，空态用 `slot="empty"`
+ * @fires page-size-change - 每页条数变化（数据驱动模式开了分页、给了 pageSizeOptions）；detail 为 `{ value: number }`
+ * @prop {number[]} pageSizeOptions - 开了 pagination 时生成的 xh-pagination 里的每页条数档位：给了才铺每页条数下拉
+ * @prop {TableRecord[]} data - 数据驱动模式：给了它，元素自己按排序链、筛选值与页码算出当前页的记录（rows 不再读）；只写 root 时按标准结构生成表头、表体与空态，列 id 即字段名，某一格可用宿主直接子节点 `slot="cell:<行 id>:<列 id>"` 接管，空态用 `slot="empty"`，filterMode 为 custom 的列头上筛选那一格用 `slot="filter:<列 id>"` 放作者自己的触发钮与面板（读写筛选值用 setFilter 与 filter-value-change）
  * @prop {string | ((record: TableRecord) => string)} rowKey - 记录的行 id：字段名或取值函数，缺省取 id 字段
  * @prop {Record<string, string[]>} filterValue - 筛选值（列 id → 勾选的值），提供即受控；列给了 filterOptions 时列头生成一颗筛选钮
  * @prop {Record<string, string[]>} defaultFilterValue - 非受控初始筛选值
@@ -178,10 +184,15 @@ export class XhTableElement<TRow extends object = TableRecord> extends XhElement
     // 数据驱动模式的数据、行 id 取法与筛选值都是数组 / 对象 / 函数，只走 property
     data: { attribute: false },
     rowKey: { attribute: false },
+    remote: { converter: BOOLEAN_CONVERTER },
+    recordCount: { converter: NUMBER_CONVERTER, attribute: 'record-count' },
     filterValue: { attribute: false },
     defaultFilterValue: { attribute: false },
     pagination: { converter: BOOLEAN_CONVERTER },
     defaultPage: { converter: NUMBER_CONVERTER, attribute: 'default-page' },
+    defaultPageSize: { converter: NUMBER_CONVERTER, attribute: 'default-page-size' },
+    // 档位是数组，只走 property
+    pageSizeOptions: { attribute: false },
     virtual: { converter: BOOLEAN_CONVERTER },
     estimateSize: { converter: NUMBER_CONVERTER, attribute: 'estimate-size' },
     sort: { attribute: false },
@@ -232,10 +243,14 @@ export class XhTableElement<TRow extends object = TableRecord> extends XhElement
   declare rows?: TableRowDef[]
   declare data?: readonly TRow[]
   declare rowKey?: TableSchema<TRow>['props']['rowKey']
+  declare remote?: boolean
+  declare recordCount?: number
   declare filterValue?: TableFilterValue
   declare defaultFilterValue?: TableFilterValue
   declare pagination?: boolean
   declare defaultPage?: number
+  declare defaultPageSize?: number
+  declare pageSizeOptions?: number[]
   declare virtual?: boolean
   declare estimateSize?: number
   declare sort?: TableSortDescriptor[]
@@ -288,6 +303,10 @@ export class XhTableElement<TRow extends object = TableRecord> extends XhElement
 
   private readonly notifyPage = (details: TablePageChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('page-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyPageSize = (details: TablePageSizeChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('page-size-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly notifySelection = (details: TableSelectionChangeDetails): void => {
@@ -376,12 +395,17 @@ export class XhTableElement<TRow extends object = TableRecord> extends XhElement
       captioned: this.getPart('caption') != null,
       ...rowTyped,
       rows: this.rows,
+      remote: this.remote ?? false,
+      recordCount: this.recordCount,
       filterValue: this.filterValue,
       defaultFilterValue: this.defaultFilterValue,
       onFilterValueChange: this.notifyFilterValue,
       pagination: this.pagination ?? false,
       defaultPage: this.defaultPage,
       onPageChange: this.notifyPage,
+      defaultPageSize: this.defaultPageSize,
+      pageSizeOptions: this.pageSizeOptions,
+      onPageSizeChange: this.notifyPageSize,
       sort: this.sort,
       // 不补 []，缺省由机器兜
       defaultSort: this.defaultSort,
@@ -444,6 +468,14 @@ export class XhTableElement<TRow extends object = TableRecord> extends XhElement
   /** 修改一列的冻结档。false 是不冻结，true 等于 'start'。 */
   setColumnSticky(columnId: string, sticky: boolean | 'start' | 'end'): void {
     this.commands().setColumnSticky(columnId, sticky)
+  }
+
+  /**
+   * 改写一列的筛选值，空数组即撤掉这一列的筛选，随之回到第 1 页；筛选值受控时只派发 filter-value-change。
+   * 自定义筛选面板（列的 filterMode 为 custom，作者节点写在 `slot="filter:<列 id>"` 上）经它写回。
+   */
+  setFilter(columnId: string, values: string[]): void {
+    this.commands().setFilter(columnId, values)
   }
 
   /** 承载焦点的行被移出 DOM 时上报 TABLE.BLUR，让状态机重新选择焦点锚点。 */

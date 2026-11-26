@@ -6,6 +6,7 @@
 // 数据驱动模式：给了 data 时，当前页的记录、行定义与筛过的总条数都由这里算出。
 // 筛选、排序与切页都是 (data, 列定义, 排序链, 筛选值, 页码) 的纯函数；机器与 connect 都经 tableRowDefs 取行，
 // 结果按这几样输入的身份缓存一份：两次求值之间都没换时直接拿上一份，一万条不必每次重排。
+// 远程模式下这三步归服务端：data 原样就是这一页，总条数取宿主报的 recordCount，这里只算页数与夹页码。
 
 import type { ContextFacade, PropFn } from '@xihan-ui/core'
 import type { TableColumnBase, TableFilterValue, TableRecord, TableRowDef, TableSchema, TableSortDescriptor } from './table.types'
@@ -126,15 +127,26 @@ export interface TableDataInput {
   readonly paginate: boolean
   readonly page: number
   readonly pageSize: number
+  /** 远程模式：不筛、不排、不切，data 原样就是这一页。缺省 false。 */
+  readonly remote?: boolean
+  /** 远程模式下宿主报的总条数；缺省取 data 的条数。本地模式不读。 */
+  readonly recordCount?: number
+}
+
+/** 远程模式的总条数：宿主报的非负整数，没报（或报得不成数）时取这一页的条数。 */
+function remoteCount(recordCount: number | undefined, fallback: number): number {
+  return recordCount != null && Number.isFinite(recordCount) ? Math.max(0, Math.trunc(recordCount)) : fallback
 }
 
 /** 筛、排、切一页。纯函数，不缓存；机器与 connect 经 tableDataViewOf 取带缓存的那一份。 */
 export function computeTableDataView(input: TableDataInput): TableDataView {
-  const leaves = tableLeafColumns(input.columns)
-  const byColumn = new Map(leaves.map(column => [column.id, column]))
   const keyed = input.data.map((record, index) => ({ record, id: rowIdOf(record, index, input.rowKey) }))
   const byId = new Map(keyed.map(entry => [entry.id, entry.record]))
+  if (input.remote)
+    return pagedView(keyed, remoteCount(input.recordCount, keyed.length), input, byId, false)
 
+  const leaves = tableLeafColumns(input.columns)
+  const byColumn = new Map(leaves.map(column => [column.id, column]))
   const filters = Object.entries(input.filterValue).flatMap(([id, values]) => {
     const column = byColumn.get(id)
     return column && values.length > 0 ? [{ column, values }] : []
@@ -149,17 +161,35 @@ export function computeTableDataView(input: TableDataInput): TableDataView {
   })
   // 排序是稳定的：比不出高下的保持 data 里的先后
   const sorted = chain.length === 0 ? filtered : [...filtered].sort((a, b) => compareRecords(a.record, b.record, chain))
+  return pagedView(sorted, sorted.length, input, byId, true)
+}
 
-  const count = sorted.length
+interface KeyedRecord {
+  readonly record: TableRecord
+  readonly id: string
+}
+
+/**
+ * 开了分页时算页数、夹页码；slice 为真时按页切出这一页（本地模式），为假时 entries 原样就是这一页（远程模式）。
+ * 页数按 count 算，至少 1 页。
+ */
+function pagedView(
+  entries: readonly KeyedRecord[],
+  count: number,
+  input: Pick<TableDataInput, 'paginate' | 'page' | 'pageSize'>,
+  byId: ReadonlyMap<string, TableRecord>,
+  slice: boolean,
+): TableDataView {
   let page = 1
   let pageCount = 1
   let pageSize = 0
-  let paged = sorted
+  let paged = entries
   if (input.paginate) {
     pageSize = Math.max(1, Math.trunc(input.pageSize) || TABLE_DEFAULT_PAGE_SIZE)
     pageCount = Math.max(1, Math.ceil(count / pageSize))
     page = Math.min(Math.max(1, Math.trunc(input.page) || 1), pageCount)
-    paged = sorted.slice((page - 1) * pageSize, page * pageSize)
+    if (slice)
+      paged = entries.slice((page - 1) * pageSize, page * pageSize)
   }
   return {
     records: paged.map(entry => entry.record),
@@ -183,6 +213,7 @@ const cache = new WeakMap<readonly TableRecord[], CacheEntry>()
 function sameInput(a: Omit<TableDataInput, 'data'>, b: Omit<TableDataInput, 'data'>): boolean {
   return a.columns === b.columns && a.rowKey === b.rowKey && a.sort === b.sort && a.filterValue === b.filterValue
     && a.paginate === b.paginate && a.page === b.page && a.pageSize === b.pageSize
+    && a.remote === b.remote && a.recordCount === b.recordCount
 }
 
 type DataSource = Readonly<{ prop: PropFn<TableSchema>, context: Pick<ContextFacade<TableSchema>, 'get'> }>
@@ -199,7 +230,9 @@ export function tableDataViewOf({ prop, context }: DataSource): TableDataView | 
     filterValue: context.get('filterValue'),
     paginate: !!prop('pagination'),
     page: context.get('page'),
-    pageSize: prop('pageSize') ?? TABLE_DEFAULT_PAGE_SIZE,
+    pageSize: context.get('pageSize'),
+    remote: !!prop('remote'),
+    recordCount: prop('recordCount'),
   }
   const hit = cache.get(data)
   if (hit && sameInput(hit.input, input))

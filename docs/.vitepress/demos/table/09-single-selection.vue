@@ -12,9 +12,7 @@ import {
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-// 单选下全选把手不生效，表头那一格空着即可
 const columns = [
-  { id: "select", width: "3rem" },
   { id: "plan", label: "套餐", width: "8rem" },
   { id: "price", label: "价格" },
 ];
@@ -35,19 +33,22 @@ const selection = ref<string[]>(["p2"]);
     <XhTableRoot
       v-model:selection="selection"
       :columns="columns"
+      :prefix-columns="['select']"
       :rows="rows"
       selection-mode="single"
     >
       <XhTableHeader>
         <XhTableRow>
-          <XhTableColumnHeader value="select" />
+          <!-- 前缀列的列 id 由库定，两侧带下划线，与作者自己的列 id 分得开 -->
+          <!-- 单选下全选把手不生效，表头那一格空着即可 -->
+          <XhTableColumnHeader value="__select__" />
           <XhTableColumnHeader value="plan"><XhTableColumnLabel>套餐</XhTableColumnLabel></XhTableColumnHeader>
           <XhTableColumnHeader value="price"><XhTableColumnLabel>价格</XhTableColumnLabel></XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
       <XhTableBody>
         <XhTableRow v-for="p in plans" :key="p.id" :value="p.id">
-          <XhTableCell value="select">
+          <XhTableCell value="__select__">
             <XhTableRowSelectTrigger />
           </XhTableCell>
           <XhTableCell value="plan">{{ p.plan }}</XhTableCell>

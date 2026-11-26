@@ -1,0 +1,30 @@
+<!-- 单选筛选 | 列写 filterMode: "single"，列头的筛选菜单换成单选：选一项即收起，换一项就替换，再选一次已选的那一项撤掉这一列的筛选 -->
+<div style="width: 100%; max-width: 480px; display: grid; gap: 12px">
+  <!-- 只写 root：表头与表体由元素照标准结构生成，筛选菜单生成在列头里 -->
+  <xh-table id="table-data-filter-single">
+    <div data-xh-part="root" aria-label="工单"></div>
+  </xh-table>
+  <span id="table-data-filter-single-value" data-demo-output>优先级：不限</span>
+</div>
+
+<script type="module">
+  const priorities = ["紧急", "高", "普通"];
+
+  const table = document.getElementById("table-data-filter-single");
+  const readout = document.getElementById("table-data-filter-single-value");
+
+  table.columns = [
+    { id: "title", label: "工单" },
+    { id: "priority", label: "优先级", width: "7rem", filterMode: "single", filterOptions: priorities.map((value) => ({ value })) },
+  ];
+
+  table.data = Array.from({ length: 9 }, (_, i) => ({
+    id: `t${i + 1}`,
+    title: `工单 ${i + 1}`,
+    priority: priorities[(i * 2) % priorities.length],
+  }));
+
+  table.addEventListener("filter-value-change", (event) => {
+    readout.textContent = `优先级：${event.detail.value.priority?.[0] ?? "不限"}`;
+  });
+</script>

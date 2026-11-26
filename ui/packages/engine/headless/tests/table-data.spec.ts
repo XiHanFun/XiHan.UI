@@ -241,3 +241,83 @@ describe('数据驱动模式：机器与 connect', () => {
     expect(onSelectionChange).toHaveBeenLastCalledWith({ value: ['u1', 'u2'] })
   })
 })
+
+describe('数据驱动模式：远程', () => {
+  it('管线不筛、不排、不切：data 原样就是这一页，总条数取 recordCount，页数按它算', () => {
+    const remote = view({ remote: true, recordCount: 42, paginate: true, pageSize: 2, page: 3, sort: [{ id: 'age', direction: 'asc' }], filterValue: { dept: ['前端'] } })
+    expect(ids(remote.records)).toEqual(['u1', 'u2', 'u3', 'u4', 'u5'])
+    expect([remote.count, remote.page, remote.pageCount, remote.pageSize]).toEqual([42, 3, 21, 2])
+    // 没报 recordCount 时按这一页的条数算
+    expect(view({ remote: true, paginate: true, pageSize: 2 }).count).toBe(5)
+    // 页码照样夹到有效范围
+    expect(view({ remote: true, recordCount: 4, paginate: true, pageSize: 2, page: 9 }).page).toBe(2)
+  })
+
+  it('点排序钮、勾筛选、翻页都只改写状态并发事件，表体照 data 原样铺；序号按页码跨页连续', () => {
+    const onSortChange = vi.fn()
+    const onFilterValueChange = vi.fn()
+    const onPageChange = vi.fn()
+    const h = mount({ columns: COLUMNS, data: PEOPLE, remote: true, recordCount: 25, pagination: true, pageSize: 5, defaultPage: 2, onSortChange, onFilterValueChange, onPageChange })
+    expect(h.api().remote).toBe(true)
+    expect([h.api().recordCount, h.api().pageCount, h.api().page]).toEqual([25, 5, 2])
+    expect(h.api().rowNumber('u1')).toBe('6')
+
+    h.api().toggleSort('age')
+    expect(onSortChange).toHaveBeenLastCalledWith({ value: [{ id: 'age', direction: 'asc' }] })
+    expect(h.api().getColumnHeaderProps({ value: 'age' })['aria-sort']).toBe('ascending')
+    expect(ids(h.api().records)).toEqual(['u1', 'u2', 'u3', 'u4', 'u5'])
+
+    h.api().setFilter('dept', ['前端'])
+    expect(onFilterValueChange).toHaveBeenLastCalledWith({ value: { dept: ['前端'] } })
+    expect(onPageChange).toHaveBeenLastCalledWith({ value: 1 })
+    expect(h.api().records).toHaveLength(5)
+
+    h.api().setPage(4)
+    expect(onPageChange).toHaveBeenLastCalledWith({ value: 4 })
+    expect(h.api().rows.map(row => row.id)).toEqual(['u1', 'u2', 'u3', 'u4', 'u5'])
+  })
+
+  it('不开 remote 时 recordCount 不参与：总条数仍是表格自己筛出来的', () => {
+    const h = mount({ columns: COLUMNS, data: PEOPLE, recordCount: 99, pagination: true })
+    expect(h.api().remote).toBe(false)
+    expect(h.api().recordCount).toBe(5)
+    // 手写结构没有远程可言
+    expect(mount({ columns: COLUMNS, rows: [{ id: 'a' }], remote: true }).api().remote).toBe(false)
+  })
+})
+
+describe('数据驱动模式：每页条数', () => {
+  it('非受控：换档后按新档切片，页码按改档前的第一条换算并通知', () => {
+    const onPageSizeChange = vi.fn()
+    const onPageChange = vi.fn()
+    const data = Array.from({ length: 30 }, (_, i) => ({ id: `r${i + 1}` }))
+    const h = mount({ columns: COLUMNS, data, pagination: true, defaultPageSize: 5, defaultPage: 3, onPageSizeChange, onPageChange })
+    expect([h.api().pageSize, h.api().page]).toEqual([5, 3])
+    // 第 3 页从第 11 条起，换成 10 条一页后第 11 条在第 2 页
+    h.api().setPageSize(10)
+    expect(onPageSizeChange).toHaveBeenLastCalledWith({ value: 10 })
+    expect(onPageChange).toHaveBeenLastCalledWith({ value: 2 })
+    expect([h.api().pageSize, h.api().page, h.api().pageCount]).toEqual([10, 2, 3])
+    expect(ids(h.api().records)[0]).toBe('r11')
+    // 同一档不再通知
+    h.api().setPageSize(10)
+    expect(onPageSizeChange).toHaveBeenCalledTimes(1)
+  })
+
+  it('受控：只发意图，宿主写回之前仍按原档切；没给 pageSizeOptions 时 api 报 null', () => {
+    const onPageSizeChange = vi.fn()
+    const data = Array.from({ length: 30 }, (_, i) => ({ id: `r${i + 1}` }))
+    const h = mount({ columns: COLUMNS, data, pagination: true, pageSize: 5, onPageSizeChange })
+    expect(h.api().pageSizeOptions).toBeNull()
+    h.api().setPageSize(20)
+    expect(onPageSizeChange).toHaveBeenLastCalledWith({ value: 20 })
+    expect(h.api().records).toHaveLength(5)
+    h.setProps({ pageSize: 20, pageSizeOptions: [5, 20] })
+    expect(h.api().records).toHaveLength(20)
+    expect(h.api().pageSizeOptions).toEqual([5, 20])
+  })
+
+  it('没开分页时不交出档位：pageSizeOptions 只给表后的分页用', () => {
+    expect(mount({ columns: COLUMNS, data: PEOPLE, pageSizeOptions: [5, 10] }).api().pageSizeOptions).toBeNull()
+  })
+})

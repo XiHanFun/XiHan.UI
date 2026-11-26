@@ -1,4 +1,4 @@
-<!-- 多选 | selectionMode 默认 none，声明 multiple 才有选择机制；选择列也要在 columns 中占一条，否则右侧列号错位。按住 Shift 点击勾选框选中一段，焦点落在表体中按 Ctrl/Cmd + A 全选，禁用行占据顺序位置但不被选入 -->
+<!-- 多选 | selectionMode 默认 none，声明 multiple 才有选择机制；选择列写进 prefixColumns，由库插在最前面并占住列号，columns 里不另写一列。按住 Shift 点击勾选框选中一段，焦点落在表体中按 Ctrl/Cmd + A 全选，禁用行占据顺序位置但不被选入 -->
 <script setup lang="ts">
 import {
   XhTableBody,
@@ -15,7 +15,6 @@ import {
 import { ref } from "vue";
 
 const columns = [
-  { id: "select", width: "3rem" },
   { id: "name", label: "姓名", width: "8rem" },
   { id: "dept", label: "部门" },
 ];
@@ -47,6 +46,7 @@ const selection = ref<string[] | "all">(["u2"]);
     <XhTableRoot
       v-model:selection="selection"
       :columns="columns"
+      :prefix-columns="['select']"
       :rows="rows"
       selection-mode="multiple"
     >
@@ -55,7 +55,8 @@ const selection = ref<string[] | "all">(["u2"]);
       </XhTableCaption>
       <XhTableHeader>
         <XhTableRow>
-          <XhTableColumnHeader value="select">
+          <!-- 前缀列的列 id 由库定，两侧带下划线，与作者自己的列 id 分得开 -->
+          <XhTableColumnHeader value="__select__">
             <!-- 全选把手是三态的唯一载体，自己占一个 Tab 位 -->
             <XhTableSelectAllTrigger />
           </XhTableColumnHeader>
@@ -65,7 +66,7 @@ const selection = ref<string[] | "all">(["u2"]);
       </XhTableHeader>
       <XhTableBody>
         <XhTableRow v-for="m in members" :key="m.id" :value="m.id">
-          <XhTableCell value="select">
+          <XhTableCell value="__select__">
             <XhTableRowSelectTrigger />
           </XhTableCell>
           <XhTableCell value="name">{{ m.name }}</XhTableCell>

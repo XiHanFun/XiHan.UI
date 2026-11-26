@@ -1,0 +1,24 @@
+<!-- 单元格省略 | 列上标 truncate：放不下的字收成一行省略号，指针停在被裁掉的格子上时原生提示给出全文；放得下的格子不出提示，读屏照旧念全文 -->
+<div style="width: 100%; max-width: 480px">
+  <!-- 只写 root：表头与表体由元素照标准结构生成 -->
+  <xh-table id="table-data-truncate">
+    <div data-xh-part="root" aria-label="文件"></div>
+  </xh-table>
+</div>
+
+<script type="module">
+  const table = document.getElementById("table-data-truncate");
+
+  table.columns = [
+    { id: "name", label: "文件", width: "8rem" },
+    { id: "path", label: "路径", truncate: true },
+    { id: "size", label: "大小", width: "5rem", align: "end" },
+  ];
+
+  table.data = [
+    { id: "a1", name: "logo.svg", path: "/assets/brand/logo.svg", size: "4 KB" },
+    { id: "a2", name: "cover.png", path: "/assets/marketing/campaigns/2026-spring/landing/hero/cover.png", size: "812 KB" },
+    { id: "a3", name: "report.pdf", path: "/shared/finance/quarterly-reports/2026/q1/board-meeting/final/report.pdf", size: "2.3 MB" },
+    { id: "a4", name: "notes.md", path: "/docs/notes.md", size: "6 KB" },
+  ];
+</script>

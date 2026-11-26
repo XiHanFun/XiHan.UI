@@ -28,6 +28,7 @@ import {
   warn,
 } from '@xihan-ui/core'
 import { TABLE_EN_US } from '../locale/en-US'
+import { pageForResize } from '../pagination/pagination.range'
 import { flatMoveIntentFromKey } from '../shared/drag'
 import { isEditableTarget } from '../shared/editable-target'
 import { resolveTranslations } from '../shared/translations'
@@ -37,7 +38,7 @@ import { tableAnatomy, tableRowQuery } from './table.anatomy'
 import { buildTableHeaderRows, orderColumnIds, resolveTableColumns, tableColumnAncestors, tableLeafColumns } from './table.columns'
 import { columnDragRects, columnMoveCommand, columnMoveIntentFromKey, draggableColumnIds, rowGroupRects, rowReorderReason, tableRowMoveCommand, treeRowIntentFromKey } from './table.drag'
 import { TABLE_COLUMN_LARGE_STEP, TABLE_COLUMN_MIN_WIDTH, TABLE_COLUMN_STEP, tableCascades, tableSelectionMode } from './table.machine'
-import { tableCellText, tableDataViewOf } from './table.pipeline'
+import { TABLE_DEFAULT_PAGE_SIZE, tableCellText, tableDataViewOf } from './table.pipeline'
 import {
   expandableTableRows,
   flattenTableRows,
@@ -181,6 +182,20 @@ function resizeStepFromKey(key: string, rtl: boolean): number | null {
 /** 数据驱动模式下没写宽度的数据列与序号列的伸缩基准，见 connectTable 里的 basisWidth。 */
 const TABLE_DATA_COLUMN_BASIS = '8rem'
 const TABLE_INDEX_COLUMN_BASIS = '4rem'
+
+/** 压线判定的容差（px），与文本截断同一个数：滚动宽度与可视宽度各自取整，恰好放得下的一行会差出 1 来。 */
+const TRUNCATE_EDGE_TOLERANCE = 1
+
+/**
+ * 截断格子此刻的全文：真被裁掉了才给，连续空白压成一个空格（原生提示照 HTML 的排版规则念）；没被裁掉或没有字时为 null。
+ * 只在指针移进来那一下的事件处理里量一次，不挂观察器：一张表几百格各盯一份尺寸不值当。
+ */
+function truncatedText(el: HTMLElement): string | null {
+  if (el.scrollWidth <= el.clientWidth + TRUNCATE_EDGE_TOLERANCE)
+    return null
+  const text = (el.textContent ?? '').replace(/\s+/g, ' ').trim()
+  return text || null
+}
 
 /** 表体用自滚视口的提醒只发一次。 */
 let viewportScrollWarned = false
@@ -347,8 +362,11 @@ export function connectTable<T extends PropTypes>(
    * 退回可见序。树形的大纲编号另行接管（见 rowOutline）。数据驱动模式开了分页时按夹好的页码与生效的每页条数算。
    */
   const paginated = !!dataView && !!prop('pagination')
+  const remote = !!dataView && !!prop('remote')
   const pageNo = paginated ? dataView.page : Math.max(1, Math.trunc(prop('page') ?? 1))
   const perPage = paginated ? dataView.pageSize : Math.max(0, Math.trunc(prop('pageSize') ?? 0))
+  const pageSizeOptions = paginated ? (prop('pageSizeOptions') ?? null) : null
+  const cellHint = context.get('cellHint')
   const rowNumber = (rowId: string): string => {
     const outline = rowOutline.get(rowId)
     if (outline)
@@ -953,6 +971,7 @@ export function connectTable<T extends PropTypes>(
     visibleRows,
     sort,
     dataDriven: dataView != null,
+    remote,
     records: dataView?.records ?? [],
     recordCount: dataView?.count ?? dataRows.length,
     recordOf: rowId => dataView?.byId.get(rowId),
@@ -967,7 +986,10 @@ export function connectTable<T extends PropTypes>(
     page: pageNo,
     pageSize: perPage,
     pageCount: paginated ? dataView.pageCount : 1,
+    pageSizeOptions,
     setPage: page => send({ type: 'PAGE.SET', value: page }),
+    // 换档的新页码按此刻生效的页码与每页条数换算：改档前的第一条仍留在页内，与分页组件同一种算法
+    setPageSize: pageSize => send({ type: 'PAGE_SIZE.SET', value: pageSize, page: pageForResize(pageNo, perPage || TABLE_DEFAULT_PAGE_SIZE, pageSize) }),
     translations: label,
     selection,
     selectionState,
@@ -1494,6 +1516,26 @@ export function connectTable<T extends PropTypes>(
         ? spanColumnsStyle(startIndex - 1, colSpan)
         : columnSizeStyle(def, hasWidthOverride(cell.value), basisWidth(def))
       const spanStyle = rowSpan && origin ? rowSpanStyle(origin.rowIndex, rowSpan) : {}
+      // 截断格子：表体按行、表尾按第几行表尾认这一格，原生提示只写给指针停着、字又被裁掉的那一格
+      const hintKey = def?.truncate && spanRow != null ? spanKey(spanRow, cell.value) : undefined
+      const truncateProps = hintKey === undefined
+        ? {}
+        : {
+            'data-truncate': dataAttr(true),
+            ...(cellHint?.cell === hintKey ? { title: cellHint.text } : {}),
+            // 触屏没有悬停提示可出，不为它量
+            'onPointerEnter': (event: PointerEvent) => {
+              const el = event.currentTarget as HTMLElement | null
+              if (!el || event.pointerType === 'touch')
+                return
+              const text = truncatedText(el)
+              send({ type: 'CELL.HINT', value: text == null ? null : { cell: hintKey, text } })
+            },
+            'onPointerLeave': () => {
+              if (context.get('cellHint')?.cell === hintKey)
+                send({ type: 'CELL.HINT', value: null })
+            },
+          }
       return normalize.element({
         ...parts.cell.attrs,
         // 列身份与表头格发同一份：少了它，使用者按列写的样式只命中表头，
@@ -1520,6 +1562,7 @@ export function connectTable<T extends PropTypes>(
         'data-dragging': dataAttr(draggingColumn === cell.value),
         'data-drop': dropSide(cell.value),
         'data-align': def?.align,
+        ...truncateProps,
         ...sticky,
         ...(Object.keys(sizeStyle).length || Object.keys(spanStyle).length
           ? { style: { ...sticky.style as Record<string, unknown>, ...sizeStyle, ...spanStyle } }

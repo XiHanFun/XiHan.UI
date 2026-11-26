@@ -68347,7 +68347,7 @@
               "type": {
                 "text": "TableRecord[]"
               },
-              "description": "数据驱动模式：给了它，元素自己按排序链、筛选值与页码算出当前页的记录（rows 不再读）；只写 root 时按标准结构生成表头、表体与空态，列 id 即字段名，某一格可用宿主直接子节点 `slot=\"cell:<行 id>:<列 id>\"` 接管，空态用 `slot=\"empty\"`"
+              "description": "数据驱动模式：给了它，元素自己按排序链、筛选值与页码算出当前页的记录（rows 不再读）；只写 root 时按标准结构生成表头、表体与空态，列 id 即字段名，某一格可用宿主直接子节点 `slot=\"cell:<行 id>:<列 id>\"` 接管，空态用 `slot=\"empty\"`，filterMode 为 custom 的列头上筛选那一格用 `slot=\"filter:<列 id>\"` 放作者自己的触发钮与面板（读写筛选值用 setFilter 与 filter-value-change）"
             },
             {
               "kind": "field",
@@ -68357,6 +68357,24 @@
                 "text": "string | ((record: TableRecord) => string)"
               },
               "description": "记录的行 id：字段名或取值函数，缺省取 id 字段"
+            },
+            {
+              "kind": "field",
+              "name": "remote",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "remote"
+            },
+            {
+              "kind": "field",
+              "name": "recordCount",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "record-count"
             },
             {
               "kind": "field",
@@ -68393,6 +68411,24 @@
                 "text": "number | undefined"
               },
               "attribute": "default-page"
+            },
+            {
+              "kind": "field",
+              "name": "defaultPageSize",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "default-page-size"
+            },
+            {
+              "kind": "field",
+              "name": "pageSizeOptions",
+              "privacy": "public",
+              "type": {
+                "text": "number[]"
+              },
+              "description": "开了 pagination 时生成的 xh-pagination 里的每页条数档位：给了才铺每页条数下拉"
             },
             {
               "kind": "field",
@@ -68735,6 +68771,12 @@
             },
             {
               "kind": "field",
+              "name": "notifyPageSize",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "notifySelection",
               "privacy": "private",
               "readonly": true
@@ -68909,6 +68951,30 @@
                 }
               ],
               "description": "修改一列的冻结档。false 是不冻结，true 等于 'start'。"
+            },
+            {
+              "kind": "method",
+              "name": "setFilter",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "columnId",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "values",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ],
+              "description": "改写一列的筛选值，空数组即撤掉这一列的筛选，随之回到第 1 页；筛选值受控时只派发 filter-value-change。\n自定义筛选面板（列的 filterMode 为 custom，作者节点写在 `slot=\"filter:<列 id>\"` 上）经它写回。"
             },
             {
               "kind": "method",
@@ -69189,6 +69255,13 @@
               }
             },
             {
+              "description": "每页条数变化（数据驱动模式开了分页、给了 pageSizeOptions）；detail 为 `{ value: number }`",
+              "name": "page-size-change",
+              "type": {
+                "text": "TablePageSizeChangeDetails"
+              }
+            },
+            {
               "description": "列偏好变化；detail 为 `{ value: TableColumnPreference }`",
               "name": "column-preference-change",
               "type": {
@@ -69368,6 +69441,30 @@
               "description": "非受控初始页码，默认 1",
               "name": "default-page",
               "fieldName": "defaultPage"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "开了 pagination 时的非受控初始每页条数，默认 10",
+              "name": "default-page-size",
+              "fieldName": "defaultPageSize"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "远程模式：data 就是服务端排好、筛好、切好的这一页，元素不再自己排序、筛选与切页，只改写排序链、筛选值、页码与每页条数并派发对应事件；开了 pagination 时页数按 record-count 算",
+              "name": "remote",
+              "fieldName": "remote"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "远程模式下服务端报的总条数，分页按它算页数；缺省取 data 的条数",
+              "name": "record-count",
+              "fieldName": "recordCount"
             },
             {
               "type": {

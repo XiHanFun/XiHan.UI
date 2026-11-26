@@ -14,6 +14,7 @@ import type {
   TableColumnKind,
   TableColumnPreference,
   TableColumnProps,
+  TableFilterSlotData,
   TableFilterValue,
   TableNavigation,
   TableRecord,
@@ -157,12 +158,23 @@ const XhTableRootImpl = /* @__PURE__ */ defineComponent({
     data: { type: Array as PropType<TableRecord[]> },
     /** 记录的行 id：字段名或取值函数，缺省取 id 字段。 */
     rowKey: { type: [String, Function] as PropType<TableProps['rowKey']> },
+    /**
+     * 远程模式：data 就是服务端排好、筛好、切好的这一页，表格不再自己排序、筛选与切页，
+     * 只改写排序链、筛选值、页码与每页条数并发出对应事件；开了 pagination 时页数按 recordCount 算。
+     */
+    remote: Boolean,
+    /** 远程模式下服务端报的总条数，分页按它算页数；缺省取 data 的条数。 */
+    recordCount: { type: Number },
     /** 筛选值（列 id → 勾选的值）：给定即受控。列给了 filterOptions 时列头铺一颗筛选钮。 */
     filterValue: { type: Object as PropType<TableFilterValue> },
     defaultFilterValue: { type: Object as PropType<TableFilterValue> },
     /** 数据驱动模式下分页：按 page 与 pageSize 切片，表后铺一组分页；筛选一变回到第 1 页。 */
     pagination: Boolean,
     defaultPage: { type: Number },
+    /** 开了 pagination 时的非受控初始每页条数，默认 10。 */
+    defaultPageSize: { type: Number },
+    /** 开了 pagination 时表后分页里的每页条数档位：给了才铺每页条数下拉。 */
+    pageSizeOptions: { type: Array as PropType<number[]> },
     /**
      * 标准结构的虚拟化开关：表体只铺滚到的那一屏行，滚的是表格根节点（吸顶表头、冻结列与行在同一个滚动面里）。
      * Virtualizer 那一块开了才加载；写默认插槽时不用它，照旧自己套 Virtualizer。
@@ -229,6 +241,8 @@ const XhTableRootImpl = /* @__PURE__ */ defineComponent({
     'update:filterValue': (_value: PayloadOf<TableProps, 'onFilterValueChange'>['value']) => true,
     'page-change': (_details: PayloadOf<TableProps, 'onPageChange'>) => true,
     'update:page': (_page: PayloadOf<TableProps, 'onPageChange'>['value']) => true,
+    'page-size-change': (_details: PayloadOf<TableProps, 'onPageSizeChange'>) => true,
+    'update:pageSize': (_pageSize: PayloadOf<TableProps, 'onPageSizeChange'>['value']) => true,
     'selection-change': (_details: PayloadOf<TableProps, 'onSelectionChange'>) => true,
     'update:selection': (_selection: PayloadOf<TableProps, 'onSelectionChange'>['value']) => true,
     'expanded-value-change': (_details: PayloadOf<TableProps, 'onExpandedValueChange'>) => true,
@@ -247,6 +261,11 @@ const XhTableRootImpl = /* @__PURE__ */ defineComponent({
     toolbar?: (props: TableToolbarSlotProps) => VNode[]
     /** 标准结构里一格的内容：参数里有记录、字段值与本来要显示的文字，别的列交出 text 即可。 */
     cell?: (props: TableCellSlotData) => VNode[]
+    /**
+     * 标准结构里 filterMode 为 custom 的列头上筛选的那一格：触发钮与面板都由作者摆，
+     * 参数里有这一列、它的筛选值、写回方法与内建筛选钮会用的名字；几列共用时按 column.id 分开。
+     */
+    filter?: (props: TableFilterSlotData) => VNode[]
     /** 标准结构里空态占位的内容。 */
     empty?: () => VNode[]
   }>,
@@ -278,6 +297,10 @@ const XhTableRootImpl = /* @__PURE__ */ defineComponent({
       emit('page-change', details)
       emit('update:page', details.value)
     }
+    const onPageSizeChange: TableProps['onPageSizeChange'] = (details) => {
+      emit('page-size-change', details)
+      emit('update:pageSize', details.value)
+    }
     const onRowMove: TableProps['onRowMove'] = (details) => {
       emit('row-move', details)
     }
@@ -291,6 +314,7 @@ const XhTableRootImpl = /* @__PURE__ */ defineComponent({
       onSortChange,
       onFilterValueChange,
       onPageChange,
+      onPageSizeChange,
       onSelectionChange,
       onExpandedValueChange,
       onColumnPreferenceChange,
@@ -768,12 +792,14 @@ function renderPagination(api: TableApi): VNode[] {
 
 interface TableStructureSlots {
   cell?: (props: TableCellSlotData) => VNode[]
+  filter?: (props: TableFilterSlotData) => VNode[]
   empty?: () => VNode[]
 }
 
 /**
  * 未写默认插槽时铺开的整套结构，作者只提供列与数据：照 headless 的 tableStructure 渲，
- * 与 Web Components 只写 root 时元素生成的节点出自同一份。格子与空态的内容由 cell / empty 插槽接管。
+ * 与 Web Components 只写 root 时元素生成的节点出自同一份。格子与空态的内容由 cell / empty 插槽接管，
+ * 自定义筛选（filterMode 为 custom）的列头上那一格放 filter 插槽的内容。
  */
 function renderDefaultStructure(api: TableApi, virtualItems: readonly StructureVirtualItem[] | undefined, slots: TableStructureSlots): VNode[] {
   const nodes = tableStructure(api, { virtualItems, slotted: name => (name === 'cell' || name === 'empty') && slots[name] != null })
@@ -786,7 +812,7 @@ function renderDefaultStructure(api: TableApi, virtualItems: readonly StructureV
       default:
         return undefined
     }
-  }, TABLE_INSTANCES)
+  }, TABLE_INSTANCES, node => (node.slot.name === 'filter' ? slots.filter?.(node.data as TableFilterSlotData) : undefined))
 }
 
 // 各组件接受的 props，与 React 同名

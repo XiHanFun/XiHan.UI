@@ -47401,6 +47401,14 @@
     display: none;
   }
 
+  /* 截断列（列的 truncate）：格子换成块容器，省略号才落得到格子里的字上——flex 行里的裸文本是匿名 flex item，
+     text-overflow 够不着它，放不下的字只会被一刀裁掉。单行与裁剪沿用格子本来的 nowrap / overflow: hidden；
+     纵向居中由块容器的 align-content 接过，同一行里别的格子更高时字仍在中线上 */
+  .xh-scope-table[data-part='cell'][data-truncate]:not([hidden]) {
+    display: block;
+    align-content: center;
+  }
+
   /* 格子里放的字段族控件（就地编辑的单元格）铺满这一格，与放进 Field 时一样；并排几个就平分，各自的压缩底线照旧 */
   .xh-scope-table[data-part='cell'] {
     --xh-control-w: 100%;

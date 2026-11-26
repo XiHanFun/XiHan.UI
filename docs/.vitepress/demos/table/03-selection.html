@@ -1,4 +1,4 @@
-<!-- 多选 | selectionMode 默认 none，声明 multiple 才有选择机制；选择列也要在 columns 中占一条，否则右侧列号错位。按住 Shift 点击勾选框选中一段，焦点落在表体中按 Ctrl/Cmd + A 全选，禁用行占据顺序位置但不被选入 -->
+<!-- 多选 | selectionMode 默认 none，声明 multiple 才有选择机制；选择列写进 prefixColumns，由库插在最前面并占住列号，columns 里不另写一列。按住 Shift 点击勾选框选中一段，焦点落在表体中按 Ctrl/Cmd + A 全选，禁用行占据顺序位置但不被选入 -->
 <div style="width: 100%; max-width: 560px; display: grid; gap: 12px">
   <xh-table id="table-selection" selection-mode="multiple">
     <div data-xh-part="root">
@@ -7,7 +7,8 @@
       </div>
       <div data-xh-part="header">
         <div data-xh-part="row">
-          <div data-xh-part="column-header" value="select">
+          <!-- 前缀列的列 id 由库定，两侧带下划线，与作者自己的列 id 分得开 -->
+          <div data-xh-part="column-header" value="__select__">
             <!-- 全选把手是三态的唯一载体，自己占一个 Tab 位 -->
             <span data-xh-part="select-all-trigger"></span>
           </div>
@@ -17,42 +18,42 @@
       </div>
       <div data-xh-part="body">
         <div data-xh-part="row" value="u1">
-          <div data-xh-part="cell" value="select">
+          <div data-xh-part="cell" value="__select__">
             <span data-xh-part="row-select-trigger"></span>
           </div>
           <div data-xh-part="cell" value="name">赵一</div>
           <div data-xh-part="cell" value="dept">平台研发</div>
         </div>
         <div data-xh-part="row" value="u2">
-          <div data-xh-part="cell" value="select">
+          <div data-xh-part="cell" value="__select__">
             <span data-xh-part="row-select-trigger"></span>
           </div>
           <div data-xh-part="cell" value="name">钱二</div>
           <div data-xh-part="cell" value="dept">前端体验</div>
         </div>
         <div data-xh-part="row" value="u3">
-          <div data-xh-part="cell" value="select">
+          <div data-xh-part="cell" value="__select__">
             <span data-xh-part="row-select-trigger"></span>
           </div>
           <div data-xh-part="cell" value="name">孙三</div>
           <div data-xh-part="cell" value="dept">基础架构</div>
         </div>
         <div data-xh-part="row" value="u4">
-          <div data-xh-part="cell" value="select">
+          <div data-xh-part="cell" value="__select__">
             <span data-xh-part="row-select-trigger"></span>
           </div>
           <div data-xh-part="cell" value="name">李四（禁用）</div>
           <div data-xh-part="cell" value="dept">质量保障</div>
         </div>
         <div data-xh-part="row" value="u5">
-          <div data-xh-part="cell" value="select">
+          <div data-xh-part="cell" value="__select__">
             <span data-xh-part="row-select-trigger"></span>
           </div>
           <div data-xh-part="cell" value="name">周五</div>
           <div data-xh-part="cell" value="dept">平台研发</div>
         </div>
         <div data-xh-part="row" value="u6">
-          <div data-xh-part="cell" value="select">
+          <div data-xh-part="cell" value="__select__">
             <span data-xh-part="row-select-trigger"></span>
           </div>
           <div data-xh-part="cell" value="name">吴六</div>
@@ -68,8 +69,9 @@
   const table = document.getElementById("table-selection");
   const readout = document.getElementById("table-selection-value");
 
+  // 选择列由库插在最前面并占住列号，数组只走属性
+  table.prefixColumns = ["select"];
   table.columns = [
-    { id: "select", width: "3rem" },
     { id: "name", label: "姓名", width: "8rem" },
     { id: "dept", label: "部门" },
   ];

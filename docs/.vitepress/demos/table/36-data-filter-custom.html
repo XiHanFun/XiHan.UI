@@ -1,0 +1,56 @@
+<!-- 自定义筛选面板 | 列写 filterMode: "custom"，列头上筛选那一格交给 filter 插槽：这里放一个气泡卡片，里面的文本框按关键字筛；筛选值仍是字符串数组，命中由列的 filter 判 -->
+<div style="width: 100%; max-width: 480px; display: grid; gap: 12px">
+  <!-- 只写 root：表头与表体由元素照标准结构生成；写了 slot="filter:name" 的节点挪进姓名那一列的列头 -->
+  <xh-table id="table-data-filter-custom">
+    <div data-xh-part="root" aria-label="成员"></div>
+    <xh-popover slot="filter:name" placement="bottom-end" size="sm">
+      <button data-xh-part="trigger" aria-label="按姓名筛选"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5h17L14 12.5V19l-4 2v-8.5L3.5 5Z"/></svg></button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <h2 data-xh-part="title">按关键字筛选</h2>
+          <xh-text-field id="table-data-filter-custom-keyword" aria-label="姓名关键字" placeholder="输入姓名里的字" clearable>
+            <div data-xh-part="root">
+              <div data-xh-part="control">
+                <input data-xh-part="input" />
+                <button data-xh-part="clear-trigger"></button>
+              </div>
+            </div>
+          </xh-text-field>
+        </div>
+      </div>
+    </xh-popover>
+  </xh-table>
+  <span id="table-data-filter-custom-value" data-demo-output>关键字：（无）</span>
+</div>
+
+<script type="module">
+  const table = document.getElementById("table-data-filter-custom");
+  const keyword = document.getElementById("table-data-filter-custom-keyword");
+  const trigger = table.querySelector('xh-popover [data-xh-part="trigger"]');
+  const readout = document.getElementById("table-data-filter-custom-value");
+
+  // 筛选值是这一列的关键字（至多一项），命中由 filter 判：名字里含有它
+  table.columns = [
+    { id: "name", label: "姓名", filterMode: "custom", filter: (record, values) => record.name.includes(values[0] ?? "") },
+    { id: "city", label: "城市", width: "7rem" },
+  ];
+
+  table.data = [
+    { id: "u1", name: "赵一帆", city: "杭州" },
+    { id: "u2", name: "钱二宁", city: "上海" },
+    { id: "u3", name: "孙一鸣", city: "北京" },
+    { id: "u4", name: "李四海", city: "杭州" },
+    { id: "u5", name: "周五洲", city: "成都" },
+  ];
+
+  // 面板里的文本框经 setFilter 写回这一列；筛选值变了再回读
+  keyword.addEventListener("value-change", (event) => {
+    const text = event.detail.value;
+    table.setFilter("name", text ? [text] : []);
+  });
+  table.addEventListener("filter-value-change", (event) => {
+    const text = event.detail.value.name?.[0];
+    trigger.style.color = text ? "var(--xh-fg-brand)" : "";
+    readout.textContent = `关键字：${text ?? "（无）"}`;
+  });
+</script>

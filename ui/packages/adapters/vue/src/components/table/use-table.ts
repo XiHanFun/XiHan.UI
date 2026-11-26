@@ -28,7 +28,7 @@ export interface TableContext {
 /** 根组件交给机器的回调（把变化发成事件），以及开了 virtual 时现取的桥：它随 Virtualizer 的状态换身份。 */
 export type TableHandlers = Pick<
   TableSchema['props'],
-  'onSortChange' | 'onFilterValueChange' | 'onPageChange' | 'onSelectionChange' | 'onExpandedValueChange' | 'onColumnPreferenceChange' | 'onRowMove' | 'onAction'
+  'onSortChange' | 'onFilterValueChange' | 'onPageChange' | 'onPageSizeChange' | 'onSelectionChange' | 'onExpandedValueChange' | 'onColumnPreferenceChange' | 'onRowMove' | 'onAction'
 > & { virtualizer?: () => CollectionVirtualizer | undefined }
 
 export function useTable(props: TableSchema['props'], handlers: TableHandlers): TableContext {

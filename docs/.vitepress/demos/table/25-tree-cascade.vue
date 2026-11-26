@@ -16,7 +16,6 @@ import {
 import { ref } from "vue";
 
 const columns = [
-  { id: "select", width: "3rem" },
   { id: "name", label: "组织", width: "13rem" },
   { id: "owner", label: "负责人" },
 ];
@@ -41,6 +40,7 @@ const selection = ref<TableSelection>([]);
       v-slot="{ visibleRows }"
       v-model:selection="selection"
       :columns="columns"
+      :prefix-columns="['select']"
       :rows="rows"
       :default-expanded-value="['rd', 'ops']"
       selection-mode="multiple"
@@ -48,7 +48,8 @@ const selection = ref<TableSelection>([]);
     >
       <XhTableHeader>
         <XhTableRow>
-          <XhTableColumnHeader value="select"><XhTableSelectAllTrigger /></XhTableColumnHeader>
+          <!-- 前缀列的列 id 由库定，两侧带下划线，与作者自己的列 id 分得开 -->
+          <XhTableColumnHeader value="__select__"><XhTableSelectAllTrigger /></XhTableColumnHeader>
           <XhTableColumnHeader value="name"><XhTableColumnLabel>组织</XhTableColumnLabel></XhTableColumnHeader>
           <XhTableColumnHeader value="owner"><XhTableColumnLabel>负责人</XhTableColumnLabel></XhTableColumnHeader>
         </XhTableRow>
@@ -59,7 +60,7 @@ const selection = ref<TableSelection>([]);
           :key="row.id"
           :value="row.id"
         >
-          <XhTableCell value="select"><XhTableRowSelectTrigger /></XhTableCell>
+          <XhTableCell value="__select__"><XhTableRowSelectTrigger /></XhTableCell>
           <XhTableCell value="name" :style="{ paddingInlineStart: `${row.level * 16}px` }">
             <XhTableExpandTrigger v-if="row.level === 1" />
             {{ byId.get(row.id)?.label }}

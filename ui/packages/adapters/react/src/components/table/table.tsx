@@ -13,6 +13,7 @@ import type {
   TableColumnDef,
   TableColumnKind,
   TableColumnPreference,
+  TableFilterSlotData,
   TableFilterValue,
   TableNavigation,
   TableRecord,
@@ -168,6 +169,13 @@ export interface XhTableRootProps<TRow extends object = TableRecord> extends Roo
   data?: readonly TRow[]
   /** 记录的行 id：字段名或取值函数，缺省取 id 字段。 */
   rowKey?: NoInfer<TableSchema<TRow>['props']['rowKey']>
+  /**
+   * 远程模式：data 就是服务端排好、筛好、切好的这一页，表格不再自己排序、筛选与切页，
+   * 只改写排序链、筛选值、页码与每页条数并发出对应回调；开了 pagination 时页数按 recordCount 算。
+   */
+  remote?: boolean
+  /** 远程模式下服务端报的总条数，分页按它算页数；缺省取 data 的条数。 */
+  recordCount?: number
   /** 筛选值（列 id → 勾选的值）：给定即受控。列给了 filterOptions 时列头铺一颗筛选钮。 */
   filterValue?: TableFilterValue
   defaultFilterValue?: TableFilterValue
@@ -176,6 +184,11 @@ export interface XhTableRootProps<TRow extends object = TableRecord> extends Roo
   pagination?: boolean
   defaultPage?: number
   onPageChange?: TableProps['onPageChange']
+  /** 开了 pagination 时的非受控初始每页条数，默认 10。 */
+  defaultPageSize?: number
+  /** 开了 pagination 时表后分页里的每页条数档位：给了才铺每页条数下拉。 */
+  pageSizeOptions?: number[]
+  onPageSizeChange?: TableProps['onPageSizeChange']
   /**
    * 标准结构的虚拟化开关：表体只铺滚到的那一屏行，滚的是表格根节点（吸顶表头、冻结列与行在同一个滚动面里）。
    * Virtualizer 那一块开了才加载；给了 children 时不用它，照旧自己套 Virtualizer。
@@ -185,6 +198,11 @@ export interface XhTableRootProps<TRow extends object = TableRecord> extends Roo
   estimateSize?: number
   /** 标准结构里一格的内容：参数里有记录、字段值与本来要显示的文字，别的列交出 text 即可。 */
   renderCell?: (cell: TableCellSlotData<TRow>) => ReactNode
+  /**
+   * 标准结构里 filterMode 为 custom 的列头上筛选的那一格：触发钮与面板都由作者摆，
+   * 参数里有这一列、它的筛选值、写回方法与内建筛选钮会用的名字；几列共用时按 column.id 分开。
+   */
+  renderFilter?: (filter: TableFilterSlotData) => ReactNode
   /** 标准结构里空态占位的内容。 */
   renderEmpty?: () => ReactNode
   sort?: TableSortDescriptor[]
@@ -261,15 +279,21 @@ export function XhTableRoot<TRow extends object = TableRecord>({
   rows,
   data,
   rowKey,
+  remote,
+  recordCount,
   filterValue,
   defaultFilterValue,
   onFilterValueChange,
   pagination,
   defaultPage,
   onPageChange,
+  defaultPageSize,
+  pageSizeOptions,
+  onPageSizeChange,
   virtual,
   estimateSize,
   renderCell,
+  renderFilter,
   renderEmpty,
   sort,
   defaultSort,
@@ -324,12 +348,17 @@ export function XhTableRoot<TRow extends object = TableRecord>({
     rows,
     data,
     rowKey,
+    remote,
+    recordCount,
     filterValue,
     defaultFilterValue,
     onFilterValueChange,
     pagination,
     defaultPage,
     onPageChange,
+    defaultPageSize,
+    pageSizeOptions,
+    onPageSizeChange,
     sort,
     defaultSort,
     selection,
@@ -385,6 +414,7 @@ export function XhTableRoot<TRow extends object = TableRecord>({
         virtualParts: virtual ? virtualParts : undefined,
         instances,
         renderCell,
+        renderFilter,
         renderEmpty,
       })
     : null
@@ -465,6 +495,7 @@ XhTableRoot.xhEvents = [
   'sort-change',
   'filter-value-change',
   'page-change',
+  'page-size-change',
   'selection-change',
   'expanded-value-change',
   'row-move',
@@ -647,13 +678,15 @@ export function XhTableCell({ value, colspan, children, ...rest }: XhTableCellPr
   const rowCtx = useOptionalTableRowContext()
   const section = useTableSection()
   const footerLevel = useTableFooterLevel()
-  const attrs = ctx.api.getCellProps({
+  // 截断列的格子量裁没裁掉挂在 pointerenter / pointerleave 上：它们不冒泡，React 的同名合成事件是拿冒泡的
+  // pointerover / pointerout 拼出来的，直接派到格子上的那一下接不到，改挂原生监听器，与 Vue / Web Components 同一条路
+  const bind = useNativeEvents(ctx.api.getCellProps({
     value,
     row: rowCtx?.value,
     footer: section === 'footer' && !rowCtx ? (footerLevel ?? 1) : undefined,
     colSpan: colspan == null ? undefined : Number(colspan),
-  })
-  return <div {...mergeReactProps(attrs, rest)}>{children}</div>
+  }), ['onPointerEnter', 'onPointerLeave'])
+  return <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>{children}</div>
 }
 
 export interface XhTableSelectAllTriggerProps extends ComponentPropsWithRef<'span'> {}
@@ -814,15 +847,17 @@ interface TableStructureContent<TRow extends object> {
   virtualParts?: Readonly<Record<string, StructurePart>>
   instances: Readonly<Record<string, StructurePart>>
   renderCell?: (cell: TableCellSlotData<TRow>) => ReactNode
+  renderFilter?: (filter: TableFilterSlotData) => ReactNode
   renderEmpty?: () => ReactNode
 }
 
 /**
  * 未给 children 时铺开的整套结构，作者只提供列与数据：照 headless 的 tableStructure 渲，
- * 与 Web Components 只写 root 时元素生成的节点出自同一份。格子与空态的内容由 renderCell / renderEmpty 接管。
+ * 与 Web Components 只写 root 时元素生成的节点出自同一份。格子与空态的内容由 renderCell / renderEmpty 接管，
+ * 自定义筛选（filterMode 为 custom）的列头上那一格放 renderFilter 的内容。
  */
 function renderDefaultStructure<TRow extends object>(api: TableApi, content: TableStructureContent<TRow>): ReactNode[] {
-  const { renderCell, renderEmpty } = content
+  const { renderCell, renderFilter, renderEmpty } = content
   const nodes = tableStructure(api, {
     virtualItems: content.virtualItems,
     slotted: name => (name === 'cell' && renderCell != null) || (name === 'empty' && renderEmpty != null),
@@ -838,5 +873,5 @@ function renderDefaultStructure<TRow extends object>(api: TableApi, content: Tab
       default:
         return undefined
     }
-  }, content.instances)
+  }, content.instances, node => (node.slot.name === 'filter' ? renderFilter?.(node.data as TableFilterSlotData) : undefined))
 }

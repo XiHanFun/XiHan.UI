@@ -83,21 +83,67 @@ export type TableCellSlotData<TRow extends object = TableRecord> = {
   | { readonly field: null, readonly value: undefined }
 )
 
+/**
+ * filter 插槽的参数（列的 filterMode 为 custom）：作者在列头里自己摆触发钮与面板（文本、日期、数值区间这类筛选），
+ * 读这一列此刻的筛选值、经 setValue 写回；命中由列的 filter 判。
+ */
+export interface TableFilterSlotData {
+  readonly column: TableColumn
+  /** 这一列此刻的筛选值；没在筛时是空数组。 */
+  readonly value: readonly string[]
+  /** 写回这一列的筛选值：空数组即撤掉这一列的筛选，随之回到第 1 页。 */
+  readonly setValue: (values: string[]) => void
+  /** 内建筛选钮会用的名字（translations.filter(列名)）：作者的触发钮只有图标时拿它作可及名。 */
+  readonly label: string
+}
+
 const NOTHING_SLOTTED: StructureSlotted = () => false
+
+/** 单选筛选菜单里那一组单选项的组身份：一列只有一组，名字只在这一张菜单里用。 */
+const SINGLE_FILTER_GROUP = 'filter'
 
 const label = (text: string): TableNode => ({ key: 'label', tag: 'span', part: 'column-label', text })
 
-/** 列头里那颗筛选钮：一张勾选型菜单，钮里没有字，漏斗由皮肤画，名字取 translations.filter(列名)。 */
+/**
+ * 列头里那颗筛选钮：钮里没有字，漏斗由皮肤画，名字取 translations.filter(列名)。
+ * multiple 是一张勾选型菜单；single 是一张单选型菜单，选完即收起，再选一次已选的那一项就撤掉这一列的筛选。
+ */
 function filterMenu(model: TableStructureModel, column: TableColumn): StructureInstanceNode {
   const options = column.filterOptions ?? []
+  const values = model.filterValue[column.id] ?? []
+  const common = { translations: { trigger: model.translations.filter(column.label ?? column.id) }, size: 'sm', placement: 'bottom-end' } as const
+  if (column.filterMode === 'single') {
+    const current = values[0]
+    return structureInstance('filter', 'menu', {
+      collection: options.map(option => ({ value: option.value, label: option.label ?? option.value, kind: 'radio', group: SINGLE_FILTER_GROUP, closeOnSelect: true })),
+      radioValue: current === undefined ? {} : { [SINGLE_FILTER_GROUP]: current },
+      // 单选项点了已选的那一项不改单选值，菜单不报单选值变化；按条目选中来判，才接得住「再点一次撤掉」
+      onItemSelect: ({ value }) => model.setFilter(column.id, value === current ? [] : [value]),
+      ...common,
+    })
+  }
   return structureInstance('filter', 'menu', {
     collection: options.map(option => ({ value: option.value, label: option.label ?? option.value, kind: 'checkbox' })),
-    checkboxValue: model.filterValue[column.id] ?? [],
+    checkboxValue: values,
     onCheckboxValueChange: ({ value }) => model.setFilter(column.id, value),
-    translations: { trigger: model.translations.filter(column.label ?? column.id) },
-    size: 'sm',
-    placement: 'bottom-end',
+    ...common,
   })
+}
+
+/** 列头里筛选的那一格：custom 交给作者的 filter 插槽，给了 filterOptions 的铺内建菜单，都没有就不铺。 */
+function filterControl(model: TableStructureModel, column: TableColumn): StructureChild<TableStructurePart> | null {
+  if (!model.dataDriven)
+    return null
+  if (column.filterMode === 'custom') {
+    const data: TableFilterSlotData = {
+      column,
+      value: model.filterValue[column.id] ?? [],
+      setValue: values => model.setFilter(column.id, values),
+      label: model.translations.filter(column.label ?? column.id),
+    }
+    return { key: 'filter', outlet: true, slot: { name: 'filter', key: column.id }, data }
+  }
+  return column.filterOptions?.length ? filterMenu(model, column) : null
 }
 
 /** 一列的列头里铺什么：按列的用途（前缀列）与声明（排序、筛选、改宽、拖拽）。 */
@@ -114,8 +160,9 @@ function leafHeaderContent(model: TableStructureModel, column: TableColumn): Str
   children.push(label(column.label ?? column.id))
   if (column.sortable)
     children.push({ key: 'sort', tag: 'span', part: 'sort-trigger' })
-  if (model.dataDriven && column.filterOptions?.length)
-    children.push(filterMenu(model, column))
+  const filter = filterControl(model, column)
+  if (filter)
+    children.push(filter)
   if (column.resizable)
     children.push({ key: 'resize', tag: 'span', part: 'column-resize-trigger' })
   return children
@@ -209,16 +256,19 @@ export function tableStructure(model: TableStructureModel, options: TableStructu
 }
 
 /**
- * root 之后的分页：数据驱动模式开了 pagination 时铺一组，按筛过的总条数算页数，翻页写回表格。
+ * root 之后的分页：数据驱动模式开了 pagination 时铺一组，按筛过的总条数（远程模式是 recordCount）算页数，
+ * 翻页与换每页条数都写回表格；作者给了 pageSizeOptions 才把档位交给分页。
  * root 是 grid 系角色，分页只能是它的兄弟；没开时什么都不铺。
  */
-export function tablePaginationStructure(model: Pick<TableApi, 'paginated' | 'recordCount' | 'page' | 'pageSize' | 'setPage'>): StructureInstanceNode[] {
+export function tablePaginationStructure(model: Pick<TableApi, 'paginated' | 'recordCount' | 'page' | 'pageSize' | 'pageSizeOptions' | 'setPage' | 'setPageSize'>): StructureInstanceNode[] {
   if (!model.paginated)
     return []
   return [structureInstance('pagination', 'pagination', {
     count: model.recordCount,
     page: model.page,
     pageSize: model.pageSize,
+    ...(model.pageSizeOptions ? { pageSizeOptions: [...model.pageSizeOptions] } : {}),
     onPageChange: ({ page }) => model.setPage(page),
+    onPageSizeChange: ({ pageSize }) => model.setPageSize(pageSize),
   })]
 }

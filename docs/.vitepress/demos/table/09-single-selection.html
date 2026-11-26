@@ -5,28 +5,29 @@
       <div data-xh-part="header">
         <div data-xh-part="row">
           <!-- 单选下全选把手不生效，表头那一格空着即可 -->
-          <div data-xh-part="column-header" value="select"></div>
+          <!-- 前缀列的列 id 由库定，两侧带下划线，与作者自己的列 id 分得开 -->
+          <div data-xh-part="column-header" value="__select__"></div>
           <div data-xh-part="column-header" value="plan"><span data-xh-part="column-label">套餐</span></div>
           <div data-xh-part="column-header" value="price"><span data-xh-part="column-label">价格</span></div>
         </div>
       </div>
       <div data-xh-part="body">
         <div data-xh-part="row" value="p1">
-          <div data-xh-part="cell" value="select">
+          <div data-xh-part="cell" value="__select__">
             <span data-xh-part="row-select-trigger"></span>
           </div>
           <div data-xh-part="cell" value="plan">入门版</div>
           <div data-xh-part="cell" value="price">¥ 0 / 月</div>
         </div>
         <div data-xh-part="row" value="p2">
-          <div data-xh-part="cell" value="select">
+          <div data-xh-part="cell" value="__select__">
             <span data-xh-part="row-select-trigger"></span>
           </div>
           <div data-xh-part="cell" value="plan">团队版</div>
           <div data-xh-part="cell" value="price">¥ 99 / 月</div>
         </div>
         <div data-xh-part="row" value="p3">
-          <div data-xh-part="cell" value="select">
+          <div data-xh-part="cell" value="__select__">
             <span data-xh-part="row-select-trigger"></span>
           </div>
           <div data-xh-part="cell" value="plan">企业版</div>
@@ -42,8 +43,9 @@
   const table = document.getElementById("table-single");
   const readout = document.getElementById("table-single-value");
 
+  // 选择列由库插在最前面并占住列号，数组只走属性
+  table.prefixColumns = ["select"];
   table.columns = [
-    { id: "select", width: "3rem" },
     { id: "plan", label: "套餐", width: "8rem" },
     { id: "price", label: "价格" },
   ];
