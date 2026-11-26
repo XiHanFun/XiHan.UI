@@ -344,7 +344,7 @@ export const dialogSuite: ConformanceSuite = {
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
       props: { defaultOpen: true, title: '删除文件？' },
       steps: [
-        { kind: 'click', part: 'cancel-trigger', expect: { events: [{ type: 'cancel-press' }, { type: 'open-change', detail: { open: false, reason: 'close-trigger' } }] } },
+        { kind: 'click', part: 'cancel-trigger', expect: { events: [{ type: 'cancel-press' }, { type: 'open-change', detail: { open: false, reason: 'close-trigger' } }, { type: 'exit-complete', detail: null }] } },
         { kind: 'settle', until: { absent: 'content' }, expect: { counts: { content: 0 } } },
       ],
     },
@@ -354,7 +354,7 @@ export const dialogSuite: ConformanceSuite = {
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
       props: { defaultOpen: true, title: '删除文件？' },
       steps: [
-        { kind: 'click', part: 'confirm-trigger', expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }] } },
+        { kind: 'click', part: 'confirm-trigger', expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }, { type: 'exit-complete', detail: null }] } },
         { kind: 'settle', until: { absent: 'content' }, expect: { counts: { content: 0 } } },
       ],
     },
