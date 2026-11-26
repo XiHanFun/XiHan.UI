@@ -27,8 +27,8 @@ const untilFailed = Number.POSITIVE_INFINITY;
     :fallback-delay="600"
     style="--xh-image-w: 140px; --xh-image-ratio: 4 / 3;"
   >
-    <!-- loading 是原生图片属性，组件不拦，直接落到图片元素上 -->
-    <XhImageImage loading="lazy" />
+    <!-- decoding 是原生图片属性，组件不拦，直接落到图片元素上；要懒加载用组件的 lazy，不在这里写 loading -->
+    <XhImageImage decoding="async" />
     <XhImageFallback>加载中</XhImageFallback>
   </XhImageRoot>
 

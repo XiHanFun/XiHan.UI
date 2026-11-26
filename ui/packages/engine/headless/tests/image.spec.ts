@@ -286,3 +286,164 @@ describe('connectImage 结构与显隐', () => {
     expect(api.loaded).toBe(true)
   })
 })
+
+describe('image 铺法', () => {
+  it('写了 fit 才落 data-fit：没写时交给皮肤的 --xh-image-fit', async () => {
+    const plain = makeImage({ src: 'a.png' })
+    await settleSrc()
+    expect((plain.api().getImageProps() as Dict)['data-fit']).toBeUndefined()
+
+    const contain = makeImage({ src: 'a.png', fit: 'contain' })
+    await settleSrc()
+    expect((contain.api().getImageProps() as Dict)['data-fit']).toBe('contain')
+
+    contain.setProps({ fit: 'scale-down' })
+    expect((contain.api().getImageProps() as Dict)['data-fit']).toBe('scale-down')
+  })
+})
+
+describe('image 懒加载', () => {
+  it('没开懒加载：不写 loading，图片载好之前收着', async () => {
+    const s = makeImage({ src: 'a.png' })
+    await settleSrc()
+    const image = s.api().getImageProps() as Dict
+    expect(image.loading).toBeUndefined()
+    expect(image.hidden).toBe(true)
+  })
+
+  it('开了懒加载：交给原生 loading="lazy"，等着取图期间不收起，否则浏览器永远不会去取', async () => {
+    const s = makeImage({ src: 'a.png', lazy: true })
+    // 来源决议前那一拍也不能收：收起的图片连观察都不会被观察
+    expect((s.api().getImageProps() as Dict).hidden).toBeUndefined()
+    await settleSrc()
+    expect(s.state()).toBe('loading')
+    const image = s.api().getImageProps() as Dict
+    expect(image.loading).toBe('lazy')
+    expect(image.hidden).toBeUndefined()
+    // loading 排在 src 之前：先说好延后，再给地址
+    const keys = Object.keys(image)
+    expect(keys.indexOf('loading')).toBeLessThan(keys.indexOf('src'))
+    // 占位与回退照常顶着图位
+    expect(s.api().showPlaceholder).toBe(true)
+    expect(s.api().showFallback).toBe(true)
+  })
+
+  it('懒加载的图取不到：照样收起，回退内容顶上', async () => {
+    const s = makeImage({ src: 'a.png', lazy: true })
+    await settleSrc()
+    s.service.send({ type: 'IMAGE.ERROR' })
+    expect((s.api().getImageProps() as Dict).hidden).toBe(true)
+    expect(s.api().showFallback).toBe(true)
+  })
+
+  it('懒加载的图载好：显出', async () => {
+    const s = makeImage({ src: 'a.png', lazy: true })
+    await settleSrc()
+    s.service.send({ type: 'IMAGE.LOAD' })
+    expect((s.api().getImageProps() as Dict).hidden).toBeUndefined()
+  })
+})
+
+describe('image 大图预览', () => {
+  function keydown(key: string) {
+    return { key, preventDefault: vi.fn() } as unknown as KeyboardEvent & { preventDefault: ReturnType<typeof vi.fn> }
+  }
+
+  it('没开预览：root 不是按钮，也不可聚焦', async () => {
+    const s = makeImage({ src: 'a.png', alt: '山谷' })
+    await settleSrc()
+    const root = s.api().getRootProps() as Dict
+    expect(root.role).toBeUndefined()
+    expect(root.tabindex).toBeUndefined()
+    expect(root['aria-haspopup']).toBeUndefined()
+    expect(root['data-interactive']).toBeUndefined()
+    expect(root.onClick).toBeUndefined()
+    expect(s.api().previewable).toBe(false)
+    expect(s.api().previewItem).toBeNull()
+  })
+
+  it('开了预览：整张图是一颗打开对话框的按钮，占一个 Tab 位', async () => {
+    const s = makeImage({ src: 'a.png', alt: '山谷', preview: true })
+    await settleSrc()
+    const root = s.api().getRootProps() as Dict
+    expect(root.role).toBe('button')
+    expect(root.tabindex).toBe(0)
+    expect(root['aria-haspopup']).toBe('dialog')
+    expect(root['data-interactive']).toBe('')
+    expect(s.api().previewable).toBe(true)
+    expect(s.api().previewOpen).toBe(false)
+    expect(s.api().previewItem).toEqual({ src: 'a.png', alt: '山谷' })
+  })
+
+  it('点击打开预览，setPreviewOpen(false) 收起', async () => {
+    const s = makeImage({ src: 'a.png', preview: true })
+    await settleSrc()
+    ;((s.api().getRootProps() as Dict).onClick as () => void)()
+    expect(s.api().previewOpen).toBe(true)
+
+    s.api().setPreviewOpen(false)
+    expect(s.api().previewOpen).toBe(false)
+  })
+
+  it('enter 与 Space 打开预览并拦下缺省动作；别的键不管', async () => {
+    const s = makeImage({ src: 'a.png', preview: true })
+    await settleSrc()
+    const onKeyDown = (s.api().getRootProps() as Dict).onKeyDown as (e: KeyboardEvent) => void
+
+    const other = keydown('a')
+    onKeyDown(other)
+    expect(other.preventDefault).not.toHaveBeenCalled()
+    expect(s.api().previewOpen).toBe(false)
+
+    for (const key of ['Enter', ' ']) {
+      s.api().setPreviewOpen(false)
+      const event = keydown(key)
+      ;((s.api().getRootProps() as Dict).onKeyDown as (e: KeyboardEvent) => void)(event)
+      expect(event.preventDefault).toHaveBeenCalledTimes(1)
+      expect(s.api().previewOpen).toBe(true)
+    }
+  })
+
+  it('载入中、失败了都能打开：大图在预览层里另走一遍加载', async () => {
+    const s = makeImage({ src: 'a.png', preview: true })
+    await settleSrc()
+    s.service.send({ type: 'IMAGE.ERROR' })
+    s.api().setPreviewOpen(true)
+    expect(s.api().previewOpen).toBe(true)
+  })
+
+  it('preview.src 给预览层另一张图：缩略图用小图、预览用原图', async () => {
+    const s = makeImage({ src: 'thumb.png', alt: '山谷', preview: { src: 'full.png' } })
+    await settleSrc()
+    expect(s.api().previewItem).toEqual({ src: 'full.png', alt: '山谷' })
+    // 缩略图自己的地址不变
+    expect((s.api().getImageProps() as Dict).src).toBe('thumb.png')
+  })
+
+  it('没有可看的图（src 与 preview.src 都没给）：预览不生效，打开也被拦下', async () => {
+    const s = makeImage({ preview: true })
+    await settleSrc()
+    expect(s.api().previewable).toBe(false)
+    expect((s.api().getRootProps() as Dict).role).toBeUndefined()
+    s.api().setPreviewOpen(true)
+    expect(s.api().previewOpen).toBe(false)
+
+    // 只给 preview.src 也算有图可看
+    const only = makeImage({ preview: { src: 'full.png' } })
+    await settleSrc()
+    expect(only.api().previewItem).toEqual({ src: 'full.png' })
+  })
+
+  it('开着的时候把预览关掉或把图撤掉：预览层跟着收起', async () => {
+    const s = makeImage({ src: 'a.png', preview: true })
+    await settleSrc()
+    s.api().setPreviewOpen(true)
+    s.setProps({ preview: false })
+    expect(s.api().previewOpen).toBe(false)
+
+    s.setProps({ preview: true })
+    s.api().setPreviewOpen(true)
+    s.setProps({ src: undefined })
+    expect(s.api().previewOpen).toBe(false)
+  })
+})

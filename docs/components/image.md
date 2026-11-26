@@ -32,7 +32,7 @@
 
 ### 尺寸与裁切
 
-同一个组件既作封面图也作缩略图：宽高比由 --xh-image-ratio 决定，画面填充方式由 --xh-image-fit 决定
+同一个组件既作封面图也作缩略图：宽高比由 --xh-image-ratio 决定，画面在盒子里怎么铺由 fit 决定（取值与 CSS object-fit 同名）
 
 <XhDemo src="image/03-size" />
 
@@ -50,7 +50,7 @@ fallback-delay 决定回退内容多久后才显示，Infinity 表示加载期�
 
 ### 点击查看大图
 
-缩略图的点击与键盘自行接管，放大层是一个对话框，其中再放一份独立的图片实例
+写上 preview，图片就是一颗打开大图预览的按钮：点击或聚焦后按 Enter / Space 打开，预览层里可以缩放、旋转与翻转，关上后焦点回到图片
 
 <XhDemo src="image/06-preview" />
 
@@ -60,17 +60,24 @@ fallback-delay 决定回退内容多久后才显示，Infinity 表示加载期�
 
 <XhDemo src="image/07-group-preview" />
 
+### 懒加载
+
+写上 lazy，图片进入视口附近才开始取，交给浏览器原生的 loading="lazy"；取到之前照常显示占位与回退内容
+
+<XhDemo src="image/08-lazy" />
+
 ### 自行决定何时取图
 
 src 是响应式的：进入视口前不提供地址，观察器命中后再换上，状态机立即经过一遍完整加载
 
-<XhDemo src="image/08-lazy-observer" />
+<XhDemo src="image/09-lazy-observer" />
 
 ## 设计指引
 
 ### 何时使用
 
 - 需要显示远端图片并处理加载与失败状态的场景。
+- 缩略图需要点开看大图的场景。
 
 ### 何时不用
 
@@ -82,20 +89,24 @@ src 是响应式的：进入视口前不提供地址，观察器命中后再换�
 
 - 状态通过回调通知；`fallbackDelay` 避免快速加载时回退内容闪烁。
 - 回退内容可以按状态区分：加载中与失败显示不同内容。
+- `fit` 决定图片在盒子里怎么铺，取值与 CSS `object-fit` 同名（`cover` / `contain` / `fill` / `none` / `scale-down`）；没写时由 `--xh-image-fit` 决定，缺省 `cover`。
+- `lazy` 让图片进入视口附近才开始取，交给浏览器原生的 `loading="lazy"`；取到之前占位与回退内容照常顶着图位。
+- `preview` 让点击图片打开大图预览，预览层是一台[图片预览](./image-viewer)，工具条带缩放、旋转、翻转与归零。整张图成为一颗按钮：可以聚焦，Enter / Space 也能打开，预览层关上后焦点回到图片。写成 `{ src }` 时预览层看另一张图，缩略图给小图、预览给原图。
 
 ### 组合
 
-- 与[图片预览](./image-viewer)配合查看大图；一组图片共用一个预览层。
+- 单张查看大图直接写 `preview`；一组图片要在同一个预览层里翻页时，用[图片预览](./image-viewer)把它们串起来。
 
 ### 最佳实践
 
-- `alt` 描述图片内容，不写“图片”；纯装饰图写空 `alt`。
+- `alt` 描述图片内容，不写“图片”；纯装饰图写空 `alt`。开了 `preview` 的图片必须写 `alt`，它也是这颗按钮的名字。
 - 为容器预留宽高比，否则图片加载完成时页面会跳动。
 
 ### 反模式
 
 - 失败时不显示任何内容，用户会以为页面损坏。
 - 用大图作为背景却不做降级。
+- 在 image 部件上直接写 `loading="lazy"`：图片载好之前是收起的，浏览器永远不会去取收起的图片。懒加载用 `lazy`。
 
 ## API 参考
 
@@ -115,6 +126,9 @@ src 是响应式的：进入视口前不提供地址，观察器命中后再换�
 | --- | --- | --- | --- |
 | `src` | `string` |  |  |
 | `alt` | `string` |  |  |
+| `fit` | `ImageFit` |  | 图片在盒子里的铺法，与 CSS object-fit 同名。没写时由皮肤的 `--xh-image-fit` 决定，缺省 cover； 写了就按它铺，压过那个变量。 |
+| `lazy` | `boolean` |  | 进入视口附近才去取图，交给浏览器原生的 `loading="lazy"`，默认 false。 等着取图期间图片元素不收起（收起的图片浏览器永远不会去取），由皮肤把它叠在图位上、保持透明。 |
+| `preview` | `boolean \| ImagePreviewOptions` |  | 点击图片打开大图预览，默认 false。开了以后整张图是一颗按钮：可以聚焦，Enter / Space 也能打开； 预览层关上后焦点回到图片。没有可看的图（src 与 preview.src 都没给）时不生效。 |
 | `fallbackDelay` | `number` |  | 加载超过该时长（毫秒）才显示回退内容，默认 0（立即显示）。 Infinity 表示加载期间永不显示回退内容，只有失败才显示。 |
 | `onStatusChange` | `(details: ImageStatusChangeDetails) => void` |  | 状态每次实际落定时通知一次；过渡态 idle 不通知。 |
 
@@ -157,9 +171,9 @@ src 是响应式的：进入视口前不提供地址，观察器命中后再换�
 
 **状态**：`idle` · `loading` · `loaded` · `error`
 
-**事件**：`SRC.CHANGE` · `IMAGE.LOAD` · `IMAGE.ERROR` · `after.fallbackDelay` · `PART.RENDERED`
+**事件**：`SRC.CHANGE` · `IMAGE.LOAD` · `IMAGE.ERROR` · `after.fallbackDelay` · `PART.RENDERED` · `PREVIEW.OPEN` · `PREVIEW.CLOSE`
 
-**判据**：`hasSrc`
+**判据**：`hasSrc` · `canPreview`
 
 ### connect API
 
@@ -171,6 +185,10 @@ src 是响应式的：进入视口前不提供地址，观察器命中后再换�
 | `loaded` | `boolean` |  |
 | `showFallback` | `boolean` | 回退内容当前是否应显示：加载失败恒为真，加载途中取决于 fallbackDelay 是否已过。 |
 | `showPlaceholder` | `boolean` | 占位层当前是否应显示：来源决议中与加载中为真，落定或失败后为假。 |
+| `previewable` | `boolean` | 开了预览、也有可看的图：root 此时是一颗打开预览的按钮。 |
+| `previewOpen` | `boolean` | 大图预览当前开着。 |
+| `previewItem` | `ImageViewerItem \| null` | 预览层里看的那张图（地址取 preview.src，缺省取 src；替代文本取 alt）；不可预览时为 null。 |
+| `setPreviewOpen` | `(open: boolean) => void` | 打开或收起大图预览；不可预览时打开无效。适配器把它接在预览层的 open 变化上。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getImageProps` | `() => T['img']` |  |
 | `getPlaceholderProps` | `() => T['element']` | 加载期间铺在图位上的占位层，纯装饰。 |
@@ -180,9 +198,12 @@ src 是响应式的：进入视口前不提供地址，观察器命中后再换�
 
 ### 键盘
 
-规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
+规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/button/#keyboardinteraction)
 
-无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+| 按键 | 生效条件 | 行为 |
+| --- | --- | --- |
+| `Tab` / `Shift+Tab` | preview enabled | 整张图片占一个 Tab 位；没开预览、或没有可看的图时不可聚焦 |
+| `Enter` / `Space` | focus on root (preview enabled) | 打开大图预览。root 是 div，浏览器不会替它把这两个键合成成一次点击，连接层自己接管（并拦下空格滚屏）；预览层关上后焦点回到图片 |
 
 ### ARIA
 
@@ -190,6 +211,8 @@ src 是响应式的：进入视口前不提供地址，观察器命中后再换�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `aria-haspopup` | 'dialog' \| undefined |
+| `root` | `role` | 'button' \| undefined |
 | `placeholder` | `aria-hidden` | 'true' |
 
 ## 样式参考
@@ -204,7 +227,9 @@ src 是响应式的：进入视口前不提供地址，观察器命中后再换�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-interactive` | ''（条件成立时才出现） |
 | `root` | `data-state` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
+| `image` | `data-fit` | props.fit |
 | `image` | `data-state` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
 | `placeholder` | `data-state` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
 | `fallback` | `data-state` | 'idle' \| 'loading' \| 'loaded' \| 'error' |

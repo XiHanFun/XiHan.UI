@@ -22,6 +22,43 @@ function dispatchOnImage(type: string): (ctx: RawStepContext) => void {
   }
 }
 
+/** loading 不进归一化快照，只能直接读 DOM。 */
+function assertImageLoading(value: string | null): (ctx: RawStepContext) => void {
+  return ({ doc }) => {
+    const got = requireImage(doc).getAttribute('loading')
+    if (got !== value)
+      throw new Error(`image 的 loading 期望 ${value}，实际 ${got}`)
+  }
+}
+
+const VIEWER_CONTENT = '[data-scope="image-viewer"][data-part="content"]'
+
+/**
+ * 预览层是另一台组件（图片预览），它的部件不进本套件的快照：直接在文档里等它的 content。
+ * open 为真时等到一个对话框、大图换成这张图；为假时等到它收起或卸下。
+ */
+function untilPreview(open: boolean, src?: string): (ctx: RawStepContext) => Promise<void> {
+  return async ({ doc, flush }) => {
+    const opened = (): boolean => {
+      const content = doc.querySelector<HTMLElement>(VIEWER_CONTENT)
+      return content?.getAttribute('role') === 'dialog' && content.getAttribute('data-state') === 'open'
+    }
+    for (let i = 0; i < 50; i++) {
+      await flush()
+      if (opened() === open)
+        break
+      await new Promise(resolve => setTimeout(resolve, 10))
+    }
+    if (opened() !== open)
+      throw new Error(open ? '预览层没有打开' : '预览层没有收起')
+    if (open && src !== undefined) {
+      const got = doc.querySelector(`${VIEWER_CONTENT} [data-scope="image-viewer"][data-part="image"]`)?.getAttribute('src')
+      if (got !== src)
+        throw new Error(`预览层大图的 src 期望 ${src}，实际 ${got}`)
+    }
+  }
+}
+
 /** src / alt 不进归一化快照（只采 aria- / data- 与结构属性），只能直接读 DOM。 */
 function assertImageSource(src: string | null, alt: string | null): (ctx: RawStepContext) => void {
   return ({ doc }) => {
@@ -233,6 +270,125 @@ export const imageSuite: ConformanceSuite = {
           },
         },
       ],
+    },
+    {
+      name: 'fit：写了就落 data-fit，换值跟着换',
+      spec: { zag: 'image.connect#getImageProps' },
+      props: { src: SRC, fit: 'contain' },
+      initial: {
+        parts: { image: { 'data-fit': 'contain' } },
+      },
+      steps: [
+        { kind: 'setProps', props: { fit: 'scale-down' } },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'image', name: 'data-fit', value: 'scale-down' } },
+          expect: { parts: { image: { 'data-fit': 'scale-down' } } },
+        },
+      ],
+    },
+    {
+      name: 'lazy：交给原生 loading="lazy"，等着取图时图片不收起（收起的图片浏览器永远不会去取）',
+      spec: { zag: 'image.connect#getImageProps' },
+      props: { src: SRC, lazy: true },
+      initial: {
+        parts: {
+          root: { 'data-state': 'loading' },
+          image: { 'data-state': 'loading', 'hidden': null },
+          placeholder: { hidden: null },
+          fallback: { hidden: null },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'loading 不进归一化快照，只有直接读 DOM 才验得到它真落在了 image 上',
+          run: assertImageLoading('lazy'),
+        },
+        {
+          kind: 'raw',
+          why: 'jsdom 不真加载图片，error 只能在 image 节点上直接派发',
+          run: dispatchOnImage('error'),
+          expect: {
+            parts: { image: { 'data-state': 'error', 'hidden': '' } },
+          },
+        },
+      ],
+    },
+    {
+      name: 'preview：root 是一颗打开对话框的按钮，占一个 Tab 位',
+      spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/button/', zag: 'image.connect#getRootProps' },
+      props: { src: SRC, alt: '一张示例图', preview: true },
+      initial: {
+        parts: {
+          root: {
+            'role': 'button',
+            'tabindex': '0',
+            'aria-haspopup': 'dialog',
+            'data-interactive': '',
+          },
+          image: { role: null },
+        },
+      },
+      steps: [
+        {
+          kind: 'focus',
+          part: 'root',
+          via: 'keyboard',
+          expect: { activeElement: { part: 'root', exact: true } },
+        },
+      ],
+      covers: ['image.kbd.tab'],
+    },
+    {
+      name: '缺省：root 不是按钮、不可聚焦；没写 fit 不落 data-fit（交给皮肤的变量），没开 lazy 不写 loading',
+      spec: { zag: 'image.connect#getRootProps' },
+      props: { src: SRC, alt: '一张示例图' },
+      initial: {
+        parts: {
+          root: { 'role': null, 'tabindex': null, 'aria-haspopup': null, 'data-interactive': null },
+          image: { 'data-fit': null, 'hidden': '' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'loading 不进归一化快照，只有直接读 DOM 才验得到它没被写上',
+          run: assertImageLoading(null),
+        },
+      ],
+    },
+    {
+      name: 'Enter / Space 打开预览：预览层看同一张图，Escape 收起后焦点回到图片',
+      spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/button/#keyboardinteraction', zag: 'image.machine#openPreview' },
+      props: { src: SRC, alt: '一张示例图', preview: true },
+      steps: [
+        { kind: 'focus', part: 'root', via: 'keyboard' },
+        { kind: 'key', key: 'Enter' },
+        {
+          kind: 'raw',
+          why: '预览层是图片预览这台组件，它的部件不进本套件的快照，只能直接在文档里等',
+          run: untilPreview(true, SRC),
+        },
+        { kind: 'key', key: 'Escape' },
+        {
+          kind: 'raw',
+          why: '预览层是图片预览这台组件，它的部件不进本套件的快照，只能直接在文档里等',
+          run: untilPreview(false),
+        },
+        {
+          kind: 'settle',
+          until: { activeElement: 'root' },
+          expect: { activeElement: { part: 'root', exact: true } },
+        },
+        { kind: 'key', key: 'Space' },
+        {
+          kind: 'raw',
+          why: '预览层是图片预览这台组件，它的部件不进本套件的快照，只能直接在文档里等',
+          run: untilPreview(true, SRC),
+        },
+      ],
+      covers: ['image.kbd.open-preview'],
     },
   ],
 }

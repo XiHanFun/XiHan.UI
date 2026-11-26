@@ -39,6 +39,9 @@
       "switch",
       "toggle-group"
     ],
+    "image": [
+      "image-viewer"
+    ],
     "menu": [
       "icon"
     ],

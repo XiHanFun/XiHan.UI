@@ -1,0 +1,39 @@
+<!-- 懒加载 | 写上 lazy，图片进入视口附近才开始取，交给浏览器原生的 loading="lazy"；取到之前照常显示占位与回退内容 -->
+<script setup lang="ts">
+import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/vue";
+
+const shots = [
+  { src: "/images/image-cropper-landscape.svg", alt: "清晨的山谷与湖泊" },
+  { src: "/images/demo-avatar.svg", alt: "抽象头像" },
+  { src: "/images/image-cropper-landscape.svg", alt: "湖面与远山" },
+];
+</script>
+
+<template>
+  <div
+    data-xh-scroll
+    style="
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      inline-size: 260px;
+      block-size: 200px;
+      overflow-y: auto;
+      padding: 12px;
+      border: var(--xh-stroke-thin) solid var(--xh-border-default);
+      border-radius: var(--xh-shape-surface);
+    "
+  >
+    <XhImageRoot
+      v-for="shot in shots"
+      :key="shot.alt"
+      :src="shot.src"
+      :alt="shot.alt"
+      lazy
+      style="--xh-image-ratio: 3 / 2; flex: none;"
+    >
+      <XhImageImage />
+      <XhImageFallback>加载中</XhImageFallback>
+    </XhImageRoot>
+  </div>
+</template>

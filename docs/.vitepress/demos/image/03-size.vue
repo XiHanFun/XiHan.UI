@@ -1,4 +1,4 @@
-<!-- 尺寸与裁切 | 同一个组件既作封面图也作缩略图：宽高比由 --xh-image-ratio 决定，画面填充方式由 --xh-image-fit 决定 -->
+<!-- 尺寸与裁切 | 同一个组件既作封面图也作缩略图：宽高比由 --xh-image-ratio 决定，画面在盒子里怎么铺由 fit 决定（取值与 CSS object-fit 同名） -->
 <script setup lang="ts">
 import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/vue";
 
@@ -11,7 +11,8 @@ const portrait
   <XhImageRoot
     :src="portrait"
     alt="裁掉多余部分"
-    style="--xh-image-w: 120px; --xh-image-ratio: 1; --xh-image-fit: cover;"
+    fit="cover"
+    style="--xh-image-w: 120px; --xh-image-ratio: 1;"
   >
     <XhImageImage />
     <XhImageFallback>加载中</XhImageFallback>
@@ -20,7 +21,8 @@ const portrait
   <XhImageRoot
     :src="portrait"
     alt="整幅装进去"
-    style="--xh-image-w: 120px; --xh-image-ratio: 1; --xh-image-fit: contain;"
+    fit="contain"
+    style="--xh-image-w: 120px; --xh-image-ratio: 1;"
   >
     <XhImageImage />
     <XhImageFallback>加载中</XhImageFallback>

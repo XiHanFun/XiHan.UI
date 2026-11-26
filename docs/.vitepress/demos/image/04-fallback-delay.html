@@ -17,8 +17,8 @@
   fallback-delay="600"
 >
   <div data-xh-part="root" style="--xh-image-w: 140px; --xh-image-ratio: 4 / 3">
-    <!-- loading 是原生图片属性，组件不拦，直接落到图片元素上 -->
-    <img data-xh-part="image" loading="lazy" />
+    <!-- decoding 是原生图片属性，组件不拦，直接落到图片元素上；要懒加载用组件的 lazy，不在这里写 loading -->
+    <img data-xh-part="image" decoding="async" />
     <div data-xh-part="fallback">加载中</div>
   </div>
 </xh-image>

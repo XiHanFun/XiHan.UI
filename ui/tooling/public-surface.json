@@ -9049,6 +9049,8 @@
       "ImageCropperValueChangeDetails",
       "ImageCropperValueChangeEndDetails",
       "ImageCropperZoomChangeDetails",
+      "ImageFit",
+      "ImagePreviewOptions",
       "ImageSchema",
       "ImageStatus",
       "ImageStatusChangeDetails",
@@ -15823,7 +15825,10 @@
     "image": [
       "alt",
       "fallbackDelay",
+      "fit",
+      "lazy",
       "onStatusChange",
+      "preview",
       "src"
     ],
     "image-cropper": [
@@ -17378,6 +17383,7 @@
     "data-file-type",
     "data-filtered",
     "data-first",
+    "data-fit",
     "data-fit-available-height",
     "data-fixed",
     "data-flip",
@@ -24739,6 +24745,9 @@
       "attributes": [
         "alt",
         "fallback-delay",
+        "fit",
+        "lazy",
+        "preview",
         "src"
       ],
       "events": [

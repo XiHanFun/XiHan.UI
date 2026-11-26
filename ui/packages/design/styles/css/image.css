@@ -32,6 +32,27 @@
     display: none;
   }
 
+  /* 开了预览：整张图是一颗打开预览层的按钮，指针换成放大镜 */
+  [data-scope='image'][data-part='root'][data-interactive] {
+    cursor: zoom-in;
+  }
+
+  /* 聚焦环画在一层盖满图位的伪元素上：画在 root 自己身上会被铺在上面的占位层盖住。
+     图片是任意色的面，环内侧衬一道底色间隔线才在每张图上都读得出来 */
+  [data-scope='image'][data-part='root'][data-interactive]::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  [data-scope='image'][data-part='root'][data-interactive]:focus-visible::after {
+    outline: var(--xh-ring-width) solid var(--xh-_ring-color, var(--xh-ring-focus));
+    outline-offset: var(--xh-ring-offset);
+    box-shadow: inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width)) var(--xh-ring-gap);
+  }
+
   /* 不声明 display：加载完成前的 hidden 直接交给浏览器的 [hidden] 规则收起。
      载完那一刻 hidden 撤掉、这个节点从不显示变为显示，淡入在那一刻起跑，
      图片不是硬切上来盖掉占位层 */
@@ -40,6 +61,37 @@
     block-size: 100%;
     object-fit: var(--xh-image-fit, cover);
     animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 写了 fit 就按它铺，压过 --xh-image-fit：那个变量是整站的缺省，fit 是这一张图自己的选择 */
+  [data-scope='image'][data-part='image'][data-fit='cover'] {
+    object-fit: cover;
+  }
+
+  [data-scope='image'][data-part='image'][data-fit='contain'] {
+    object-fit: contain;
+  }
+
+  [data-scope='image'][data-part='image'][data-fit='fill'] {
+    object-fit: fill;
+  }
+
+  [data-scope='image'][data-part='image'][data-fit='none'] {
+    object-fit: none;
+  }
+
+  [data-scope='image'][data-part='image'][data-fit='scale-down'] {
+    object-fit: scale-down;
+  }
+
+  /* 懒加载等着取图：收起的图片浏览器永远不会去取，所以这一段它不收，叠在图位上保持透明，
+     版面照旧由占位与回退内容撑着。不播进场：载好那一刻 animation 从 none 换回淡入才起跑 */
+  [data-scope='image'][data-part='image'][loading='lazy']:is([data-state='idle'], [data-state='loading']) {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    animation: none;
+    pointer-events: none;
   }
   /* 换图：新图载入期间，旧图的替身原样盖在原处，不重播进场；新图载好（或失败）那一刻淡出，与新图的淡入交叉 */
   [data-scope='image'][data-part='image'][data-xh-ghost] {

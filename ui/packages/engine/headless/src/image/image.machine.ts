@@ -30,6 +30,15 @@ export function imageFallbackVisible(status: ImageSchema['state'], fallbackVisib
   return status === 'error' || (status !== 'loaded' && fallbackVisible)
 }
 
+/** 预览层里看的那张图：preview 写成对象且给了 src 时取它，否则取 src；预览没开、或两处都没有地址时为 undefined。 */
+export function resolveImagePreviewSrc(props: Pick<ImageSchema['props'], 'src' | 'preview'>): string | undefined {
+  const { preview } = props
+  if (!preview)
+    return undefined
+  const src = (typeof preview === 'object' ? preview.src : undefined) || props.src
+  return src || undefined
+}
+
 // 异步来源只有 <img> 的 load / error，由适配器回送。
 export const imageMachine = createMachine({
   name: 'image',
@@ -41,19 +50,27 @@ export const imageMachine = createMachine({
     })),
     placeholderRendered: cell<boolean>(() => ({ defaultValue: true })),
     fallbackRendered: cell<boolean>(() => ({ defaultValue: false })),
+    previewOpen: cell<boolean>(() => ({ defaultValue: false })),
   }),
   // 占位层与回退内容撤下时先淡出、与图片的淡入交叉，播完才藏起
   effects: ['trackPlaceholderPresence', 'trackFallbackPresence', 'releaseSwap'],
   // 首帧一律停在 idle，来源决议推迟到宿主提交一帧之后（见 resolveSrc）
   initialState: () => 'idle',
-  watch: ({ track, prop, action }) => track([() => prop('src')], () => action(['syncSrc'])),
+  watch: ({ track, prop, action }) => {
+    track([() => prop('src')], () => action(['syncSrc']))
+    // 预览关掉了、或者没图可看了：开着的预览层跟着收起
+    track([() => prop('preview'), () => prop('src')], () => action(['syncPreview']))
+  },
   // 换图重走一轮；loading→loading 用 reenter 重跑 entry 并重挂计时器。
+  // 预览的开合与加载相位无关：载入中、失败了都能打开，大图在预览层里另走一遍加载。
   on: {
     'SRC.CHANGE': [
       { guard: 'hasSrc', target: 'loading', reenter: true, actions: ['beginSwap'] },
       { target: 'error', actions: ['beginSwap'] },
     ],
     'PART.RENDERED': { actions: ['setPartRendered'] },
+    'PREVIEW.OPEN': { guard: 'canPreview', actions: ['openPreview'] },
+    'PREVIEW.CLOSE': { actions: ['closePreview'] },
   },
   states: {
     idle: {
@@ -84,6 +101,7 @@ export const imageMachine = createMachine({
   implementations: {
     guards: {
       hasSrc: ({ prop }) => !!prop('src'),
+      canPreview: ({ prop }) => resolveImagePreviewSrc({ src: prop('src'), preview: prop('preview') }) !== undefined,
     },
     actions: {
       /**
@@ -111,6 +129,12 @@ export const imageMachine = createMachine({
       },
       showFallback: ({ context }) => {
         context.set('fallbackVisible', true)
+      },
+      openPreview: ({ context }) => context.set('previewOpen', true),
+      closePreview: ({ context }) => context.set('previewOpen', false),
+      syncPreview: ({ context, prop }) => {
+        if (context.get('previewOpen') && resolveImagePreviewSrc({ src: prop('src'), preview: prop('preview') }) === undefined)
+          context.set('previewOpen', false)
       },
       setPartRendered: ({ context, event }) => {
         const e = event.current()

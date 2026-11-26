@@ -40251,15 +40251,15 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-image>`：Light-DOM 行为宿主：作者写 root / image / fallback 角色节点，\n元素运行 image 状态机并把 connect 产出接上。图片来源由宿主的 src / alt 写入 image 节点，\n加载成败经 image 自身的 load / error 回送给状态机；两个节点都常驻，依靠 hidden 互斥显隐。\n\n与头像不同的是回退内容有一个延迟门槛：`fallback-delay` 之内不显示回退内容，\n缓存命中的图片直接从空位切换到图片，不会闪现占位。",
+          "description": "`<xh-image>`：Light-DOM 行为宿主：作者写 root / image / fallback 角色节点，\n元素运行 image 状态机并把 connect 产出接上。图片来源由宿主的 src / alt 写入 image 节点，\n加载成败经 image 自身的 load / error 回送给状态机；两个节点都常驻，依靠 hidden 互斥显隐。\n\n与头像不同的是回退内容有一个延迟门槛：`fallback-delay` 之内不显示回退内容，\n缓存命中的图片直接从空位切换到图片，不会闪现占位。\n\n开了 `preview`，root 成为打开大图预览的按钮，元素在 root 之后生成一台 `<xh-image-viewer>`（遮罩、大图、\n工具条与关闭钮都由元素生成，作者不写），开合跟着图片走；它的 open-change 不冒出本元素。",
           "name": "XhImageElement",
           "cssParts": [
             {
-              "description": "图片根容器（承载 data-state）",
+              "description": "图片根容器（承载 data-state）；开了预览时是一颗按钮（role=button、可聚焦）",
               "name": "root"
             },
             {
-              "description": "图片节点，必须是原生 img；src / alt 由宿主写入（作者不应自行编写，会被覆盖或清除），未就绪时带 hidden",
+              "description": "图片节点，必须是原生 img；src / alt 由宿主写入（作者不应自行编写，会被覆盖或清除），未就绪时带 hidden（懒加载等着取图时不带）",
               "name": "image"
             },
             {
@@ -40283,6 +40283,15 @@
             },
             {
               "kind": "field",
+              "name": "dependencies",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ 'xh-image-viewer': XhImageViewerElement }"
+            },
+            {
+              "kind": "field",
               "name": "src",
               "privacy": "public",
               "type": {
@@ -40301,12 +40310,58 @@
             },
             {
               "kind": "field",
+              "name": "fit",
+              "privacy": "public",
+              "type": {
+                "text": "ImageSchema['props']['fit'] | undefined"
+              },
+              "attribute": "fit"
+            },
+            {
+              "kind": "field",
+              "name": "lazy",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "lazy"
+            },
+            {
+              "kind": "field",
+              "name": "preview",
+              "privacy": "public",
+              "type": {
+                "text": "ImageSchema['props']['preview'] | undefined"
+              },
+              "attribute": "preview"
+            },
+            {
+              "kind": "field",
               "name": "fallbackDelay",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
               "attribute": "fallback-delay"
+            },
+            {
+              "kind": "field",
+              "name": "afterRootKeys",
+              "type": {
+                "text": "KeyedChildren"
+              },
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap()",
+              "description": "预览层（root 之后的那台图片预览）按 key 复用。"
+            },
+            {
+              "kind": "field",
+              "name": "previewViewers",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakSet<Element>()",
+              "description": "已经铺好部件节点的那台图片预览：撤掉再开时生成的是新的一台，要重新铺。"
             },
             {
               "kind": "field",
@@ -40330,6 +40385,25 @@
                   "text": "Partial<ImageSchema['props']>"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "syncPreview",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "ImageApi"
+                  }
+                }
+              ],
+              "description": "预览层：开了预览就在 root 之后放一台图片预览，开合受图片的 previewOpen 控制，它请求关闭时写回；\n不能预览了就撤掉。部件节点只在新建时铺一次，此后归那台元素自己接线。"
             },
             {
               "kind": "method",
@@ -40386,6 +40460,30 @@
               "description": "图片替代文本，原样写到 image 节点上",
               "name": "alt",
               "fieldName": "alt"
+            },
+            {
+              "type": {
+                "text": "ImageSchema['props']['fit'] | undefined"
+              },
+              "description": "图片在盒子里的铺法，与 CSS object-fit 同名；未提供时由 --xh-image-fit 决定，缺省 cover",
+              "name": "fit",
+              "fieldName": "fit"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "进入视口附近才去取图（原生 loading=\"lazy\"），默认 false",
+              "name": "lazy",
+              "fieldName": "lazy"
+            },
+            {
+              "type": {
+                "text": "ImageSchema['props']['preview'] | undefined"
+              },
+              "description": "点击或 Enter / Space 打开大图预览，默认 false；要给预览层另一张图时经 property 赋 `{ src }`",
+              "name": "preview",
+              "fieldName": "preview"
             },
             {
               "type": {

@@ -29,8 +29,8 @@ export default function Demo(): ReactNode {
         fallbackDelay={600}
         style={boxStyle}
       >
-        {/* loading 是原生图片属性，组件不拦，直接落到图片元素上 */}
-        <XhImageImage loading="lazy" />
+        {/* decoding 是原生图片属性，组件不拦，直接落到图片元素上；要懒加载用组件的 lazy，不在这里写 loading */}
+        <XhImageImage decoding="async" />
         <XhImageFallback>加载中</XhImageFallback>
       </XhImageRoot>
 
