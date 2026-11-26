@@ -247,5 +247,40 @@ export const timelineSuite: ConformanceSuite = {
         },
       },
     },
+    {
+      name: '标准结构：只给 collection 不写结构时，一条一个 li，给了哪一项才铺哪一块，列表语义与手写时相同',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', tag: 'ol', defaultStructure: true }),
+      props: {
+        collection: [
+          { value: 'created', label: '07-01', time: '09:12', datetime: '2026-07-01T09:12', title: '订单已创建', description: '下单来源：网页端' },
+          { value: 'failed', title: '派送失败', tone: 'danger' },
+        ],
+      },
+      initial: {
+        order: [
+          'root',
+          'item[0]',
+          'label',
+          'indicator[0]',
+          'connector[0]',
+          'content[0]',
+          'time',
+          'title[0]',
+          'description',
+          'item[1]',
+          'indicator[1]',
+          'connector[1]',
+          'content[1]',
+          'title[1]',
+        ],
+        parts: {
+          'root': { role: 'list' },
+          'item[0]': { role: 'listitem' },
+          'indicator[0]': { 'aria-hidden': 'true', 'data-tone': null },
+          'indicator[1]': { 'data-tone': 'danger' },
+        },
+      },
+    },
   ],
 }

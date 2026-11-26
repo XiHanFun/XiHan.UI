@@ -6,13 +6,14 @@
 // 提供 timeline 相关实现。
 
 import type { Orientation, Size, Tone } from '@xihan-ui/core'
-import type { TimelinePlacement, TimelineProps } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { TimelineApi, TimelineNode, TimelinePlacement, TimelineProps } from '@xihan-ui/headless'
+import type { PropType, VNode } from 'vue'
 import type { PropsOf } from '../../runtime/props-of'
-import { connectTimeline } from '@xihan-ui/headless'
+import { connectTimeline, timelineStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
+import { renderStructure } from '../../runtime/structure'
 import { provideTimeline, provideTimelineItem, useTimelineContext, useTimelineItemContext } from './context'
 
 /** 根渲染为 ol：事件本身有先后，列表标记由皮肤去除、列表语义由 role 保留。 */
@@ -20,6 +21,8 @@ export const XhTimelineRoot = defineComponent({
   name: 'XhTimelineRoot',
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
+    /** 事件数据：不写默认插槽时按它铺出标准结构。 */
+    collection: { type: Array as PropType<readonly TimelineNode[]> },
     orientation: { type: String as PropType<Orientation> },
     placement: { type: String as PropType<TimelinePlacement> },
     size: { type: String as PropType<Size> },
@@ -29,7 +32,7 @@ export const XhTimelineRoot = defineComponent({
     const configured = withXhConfig('timeline', props)
     const api = computed(() => connectTimeline(configured as TimelineProps, vueNormalize))
     provideTimeline({ api })
-    return () => h('ol', api.value.getRootProps(), slots.default?.())
+    return () => h('ol', api.value.getRootProps(), slots.default ? slots.default() : renderDefaultStructure(api.value))
   },
 })
 
@@ -104,6 +107,26 @@ export const XhTimelineTime = defineComponent({
     return () => h('time', ctx.api.value.getTimeProps(), slots.default?.())
   },
 })
+
+/** 标准结构里各部件对应的组件。 */
+const TIMELINE_PARTS = {
+  item: XhTimelineItem,
+  label: XhTimelineLabel,
+  indicator: XhTimelineIndicator,
+  connector: XhTimelineConnector,
+  content: XhTimelineContent,
+  title: XhTimelineTitle,
+  description: XhTimelineDescription,
+  time: XhTimelineTime,
+}
+
+/**
+ * 未写默认插槽时照 timelineStructure 铺开的事件流，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 机读时间经 time 的透传属性落到 `<time datetime>` 上。
+ */
+function renderDefaultStructure(api: TimelineApi): VNode[] {
+  return renderStructure(timelineStructure(api), TIMELINE_PARTS)
+}
 
 // 各组件接受的 props，与 React 同名
 export type XhTimelineConnectorProps = PropsOf<typeof XhTimelineConnector>

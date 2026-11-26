@@ -9909,6 +9909,8 @@
       "TimeUnavailablePredicate",
       "TimelineApi",
       "TimelineItemProps",
+      "TimelineNode",
+      "TimelineNodeMeta",
       "TimelinePlacement",
       "TimelineProps",
       "TimelineTranslations",
@@ -11327,6 +11329,7 @@
       "timelineAnatomy",
       "timelineKeyboard",
       "timelineMeta",
+      "timelineStructure",
       "timerAnatomy",
       "timerElapsedAt",
       "timerKeyboard",
@@ -17007,6 +17010,7 @@
       "variant"
     ],
     "timeline": [
+      "collection",
       "orientation",
       "placement",
       "size"

@@ -6,8 +6,9 @@
 // 提供 timeline 相关实现。
 
 import type { Orientation, Size, Tone } from '@xihan-ui/core'
-import type { TimelineItemProps, TimelinePlacement, TimelineProps } from '@xihan-ui/headless'
-import { connectTimeline, timelineAnatomy, timelineMeta } from '@xihan-ui/headless'
+import type { TimelineApi, TimelineItemProps, TimelineNode, TimelinePlacement, TimelineProps } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
+import { connectTimeline, timelineAnatomy, timelineMeta, timelineStructure } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -19,10 +20,12 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
 /**
  * `<xh-timeline>`：事件流行为宿主，无状态机，把 connectTimeline 产出接到角色节点上。
  *
- * 作者写 root / item / indicator / connector / content / title / description / time 角色节点，
- * 元素只在其上写属性，不替作者生成任何节点。
+ * 作者写 root / item / indicator / connector / content / title / description / time 角色节点，元素只在其上写属性。
  * 标签建议：root 写 `<ol>`、item 写 `<li>`、time 写 `<time datetime="…">`，
  * 机读时间归作者，元素不代填。
+ *
+ * 不写部件（或只写 root）时元素按标准结构生成：`<ol>` 里 collection 的每一条一个 `<li>`，依次是坐标列（给了 label 才有）、
+ * 圆点、连线与内容，内容里是时刻（给了 time 才有，datetime 写成机读时间）、标题与说明；条目的语气写成 item 上的 tone。
  *
  * 这不是步骤条：`<xh-steps>` 表达流程进行到第几步，有当前项与完成态；
  * 这里表达按时间排列的事件流，条目已经发生、彼此平等，没有当前项，也就没有任何状态属性。
@@ -46,16 +49,35 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
 export class XhTimelineElement extends XhElement {
   static override partContract = { anatomy: timelineAnatomy, meta: timelineMeta }
 
+  static override structure: ElementStructure<XhTimelineElement> = {
+    rootTag: 'ol',
+    build: host => timelineStructure(host.api()),
+  }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开
   static override properties = {
     orientation: { converter: STRING_CONVERTER },
     placement: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    // 事件数据是数组，只走 property
+    collection: { attribute: false },
   }
 
+  /** 事件数据：不写部件（或只写 root）时按它生成标准结构；手写结构时不读。 */
+  declare collection?: readonly TimelineNode[]
   declare orientation?: Orientation
   declare placement?: TimelinePlacement
   declare size?: Size
+
+  /** 连接层的这一帧：读响应式 property，不回读 DOM 特性。 */
+  private api(): TimelineApi {
+    return connectTimeline(this.configured('timeline', {
+      collection: this.collection,
+      orientation: this.orientation,
+      placement: this.placement,
+      size: this.size,
+    } satisfies TimelineProps), wcNormalize)
+  }
 
   /**
    * 取角色节点所属条目的语气：tone 写在 item 节点上，圆点向上查找自己的 item。
@@ -70,12 +92,7 @@ export class XhTimelineElement extends XhElement {
   }
 
   protected wire(): void {
-    // 读响应式 property，不回读 DOM 特性
-    const api = connectTimeline(this.configured('timeline', {
-      orientation: this.orientation,
-      placement: this.placement,
-      size: this.size,
-    } satisfies TimelineProps), wcNormalize)
+    const api = this.api()
 
     const put = (name: string, props: Record<string, unknown>): void => {
       const el = this.getPart(name)

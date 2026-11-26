@@ -6,7 +6,7 @@
 // 提供 timeline 相关实现。
 
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
-import type { TimelineApi, TimelineProps } from './timeline.types'
+import type { TimelineApi, TimelineNodeMeta, TimelineProps } from './timeline.types'
 import { timelineAnatomy } from './timeline.anatomy'
 
 const parts = timelineAnatomy.build()
@@ -28,8 +28,12 @@ export function connectTimeline<T extends PropTypes>(
   const orientation = props.orientation ?? 'vertical'
   const placement = props.placement
   const size = props.size
+  // 条目身份没写就取下标：展示型条目没有焦点与状态，按位置复用节点不出错
+  const collection: TimelineNodeMeta[] = (props.collection ?? []).map(({ value, ...node }, index) => ({ ...node, value: value ?? String(index), index }))
 
   return {
+    collection,
+
     // 报列表语义：皮肤要抹掉列表标记，抹掉后部分引擎会连列表语义一起丢，
     // 而作者未必把根写成 ol/ul，显式写出来两种情形都成立
     getRootProps: () => normalize.element({

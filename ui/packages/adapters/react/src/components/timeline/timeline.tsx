@@ -6,16 +6,19 @@
 // 提供 timeline 相关实现。
 
 import type { Orientation, Size, Tone } from '@xihan-ui/core'
-import type { TimelinePlacement, TimelineProps } from '@xihan-ui/headless'
+import type { TimelineApi, TimelineNode, TimelinePlacement, TimelineProps } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
-import { connectTimeline } from '@xihan-ui/headless'
+import { connectTimeline, timelineStructure } from '@xihan-ui/headless'
 import { useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { reactNormalize } from '../../runtime/normalize-props'
+import { renderStructure } from '../../runtime/structure'
 import { TimelineItemProvider, TimelineProvider, useTimelineContext, useTimelineItemContext } from './context'
 
 export interface XhTimelineRootProps extends ComponentPropsWithRef<'ol'> {
+  /** 事件数据：不给 children 时按它铺出标准结构。 */
+  collection?: readonly TimelineNode[]
   /** 方向，默认 vertical。 */
   orientation?: Orientation
   /** 侧别：内容与坐标排在线的哪一侧。 */
@@ -25,15 +28,15 @@ export interface XhTimelineRootProps extends ComponentPropsWithRef<'ol'> {
 }
 
 /** 根渲染为 ol：事件本身有先后，列表标记由皮肤去除、列表语义由 role 保留。 */
-export function XhTimelineRoot({ orientation, placement, size, children, ...rest }: XhTimelineRootProps): ReactNode {
+export function XhTimelineRoot({ collection, orientation, placement, size, children, ...rest }: XhTimelineRootProps): ReactNode {
   const api = connectTimeline(
-    withXhConfig('timeline', { orientation, placement, size }) as TimelineProps,
+    withXhConfig('timeline', { collection, orientation, placement, size }) as TimelineProps,
     reactNormalize,
   )
   return (
     <TimelineProvider value={{ api }}>
       <ol {...mergeReactProps(api.getRootProps(), rest)}>
-        {children}
+        {children ?? renderDefaultStructure(api)}
       </ol>
     </TimelineProvider>
   )
@@ -135,4 +138,26 @@ export function XhTimelineTime({ children, ...rest }: XhTimelineTimeProps): Reac
       {children}
     </time>
   )
+}
+
+/** 按数据铺的时刻：结构节点上的机读时间是 DOM 写法 datetime，交给 React 时换成 dateTime。 */
+function TimelineStructureTime({ datetime, ...rest }: XhTimelineTimeProps & { datetime?: string }): ReactNode {
+  return <XhTimelineTime {...rest} dateTime={datetime} />
+}
+
+/** 标准结构里各部件对应的组件。 */
+const TIMELINE_PARTS = {
+  item: XhTimelineItem,
+  label: XhTimelineLabel,
+  indicator: XhTimelineIndicator,
+  connector: XhTimelineConnector,
+  content: XhTimelineContent,
+  title: XhTimelineTitle,
+  description: XhTimelineDescription,
+  time: TimelineStructureTime,
+}
+
+/** 未给 children 时照 timelineStructure 铺开的事件流，与 Web Components 不写部件时元素生成的节点出自同一份。 */
+function renderDefaultStructure(api: TimelineApi): ReactNode[] {
+  return renderStructure(timelineStructure(api), TIMELINE_PARTS)
 }
