@@ -11,7 +11,7 @@ import type { SideNavApi, SideNavFilter, SideNavNode, SideNavSchema, SideNavTran
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { connectSideNav, findSideNavRowEl, sideNavTooltipProps, tooltipMachine } from '@xihan-ui/headless'
+import { connectSideNav, findSideNavRowEl, sideNavStructure, sideNavTooltipProps, tooltipMachine } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { withXhConfig } from '../../config/config'
@@ -23,9 +23,11 @@ import { reactNormalize } from '../../runtime/normalize-props'
 import { XhPortal } from '../../runtime/portal'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
+import { XhIcon } from '../icon/icon'
 import { TooltipGroupContext } from '../tooltip/context'
 import { SideNavGroupProvider, SideNavItemProvider, SideNavNodeProvider, SideNavProvider, useSideNavContext, useSideNavGroupContext, useSideNavItemContext, useSideNavNodeContext } from './context'
 import { useSideNav } from './use-side-nav'
@@ -120,29 +122,31 @@ export function XhSideNavRoot({
     onExpandedValueChange,
   }) as SideNavProps)
   const api = ctx.api
-  // 经 children 载荷交出状态与命令，供折叠开关这类外部控件使用
+  // 经 children 载荷交出状态与命令，供折叠开关这类外部控件使用；没给 children 时照标准结构铺
   return (
     <SideNavProvider value={ctx}>
       <nav {...mergeReactProps(api.getRootProps(), rest)}>
-        {renderSlot(children, {
-          value: api.value,
-          expandedValue: api.expandedValue,
-          collapsed: api.collapsed,
-          popoutValue: api.popoutValue,
-          isSelected: api.isSelected,
-          isExpanded: api.isExpanded,
-          isActiveBranch: api.isActiveBranch,
-          select: api.select,
-          setValue: api.setValue,
-          setExpandedValue: api.setExpandedValue,
-          expand: api.expand,
-          collapse: api.collapse,
-          openPopout: api.openPopout,
-          closePopout: api.closePopout,
-          inputValue: api.inputValue,
-          setInputValue: api.setInputValue,
-          searching: api.searching,
-        })}
+        {children === undefined
+          ? renderDefaultStructure(api)
+          : renderSlot(children, {
+              value: api.value,
+              expandedValue: api.expandedValue,
+              collapsed: api.collapsed,
+              popoutValue: api.popoutValue,
+              isSelected: api.isSelected,
+              isExpanded: api.isExpanded,
+              isActiveBranch: api.isActiveBranch,
+              select: api.select,
+              setValue: api.setValue,
+              setExpandedValue: api.setExpandedValue,
+              expand: api.expand,
+              collapse: api.collapse,
+              openPopout: api.openPopout,
+              closePopout: api.closePopout,
+              inputValue: api.inputValue,
+              setInputValue: api.setInputValue,
+              searching: api.searching,
+            })}
       </nav>
     </SideNavProvider>
   )
@@ -453,4 +457,37 @@ export function XhSideNavLink({ value, asChild, children, ...rest }: XhSideNavLi
   )
   const props = mergePartProps(mergeReactProps(bind.attrs, { ref: bind.ref }), rest)
   return renderAsChild(asChild, children, props, 'side-nav', (p, kids) => <a {...p}>{kids}</a>, { applyAnatomy: true })
+}
+
+/**
+ * 结构里折叠态弹出面板的定位层：XhSideNavBranchContent 在弹出态自己渲出定位层并搬到浮层落点，
+ * 这一层只把子层原样交下去，不另出节点。
+ */
+function SideNavStructurePositioner({ children }: { children?: ReactNode }): ReactNode {
+  return children
+}
+
+/** 标准结构里各部件对应的组件。 */
+const SIDE_NAV_PARTS = {
+  'list': XhSideNavList,
+  'item': XhSideNavItem,
+  'link': XhSideNavLink,
+  'link-text': XhSideNavLinkText,
+  'branch': XhSideNavBranch,
+  'branch-trigger': XhSideNavBranchTrigger,
+  'branch-text': XhSideNavBranchText,
+  'branch-indicator': XhSideNavBranchIndicator,
+  'positioner': SideNavStructurePositioner,
+  'branch-content': XhSideNavBranchContent,
+}
+
+/** 标准结构里组合进来的组件：数据里给了图标的入口，图标是一枚 XhIcon。 */
+const SIDE_NAV_INSTANCES = { icon: XhIcon }
+
+/**
+ * 未给 children 时照 sideNavStructure 铺开的整棵导航树，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 搜索框、空态、分组与图标栏名称提示不在其中，要用时手写结构。
+ */
+function renderDefaultStructure(api: SideNavApi): ReactNode[] {
+  return renderStructure(sideNavStructure(api), SIDE_NAV_PARTS, undefined, SIDE_NAV_INSTANCES)
 }

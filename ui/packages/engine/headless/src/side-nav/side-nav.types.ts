@@ -5,7 +5,7 @@
 
 // 定义 side nav 类型契约。
 
-import type { Cleanup, Direction, Layer, MachineSchema, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { Cleanup, Direction, IconRecord, Layer, MachineSchema, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 
 // 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter，缺省时弹出层相关副作用短路。
@@ -66,6 +66,11 @@ export interface SideNavNode {
    * 当前项的品牌淡底与禁用都压过它。彩字不是唯一通道，要紧的差别仍要配图标。
    */
   tone?: Tone
+  /**
+   * 图标：标准结构把它铺成一枚 Icon，排在行文字之前；折叠为图标栏后只剩这一列。纯装饰，读屏从行文字取意。
+   * 手写结构时不读这一项，图标由作者自己摆。
+   */
+  icon?: IconRecord
   /** 直达目标；只对叶子有意义。 */
   href?: string
   children?: SideNavNode[]
@@ -247,6 +252,8 @@ export interface SideNavGroupProps extends SideNavNodeProps {
 }
 
 export interface SideNavApi<T extends PropTypes = PropTypes> {
+  /** 入口树，即 collection 原样；未提供时为空数组。标准结构照它铺整棵树，搜索时的收起归各部件的 hidden。 */
+  collection: readonly SideNavNode[]
   /** 选中的叶子；尚未选中时为 null。 */
   value: string | null
   expandedValue: string[]

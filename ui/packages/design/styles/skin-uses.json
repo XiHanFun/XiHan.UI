@@ -56,6 +56,7 @@
       "virtualizer"
     ],
     "side-nav": [
+      "icon",
       "tooltip"
     ],
     "table": [

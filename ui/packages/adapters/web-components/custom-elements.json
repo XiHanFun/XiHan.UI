@@ -63228,7 +63228,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-side-nav>`：Light-DOM 行为宿主：管理后台侧栏导航。\n作者写 root / list 与若干 branch / link 角色节点，元素运行 side-nav 状态机并把 connect 产出接上。\n节点身份取自节点上的 value 属性；href 与禁用查询 `collection` 这份树数据。\n放一个 input 角色节点即可按标签过滤导航树，自定义匹配规则经 filter property 给。",
+          "description": "`<xh-side-nav>`：Light-DOM 行为宿主：管理后台侧栏导航。\n作者写 root / list 与若干 branch / link 角色节点，元素运行 side-nav 状态机并把 connect 产出接上。\n节点身份取自节点上的 value 属性；href 与禁用查询 `collection` 这份树数据。\n放一个 input 角色节点即可按标签过滤导航树，自定义匹配规则经 filter property 给。\n\n不写部件（或只写 root）时元素按 collection 生成标准结构：`<nav>` 里一个列表，叶子是 item 里的一条 link，\n分支是 branch 里的行按钮（图标、行文字、指示符）与子层；给了 icon 的入口在行文字前生成一枚 `<xh-icon>`。\n折叠为图标栏后顶层分支的子层外面套一层定位层。搜索框、空态、分组与名称提示不在其中，要用时手写结构。",
           "name": "XhSideNavElement",
           "cssParts": [
             {
@@ -63321,6 +63321,24 @@
               },
               "static": true,
               "default": "{ anatomy: sideNavAnatomy, meta: sideNavMeta, delegates: [{ name: 'tooltip', parts: ['tooltip-positioner', 'tooltip'] }], }"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhSideNavElement>"
+              },
+              "static": true,
+              "default": "{ rootTag: 'nav', build: host => host.ctrl.service ? sideNavStructure(connectSideNav(host.ctrl.service, wcNormalize)) : undefined, }"
+            },
+            {
+              "kind": "field",
+              "name": "dependencies",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ 'xh-icon': XhIconElement }"
             },
             {
               "kind": "field",

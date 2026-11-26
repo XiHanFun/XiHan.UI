@@ -8,11 +8,11 @@
 import type { Cleanup, Layer, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { SideNavApi, SideNavFilter, SideNavNode, SideNavSchema, TooltipSchema } from '@xihan-ui/headless'
-import type { PropType, SlotsType, VNode } from 'vue'
+import type { FunctionalComponent, PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { PropsOf } from '../../runtime/props-of'
 import { createScope } from '@xihan-ui/core'
-import { connectSideNav, findSideNavRowEl, sideNavTooltipProps, tooltipMachine } from '@xihan-ui/headless'
+import { connectSideNav, findSideNavRowEl, sideNavStructure, sideNavTooltipProps, tooltipMachine } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -20,9 +20,11 @@ import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { XhPortal } from '../../runtime/portal'
+import { renderStructure } from '../../runtime/structure'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
+import { XhIcon } from '../icon/icon'
 import { useTooltipGroup } from '../tooltip/context'
 import { provideSideNav, provideSideNavGroup, provideSideNavItem, provideSideNavNode, useSideNavContext, useSideNavGroupContext, useSideNavItemContext, useSideNavNodeContext } from './context'
 import { useSideNav } from './use-side-nav'
@@ -94,26 +96,28 @@ export const XhSideNavRoot = defineComponent({
       },
     })
     provideSideNav(ctx)
-    // 经插槽暴露状态与命令，供折叠开关这类外部控件使用
-    return () => h('nav', ctx.api.value.getRootProps(), slots.default?.({
-      value: ctx.api.value.value,
-      expandedValue: ctx.api.value.expandedValue,
-      collapsed: ctx.api.value.collapsed,
-      popoutValue: ctx.api.value.popoutValue,
-      isSelected: ctx.api.value.isSelected,
-      isExpanded: ctx.api.value.isExpanded,
-      isActiveBranch: ctx.api.value.isActiveBranch,
-      select: ctx.api.value.select,
-      setValue: ctx.api.value.setValue,
-      setExpandedValue: ctx.api.value.setExpandedValue,
-      expand: ctx.api.value.expand,
-      collapse: ctx.api.value.collapse,
-      openPopout: ctx.api.value.openPopout,
-      closePopout: ctx.api.value.closePopout,
-      inputValue: ctx.api.value.inputValue,
-      setInputValue: ctx.api.value.setInputValue,
-      searching: ctx.api.value.searching,
-    }))
+    // 经插槽暴露状态与命令，供折叠开关这类外部控件使用；没写默认插槽时照标准结构铺
+    return () => h('nav', ctx.api.value.getRootProps(), slots.default
+      ? slots.default({
+          value: ctx.api.value.value,
+          expandedValue: ctx.api.value.expandedValue,
+          collapsed: ctx.api.value.collapsed,
+          popoutValue: ctx.api.value.popoutValue,
+          isSelected: ctx.api.value.isSelected,
+          isExpanded: ctx.api.value.isExpanded,
+          isActiveBranch: ctx.api.value.isActiveBranch,
+          select: ctx.api.value.select,
+          setValue: ctx.api.value.setValue,
+          setExpandedValue: ctx.api.value.setExpandedValue,
+          expand: ctx.api.value.expand,
+          collapse: ctx.api.value.collapse,
+          openPopout: ctx.api.value.openPopout,
+          closePopout: ctx.api.value.closePopout,
+          inputValue: ctx.api.value.inputValue,
+          setInputValue: ctx.api.value.setInputValue,
+          searching: ctx.api.value.searching,
+        })
+      : renderDefaultStructure(ctx.api.value))
   },
 })
 
@@ -413,6 +417,37 @@ export const XhSideNavLink = defineComponent({
     }
   },
 })
+
+/**
+ * 结构里折叠态弹出面板的定位层：XhSideNavBranchContent 在弹出态自己渲出定位层并搬到浮层落点，
+ * 这一层只把子层原样交下去，不另出节点。
+ */
+const SideNavStructurePositioner: FunctionalComponent = (_, { slots }) => slots.default?.()
+
+/** 标准结构里各部件对应的组件。 */
+const SIDE_NAV_PARTS = {
+  'list': XhSideNavList,
+  'item': XhSideNavItem,
+  'link': XhSideNavLink,
+  'link-text': XhSideNavLinkText,
+  'branch': XhSideNavBranch,
+  'branch-trigger': XhSideNavBranchTrigger,
+  'branch-text': XhSideNavBranchText,
+  'branch-indicator': XhSideNavBranchIndicator,
+  'positioner': SideNavStructurePositioner,
+  'branch-content': XhSideNavBranchContent,
+}
+
+/** 标准结构里组合进来的组件：数据里给了图标的入口，图标是一枚 XhIcon。 */
+const SIDE_NAV_INSTANCES = { icon: XhIcon }
+
+/**
+ * 未写默认插槽时照 sideNavStructure 铺开的整棵导航树，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 搜索框、空态、分组与图标栏名称提示不在其中，要用时手写结构。
+ */
+function renderDefaultStructure(api: SideNavApi): VNode[] {
+  return renderStructure(sideNavStructure(api), SIDE_NAV_PARTS, undefined, SIDE_NAV_INSTANCES)
+}
 
 // 各组件接受的 props，与 React 同名
 export type XhSideNavBranchProps = PropsOf<typeof XhSideNavBranch>

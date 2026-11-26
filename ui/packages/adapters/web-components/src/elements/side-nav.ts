@@ -7,15 +7,17 @@
 
 import type { Cleanup, IdGenerator, Layer, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { SideNavApi, SideNavExpandedValueChangeDetails, SideNavNode, SideNavNodeProps, SideNavSchema, SideNavTranslations, SideNavValueChangeDetails, TooltipSchema } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectSideNav, findSideNavRowEl, sideNavAnatomy, sideNavMachine, sideNavMeta, sideNavTooltipProps, tooltipMachine } from '@xihan-ui/headless'
+import { connectSideNav, findSideNavRowEl, sideNavAnatomy, sideNavMachine, sideNavMeta, sideNavStructure, sideNavTooltipProps, tooltipMachine } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
+import { XhIconElement } from './icon'
 import { findTooltipGroup } from './tooltip'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -39,6 +41,10 @@ const GROUP_SELECTOR = '[data-xh-part="group"]'
  * 作者写 root / list 与若干 branch / link 角色节点，元素运行 side-nav 状态机并把 connect 产出接上。
  * 节点身份取自节点上的 value 属性；href 与禁用查询 `collection` 这份树数据。
  * 放一个 input 角色节点即可按标签过滤导航树，自定义匹配规则经 filter property 给。
+ *
+ * 不写部件（或只写 root）时元素按 collection 生成标准结构：`<nav>` 里一个列表，叶子是 item 里的一条 link，
+ * 分支是 branch 里的行按钮（图标、行文字、指示符）与子层；给了 icon 的入口在行文字前生成一枚 `<xh-icon>`。
+ * 折叠为图标栏后顶层分支的子层外面套一层定位层。搜索框、空态、分组与名称提示不在其中，要用时手写结构。
  *
  * @customElement xh-side-nav
  * @attr {string} value - 受控选中的叶子；未提供该属性即非受控
@@ -82,6 +88,14 @@ export class XhSideNavElement extends XhPortalHostElement {
     meta: sideNavMeta,
     delegates: [{ name: 'tooltip', parts: ['tooltip-positioner', 'tooltip'] }],
   }
+
+  static override structure: ElementStructure<XhSideNavElement> = {
+    rootTag: 'nav',
+    build: host => host.ctrl.service ? sideNavStructure(connectSideNav(host.ctrl.service, wcNormalize)) : undefined,
+  }
+
+  // 结构里给了 icon 的入口生成 <xh-icon>
+  static override dependencies = { 'xh-icon': XhIconElement }
 
   // dir 只占属性名、字段改叫 direction：同名声明会盖掉 HTMLElement 原生反射。
   static override properties = {

@@ -323,6 +323,7 @@ export function connectSideNav<T extends PropTypes>(
   }
 
   return {
+    collection,
     value,
     expandedValue: collapsed ? [] : expandedValue,
     collapsed,
