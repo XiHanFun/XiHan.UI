@@ -1,4 +1,4 @@
-import type { ConformanceSuite } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { emptyStateAnatomy, emptyStateKeyboard } from '@xihan-ui/headless'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/practices/live-regions/'
@@ -96,6 +96,25 @@ export const emptyStateSuite: ConformanceSuite = {
           },
         },
       ],
+    },
+    {
+      name: '作者不写结构：三端都照 emptyStateStructure 渲，只给说明就只铺说明，root 照旧是活区',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { description: '换个关键词，或者把筛选条件放宽一些', size: 'sm' },
+      initial: {
+        order: ['root', 'description'],
+        counts: { media: 0, indicator: 0, title: 0, action: 0 },
+        parts: { root: { 'role': 'status', 'data-size': 'sm' } },
+      },
+    },
+    {
+      name: '作者不写结构且什么都不给：root 里是空的，不铺空段',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      initial: {
+        order: ['root'],
+      },
     },
   ],
 }

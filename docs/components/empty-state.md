@@ -50,6 +50,12 @@ tone 为图标区上语气色，与全库同一根轴，绘制什么图标仍由
 
 <XhDemo src="empty-state/05-tone-icon" />
 
+### props 写法
+
+不写结构时按标准结构铺：标题与说明两个属性写出一块空状态，图标与操作用同名插槽
+
+<XhDemo src="empty-state/06-props" />
+
 ## 设计指引
 
 ### 何时使用
@@ -68,6 +74,7 @@ tone 为图标区上语气色，与全库同一根轴，绘制什么图标仍由
 - `live` 决定内容出现时读屏如何播报，搜索结果变空时尤其重要。
 - `status` 只接受 404 / 403 / 500 三个状态码，各并入最接近的一族语气色；`tone` 直接指定语气，两者都写时以 `tone` 为准。
 - 开幕只在出现时播放：页面加载完成之前挂上或服务端渲染后水合的空状态直接呈现；筛选、删除或新数据带来的出现，以及 root 从 `hidden` 恢复显示，图标、标题、说明、操作依次开幕。
+- 不写结构时按标准结构铺（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：插画、图标、标题、说明、操作，给了哪段才铺哪段。标题与说明取 `title`、`description` 或同名插槽，插画、图标与操作区只来自插槽。Vue 是 `media`、`indicator`、`title`、`description`、`action` 五个具名插槽，React 是同名的五个属性，Web Components 是宿主直接子节点上的同名 `slot`；Web Components 的标题文字写作 `title-text`，宿主上的全局 `title` 会出浏览器原生提示。
 
 ### 组合
 
@@ -105,6 +112,31 @@ tone 为图标区上语气色，与全库同一根轴，绘制什么图标仍由
 | `size` | `Size` |  | 尺寸档位，只影响留白与字号，不改变语义。 |
 | `status` | `EmptyStateStatus` |  | 结果页的状态码，只写为 root 的 data-status；皮肤据此把图标区并入最接近的一族语气色，图标内容由作者放入图标槽。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定图标区使用哪族颜色；与 status 都提供时以它为准。未提供时保持中性。 |
+
+### 插槽
+
+仅列出带载荷的插槽。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhEmptyStateRoot` | `default` | — |  |
+| `XhEmptyStateRoot` | `media` | — | 插画，与 indicator 二选一。 |
+| `XhEmptyStateRoot` | `indicator` | — | 装饰图标。 |
+| `XhEmptyStateRoot` | `title` | — | 标题，压过 title。 |
+| `XhEmptyStateRoot` | `description` | — | 说明，压过 description。 |
+| `XhEmptyStateRoot` | `action` | — | 操作按钮。 |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhEmptyStateRoot` | `media` | `ReactNode` |  | 插画，铺进 media 部件；与 indicator 二选一。 |
+| `XhEmptyStateRoot` | `indicator` | `ReactNode` |  | 装饰图标，铺进 indicator 部件。 |
+| `XhEmptyStateRoot` | `title` | `ReactNode` |  | 标题。是字符串时作文字，是别的节点时由标题部件装着。 |
+| `XhEmptyStateRoot` | `description` | `ReactNode` |  | 说明。是字符串时作文字，是别的节点时由说明部件装着。 |
+| `XhEmptyStateRoot` | `action` | `ReactNode` |  | 操作按钮，铺进 action 部件。 |
 
 ### 状态
 

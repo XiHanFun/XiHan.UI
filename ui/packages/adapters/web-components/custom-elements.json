@@ -26501,7 +26501,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-empty-state>`：空状态行为宿主，把 connectEmptyState 产出的属性接到角色节点上。\n\nroot 默认是 role=status 的活区：节点应当常驻、用 hidden 收起，\n整块插入文档的活区读屏通常不播报。首屏静态占位写 live=\"off\"。\n\n开幕只在出现时播：页面加载期间接上、此刻可见的空状态直接呈现；页面加载完之后插入的、\n或 root 从 hidden 翻成显出的，才逐段开幕。",
+          "description": "`<xh-empty-state>`：空状态行为宿主，把 connectEmptyState 产出的属性接到角色节点上。\n\nroot 默认是 role=status 的活区：节点应当常驻、用 hidden 收起，\n整块插入文档的活区读屏通常不播报。首屏静态占位写 live=\"off\"。\n\n开幕只在出现时播：页面加载期间接上、此刻可见的空状态直接呈现；页面加载完之后插入的、\n或 root 从 hidden 翻成显出的，才逐段开幕。\n\n不写部件（或只写 root）时元素按标准结构生成：插画（`slot=\"media\"`）、图标（`slot=\"indicator\"`）、\n标题（title-text 属性或 `slot=\"title\"`）、说明（description 属性或 `slot=\"description\"`）、操作（`slot=\"action\"`），\n给了哪段才生成哪段，宿主直接子节点上写了 slot 的节点搬进对应部件。",
           "name": "XhEmptyStateElement",
           "cssParts": [
             {
@@ -26541,6 +26541,15 @@
             },
             {
               "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhEmptyStateElement>"
+              },
+              "static": true,
+              "default": "{ build: host => emptyStateStructure({ title: host.titleText, description: host.description, slotted: (name, key) => host.slotted(name, key), }), }"
+            },
+            {
+              "kind": "field",
               "name": "size",
               "privacy": "public",
               "type": {
@@ -26574,6 +26583,24 @@
                 "text": "Tone | undefined"
               },
               "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "titleText",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "title-text"
+            },
+            {
+              "kind": "field",
+              "name": "description",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "description"
             },
             {
               "kind": "field",
@@ -26625,6 +26652,22 @@
               "description": "语气，写到 root 的 data-tone 上",
               "name": "tone",
               "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标准结构里的标题文字。不用 HTML 全局属性 title：写在宿主上会出浏览器原生提示",
+              "name": "title-text",
+              "fieldName": "titleText"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标准结构里的说明文字；手写部件时不使用它",
+              "name": "description",
+              "fieldName": "description"
             }
           ],
           "superclass": {

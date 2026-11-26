@@ -20,6 +20,7 @@
 - `live` 决定内容出现时读屏如何播报，搜索结果变空时尤其重要。
 - `status` 只接受 404 / 403 / 500 三个状态码，各并入最接近的一族语气色；`tone` 直接指定语气，两者都写时以 `tone` 为准。
 - 开幕只在出现时播放：页面加载完成之前挂上或服务端渲染后水合的空状态直接呈现；筛选、删除或新数据带来的出现，以及 root 从 `hidden` 恢复显示，图标、标题、说明、操作依次开幕。
+- 不写结构时按标准结构铺（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：插画、图标、标题、说明、操作，给了哪段才铺哪段。标题与说明取 `title`、`description` 或同名插槽，插画、图标与操作区只来自插槽。Vue 是 `media`、`indicator`、`title`、`description`、`action` 五个具名插槽，React 是同名的五个属性，Web Components 是宿主直接子节点上的同名 `slot`；Web Components 的标题文字写作 `title-text`，宿主上的全局 `title` 会出浏览器原生提示。
 
 ## 组合
 

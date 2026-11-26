@@ -7,7 +7,8 @@
 
 import type { Tone } from '@xihan-ui/core'
 import type { EmptyStateLive, EmptyStateSchema, EmptyStateStatus } from '@xihan-ui/headless'
-import { connectEmptyState, emptyStateAnatomy, emptyStateMachine, emptyStateMeta } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
+import { connectEmptyState, emptyStateAnatomy, emptyStateMachine, emptyStateMeta, emptyStateStructure } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -24,11 +25,17 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * 开幕只在出现时播：页面加载期间接上、此刻可见的空状态直接呈现；页面加载完之后插入的、
  * 或 root 从 hidden 翻成显出的，才逐段开幕。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：插画（`slot="media"`）、图标（`slot="indicator"`）、
+ * 标题（title-text 属性或 `slot="title"`）、说明（description 属性或 `slot="description"`）、操作（`slot="action"`），
+ * 给了哪段才生成哪段，宿主直接子节点上写了 slot 的节点搬进对应部件。
+ *
  * @customElement xh-empty-state
  * @attr {'sm'|'md'|'lg'} size - 尺寸档位，写到 root 的 data-size 上
  * @attr {'polite'|'off'} live - 播报方式，off 时 root 不带 role
  * @attr {'404'|'403'|'500'} status - 结果页的状态码，写到 root 的 data-status 上；通用结果使用 tone
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，写到 root 的 data-tone 上
+ * @attr {string} title-text - 标准结构里的标题文字。不用 HTML 全局属性 title：写在宿主上会出浏览器原生提示
+ * @attr {string} description - 标准结构里的说明文字；手写部件时不使用它
  * @csspart root - 承载 role 与 data-size / data-status / data-tone 的容器
  * @csspart media - 装饰插画，对读屏隐藏；与 indicator 二选一
  * @csspart indicator - 装饰图标，对读屏隐藏
@@ -39,18 +46,30 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 export class XhEmptyStateElement extends XhElement {
   static override partContract = { anatomy: emptyStateAnatomy, meta: emptyStateMeta }
 
+  static override structure: ElementStructure<XhEmptyStateElement> = {
+    build: host => emptyStateStructure({
+      title: host.titleText,
+      description: host.description,
+      slotted: (name, key) => host.slotted(name, key),
+    }),
+  }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开
   static override properties = {
     size: { converter: STRING_CONVERTER },
     live: { converter: STRING_CONVERTER },
     status: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
+    titleText: { converter: STRING_CONVERTER, attribute: 'title-text' },
+    description: { converter: STRING_CONVERTER },
   }
 
   declare size?: 'sm' | 'md' | 'lg'
   declare live?: EmptyStateLive
   declare status?: EmptyStateStatus
   declare tone?: Tone
+  declare titleText?: string
+  declare description?: string
 
   private readonly ctrl = new MachineController<EmptyStateSchema>(this, emptyStateMachine, () => ({
     size: this.size,

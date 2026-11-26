@@ -8654,6 +8654,7 @@
       "EmptyStateRefs",
       "EmptyStateSchema",
       "EmptyStateStatus",
+      "EmptyStateStructureOptions",
       "EmptyStateTranslations",
       "ExpressionInputApi",
       "ExpressionInputAutoSize",
@@ -10608,6 +10609,7 @@
       "emptyStateKeyboard",
       "emptyStateMachine",
       "emptyStateMeta",
+      "emptyStateStructure",
       "enUS",
       "esES",
       "expandPanel",
@@ -24265,9 +24267,11 @@
     },
     "xh-empty-state": {
       "attributes": [
+        "description",
         "live",
         "size",
         "status",
+        "title-text",
         "tone"
       ],
       "events": []
