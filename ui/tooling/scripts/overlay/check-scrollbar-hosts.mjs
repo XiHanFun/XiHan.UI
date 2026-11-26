@@ -302,27 +302,49 @@ function resolveParts(src, text, seen = new Set(), many = false) {
   return { parts: [...new Set(parts)], unresolved: [...new Set(unresolved)] }
 }
 
+/** 对象字面量里某个属性的初值原文；不是对象字面量或没有这一项时为 null。 */
+function propertyText(source, options, name) {
+  if (!options || !ts.isObjectLiteralExpression(options))
+    return null
+  const found = options.properties.find(member => ts.isPropertyAssignment(member)
+    && (ts.isIdentifier(member.name) || ts.isStringLiteral(member.name))
+    && member.name.text === name)
+  return found?.initializer ?? null
+}
+
+/** 共用浮层接线（Vue 的 useOverlay / useOverlayLayer、WC 的 OverlayController）收的登记项：`layer: () => ({ ... })`。 */
+function sharedLayerOptions(node) {
+  const callee = ts.isCallExpression(node) || ts.isNewExpression(node) ? node.expression : null
+  if (!callee || !ts.isIdentifier(callee) || !['useOverlay', 'useOverlayLayer', 'OverlayController'].includes(callee.text))
+    return null
+  const options = node.arguments?.find(arg => ts.isObjectLiteralExpression(arg))
+  const layer = propertyText(null, options, 'layer')
+  if (!layer || !ts.isArrowFunction(layer))
+    return null
+  let body = layer.body
+  while (ts.isParenthesizedExpression(body)) body = body.expression
+  return ts.isObjectLiteralExpression(body) ? body : null
+}
+
 /** 只读取真正的层注册配置；同名变量、形参和后代悬停所有权不属于 LayerRegistry。 */
 function registeredLayers(src) {
   const source = ts.createSourceFile('scrollbar-host.ts', src, ts.ScriptTarget.Latest, true)
   const layers = []
+  const push = (options) => {
+    const text = name => propertyText(source, options, name)?.getText(source) ?? null
+    layers.push({ node: text('node'), branches: text('branches') })
+  }
   function visit(node) {
     if (ts.isCallExpression(node)
       && ts.isPropertyAccessExpression(node.expression)
       && node.expression.name.text === 'register'
       && ts.isPropertyAccessExpression(node.expression.expression)
       && node.expression.expression.name.text === 'layerRegistry') {
-      const options = node.arguments[0]
-      const property = (name) => {
-        if (!options || !ts.isObjectLiteralExpression(options))
-          return null
-        const found = options.properties.find(member => ts.isPropertyAssignment(member)
-          && (ts.isIdentifier(member.name) || ts.isStringLiteral(member.name))
-          && member.name.text === name)
-        return found?.initializer.getText(source) ?? null
-      }
-      layers.push({ node: property('node'), branches: property('branches') })
+      push(node.arguments[0])
     }
+    const shared = sharedLayerOptions(node)
+    if (shared)
+      push(shared)
     ts.forEachChild(node, visit)
   }
   visit(source)

@@ -5,17 +5,16 @@
 
 // 提供 use menu 相关实现。
 
-import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
+import type { Service } from '@xihan-ui/core'
 import type { MenuApi, MenuSchema, MenuTreeNode } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
-import { createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createScope } from '@xihan-ui/core'
 import { connectMenu, createMenuTreeNode, menuMachine, menuOpensOnHover } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, onBeforeUnmount, ref } from 'vue'
-import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
-import { useOverlayExit } from '../../runtime/use-overlay-exit'
+import { useOverlay } from '../../runtime/use-overlay'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface MenuContext {
@@ -44,7 +43,6 @@ function useMenuImpl(
   onRadioValueChange?: MenuSchema['props']['onRadioValueChange'],
   treeParent?: MenuTreeNode,
 ): MenuContext {
-  const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
@@ -69,45 +67,33 @@ function useMenuImpl(
   const releaseParent = treeParent?.registerChild(tree)
   onBeforeUnmount(() => releaseParent?.())
 
-  // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
-  let config: RuntimeConfig | null = null
-
-  if (typeof document !== 'undefined') {
-    config = createRuntimeConfig({ scope, idGenerator: idGen })
-
-    // 只提供注册函数，入栈出栈由机器的 trackLayer 效应按展开态驱动
-    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
+  const api = computed(() => connectMenu(service, vueNormalize))
+  // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
+  const { visible, portalTarget } = useOverlay({
+    scope,
+    idGenerator: idGen,
+    service,
+    layer: () => ({
       kind: 'popover',
       node: () => contentRef.value,
       // trigger 记为本层分支，点它算层内交互；外部锚点同理，点它交给打开它的那条命令去切换。
       // 浮层壳一并记上：条目列表之外还浮着自绘滚动条，按住它拖动不该把菜单消解掉
       branches: () => [triggerRef.value, props.anchor, positionerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
-      surfaces: () => [],
       // 悬停就展开的菜单（含子菜单）压在别的层上面不代表开在里面：只护着它开在其内容里的层
       opensOnHover: menuOpensOnHover(props),
-    })
-
-    // 定位引擎由适配器注入，机器只经端口驱动
-    service.refs.set('config', config!)
-    service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createDeferredPositionEngine())
-    service.refs.set('getAnchorEl', () => triggerRef.value)
-    service.refs.set('getFloatingEl', () => positionerRef.value)
-    service.refs.set('getContentEl', () => contentRef.value)
-    service.refs.set('getHoverBranches', tree.getHoverBranches)
-  }
-
-  const api = computed(() => connectMenu(service, vueNormalize))
-  // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
-  const visible = useOverlayExit({
-    config,
+    }),
+    refs: () => {
+      // 定位引擎由适配器注入，机器只经端口驱动
+      service.refs.set('position', createDeferredPositionEngine())
+      service.refs.set('getAnchorEl', () => triggerRef.value)
+      service.refs.set('getFloatingEl', () => positionerRef.value)
+      service.refs.set('getContentEl', () => contentRef.value)
+      service.refs.set('getHoverBranches', tree.getHoverBranches)
+    },
     isOpen: () => api.value.open,
     contentRef,
-    onPresence: presence => service.refs.set('presence', presence),
   })
-  // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
-  const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
   const portalSource = computed(() => (props.anchor !== undefined ? undefined : triggerRef))
 

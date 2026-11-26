@@ -5,16 +5,16 @@
 
 // 提供 use menubar 相关实现。
 
-import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
+import type { Service } from '@xihan-ui/core'
 import type { MenubarApi, MenubarSchema, MenuTreeNode } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
-import { createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createScope } from '@xihan-ui/core'
 import { connectMenubar, createMenuTreeNode, menubarMachine } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, ref, shallowReactive } from 'vue'
-import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
+import { useOverlayLayer } from '../../runtime/use-overlay'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 /** 按 value 登记角色节点，浮层三件套据此取到当前展开的菜单项。 */
@@ -40,7 +40,6 @@ export function useMenubar(
   onCheckboxValueChange?: MenubarSchema['props']['onCheckboxValueChange'],
   onRadioValueChange?: MenubarSchema['props']['onRadioValueChange'],
 ): MenubarContext {
-  const xhConfig = useXhConfig()
   const rootRef = ref<HTMLElement | null>(null)
   // 触发器只在事件与效应里被机器读，普通 Map 即可；定位层与内容还要派生「当前展开那张」的两支 ref
   // （层注册的 node 与分支读它们），登记表得是响应式的，菜单后到时派生值才跟着更新
@@ -81,36 +80,29 @@ export function useMenubar(
   const positionerRef = computed(current(positioners))
   const contentRef = computed(current(contents))
 
-  let config: RuntimeConfig | null = null
-
-  if (typeof document !== 'undefined') {
-    config = createRuntimeConfig({ scope, idGenerator: idGen })
-
-    // 只提供注册函数，入栈出栈由机器的 trackLayer 效应按有无菜单展开驱动
-    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
+  const { portalTarget } = useOverlayLayer({
+    scope,
+    idGenerator: idGen,
+    service,
+    layer: () => ({
       kind: 'popover',
       node: () => contentRef.value,
       // 整条菜单栏记为本层分支，点 trigger 与掠过换菜单都算层内交互；
       // 当前那张的定位层一并记上：条目列表之外还浮着自绘滚动条，按住它拖动不该把菜单消解掉
       branches: () => [rootRef.value, positionerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
-      // 菜单不带遮罩，没有可点关闭的表面
-      surfaces: () => [],
-    })
-
+    }),
     // 定位引擎由适配器注入，机器只经端口驱动
-    service.refs.set('config', config!)
-    service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createDeferredPositionEngine())
-    service.refs.set('getAnchorEl', current(triggers))
-    service.refs.set('getFloatingEl', current(positioners))
-    service.refs.set('getContentEl', current(contents))
-    service.refs.set('getRootEl', () => rootRef.value)
-  }
+    refs: () => {
+      service.refs.set('position', createDeferredPositionEngine())
+      service.refs.set('getAnchorEl', current(triggers))
+      service.refs.set('getFloatingEl', current(positioners))
+      service.refs.set('getContentEl', current(contents))
+      service.refs.set('getRootEl', () => rootRef.value)
+    },
+  })
 
   const api = computed(() => connectMenubar(service, vueNormalize))
-  // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
-  const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
   return {
     service,

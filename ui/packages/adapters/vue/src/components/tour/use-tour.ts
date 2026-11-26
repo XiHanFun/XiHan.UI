@@ -5,19 +5,18 @@
 
 // 提供 use tour 相关实现。
 
-import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
+import type { Service } from '@xihan-ui/core'
 import type { TourApi, TourSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import type { TitleDescriptionPresence } from '../../runtime/title-description'
-import { createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createScope } from '@xihan-ui/core'
 import { connectTour, resolveTourBoundary, tourMachine } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
-import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useTitleDescriptionPresence } from '../../runtime/title-description'
 import { useMachine } from '../../runtime/use-machine'
-import { useOverlayExit } from '../../runtime/use-overlay-exit'
+import { useOverlay } from '../../runtime/use-overlay'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface TourContext {
@@ -42,7 +41,6 @@ export function useTour(
   notify: Pick<TourSchema['props'], 'onOpenChange' | 'onValueChange' | 'onComplete' | 'onSkip'> = {},
   container?: () => Element | null | undefined,
 ): TourContext {
-  const xhConfig = useXhConfig()
   const backdropRef = ref<HTMLElement | null>(null)
   const spotlightRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
@@ -54,14 +52,12 @@ export function useTour(
   const presence = useTitleDescriptionPresence()
   const service = useMachine(tourMachine, () => ({ ...props, parts: presence.parts.value, ...notify }), scope)
 
-  // 服务端没有 DOM、也就没有落点：config 为 null 时浮层退回 body
-  let config: RuntimeConfig | null = null
-
-  if (typeof document !== 'undefined') {
-    config = createRuntimeConfig({ scope, idGenerator: idGen })
-
-    // 只提供注册函数，入栈出栈由机器的 trackLayer 效应按展开态驱动
-    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
+  const api = computed(() => connectTour(service, vueNormalize))
+  const { visible, portalTarget } = useOverlay({
+    scope,
+    idGenerator: idGen,
+    service,
+    layer: () => ({
       // 引导是模态的：遮罩盖住整页，焦点陷在浮层里
       kind: 'modal',
       node: () => contentRef.value,
@@ -73,26 +69,18 @@ export function useTour(
       visuals: () => [contentRef.value, positionerRef.value, backdropRef.value, spotlightRef.value].filter(Boolean) as Element[],
       // 限定在区域里时罩住那块区域：引导途中区域里新开的层（如抽屉）排在引导之下
       covers: () => resolveTourBoundary(scope, service.prop('boundary')),
-    })
-
-    // 定位引擎由适配器注入，机器只经端口驱动；锚点由机器按每步 target 自行解析
-    service.refs.set('config', config)
-    service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createDeferredPositionEngine())
-    service.refs.set('getFloatingEl', () => positionerRef.value)
-    service.refs.set('getContentEl', () => contentRef.value)
-  }
-
-  const api = computed(() => connectTour(service, vueNormalize))
-  const visible = useOverlayExit({
-    config,
+    }),
+    refs: () => {
+      // 定位引擎由适配器注入，机器只经端口驱动；锚点由机器按每步 target 自行解析
+      service.refs.set('position', createDeferredPositionEngine())
+      service.refs.set('getFloatingEl', () => positionerRef.value)
+      service.refs.set('getContentEl', () => contentRef.value)
+    },
     isOpen: () => api.value.open,
     contentRef,
     additionalExitRefs: [backdropRef, spotlightRef],
-    onPresence: presence => service.refs.set('presence', presence),
+    container,
   })
-  // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
-  const portalTarget = computed<string | Element>(() => container?.() ?? xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
   const showBackdrop = (): boolean => props.showBackdrop ?? true
 

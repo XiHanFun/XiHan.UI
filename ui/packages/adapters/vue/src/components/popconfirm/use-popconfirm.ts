@@ -5,19 +5,18 @@
 
 // 提供 use popconfirm 相关实现。
 
-import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
+import type { Service } from '@xihan-ui/core'
 import type { PopconfirmApi, PopconfirmConfirmErrorDetails, PopconfirmIntents, PopconfirmNotifiers, PopconfirmOverlayProps, PopoverSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import type { TitleDescriptionPresence } from '../../runtime/title-description'
-import { createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createScope } from '@xihan-ui/core'
 import { connectPopconfirm, popoverMachine } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
-import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useTitleDescriptionPresence } from '../../runtime/title-description'
 import { useMachine } from '../../runtime/use-machine'
-import { useOverlayExit } from '../../runtime/use-overlay-exit'
+import { useOverlay } from '../../runtime/use-overlay'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface PopconfirmContext {
@@ -38,7 +37,6 @@ export function usePopconfirm(
   props: PopconfirmOverlayProps,
   notify?: PopconfirmNotifiers,
 ): PopconfirmContext {
-  const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
@@ -75,32 +73,6 @@ export function usePopconfirm(
     onExitComplete: notify?.onExitComplete,
   }), scope)
 
-  // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
-  let config: RuntimeConfig | null = null
-
-  if (typeof document !== 'undefined') {
-    config = createRuntimeConfig({ scope, idGenerator: idGen })
-
-    // 只提供注册函数，入栈出栈由机器的 trackLayer 效应按展开态驱动
-    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
-      kind: 'popover',
-      node: () => contentRef.value,
-      // trigger 记为本层分支，点它算层内交互；浮层壳一并记上：面板之外还浮着自绘滚动条，
-      // 按住它拖动不该把面板消解掉
-      branches: () => [triggerRef.value, positionerRef.value].filter(Boolean) as Element[],
-      isModal: () => false,
-      surfaces: () => [],
-    })
-
-    // 定位引擎由适配器注入，机器只经端口驱动
-    service.refs.set('config', config!)
-    service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createDeferredPositionEngine())
-    service.refs.set('getAnchorEl', () => triggerRef.value)
-    service.refs.set('getFloatingEl', () => positionerRef.value)
-    service.refs.set('getContentEl', () => contentRef.value)
-  }
-
   // 每次点击现读 notify，宿主换回调也立刻生效；onConfirm 的返回值原样透传，异步门靠它
   const intents: PopconfirmIntents = {
     onConfirm: () => notify?.onConfirm?.(),
@@ -122,14 +94,28 @@ export function usePopconfirm(
 
   const api = computed(() => connectPopconfirm(service, intents, vueNormalize))
   // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
-  const visible = useOverlayExit({
-    config,
+  const { visible, portalTarget } = useOverlay({
+    scope,
+    idGenerator: idGen,
+    service,
+    layer: () => ({
+      kind: 'popover',
+      node: () => contentRef.value,
+      // trigger 记为本层分支，点它算层内交互；浮层壳一并记上：面板之外还浮着自绘滚动条，
+      // 按住它拖动不该把面板消解掉
+      branches: () => [triggerRef.value, positionerRef.value].filter(Boolean) as Element[],
+      isModal: () => false,
+    }),
+    refs: () => {
+      // 定位引擎由适配器注入，机器只经端口驱动
+      service.refs.set('position', createDeferredPositionEngine())
+      service.refs.set('getAnchorEl', () => triggerRef.value)
+      service.refs.set('getFloatingEl', () => positionerRef.value)
+      service.refs.set('getContentEl', () => contentRef.value)
+    },
     isOpen: () => api.value.open,
     contentRef,
-    onPresence: presence => service.refs.set('presence', presence),
   })
-  // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
-  const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
   return { visible, service, api, triggerRef, positionerRef, contentRef, portalTarget, presence }
 }

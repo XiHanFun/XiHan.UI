@@ -5,14 +5,15 @@
 
 // 提供 use navigation menu 相关实现。
 
-import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
+import type { RuntimeConfig, Service } from '@xihan-ui/core'
 import type { NavigationMenuApi, NavigationMenuSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
-import { createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createScope } from '@xihan-ui/core'
 import { connectNavigationMenu, navigationMenuMachine } from '@xihan-ui/headless'
 import { computed, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
+import { useOverlayLayer } from '../../runtime/use-overlay'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface NavigationMenuContext {
@@ -40,24 +41,20 @@ export function useNavigationMenu(
   // 指示条的量测在机器的 action 里跑，参照系经 refs 交进去
   service.refs.set('getListEl', () => listRef.value)
 
-  let config: RuntimeConfig | null = null
-  if (typeof document !== 'undefined') {
-    config = createRuntimeConfig({ scope, idGenerator: idGen })
-
-    // 只提供注册函数，入栈出栈由机器的 syncLayer 按展开项驱动
-    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
+  // 入栈出栈由机器的 syncLayer 按展开项驱动
+  const { config } = useOverlayLayer({
+    scope,
+    idGenerator: idGen,
+    service,
+    layer: () => ({
       // 导航只参与 Escape 仲裁与栈顶判定：面板就在文档流里，不陷焦点、不锁滚动、没有遮罩
       kind: 'inline',
       // 整个 nav 都算层内：trigger 与面板都住在里面
       node: () => rootRef.value,
       branches: () => [],
       isModal: () => false,
-      surfaces: () => [],
-    })
-
-    service.refs.set('config', config)
-    service.refs.set('registerLayer', registerLayer)
-  }
+    }),
+  })
 
   const api = computed(() => connectNavigationMenu(service, vueNormalize))
   return { api, service, rootRef, listRef, config }

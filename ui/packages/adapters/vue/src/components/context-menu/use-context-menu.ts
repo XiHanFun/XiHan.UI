@@ -5,17 +5,16 @@
 
 // 提供 use context menu 相关实现。
 
-import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
+import type { Service } from '@xihan-ui/core'
 import type { ContextMenuApi, ContextMenuSchema, MenuTreeNode } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
-import { createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createScope } from '@xihan-ui/core'
 import { connectContextMenu, contextMenuMachine, createMenuTreeNode } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
-import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
-import { useOverlayExit } from '../../runtime/use-overlay-exit'
+import { useOverlay } from '../../runtime/use-overlay'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface ContextMenuContext {
@@ -39,7 +38,6 @@ export function useContextMenu(
   onCheckboxValueChange?: ContextMenuSchema['props']['onCheckboxValueChange'],
   onRadioValueChange?: ContextMenuSchema['props']['onRadioValueChange'],
 ): ContextMenuContext {
-  const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
@@ -56,43 +54,31 @@ export function useContextMenu(
   })
   service = useMachine(contextMenuMachine, () => ({ ...props, onOpenChange, onItemSelect, onCheckboxValueChange, onRadioValueChange }), scope)
 
-  // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
-  let config: RuntimeConfig | null = null
-
-  if (typeof document !== 'undefined') {
-    config = createRuntimeConfig({ scope, idGenerator: idGen })
-
-    // 只提供注册函数，入栈出栈由机器的 trackLayer 效应按展开态驱动
-    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
+  const api = computed(() => connectContextMenu(service, vueNormalize))
+  // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
+  const { visible, portalTarget } = useOverlay({
+    scope,
+    idGenerator: idGen,
+    service,
+    layer: () => ({
       kind: 'popover',
       node: () => contentRef.value,
       // 触发区记为本层分支，展开着再右键可就地换坐标；左键关闭由 connect 在 pointerdown 上收口。
       // 浮层壳一并记上：条目列表之外还浮着自绘滚动条，按住它拖动不该把菜单消解掉
       branches: () => [triggerRef.value, positionerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
-      surfaces: () => [],
-    })
-
-    // 定位引擎由适配器注入，机器只经端口驱动；锚点是光标坐标，故无 getAnchorEl
-    service.refs.set('config', config!)
-    service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createDeferredPositionEngine())
-    service.refs.set('getFloatingEl', () => positionerRef.value)
-    // 触发区兼作两用：收起时焦点归还它，没有光标坐标时它的起始角就是锚点
-    service.refs.set('getTriggerEl', () => triggerRef.value)
-    service.refs.set('getContentEl', () => contentRef.value)
-  }
-
-  const api = computed(() => connectContextMenu(service, vueNormalize))
-  // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
-  const visible = useOverlayExit({
-    config,
+    }),
+    refs: () => {
+      // 定位引擎由适配器注入，机器只经端口驱动；锚点是光标坐标，故无 getAnchorEl
+      service.refs.set('position', createDeferredPositionEngine())
+      service.refs.set('getFloatingEl', () => positionerRef.value)
+      // 触发区兼作两用：收起时焦点归还它，没有光标坐标时它的起始角就是锚点
+      service.refs.set('getTriggerEl', () => triggerRef.value)
+      service.refs.set('getContentEl', () => contentRef.value)
+    },
     isOpen: () => api.value.open,
     contentRef,
-    onPresence: presence => service.refs.set('presence', presence),
   })
-  // 先问全局配置的落点，没有才落 body
-  const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
   return { visible, service, api, triggerRef, positionerRef, contentRef, tree, portalTarget }
 }

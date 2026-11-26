@@ -5,19 +5,18 @@
 
 // 提供 use popover 相关实现。
 
-import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
+import type { Service } from '@xihan-ui/core'
 import type { PopoverApi, PopoverSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import type { TitleDescriptionPresence } from '../../runtime/title-description'
-import { createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createScope } from '@xihan-ui/core'
 import { connectPopover, popoverMachine } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
-import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useTitleDescriptionPresence } from '../../runtime/title-description'
 import { useMachine } from '../../runtime/use-machine'
-import { useOverlayExit } from '../../runtime/use-overlay-exit'
+import { useOverlay } from '../../runtime/use-overlay'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface PopoverContext {
@@ -43,7 +42,6 @@ export function usePopover(
   onOpenChange?: PopoverSchema['props']['onOpenChange'],
   onExitComplete?: PopoverSchema['props']['onExitComplete'],
 ): PopoverContext {
-  const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
@@ -53,48 +51,32 @@ export function usePopover(
   const presence = useTitleDescriptionPresence()
   const service = useMachine(popoverMachine, () => ({ ...props, parts: presence.parts.value, onOpenChange, onExitComplete }), scope)
 
-  // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
-  let config: RuntimeConfig | null = null
-
-  if (typeof document !== 'undefined') {
-    config = createRuntimeConfig({
-      scope,
-      idGenerator: idGen,
-      // modal 档会加滚动锁。宿主把滚动搬进内容容器时 body 本身不滚，这条把真正在滚的那层交给滚动锁
-      scrollRoot: () => xhConfig.value.scrollRoot?.() ?? null,
-    })
-
-    // 只提供注册函数，入栈出栈由机器的 trackLayer 效应按展开态驱动
-    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
+  const api = computed(() => connectPopover(service, vueNormalize))
+  // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
+  const { visible, portalTarget } = useOverlay({
+    scope,
+    idGenerator: idGen,
+    service,
+    layer: () => ({
       kind: 'popover',
       node: () => contentRef.value,
       // trigger 记为本层分支，点它算层内交互；外部锚点同理，点它交给打开它的那条命令去切换。
       // 浮层壳一并记上：面板之外还浮着自绘滚动条，按住它拖动不该把面板消解掉
       // 虚拟锚点只给得出矩形，不是节点，不记
       branches: () => [triggerRef.value, (props.anchor as Partial<Node> | null | undefined)?.nodeType === 1 ? props.anchor : null, positionerRef.value].filter(Boolean) as Element[],
+      // modal 档会加滚动锁
       isModal: () => props.modal ?? false,
-      surfaces: () => [],
-    })
-
+    }),
     // 定位引擎由适配器注入，机器只经端口驱动
-    service.refs.set('config', config!)
-    service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createDeferredPositionEngine())
-    service.refs.set('getAnchorEl', () => triggerRef.value)
-    service.refs.set('getFloatingEl', () => positionerRef.value)
-    service.refs.set('getContentEl', () => contentRef.value)
-  }
-
-  const api = computed(() => connectPopover(service, vueNormalize))
-  // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
-  const visible = useOverlayExit({
-    config,
+    refs: () => {
+      service.refs.set('position', createDeferredPositionEngine())
+      service.refs.set('getAnchorEl', () => triggerRef.value)
+      service.refs.set('getFloatingEl', () => positionerRef.value)
+      service.refs.set('getContentEl', () => contentRef.value)
+    },
     isOpen: () => api.value.open,
     contentRef,
-    onPresence: presence => service.refs.set('presence', presence),
   })
-  // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
-  const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
   const portalSource = computed(() => (props.anchor !== undefined ? undefined : triggerRef))
 

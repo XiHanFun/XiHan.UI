@@ -5,12 +5,12 @@
 
 // 提供 use color picker 相关实现。
 
-import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
+import type { Service } from '@xihan-ui/core'
 import type { ColorPickerApi, ColorPickerSchema, ColorPickerServices, ColorSliderSchema, ColorSliderServices, SliderSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import type { ColorSliderContext } from '../color-slider/use-color-slider'
 import type { ColorSwatchPickerContext } from '../color-swatch-picker/use-color-swatch-picker'
-import { createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createScope } from '@xihan-ui/core'
 import {
   colorPickerAlphaSliderProps,
   colorPickerHueSliderProps,
@@ -25,10 +25,9 @@ import {
 } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
-import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
-import { useOverlayExit } from '../../runtime/use-overlay-exit'
+import { useOverlay } from '../../runtime/use-overlay'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface ColorPickerContext {
@@ -64,7 +63,6 @@ export function useColorPicker(
   props: ColorPickerSchema['props'],
   handlers: Pick<ColorPickerSchema['props'], 'onValueChange' | 'onOpenChange' | 'onColorError' | 'onRecentColorsChange' | 'onClear'> = {},
 ): ColorPickerContext {
-  const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
@@ -102,14 +100,13 @@ export function useColorPicker(
     recentSwatchPicker,
   }
 
-  // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
-  let config: RuntimeConfig | null = null
-
-  if (typeof document !== 'undefined') {
-    config = createRuntimeConfig({ scope, idGenerator: idGen })
-
-    // 只提供注册函数，入栈出栈由机器的 trackLayer 效应按展开态驱动
-    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
+  const api = computed(() => connectColorPicker(services, vueNormalize))
+  // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
+  const { visible, portalTarget } = useOverlay({
+    scope,
+    idGenerator: idGen,
+    service,
+    layer: () => ({
       kind: 'popover',
       node: () => contentRef.value,
       // 触发器记为本层分支，点它算层内交互；
@@ -117,30 +114,19 @@ export function useColorPicker(
       branches: () => [triggerRef.value, positionerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
       // 浮层不带遮罩，没有可点关闭的表面
-      surfaces: () => [],
-    })
-
-    // 定位引擎由适配器注入，机器只经端口驱动
-    service.refs.set('config', config!)
-    service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createDeferredPositionEngine())
-    service.refs.set('getAnchorEl', () => triggerRef.value)
-    service.refs.set('getFloatingEl', () => positionerRef.value)
-    service.refs.set('getContentEl', () => contentRef.value)
-    // 传 getter 而非节点，ref 在挂载后才有值
-    service.refs.set('getAreaEl', () => areaRef.value)
-  }
-
-  const api = computed(() => connectColorPicker(services, vueNormalize))
-  // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
-  const visible = useOverlayExit({
-    config,
+    }),
+    refs: () => {
+      // 定位引擎由适配器注入，机器只经端口驱动
+      service.refs.set('position', createDeferredPositionEngine())
+      service.refs.set('getAnchorEl', () => triggerRef.value)
+      service.refs.set('getFloatingEl', () => positionerRef.value)
+      service.refs.set('getContentEl', () => contentRef.value)
+      // 传 getter 而非节点，ref 在挂载后才有值
+      service.refs.set('getAreaEl', () => areaRef.value)
+    },
     isOpen: () => api.value.open,
     contentRef,
-    onPresence: presence => service.refs.set('presence', presence),
   })
-  // 先问全局配置的落点，没有才落 body
-  const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
   // 内嵌组件的 api 从取色器那份 api 上取：同一帧算好的同一份，不另连一次
   const hueSlider: ColorSliderContext = { api: computed(() => api.value.hueSlider), service: hue.root, trackRef: hue.trackRef, labelCount: hue.labelCount }

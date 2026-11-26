@@ -5,17 +5,16 @@
 
 // 提供 use expression input 相关实现。
 
-import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
+import type { Service } from '@xihan-ui/core'
 import type { ExpressionInputApi, ExpressionInputEl, ExpressionInputSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
-import { createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createScope } from '@xihan-ui/core'
 import { connectExpressionInput, expressionInputMachine } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
-import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
-import { useOverlayExit } from '../../runtime/use-overlay-exit'
+import { useOverlay } from '../../runtime/use-overlay'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface ExpressionInputContext {
@@ -41,7 +40,6 @@ export function useExpressionInput(
   props: ExpressionInputSchema['props'],
   handlers: Pick<ExpressionInputSchema['props'], 'onValueChange' | 'onIssuesChange' | 'onCompletionSelect' | 'onOpenChange'> = {},
 ): ExpressionInputContext {
-  const xhConfig = useXhConfig()
   const inputRef = ref<ExpressionInputEl | null>(null)
   const highlightRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
@@ -60,37 +58,27 @@ export function useExpressionInput(
     ...handlers,
   }), scope)
 
-  let config: RuntimeConfig | null = null
-
-  if (typeof document !== 'undefined') {
-    config = createRuntimeConfig({ scope, idGenerator: idGen })
-
-    // 只提供注册函数，实际入栈出栈由机器的 trackLayer 效应按展开态驱动
-    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
+  const api = computed(() => connectExpressionInput(service, vueNormalize))
+  const { visible, portalTarget } = useOverlay({
+    scope,
+    idGenerator: idGen,
+    service,
+    layer: () => ({
       kind: 'popover',
       node: () => contentRef.value,
       // 输入框记为本层分支：在里面打字、点击都算层内交互，不该把补全点没
       branches: () => [inputRef.value, positionerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
-      surfaces: () => [],
-    })
-
-    service.refs.set('config', config!)
-    service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createDeferredPositionEngine())
-    service.refs.set('getFloatingEl', () => positionerRef.value)
-    service.refs.set('getInputEl', () => inputRef.value)
-    service.refs.set('getHighlightEl', () => highlightRef.value)
-  }
-
-  const api = computed(() => connectExpressionInput(service, vueNormalize))
-  const visible = useOverlayExit({
-    config,
+    }),
+    refs: () => {
+      service.refs.set('position', createDeferredPositionEngine())
+      service.refs.set('getFloatingEl', () => positionerRef.value)
+      service.refs.set('getInputEl', () => inputRef.value)
+      service.refs.set('getHighlightEl', () => highlightRef.value)
+    },
     isOpen: () => api.value.open,
     contentRef,
-    onPresence: presence => service.refs.set('presence', presence),
   })
-  const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
   return { labelCount, issuesCount, multiline, visible, service, api, inputRef, highlightRef, positionerRef, contentRef, portalTarget }
 }

@@ -5,16 +5,16 @@
 
 // 提供 use citation 相关实现。
 
-import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
+import type { Service } from '@xihan-ui/core'
 import type { CitationApi, CitationSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
-import { createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { createScope } from '@xihan-ui/core'
 import { citationAnatomy, citationMachine, connectCitation } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
-import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
+import { useOverlayLayer } from '../../runtime/use-overlay'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 const triggerSelector = citationAnatomy.build().trigger.selector
@@ -33,7 +33,6 @@ export interface CitationContext {
 type CitationNotifiers = Pick<CitationSchema['props'], 'onActiveSourceChange' | 'onOpenChange' | 'onSourceOpen'>
 
 export function useCitation(props: CitationSchema['props'], callbacks: CitationNotifiers = {}): CitationContext {
-  const xhConfig = useXhConfig()
   const rootRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
   const idGen = createVueIdGenerator()
@@ -41,26 +40,22 @@ export function useCitation(props: CitationSchema['props'], callbacks: CitationN
   const service = useMachine(citationMachine, () => ({ ...props, ...callbacks }), scope)
 
   // 无 DOM 环境（SSR）不建引擎与消解层：hover 档的卡片首屏本来就收着
-  let config: RuntimeConfig | null = null
-  if (typeof document !== 'undefined') {
-    config = createRuntimeConfig({ scope, idGenerator: idGen })
-    // 只提供注册函数，入栈出栈由机器按卡片开合驱动
-    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
+  const { portalTarget } = useOverlayLayer({
+    scope,
+    idGenerator: idGen,
+    service,
+    layer: () => ({
       kind: 'popover',
       node: () => positionerRef.value,
       // 行内引用记为本层分支：按在另一处引用上是切换，不是层外交互
       branches: () => [...(rootRef.value?.querySelectorAll<HTMLElement>(triggerSelector) ?? [])],
       isModal: () => false,
-      surfaces: () => [],
       // 只有 hover 档入栈：卡片悬停就出现，压在别的层上面不代表开在里面，只护着它开在其内容里的层
       opensOnHover: true,
-    })
-    service.refs.set('config', config)
-    service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createDeferredPositionEngine())
-  }
+    }),
+    refs: () => service.refs.set('position', createDeferredPositionEngine()),
+  })
   service.refs.set('getFloatingEl', () => positionerRef.value)
 
-  const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
   return { api: computed(() => connectCitation(service, vueNormalize)), service, rootRef, positionerRef, portalTarget }
 }
