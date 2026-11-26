@@ -1,4 +1,4 @@
-import type { ConformanceSuite } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { alertAnatomy, alertKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
@@ -203,6 +203,37 @@ export const alertSuite: ConformanceSuite = {
       props: { translations: { close: '关闭提示' } },
       initial: {
         parts: { 'close-trigger': { 'aria-label': '关闭提示' } },
+      },
+    },
+    {
+      name: '作者不写结构：三端都照 alertStructure 铺出文本列与说明，写了 closable 才铺关闭钮；没有标题时 root 只描述、不命名',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { tone: 'success', description: '构建完成后会自动发布。', closable: true },
+      initial: {
+        order: ['root', 'content', 'description', 'close-trigger'],
+        parts: {
+          'root': {
+            'role': 'status',
+            'aria-labelledby': null,
+            'aria-describedby': '@part(description)',
+            'data-tone': 'success',
+          },
+          'close-trigger': { 'type': 'button', 'aria-label': 'Close', 'hidden': null },
+        },
+      },
+      steps: [
+        { kind: 'click', part: 'close-trigger', expect: { events: [{ type: 'open-change', detail: { open: false } }] } },
+      ],
+    },
+    {
+      name: '作者不写结构、也不写 closable：只铺必备的文本列，不替作者添一颗关闭钮',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { description: '构建完成后会自动发布。' },
+      initial: {
+        order: ['root', 'content', 'description'],
+        counts: { 'content': 1, 'close-trigger': 0, 'indicator': 0, 'action': 0 },
       },
     },
   ],

@@ -8078,6 +8078,7 @@
       "AlertApi",
       "AlertOpenChangeDetails",
       "AlertSchema",
+      "AlertStructureOptions",
       "AlertTranslations",
       "AnchorApi",
       "AnchorIndicatorRect",
@@ -10102,6 +10103,7 @@
       "alertKeyboard",
       "alertMachine",
       "alertMeta",
+      "alertStructure",
       "anchorAnatomy",
       "anchorItemQuery",
       "anchorKeyboard",
@@ -23378,7 +23380,9 @@
         "banner",
         "closable",
         "default-open",
+        "description",
         "open",
+        "title-text",
         "tone"
       ],
       "events": [

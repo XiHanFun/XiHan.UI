@@ -54,6 +54,12 @@ banner 把提示贴在页面顶部铺满整行：不取圆角，只在朝向页�
 
 <XhDemo src="alert/06-banner" />
 
+### props 写法
+
+不写结构时按标准结构铺：标题与说明两个属性写出一条提示，图标与操作用同名插槽
+
+<XhDemo src="alert/07-props" />
+
 ## 设计指引
 
 ### 何时使用
@@ -74,6 +80,7 @@ banner 把提示贴在页面顶部铺满整行：不取圆角，只在朝向页�
 - `closable` 显示关闭按钮，关闭状态可受控。
 - 关闭时先淡出、再收起占位，下方内容随之平移上来；退场播完才藏起，途中不再响应交互。
 - `banner` 把提示改成页面顶部的横幅：贴着页面或容器的边铺满整行，不取圆角，只在朝向页面内容的块尾画一道描边。它说的是提示贴在哪儿，不是面的形态：面、语气、实时区语义与关闭都与页内提示相同。
+- 不写结构时按标准结构铺（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：图标、文本列、操作区、关闭钮。文本列恒铺，里面给了标题、说明才铺对应一段（标题在前）；标题与说明取 `title`、`description` 或同名插槽，图标与操作区只来自插槽；关闭钮只在写了 `closable` 时铺在末尾，叉由皮肤画。Vue 是 `indicator`、`title`、`description`、`action` 四个具名插槽，React 是同名的四个属性，Web Components 是宿主直接子节点上的同名 `slot`；Web Components 的标题文字写作 `title-text`，宿主上的全局 `title` 会出浏览器原生提示。
 
 ### 组合
 
@@ -122,12 +129,28 @@ banner 把提示贴在页面顶部铺满整行：不取圆角，只在朝向页�
 | --- | --- | --- |
 | `open-change` | `AlertOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
+### 插槽
+
+仅列出带载荷的插槽。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhAlertRoot` | `default` | — |  |
+| `XhAlertRoot` | `indicator` | — | 语气图标。 |
+| `XhAlertRoot` | `title` | — | 标题，压过 title。 |
+| `XhAlertRoot` | `description` | — | 说明，压过 description。 |
+| `XhAlertRoot` | `action` | — | 操作按钮。 |
+
 ### React 适配器 props
 
 只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
+| `XhAlertRoot` | `indicator` | `ReactNode` |  | 语气图标，铺进 indicator 部件。 |
+| `XhAlertRoot` | `title` | `ReactNode` |  | 标题。是字符串时作文字，是别的节点时由标题部件装着。 |
+| `XhAlertRoot` | `description` | `ReactNode` |  | 说明。是字符串时作文字，是别的节点时由说明部件装着。 |
+| `XhAlertRoot` | `action` | `ReactNode` |  | 操作按钮，铺进 action 部件。 |
 | `XhAlertRoot` | `children` | `ReactNode` |  |  |
 
 ### 状态

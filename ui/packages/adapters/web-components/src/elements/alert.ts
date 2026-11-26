@@ -7,7 +7,8 @@
 
 import type { Tone } from '@xihan-ui/core'
 import type { AlertOpenChangeDetails, AlertSchema } from '@xihan-ui/headless'
-import { alertAnatomy, alertMachine, alertMeta, connectAlert } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
+import { alertAnatomy, alertMachine, alertMeta, alertStructure, connectAlert } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
@@ -19,12 +20,18 @@ import { MachineController } from '../runtime/machine-controller'
  * `<xh-alert>`：Light-DOM 行为宿主，把 alert 状态机接到 root / indicator / content / title / description /
  * action / close-trigger 角色节点，收起时用内联 style.display 隐藏 root。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：图标（`slot="indicator"`）、文本列里的标题（title-text 属性或
+ * `slot="title"`）与说明（description 属性或 `slot="description"`）、操作（`slot="action"`），写了 closable 时末尾再生成关闭钮；
+ * 文本列恒有，其余给了哪段才生成哪段，宿主直接子节点上写了 slot 的节点搬进对应部件。
+ *
  * @customElement xh-alert
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定实时区级别与配色
- * @attr {boolean} closable - 关闭按钮是否可用，默认为真
+ * @attr {boolean} closable - 关闭按钮是否可用，默认为真；生成结构时写了才生成关闭钮
  * @attr {boolean} banner - 横幅：贴边铺满的页面通栏，不取圆角，只留块尾描边
  * @attr {boolean} open - 受控显隐；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始显隐，默认显示
+ * @attr {string} title-text - 标准结构里的标题文字。不用 HTML 全局属性 title：写在宿主上会出浏览器原生提示
+ * @attr {string} description - 标准结构里的说明文字；手写部件时不使用它
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 提示根容器（实时区所在）
  * @csspart indicator - 语气图标（对读屏隐藏）
@@ -36,6 +43,16 @@ import { MachineController } from '../runtime/machine-controller'
  */
 export class XhAlertElement extends XhElement {
   static override partContract = { anatomy: alertAnatomy, meta: alertMeta }
+
+  static override structure: ElementStructure<XhAlertElement> = {
+    build: host => alertStructure({
+      title: host.titleText,
+      description: host.description,
+      // 作者写的值并上全局配置的组件级缺省，不补 connect 的缺省：写了真才生成关闭钮
+      closable: host.configured('alert', { closable: host.closable }).closable,
+      slotted: (name, key) => host.slotted(name, key),
+    }),
+  }
 
   // 布尔一律用三态转换器：属性缺席翻成 undefined，缺省值由机器与 connect 决定；
   // 用 Lit 自带的 Boolean 转换器的话，缺省为真的 closable / default-open 永远关不掉
@@ -50,6 +67,8 @@ export class XhAlertElement extends XhElement {
     },
     // 文案是对象，只能走 property
     translations: { attribute: false },
+    titleText: { converter: { fromAttribute: (v: string | null) => v ?? undefined }, attribute: 'title-text' },
+    description: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
   }
 
   declare tone?: Tone
@@ -58,6 +77,8 @@ export class XhAlertElement extends XhElement {
   declare open?: boolean
   declare defaultOpen?: boolean
   declare translations?: AlertSchema['props']['translations']
+  declare titleText?: string
+  declare description?: string
 
   private readonly notify = (details: AlertOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
