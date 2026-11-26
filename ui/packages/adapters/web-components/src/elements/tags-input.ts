@@ -17,20 +17,11 @@ import type {
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTagsInput, tagsInputAnatomy, tagsInputMachine, tagsInputMeta, tagsInputStructure } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER, STRING_LIST_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 属性缺席翻成 undefined，以此区分受控与非受控。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-// 标签集合写进属性时一律按逗号拆（属性表达不了数组）。
-// 用别的 delimiter 时请走 property（`el.value = ['a;b']`）：转换器看不见同一元素上的另一个属性
-const ARRAY_CONVERTER = {
-  fromAttribute: (v: string | null) => (v == null ? undefined : v.split(',').map(s => s.trim()).filter(s => s !== '')),
-}
 
 /**
  * `<xh-tags-input>`：Light-DOM 行为宿主：作者写 root / label / control / input / item 一族与
@@ -113,8 +104,8 @@ export class XhTagsInputElement extends XhElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     label: { converter: STRING_CONVERTER },
-    value: { converter: ARRAY_CONVERTER },
-    defaultValue: { converter: ARRAY_CONVERTER, attribute: 'default-value' },
+    value: { converter: STRING_LIST_CONVERTER },
+    defaultValue: { converter: STRING_LIST_CONVERTER, attribute: 'default-value' },
     inputValue: { converter: STRING_CONVERTER, attribute: 'input-value' },
     defaultInputValue: { converter: STRING_CONVERTER, attribute: 'default-input-value' },
     maxTags: { converter: NUMBER_CONVERTER, attribute: 'max-tags' },

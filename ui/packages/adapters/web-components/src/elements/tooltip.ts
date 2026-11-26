@@ -15,7 +15,7 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { createExitGate } from '@xihan-ui/core/presence'
 import { connectTooltip, createTooltipGroup, tooltipAnatomy, tooltipMachine, tooltipMeta, tooltipStructure } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { createGeneratedElement, GEN_ATTR, reconcile, setText } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
@@ -30,17 +30,8 @@ const DELEGATE_MARK = 'tooltip-delegate'
 
 // 字符串属性统一走这个转换器：属性缺席即 undefined，缺省值的唯一事实源留在机器。
 // Lit 默认转换器会在属性被移除时把值落成 null，那样就再也表达不了"没写过"。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 // 数值属性同理；写不成数的值（文字、单位后缀）当作没写，缺省仍由机器给。
-const NUMBER_CONVERTER = {
-  fromAttribute: (v: string | null) => {
-    if (v === null)
-      return undefined
-    const n = Number(v)
-    return Number.isFinite(n) ? n : undefined
-  },
-}
 
 /**
  * `<xh-tooltip>`：Light-DOM 行为宿主：作者写 trigger / positioner / content / arrow 角色节点，

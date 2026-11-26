@@ -9,7 +9,7 @@ import type { ControlVariant, Size } from '@xihan-ui/core'
 import type { FilterBuilderApi, FilterBuilderCreateId, FilterBuilderSchema, FilterBuilderValueChangeDetails, FilterField, FilterGroup, FilterOperator, FilterParameter, FilterPath } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { connectFilterBuilder, filterBuilderAnatomy, filterBuilderMachine, filterBuilderMeta, filterBuilderStructure, filterBuilderTranslations } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -21,10 +21,6 @@ import { XhSwitchElement } from './switch'
 import { XhTagsInputElement } from './tags-input'
 import { XhTextFieldElement } from './text-field'
 import { XhToggleGroupElement } from './toggle-group'
-
-// 属性缺席翻成 undefined，以此区分受控与非受控。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /** 组里部件找所在的组、条件行里的部件找所在的条件，都按作者会写的角色属性向上找。 */
 const GROUP_SELECTOR = '[data-xh-part="group"]'

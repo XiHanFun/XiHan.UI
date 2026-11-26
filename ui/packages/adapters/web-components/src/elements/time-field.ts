@@ -8,18 +8,12 @@
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { TimeFieldSchema, TimeFieldValueChangeDetails, TimeGranularity, TimeHourCycle, TimeSegmentType } from '@xihan-ui/headless'
 import { connectTimeField, timeFieldAnatomy, timeFieldMachine, timeFieldMeta } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
+import { HOUR_CYCLE_CONVERTER } from '../dom/hour-cycle'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 属性缺席翻成 undefined，以此区分受控与非受控。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 小时制只有 12 与 24 两个取值，写别的一律当作没写（回落到 locale 推断）
-const HOUR_CYCLE_CONVERTER = {
-  fromAttribute: (v: string | null): TimeHourCycle | undefined => (v === '12' ? 12 : v === '24' ? 24 : undefined),
-}
 
 const SEGMENT_TYPES: readonly TimeSegmentType[] = ['hour', 'minute', 'second', 'dayPeriod']
 

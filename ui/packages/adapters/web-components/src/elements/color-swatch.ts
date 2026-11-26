@@ -8,10 +8,9 @@
 import type { Size } from '@xihan-ui/core'
 import type { ColorSwatchProps } from '@xihan-ui/headless'
 import { colorSwatchAnatomy, colorSwatchMeta, connectColorSwatch } from '@xihan-ui/headless'
+import { STRING_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
-
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
  * `<xh-color-swatch>`：颜色色块宿主，无状态机。

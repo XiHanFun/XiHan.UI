@@ -28,7 +28,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { connectPieChart, pieChartAnatomy, pieChartMachine, pieChartMeta } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { createGeneratedElement, GEN_ATTR, generatedChildren, hasAuthorContent, reconcile, SVG_NS } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
@@ -39,8 +39,6 @@ import { MachineController } from '../runtime/machine-controller'
 const DEFS_KEY = 'defs'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
  * `<xh-pie-chart>`：饼图宿主，一行数据一个扇区，缺省画成环形。

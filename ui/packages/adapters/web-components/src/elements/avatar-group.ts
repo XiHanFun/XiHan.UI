@@ -8,6 +8,7 @@
 import type { Size } from '@xihan-ui/core'
 import type { AvatarGroupProps } from '@xihan-ui/headless'
 import { avatarGroupAnatomy, avatarGroupMeta, connectAvatarGroup } from '@xihan-ui/headless'
+import { STRING_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -30,7 +31,7 @@ export class XhAvatarGroupElement extends XhElement {
   // 属性缺席翻成 undefined，缺省值由 connect 决定
   static override properties = {
     maxVisible: { type: Number, attribute: 'max-visible' },
-    size: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
+    size: { converter: STRING_CONVERTER },
   }
 
   declare maxVisible?: number

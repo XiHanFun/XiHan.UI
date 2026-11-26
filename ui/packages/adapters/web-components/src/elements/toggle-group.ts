@@ -10,16 +10,12 @@ import type { resolveFormControlState, SelectionValueKey, ToggleGroupItemProps, 
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectToggleGroup, toggleGroupAnatomy, toggleGroupMachine, toggleGroupMeta, toggleGroupStructure } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 字符串属性统一走这个转换器：属性缺席即 undefined，缺省值的唯一事实源留在 connect。
-// Lit 默认转换器会在属性被移除时把值落成 null，那样 value 就再也表达不了"非受控"。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
  * `<xh-toggle-group>`：Light-DOM 行为宿主：作者写 root 与若干 item 角色节点，
@@ -80,7 +76,7 @@ export class XhToggleGroupElement<V = string> extends XhElement {
   static override properties = {
     // 数组只走 property，属性表达不了；给了它条目的文本与禁用即以数据为准
     collection: { attribute: false },
-    valueKey: { converter: { fromAttribute: (v: string | null) => v ?? undefined }, attribute: 'value-key' },
+    valueKey: { converter: STRING_CONVERTER, attribute: 'value-key' },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     multiple: { converter: BOOLEAN_CONVERTER },

@@ -20,21 +20,11 @@ import type {
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { citationAnatomy, citationMachine, citationMeta, connectCitation } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
-
-// 写不成数的值当作没写，缺省仍由机器给
-const NUMBER_CONVERTER = {
-  fromAttribute: (v: string | null) => {
-    if (v === null)
-      return undefined
-    const n = Number(v)
-    return Number.isFinite(n) ? n : undefined
-  },
-}
 
 /**
  * `<xh-citation>` —— SourcePart 驱动的行内引用、来源预览与来源列表宿主。

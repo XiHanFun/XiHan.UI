@@ -9,7 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { DateFieldSchema, DateFieldSegmentProps, DateFieldTranslations, DateFieldValueChangeDetails, DateGranularity, DateHourCycle, DateSegmentSet, DateSegmentType } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { connectDateField, dateFieldAnatomy, dateFieldMachine, dateFieldMeta, dateFieldStructure } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { HOUR_CYCLE_CONVERTER } from '../dom/hour-cycle'
 import { wcNormalize } from '../dom/normalize'
@@ -17,7 +17,6 @@ import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 段集用属性也表达得了：逗号分隔的段名。空串与只剩分隔符的写法等同于没给
 const SEGMENT_SET_CONVERTER = {
   fromAttribute: (v: string | null): DateSegmentSet | undefined => {

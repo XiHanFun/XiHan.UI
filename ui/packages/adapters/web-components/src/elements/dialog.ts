@@ -13,7 +13,7 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { createExitGate } from '@xihan-ui/core/presence'
 import { connectDialog, dialogAnatomy, dialogMachine, dialogMeta, dialogStructure } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
@@ -22,9 +22,6 @@ import { withoutHidden } from '../overlay-exit'
 import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
-
-// 属性缺席翻成 undefined，缺省值由皮肤的缺省档决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
  * `<xh-dialog>`：Light-DOM 行为宿主，运行 dialog 状态机并把 connect 产出接到角色节点上，

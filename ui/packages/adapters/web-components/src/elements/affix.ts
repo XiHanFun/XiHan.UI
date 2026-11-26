@@ -8,13 +8,11 @@
 import type { Service } from '@xihan-ui/core'
 import type { AffixChangeDetails, AffixSchema } from '@xihan-ui/headless'
 import { affixAnatomy, affixMachine, affixMeta, connectAffix } from '@xihan-ui/headless'
+import { NUMBER_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
  * `<xh-affix>`：吸附行为宿主：滚动超过判定线后把 content 固定在滚动容器可视区的边缘。

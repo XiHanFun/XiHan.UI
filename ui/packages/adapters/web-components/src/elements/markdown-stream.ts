@@ -7,13 +7,12 @@
 
 import type { MarkdownBlock, MarkdownInlineMount, MarkdownStreamApi, MarkdownStreamProps, MarkdownStreamTranslations } from '@xihan-ui/headless'
 import { connectMarkdownStream, markdownBlockHtml, markdownStreamAnatomy, markdownStreamMeta, queryMarkdownInlines, trackMarkdownStreamCaret } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
 // 属性缺席翻成 undefined，缺省值由 connect 给出
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const BLOCK_SELECTOR = markdownStreamAnatomy.build().block.selector
 
 /**

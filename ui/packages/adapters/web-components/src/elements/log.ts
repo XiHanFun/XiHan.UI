@@ -9,16 +9,11 @@ import type { IdGenerator, RuntimeConfig, Service, Size } from '@xihan-ui/core'
 import type { CollectionVirtualizer, LogApi, LogLevel, LogProps, LogSchema, LogStickChangeDetails, LogTranslations } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectLog, logAnatomy, logMachine, logMeta, parseAnsi } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 属性缺席翻成 undefined，缺省值由 connect 给出
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 空串按缺席处理，避免 Number('') 落成 0
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 const LEVELS = new Set<string>(['debug', 'info', 'warn', 'error'])
 // levels 写成空白分隔的几个级别；四档之外的词不认

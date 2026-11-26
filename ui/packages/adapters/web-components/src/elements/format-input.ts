@@ -10,7 +10,7 @@ import type { FormatSpec } from '@xihan-ui/expression'
 import type { FormatInputApi, FormatInputKind, FormatInputSchema, FormatInputValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { connectFormatInput, formatInputAnatomy, formatInputMachine, formatInputMeta, formatInputStructure, formatInputTranslations } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -20,9 +20,6 @@ import { XhNumberFieldElement } from './number-field'
 import { XhSelectElement } from './select'
 import { XhSwitchElement } from './switch'
 import { XhToggleGroupElement } from './toggle-group'
-
-// 属性缺席翻成 undefined，以此区分受控与非受控。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /** 元素还没进文档时调命令式方法的报错。 */
 function notConnected(method: string): Error {

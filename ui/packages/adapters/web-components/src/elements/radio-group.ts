@@ -10,7 +10,7 @@ import type { RadioGroupItemProps, RadioGroupNode, RadioGroupSchema, RadioGroupV
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectRadioGroup, radioGroupAnatomy, radioGroupMachine, radioGroupMeta, radioGroupStructure } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
@@ -80,9 +80,9 @@ export class XhRadioGroupElement<V = string> extends XhElement {
   static override properties = {
     // 数组只走 property，属性表达不了；给了它条目的文本与禁用即以数据为准
     collection: { attribute: false },
-    valueKey: { converter: { fromAttribute: (v: string | null) => v ?? undefined }, attribute: 'value-key' },
-    label: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
-    value: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
+    valueKey: { converter: STRING_CONVERTER, attribute: 'value-key' },
+    label: { converter: STRING_CONVERTER },
+    value: { converter: STRING_CONVERTER },
     defaultValue: { attribute: 'default-value' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },

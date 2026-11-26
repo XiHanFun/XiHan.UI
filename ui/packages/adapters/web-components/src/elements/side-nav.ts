@@ -13,7 +13,7 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { createExitGate } from '@xihan-ui/core/presence'
 import { connectSideNav, findSideNavRowEl, sideNavAnatomy, sideNavMachine, sideNavMeta, sideNavStructure, sideNavTooltipProps, tooltipMachine } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { withoutHidden } from '../overlay-exit'
@@ -21,9 +21,6 @@ import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 import { XhIconElement } from './icon'
 import { findTooltipGroup } from './tooltip'
-
-// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /** 分支一系的归属容器；嵌套分支各认最近的那个。 */
 const BRANCH = 'branch'

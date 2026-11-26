@@ -10,24 +10,11 @@ import type { SortableDragEndDetails, SortableDragStartDetails, SortableSchema, 
 import type { SortableAxis } from '@xihan-ui/pointer'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectSortable, sortableAnatomy, sortableMachine, sortableMeta } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER, STRING_LIST_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-/** 顺序写成逗号分隔的标识串（ids="a,b,c"）。空串当没写。 */
-const ID_LIST_CONVERTER = {
-  fromAttribute: (v: string | null) => {
-    if (v == null || v.trim() === '')
-      return undefined
-    const out = v.split(',').map(s => s.trim()).filter(Boolean)
-    return out.length ? out : undefined
-  },
-}
 
 /**
  * `<xh-sortable>`：Light-DOM 行为宿主：作者写 root / item / item-drag-trigger / live-region 角色节点，
@@ -72,7 +59,7 @@ export class XhSortableElement extends XhElement {
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名响应式字段会与基类类型打架。描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
-    ids: { converter: ID_LIST_CONVERTER },
+    ids: { converter: STRING_LIST_CONVERTER },
     orientation: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     disabled: { converter: BOOLEAN_CONVERTER },

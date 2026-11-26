@@ -11,7 +11,7 @@ import type { ElementStructure } from '../element-base'
 import type { FormControlHost } from '../runtime/form-control-host'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectField, fieldAnatomy, fieldControlWiring, fieldMeta, fieldStructure, hasNamingContent } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { XhReactiveElement } from '../reactive'
@@ -23,8 +23,6 @@ export const FIELD_SCOPE_SELECTOR = 'xh-field, xh-field-boundary'
 // 属性缺席翻成 undefined，控件 id 的缺省由 connect 派生。
 /** 说明部件里会改变「读不读得出一句话」的属性：命名属性与对读屏隐藏的两种标记。 */
 const DESCRIPTION_NAMING_ATTRS = ['aria-label', 'aria-labelledby', 'alt', 'title', 'aria-hidden', 'hidden']
-
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
  * `<xh-field>`：Light-DOM 行为宿主，无状态机，把 connectField 产出的 id 与 aria-* 接到

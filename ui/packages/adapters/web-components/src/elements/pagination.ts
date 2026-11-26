@@ -13,18 +13,13 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { createExitGate } from '@xihan-ui/core/presence'
 import { connectPagination, paginationAnatomy, paginationMachine, paginationMeta, paginationPageSizeSelectProps, paginationStructure, selectMachine } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
-
-// 数值属性统一走这个转换器：属性缺席即 undefined，缺省值的唯一事实源留在 connect。
-// 空串也当缺席：`page=""` 经 Number() 会变成 0，那是个不存在的页。
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /** 页码按钮声明的页数；缺失或空串一律返回 NaN（见 wire 中的说明）。 */
 function itemPage(el: HTMLElement): number {

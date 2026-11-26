@@ -8,7 +8,7 @@
 import type { ImageApi, ImageSchema, ImageStatus, ImageStatusChangeDetails } from '@xihan-ui/headless'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { connectImage, imageAnatomy, imageMachine, imageMeta } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { createAuthoredElement } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
@@ -16,10 +16,6 @@ import { placeAfterRoot } from '../dom/structure'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 import { XhImageViewerElement } from './image-viewer'
-
-// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /** 预览层工具条上的按钮，顺序与 Vue / React 的预览层一致。 */
 const PREVIEW_TOOLS = [

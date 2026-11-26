@@ -9,13 +9,10 @@ import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { BreadcrumbNode, BreadcrumbSchema, BreadcrumbTranslations } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { breadcrumbAnatomy, breadcrumbMachine, breadcrumbMeta, breadcrumbStructure, connectBreadcrumb } from '@xihan-ui/headless'
+import { NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 属性缺席翻成 undefined，缺省值由 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
 
 /** 读作者写在角色节点上的布尔声明：属性缺席或 ="false" 为假，其余为真。 */
 function authorFlag(el: HTMLElement, name: string): boolean {

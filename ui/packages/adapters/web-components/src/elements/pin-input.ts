@@ -9,15 +9,13 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { PinInputSchema, PinInputTranslations, PinInputType, PinInputValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { connectPinInput, pinInputAnatomy, pinInputMachine, pinInputMeta, pinInputStructure } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，以此区分受控与非受控。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 // 值在属性里是一整串（value="1234"），逐字符摊成数组；长度归一交给机器。
 // 直接给 property 赋数组时不过转换器，两种写法都通
 const ARRAY_CONVERTER = { fromAttribute: (v: string | null) => (v == null ? undefined : [...v]) }

@@ -8,7 +8,7 @@
 import type { SeparatorProps } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { connectSeparator, separatorAnatomy, separatorMeta, separatorStructure } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -39,11 +39,11 @@ export class XhSeparatorElement extends XhElement {
 
   // 属性缺席翻成 undefined，缺省值由 connect 决定
   static override properties = {
-    orientation: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
+    orientation: { converter: STRING_CONVERTER },
     decorative: { converter: BOOLEAN_CONVERTER },
-    variant: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
+    variant: { converter: STRING_CONVERTER },
     dashed: { converter: BOOLEAN_CONVERTER },
-    align: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
+    align: { converter: STRING_CONVERTER },
   }
 
   declare orientation?: string

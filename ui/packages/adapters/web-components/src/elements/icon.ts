@@ -10,12 +10,10 @@ import type { IconApi, IconFlip, IconProps, IconSize, IconWeight } from '@xihan-
 import type { ElementStructure } from '../element-base'
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 import { connectIcon, iconAnatomy, iconMeta, iconStructure } from '@xihan-ui/headless'
+import { STRING_CONVERTER } from '../dom/converters'
 import { GEN_ATTR } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
-
-// 属性缺席翻成 undefined，缺省值由 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
 

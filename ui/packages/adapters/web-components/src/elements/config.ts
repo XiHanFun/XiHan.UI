@@ -24,13 +24,13 @@ import type { PropertyValues } from '../reactive'
 import { logicalParentElement } from '@xihan-ui/core'
 import { createVisualEnvironmentController } from '@xihan-ui/core/visual-environment'
 import { notifyXhConfigChange } from '../config'
+import { STRING_CONVERTER } from '../dom/converters'
 import { XhReactiveElement } from '../reactive'
 
 /** 视觉环境轴：只写到节点上供 CSS 读，不进元素解析到的配置。 */
 const VISUAL_KEYS = new Set(['mode', 'brand', 'density', 'direction', 'contrast', 'motion', 'transparency', 'material'])
 
 // 属性缺席翻成 undefined：这一层「没说」，取值回落外层而不是清空。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
  * `<xh-config>`：配置作用域。包裹一棵子树，其中的元素解析 locale / size / translations

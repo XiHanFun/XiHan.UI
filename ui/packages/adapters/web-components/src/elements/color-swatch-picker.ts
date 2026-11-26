@@ -10,7 +10,7 @@ import type { ColorSwatchPickerItemProps, ColorSwatchPickerNode, ColorSwatchPick
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { colorSwatchPickerAnatomy, colorSwatchPickerMachine, colorSwatchPickerMeta, colorSwatchPickerStructure, connectColorSwatchPicker } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
@@ -18,7 +18,6 @@ import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 /** 属性缺席转换为 undefined，默认值由状态机决定。 */
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
  * `<xh-color-swatch-picker>`：Light-DOM 行为宿主，运行 color-swatch-picker 状态机并把 connect 产出接到

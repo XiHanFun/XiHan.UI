@@ -9,7 +9,7 @@ import type { Direction, IdGenerator, Orientation, Service } from '@xihan-ui/cor
 import type { SplitterPanelProps, SplitterSchema, SplitterSizesChangeDetails, SplitterSizesChangeEndDetails } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope, normalizeItemIndex } from '@xihan-ui/core'
 import { connectSplitter, splitterAnatomy, splitterMachine, splitterMeta } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, NUMBER_LIST_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -17,20 +17,10 @@ import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 // （sizes 尤其：落成 null 就分不出"非受控"与"受控且当前为空"）。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 /**
  * 布局是百分比数组，属性写成逗号分隔（两栏 sizes="30,70"）。
  * 解析不出任何有限数就当没写：留下 NaN 会一路写进 aria-valuenow 与定位百分比。
  */
-const NUMBER_LIST_CONVERTER = {
-  fromAttribute: (v: string | null) => {
-    if (v == null || v.trim() === '')
-      return undefined
-    const out = v.split(',').map(Number).filter(Number.isFinite)
-    return out.length ? out : undefined
-  },
-}
 /**
  * 面板约束写为 JSON 数组（`panels='[{"id":"main","min":20}]'`）。
  * 无法解析为数组时视为未写：传入一个不完整的对象会让面板块数与作者写的节点数不一致，

@@ -27,7 +27,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { connectSankeyChart, sankeyChartAnatomy, sankeyChartMachine, sankeyChartMeta } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { createGeneratedElement, GEN_ATTR, generatedChildren, hasAuthorContent, reconcile, SVG_NS } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
@@ -38,7 +38,6 @@ import { MachineController } from '../runtime/machine-controller'
 const DEFS_KEY = 'defs'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
  * `<xh-sankey-chart>`：桑基图宿主，节点分列排开、流带的宽度与流量成正比，看流量从哪里来、到哪里去。

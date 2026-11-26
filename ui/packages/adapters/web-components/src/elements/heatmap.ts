@@ -39,19 +39,12 @@ import {
   normalizeHeatmapNumber,
   normalizeHeatmapString,
 } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { createGeneratedElement, generatedChildren, hasAuthorContent } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 字符串属性统一走这个转换器：属性缺席即 undefined，缺省值的唯一事实源留在 connect。
-// Lit 默认转换器会在属性被移除时把值落成 null，那样就再也表达不了「没写」。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-
-// 数字属性：属性缺席或空串即 undefined，交回 connect 定缺省。
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /** 往上找最近的某个角色节点，取它写着的 value：块把月份传给行，行把行身份传给格子。 */
 /** 作者写在 legend-item 上的 polarity 属性；只认两侧，其余一律当顺序色阶或中点那一格。 */

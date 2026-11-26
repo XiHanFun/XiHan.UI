@@ -9,14 +9,10 @@ import type { Size, Tone } from '@xihan-ui/core'
 import type { StatisticProps, StatisticTrend } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { connectStatistic, statisticAnatomy, statisticMeta, statisticStructure } from '@xihan-ui/headless'
+import { NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { GEN_ATTR } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
-
-// 属性缺席翻成 undefined，缺省值由 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 空串也当缺席：`value=""` 经 Number() 会变成 0，那是一个货真价实的数，不是"没写"
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
  * `<xh-statistic>`：Light-DOM 行为宿主，无状态机，把 connectStatistic 产出接到各角色节点。

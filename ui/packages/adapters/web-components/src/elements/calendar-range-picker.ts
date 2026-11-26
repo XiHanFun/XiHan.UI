@@ -20,16 +20,12 @@ import type {
   CalendarWeekdayFormat,
 } from '@xihan-ui/headless'
 import { calendarRangePickerAnatomy, calendarRangePickerMachine, calendarRangePickerMeta, connectCalendarRangePicker } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { END_INDEX_CONVERTER } from '../dom/end-index'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /** 作者写的面板下标；写坏了或没写按 0 算。 */
 function declaredIndex(el: Element | null | undefined, fallback = 0): number {

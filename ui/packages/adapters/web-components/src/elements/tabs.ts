@@ -10,7 +10,7 @@ import type { TabsActivationMode, TabsNode, TabsSchema, TabsTranslations, TabsVa
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTabs, tabsAnatomy, tabsMachine, tabsMeta, tabsOverflowMenuProps, tabsStructure } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
@@ -18,9 +18,6 @@ import { MachineController } from '../runtime/machine-controller'
 import { OverflowMenuController } from '../runtime/overflow-menu-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 import { XhIconElement } from './icon'
-
-// 属性缺席翻成 undefined，缺省值由 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /** 换位事件的 detail：从状态机 props 上的回调取，不在适配器中另抄一份类型。 */
 type TabsMoveDetails = Parameters<NonNullable<TabsSchema['props']['onTabMove']>>[0]

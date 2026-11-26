@@ -10,7 +10,7 @@ import type { FieldArrayApi, FieldArrayColumn, FieldArrayItem, FieldArrayItemPro
 import type { ElementStructure } from '../element-base'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectFieldArray, fieldArrayAnatomy, fieldArrayDragContainer, fieldArrayDragItems, fieldArrayDragProps, fieldArrayMachine, fieldArrayMeta, fieldArrayStructure, sortableMachine } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -21,8 +21,6 @@ const FORM_SERVICE = Symbol.for('xh.form.service')
 type FormHost = HTMLElement & { [FORM_SERVICE]?: Service<FormSchema> }
 
 // 属性缺席翻成 undefined，以此区分受控与非受控。
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /** 作者写在行上的下标。缺席或写错时退回文档序：把行按顺序排列本身就是声明。 */
 function declaredIndex(el: HTMLElement, position: number): number {

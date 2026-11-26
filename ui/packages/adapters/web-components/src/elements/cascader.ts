@@ -25,7 +25,7 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_
 import { createExitGate } from '@xihan-ui/core/presence'
 import { cascaderAnatomy, cascaderMachine, cascaderMeta, cascaderStructure, connectCascader } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { PART_ATTR } from '../dom/parts'
@@ -33,10 +33,6 @@ import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
-
-// 属性缺席翻成 undefined，缺省值由机器与 connect 决定；Lit 自带转换器会把缺席落成 null/false，表达不了"未指定"。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
 
 /** 条目一系的归属容器：文本与勾选标记向上找最近的那个条目。 */
 const ITEM_SELECTOR = '[data-xh-part="item"]'

@@ -9,15 +9,11 @@ import type { Direction, Orientation, Service, Size, Tone } from '@xihan-ui/core
 import type { AnchorNode, AnchorSchema, AnchorTranslations, AnchorValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { anchorAnatomy, anchorMachine, anchorMeta, anchorStructure, connectAnchor } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
 
 /**
  * `<xh-anchor>`：锚点导航行为宿主，激活项由状态机的滚动观察器结算，

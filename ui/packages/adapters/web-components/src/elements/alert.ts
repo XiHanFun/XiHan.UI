@@ -9,7 +9,7 @@ import type { Tone } from '@xihan-ui/core'
 import type { AlertOpenChangeDetails, AlertSchema } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { alertAnatomy, alertMachine, alertMeta, alertStructure, connectAlert } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
@@ -58,7 +58,7 @@ export class XhAlertElement extends XhElement {
   // 布尔一律用三态转换器：属性缺席翻成 undefined，缺省值由机器与 connect 决定；
   // 用 Lit 自带的 Boolean 转换器的话，缺省为真的 closable / default-open 永远关不掉
   static override properties = {
-    tone: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
+    tone: { converter: STRING_CONVERTER },
     closable: { converter: BOOLEAN_CONVERTER },
     banner: { converter: BOOLEAN_CONVERTER },
     open: { converter: BOOLEAN_CONVERTER },
@@ -68,8 +68,8 @@ export class XhAlertElement extends XhElement {
     },
     // 文案是对象，只能走 property
     translations: { attribute: false },
-    titleText: { converter: { fromAttribute: (v: string | null) => v ?? undefined }, attribute: 'title-text' },
-    description: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
+    titleText: { converter: STRING_CONVERTER, attribute: 'title-text' },
+    description: { converter: STRING_CONVERTER },
   }
 
   declare tone?: Tone

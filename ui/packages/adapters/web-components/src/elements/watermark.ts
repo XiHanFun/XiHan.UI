@@ -7,14 +7,10 @@
 
 import type { WatermarkImageSize, WatermarkSchema } from '@xihan-ui/headless'
 import { connectWatermark, watermarkAnatomy, watermarkMachine, watermarkMeta } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 属性缺席翻成 undefined，缺省值由 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
  * `<xh-watermark>`：Light-DOM 行为宿主，运行 watermark 状态机（地址形式图片的取回与防篡改），

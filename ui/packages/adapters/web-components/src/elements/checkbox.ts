@@ -9,7 +9,7 @@ import type { Size, Tone } from '@xihan-ui/core'
 import type { CheckboxCheckedChangeDetails, CheckboxCheckedState, CheckboxSchema } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { checkboxAnatomy, checkboxMachine, checkboxMeta, checkboxStructure, connectCheckbox } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -57,8 +57,8 @@ export class XhCheckboxElement extends XhElement {
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
     required: { converter: BOOLEAN_CONVERTER },
-    name: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
-    value: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
+    name: { converter: STRING_CONVERTER },
+    value: { converter: STRING_CONVERTER },
     tone: {},
     size: {},
   }

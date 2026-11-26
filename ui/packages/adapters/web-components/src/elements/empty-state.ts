@@ -9,12 +9,10 @@ import type { Tone } from '@xihan-ui/core'
 import type { EmptyStateLive, EmptyStateSchema, EmptyStateStatus } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { connectEmptyState, emptyStateAnatomy, emptyStateMachine, emptyStateMeta, emptyStateStructure } from '@xihan-ui/headless'
+import { STRING_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 属性缺席翻成 undefined，缺省值由 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
  * `<xh-empty-state>`：空状态行为宿主，把 connectEmptyState 产出的属性接到角色节点上。

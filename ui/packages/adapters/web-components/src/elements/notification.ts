@@ -29,7 +29,7 @@ import {
   notificationMachine,
   notificationMeta,
 } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
@@ -37,11 +37,6 @@ import { renderedTitleDescription } from '../dom/title-description'
 import { XhElement } from '../element-base'
 import { NotificationItemExitGate } from '../notification-item-exit'
 import { MachineController } from '../runtime/machine-controller'
-
-// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 空串也当缺席：maxVisible="" 经 Number() 会变成 0，那会被当成不限而不是缺省
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
  * 该堆叠对应哪个位置。属性缺席时交 undefined，由 connect 回落到队列的 placement。

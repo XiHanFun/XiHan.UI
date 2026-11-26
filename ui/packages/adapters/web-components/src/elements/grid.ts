@@ -6,8 +6,8 @@
 // 提供 grid 相关实现。
 
 import type { GridColumnCount, GridItemProps, GridProps } from '@xihan-ui/headless'
-import { connectGrid, gridAnatomy, gridMeta, normalizeGridCount, normalizeGridTier } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { connectGrid, gridAnatomy, gridMeta, normalizeGridTier } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -15,7 +15,6 @@ import { XhElement } from '../element-base'
 type ColumnsByBreakpoint = Exclude<GridProps['columns'], GridColumnCount | undefined>
 
 // 属性缺席翻成 undefined，缺省值由 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 /**
  * 列数写整数就是各档同一个列数（`columns="3"`），写 JSON 对象就是逐档的列数
  * （`columns='{"base":1,"md":3}'`）。解析不出对象时当没写：落一个半截对象进去，
@@ -66,7 +65,7 @@ export class XhGridElement extends XhElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开
   static override properties = {
     columns: { converter: COLUMNS_CONVERTER },
-    rows: { converter: { fromAttribute: normalizeGridCount } },
+    rows: { converter: NUMBER_CONVERTER },
     minColWidth: { converter: STRING_CONVERTER, attribute: 'min-col-width' },
     gap: { converter: STRING_CONVERTER },
     rowGap: { converter: STRING_CONVERTER, attribute: 'row-gap' },

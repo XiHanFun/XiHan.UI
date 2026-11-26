@@ -10,16 +10,12 @@ import type { FormControlState, TagGroupApi, TagGroupItemDeleteDetails, TagGroup
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTagGroup, tagGroupAnatomy, tagGroupMachine, tagGroupMeta, tagGroupStructure } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 属性缺席翻成 undefined，缺省值由机器与 connect 决定
-// （value 尤其：落成 null 就分不出「非受控」与「受控且当前无选中」）。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
  * `<xh-tag-group>`：Light-DOM 行为宿主：作者写 root / label / list 与若干 item（内含 cell）角色节点，

@@ -9,7 +9,7 @@ import type { Size, Tone } from '@xihan-ui/core'
 import type { BadgeApi, BadgePlacement, BadgeSchema } from '@xihan-ui/headless'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { badgeAnatomy, badgeMachine, badgeMeta, connectBadge } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { createGeneratedElement, hasAuthorContent, reconcile, setText } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -42,15 +42,15 @@ export class XhBadgeElement extends XhElement {
 
   // 属性缺席翻成 undefined，缺省值由 connect 决定
   static override properties = {
-    placement: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
-    tone: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
-    size: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
-    count: { converter: { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) } },
-    max: { converter: { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) } },
+    placement: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
+    count: { converter: NUMBER_CONVERTER },
+    max: { converter: NUMBER_CONVERTER },
     showZero: { converter: BOOLEAN_CONVERTER, attribute: 'show-zero' },
     dot: { converter: BOOLEAN_CONVERTER },
     pulse: { converter: BOOLEAN_CONVERTER },
-    label: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
+    label: { converter: STRING_CONVERTER },
   }
 
   declare placement?: BadgePlacement

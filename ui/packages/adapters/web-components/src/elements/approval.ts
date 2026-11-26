@@ -16,18 +16,13 @@ import type {
   ApprovalTranslations,
 } from '@xihan-ui/headless'
 import { approvalAnatomy, approvalMachine, approvalMeta, connectApproval } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 属性缺席翻成 undefined，缺省值由机器与 connect 给出
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 空串按缺席处理，避免 Number('') 落成 0
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
  * `<xh-approval>`：Light-DOM 行为宿主：危险动作执行前的人工审批闸门。

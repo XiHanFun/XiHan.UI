@@ -12,7 +12,7 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { createExitGate } from '@xihan-ui/core/presence'
 import { connectHoverCard, hoverCardAnatomy, hoverCardMachine, hoverCardMeta } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
@@ -22,18 +22,6 @@ import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
-
-// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 写不成数的值（文字、单位后缀）当作没写，缺省仍由机器给
-const NUMBER_CONVERTER = {
-  fromAttribute: (v: string | null) => {
-    if (v === null)
-      return undefined
-    const n = Number(v)
-    return Number.isFinite(n) ? n : undefined
-  },
-}
 
 /**
  * `<xh-hover-card>`：Light-DOM 行为宿主：作者写 root / trigger / positioner / content / arrow 角色节点，

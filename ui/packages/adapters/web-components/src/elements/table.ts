@@ -36,7 +36,7 @@ import type { ElementStructure } from '../element-base'
 import type { StructureVirtualBinding } from '../runtime/structure-virtual'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTable, tableAnatomy, tableMachine, tableMeta, tablePaginationStructure, tableStructure, tableVisibleDataRowCount, VIRTUAL_STRUCTURE_DELEGATE } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { GEN_ATTR } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
@@ -45,11 +45,6 @@ import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 import { XhMenuElement } from './menu'
 import { XhPaginationElement } from './pagination'
-
-// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 数值属性：属性缺席即 undefined，缺省值的唯一事实源留在 connect
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /** 行换位事件的 detail：从状态机 props 上的回调取，不在适配器中另抄一份类型。 */
 type TableRowMoveDetails = Parameters<NonNullable<TableSchema['props']['onRowMove']>>[0]

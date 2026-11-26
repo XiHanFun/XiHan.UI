@@ -8,7 +8,7 @@
 import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { ButtonGroupProps } from '@xihan-ui/headless'
 import { buttonGroupAnatomy, buttonGroupMeta, connectButtonGroup } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -39,10 +39,10 @@ export class XhButtonGroupElement extends XhElement {
 
   // 属性缺席翻成 undefined，缺省值由 connect 决定
   static override properties = {
-    orientation: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
-    variant: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
-    tone: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
-    size: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
+    orientation: { converter: STRING_CONVERTER },
+    variant: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     fullWidth: { converter: BOOLEAN_CONVERTER, attribute: 'full-width' },
     split: { converter: BOOLEAN_CONVERTER },

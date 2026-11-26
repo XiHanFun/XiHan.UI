@@ -16,14 +16,12 @@ import type {
   GridListValueChangeDetails,
 } from '@xihan-ui/headless'
 import { connectGridList, gridListAnatomy, gridListMachine, gridListMeta } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-const STRING_CONVERTER = { fromAttribute: (value: string | null) => value ?? undefined }
 
 /**
  * xh-grid-list —— 可选择、可承载行内按钮的非表格集合。拖动通过 xh-sortable 组合，

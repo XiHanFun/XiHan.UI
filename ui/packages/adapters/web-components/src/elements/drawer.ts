@@ -13,7 +13,7 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xih
 import { createExitGate } from '@xihan-ui/core/presence'
 import { connectDrawer, drawerAnatomy, drawerMachine, drawerMeta, drawerStructure } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
@@ -22,18 +22,6 @@ import { withoutHidden } from '../overlay-exit'
 import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
-
-// 属性缺席翻成 undefined，缺省值由 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 数值属性同理；写不成数的值当作没写，缺省仍由机器给
-const NUMBER_CONVERTER = {
-  fromAttribute: (v: string | null) => {
-    if (v === null)
-      return undefined
-    const n = Number(v)
-    return Number.isFinite(n) ? n : undefined
-  },
-}
 
 /**
  * `<xh-drawer>`：Light-DOM 行为宿主，运行 drawer 状态机并把 connect 产出接到角色节点上，

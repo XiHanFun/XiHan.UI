@@ -9,11 +9,9 @@ import type { ControlVariant, Size } from '@xihan-ui/core'
 import type { DescriptionsApi, DescriptionsColumns, DescriptionsNode, DescriptionsPlacement, DescriptionsProps } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { connectDescriptions, descriptionsAnatomy, descriptionsMeta, descriptionsStructure } from '@xihan-ui/headless'
+import { STRING_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
-
-// 属性缺席翻成 undefined，缺省值由 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
  * `<xh-descriptions>`：Light-DOM 行为宿主，无状态机，把 connectDescriptions 产出接到各角色节点。

@@ -8,16 +8,11 @@
 import type { Direction, Orientation, Size } from '@xihan-ui/core'
 import type { CarouselEffect, CarouselPageChangeDetails, CarouselSchema, CarouselTranslations } from '@xihan-ui/headless'
 import { carouselAnatomy, carouselMachine, carouselMeta, connectCarousel } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 属性缺席翻成 undefined，缺省值由 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 空串也当缺席，避免 Number('') 落成页码 0
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
  * autoplay 布尔或毫秒两用：缺席 = undefined，`autoplay` / `autoplay="true"` = 默认间隔，

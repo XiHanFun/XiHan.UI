@@ -8,15 +8,11 @@
 import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { ClipboardCopyErrorDetails, ClipboardSchema, ClipboardStatusChangeDetails, ClipboardTranslations } from '@xihan-ui/headless'
 import { clipboardAnatomy, clipboardMachine, clipboardMeta, connectClipboard } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
  * `<xh-clipboard>`：Light-DOM 行为宿主，运行 clipboard 状态机并把 connect 产出接到角色节点上。

@@ -9,7 +9,7 @@ import type { HighlighterPort, IdGenerator } from '@xihan-ui/core'
 import type { CodeViewApi, CodeViewClampedChangeDetails, CodeViewFoldedChangeDetails, CodeViewProps, CodeViewSchema, CodeViewTranslations } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { codeViewAnatomy, codeViewMachine, codeViewMeta, connectCodeView, createCodeViewHighlighterResource } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -18,9 +18,7 @@ import { MachineController } from '../runtime/machine-controller'
 const defaultHighlighter = createCodeViewHighlighterResource(() => import('@xihan-ui/code-highlight'))
 
 // 属性缺席翻成 undefined，缺省值由 connect 给出
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 空串按缺席处理，避免 Number('') 落成 0
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 // 逗号分隔的行号表；缺席为 undefined，空串是一张空表（受控地一个都不折叠）
 /** 按块折叠时铺出来的一行：开合只改属性，不重铺节点。 */
 interface FoldingLine {

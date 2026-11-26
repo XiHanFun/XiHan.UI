@@ -9,24 +9,12 @@ import type { Orientation, Size, Tone } from '@xihan-ui/core'
 import type { CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupSchema, CheckboxGroupValueChangeDetails, CheckboxGroupVariant, ResolvedFormControlState, SelectionValueKey } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { checkboxGroupAnatomy, checkboxGroupMachine, checkboxGroupMeta, checkboxGroupStructure, connectCheckboxGroup } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER, STRING_LIST_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 属性缺席翻成 undefined，以此区分受控与非受控。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-
-// 数值：缺席或空串翻成 undefined，由机器按「不设限」处理。
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-
-// 值集合走逗号分隔（value="a,b"）：空串是空集合，只有 null 才翻成 undefined。
-// 条目值里不能带逗号，用 property 赋值则不受限。
-const LIST_CONVERTER = {
-  fromAttribute: (v: string | null) => (v === null ? undefined : v.split(',').map(s => s.trim()).filter(Boolean)),
-}
 
 /**
  * `<xh-checkbox-group>`：Light-DOM 行为宿主：作者写 root / label 与若干 item 角色节点，
@@ -87,11 +75,11 @@ export class XhCheckboxGroupElement<V = string> extends XhElement {
   static override properties = {
     // 数组只走 property，属性表达不了；给了它条目的文本与禁用即以数据为准
     collection: { attribute: false },
-    valueKey: { converter: { fromAttribute: (v: string | null) => v ?? undefined }, attribute: 'value-key' },
-    label: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
-    value: { converter: LIST_CONVERTER },
-    defaultValue: { converter: LIST_CONVERTER, attribute: 'default-value' },
-    itemValues: { converter: LIST_CONVERTER, attribute: 'item-values' },
+    valueKey: { converter: STRING_CONVERTER, attribute: 'value-key' },
+    label: { converter: STRING_CONVERTER },
+    value: { converter: STRING_LIST_CONVERTER },
+    defaultValue: { converter: STRING_LIST_CONVERTER, attribute: 'default-value' },
+    itemValues: { converter: STRING_LIST_CONVERTER, attribute: 'item-values' },
     minSelected: { converter: NUMBER_CONVERTER, attribute: 'min-selected' },
     maxSelected: { converter: NUMBER_CONVERTER, attribute: 'max-selected' },
     disabled: { converter: BOOLEAN_CONVERTER },

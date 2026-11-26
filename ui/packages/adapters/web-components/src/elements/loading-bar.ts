@@ -8,16 +8,14 @@
 import type { Tone } from '@xihan-ui/core'
 import type { LoadingBarSchema, LoadingBarTranslations, LoadingBarValueChangeDetails } from '@xihan-ui/headless'
 import { connectLoadingBar, loadingBarAnatomy, loadingBarMachine, loadingBarMeta } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 空串也当缺席：`value=""` 经 Number() 会变成 0，那是一个货真价实的进度值，不是"没写"
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 // 厚度两用：`height="3"` 按像素，`height="0.25rem"` 按 CSS 长度原样交给 connect
 const HEIGHT_CONVERTER = {
   fromAttribute: (v: string | null): string | number | undefined => {

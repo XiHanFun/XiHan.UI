@@ -8,11 +8,9 @@
 import type { Size, Tone } from '@xihan-ui/core'
 import type { TypographyAlign, TypographyProps, TypographyVariant, TypographyWeight } from '@xihan-ui/headless'
 import { connectTypography, typographyAnatomy, typographyMeta } from '@xihan-ui/headless'
+import { STRING_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
-
-// 属性缺席翻成 undefined，缺省值由 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
  * 读取作者写在角色节点上的声明；属性缺席即 undefined。

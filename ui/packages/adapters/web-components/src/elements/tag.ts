@@ -8,14 +8,11 @@
 import type { Size, Tone } from '@xihan-ui/core'
 import type { TagOpenChangeDetails, TagSchema, TagVariant } from '@xihan-ui/headless'
 import { connectTag, tagAnatomy, tagMachine, tagMeta } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 字符串属性统一走这个转换器：属性缺席即 undefined，缺省值的唯一事实源留在 connect。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
  * `<xh-tag>`：Light-DOM 行为宿主：作者写 root、label、close-trigger 角色节点，

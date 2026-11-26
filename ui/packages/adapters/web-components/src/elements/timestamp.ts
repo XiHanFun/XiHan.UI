@@ -7,13 +7,10 @@
 
 import type { TimestampDisplay, TimestampSchema, TimestampTranslations, TimestampValue } from '@xihan-ui/headless'
 import { connectTimestamp, timestampAnatomy, timestampMachine, timestampMeta } from '@xihan-ui/headless'
+import { NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 属性缺席翻成 undefined，缺省值由 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
  * `<xh-timestamp>`：Light-DOM 行为宿主，把 connectTimestamp 产出接到 root 角色节点。

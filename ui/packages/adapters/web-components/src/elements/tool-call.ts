@@ -11,17 +11,12 @@ import type { ToolCallOpenChangeDetails, ToolCallPhase, ToolCallProps, ToolCallS
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { createExitGate } from '@xihan-ui/core/presence'
 import { connectToolCall, isToolCallRunning, toolCallAnatomy, toolCallMachine, toolCallMeta } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
-
-// 属性缺席翻成 undefined，缺省值由机器与 connect 给出
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 空串按缺席处理，避免 Number('') 落成 0
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
  * `<xh-tool-call>`：Light-DOM 行为宿主：运行 tool-call 状态机，把 connect 产出接到作者编写的

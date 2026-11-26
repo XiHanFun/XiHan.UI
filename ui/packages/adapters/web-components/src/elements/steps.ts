@@ -10,16 +10,11 @@ import type { StepNode, StepsItemProps, StepsSchema, StepStatus, StepsTranslatio
 import type { ElementStructure } from '../element-base'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectSteps, stepsAnatomy, stepsMachine, stepsMeta, stepsStructure } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, NUMBER_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 数值属性统一走这个转换器：属性缺席即 undefined，缺省值的唯一事实源留在 connect。
-// 空串也当缺席：`value=""` 经 Number() 会变成 0，那是一个真实存在的步序，不该由笔误产生。
-const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 const ITEM_SELECTOR = '[data-xh-part="item"]'
 

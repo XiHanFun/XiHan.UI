@@ -18,14 +18,11 @@ import type {
 } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { connectSignaturePad, EMPTY_SIGNATURE, signaturePadAnatomy, signaturePadMachine, signaturePadMeta, signaturePadStructure } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 属性缺席翻成 undefined，缺省值的唯一事实源留在 connect。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
  * `<xh-signature-pad>`：Light-DOM 行为宿主：作者写 root / control / path 三个必需角色节点

@@ -13,7 +13,7 @@ import type { PropertyValues } from '../reactive'
 import { createCounterIdGenerator, createScope, DIAGNOSTIC_CODES, logicallyContains, reportDiagnostic } from '@xihan-ui/core'
 import { connectFieldset, fieldsetAnatomy, fieldsetMeta, fieldsetStructure, hasNamingContent } from '@xihan-ui/headless'
 import { notifyXhConfigChange } from '../config'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -59,7 +59,7 @@ export class XhFieldsetElement extends XhElement {
   // 三个开关走三态转换器：disabled="false" 读成假，与 Vue 侧 :disabled="false" 同解。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
-    legend: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
+    legend: { converter: STRING_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     invalid: { converter: BOOLEAN_CONVERTER },
     required: { converter: BOOLEAN_CONVERTER },

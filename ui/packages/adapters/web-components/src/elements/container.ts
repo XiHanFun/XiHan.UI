@@ -7,6 +7,7 @@
 
 import type { ContainerMaxWidth, ContainerProps } from '@xihan-ui/headless'
 import { connectContainer, containerAnatomy, containerMeta } from '@xihan-ui/headless'
+import { STRING_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -28,7 +29,7 @@ export class XhContainerElement extends XhElement {
 
   // 属性缺席翻成 undefined，缺省值由 connect 决定
   static override properties = {
-    maxWidth: { converter: { fromAttribute: (v: string | null) => v ?? undefined }, attribute: 'max-width' },
+    maxWidth: { converter: STRING_CONVERTER, attribute: 'max-width' },
   }
 
   declare maxWidth?: ContainerMaxWidth

@@ -8,12 +8,9 @@
 import type { Tone } from '@xihan-ui/core'
 import type { HighlightApi, HighlightProps } from '@xihan-ui/headless'
 import { connectHighlight, highlightAnatomy, highlightMeta } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
-
-// 属性缺席翻成 undefined，缺省值由 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
  * `<xh-highlight>`：Light-DOM 行为宿主，无状态机，把 text 按 keyword 切段铺进 root。

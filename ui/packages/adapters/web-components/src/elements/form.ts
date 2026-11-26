@@ -31,7 +31,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { FormControlHost } from '../runtime/form-control-host'
 import { connectForm, formAnatomy, formFieldModel, formMachine, formMeta } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -39,7 +39,6 @@ import { FORM_CONTROL_HOST_SELECTOR, isComposedControl } from '../runtime/form-c
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 仅限本适配器复合控件的私有服务槽；不用导出函数，避免误变成自定义元素公开 API。
 const FORM_SERVICE = Symbol.for('xh.form.service')
 

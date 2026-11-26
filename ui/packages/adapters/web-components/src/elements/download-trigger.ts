@@ -8,14 +8,11 @@
 import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { DownloadTriggerCompleteDetails, DownloadTriggerData, DownloadTriggerErrorDetails, DownloadTriggerSchema, DownloadTriggerTranslations } from '@xihan-ui/headless'
 import { connectDownloadTrigger, downloadTriggerAnatomy, downloadTriggerMachine, downloadTriggerMeta } from '@xihan-ui/headless'
-import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { BOOLEAN_CONVERTER, STRING_CONVERTER } from '../dom/converters'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
-const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
  * `<xh-download-trigger>`：Light-DOM 行为宿主，运行 download-trigger 状态机并把 connect 产出接到 root 角色节点。
