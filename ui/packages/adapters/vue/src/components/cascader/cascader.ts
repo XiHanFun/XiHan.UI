@@ -138,6 +138,10 @@ export const XhCascaderRoot = defineComponent({
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
     loop: { type: Boolean, default: undefined },
+    /** 第一次展开时才挂载 content 里的各列与搜索框，默认 false。 */
+    lazyMount: { type: Boolean, default: undefined },
+    /** 收起动画播完后卸载 content 里的各列与搜索框，默认 false；下次展开重新挂载。 */
+    unmountOnExit: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction> },
   },
   // *-change 携带 details 对象，update:* 携带裸值；选中值恒为路径数组，单选时长度 ≤ 1
@@ -425,7 +429,8 @@ export const XhCascaderContent = defineComponent({
     // 收起时只隐藏不卸载；跨列的键盘导航也在这一层处理
     return () => {
       const api = ctx.api.value
-      const children = slots.default?.() ?? []
+      // 各列与搜索框挂不挂由 headless 按 lazyMount / unmountOnExit 判，手写与按数据铺的都走这一处；空态与在途占位常挂
+      const children = api.isContentMounted(ctx.visible.value) ? slots.default?.() ?? [] : []
       return h('div', {
         ...api.getContentProps(),
         // 收起跟着退场闸门走：hidden 与内联 display 都等退场播完才落。宿主的

@@ -64,6 +64,11 @@ export interface CascaderStructureOptions {
   searchable?: boolean
   /** 作者给了哪些插槽的内容，只认 label。 */
   slotted?: StructureSlotted
+  /**
+   * content 里的内容这一刻铺不铺，缺省铺；取 isContentMounted 的判定。Web Components 生成节点时按它增删，
+   * Vue / React 由 content 部件自己按判定渲不渲子节点，不必传。
+   */
+  contentMounted?: boolean
 }
 
 type CascaderStructureModel = Pick<CascaderApi, 'multiple' | 'tags' | 'columns' | 'searchResults' | 'searching' | 'columnLoadState' | 'translations'>
@@ -123,7 +128,9 @@ export function cascaderStructure(model: CascaderStructureModel, options: Cascad
     ],
   }
   const content: CascaderNode[] = []
-  if (options.searchable) {
+  // lazyMount / unmountOnExit 判为不挂时 content 节点照旧在，只留空态与在途两个占位，各列与搜索框不铺
+  const mounted = options.contentMounted !== false
+  if (mounted && options.searchable) {
     content.push(
       { key: 'input', tag: 'input', part: 'input' },
       {
@@ -135,7 +142,7 @@ export function cascaderStructure(model: CascaderStructureModel, options: Cascad
     )
   }
   content.push(
-    ...model.columns.map(column => columnStructure(model, column)),
+    ...(mounted ? model.columns.map(column => columnStructure(model, column)) : []),
     { key: 'empty', tag: 'div', part: 'empty', text: model.searching ? t.noMatch : t.empty },
     { key: 'loading', tag: 'div', part: 'loading', text: t.loading },
   )

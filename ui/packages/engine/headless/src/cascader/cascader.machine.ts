@@ -10,6 +10,7 @@ import type { BranchLoadPort } from '../shared/lazy-branch'
 import type { CascaderBranchLoadSnapshot, CascaderFocusIntent, CascaderNode, CascaderNodeMeta, CascaderPressedPart, CascaderSchema, CascaderValue } from './cascader.types'
 import { cascadeToggle, collapseChecked, itemValue, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
+import { markOpened, openedCell } from '../shared/disclosure-mount'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import {
   abortBranchLoads,
@@ -211,6 +212,8 @@ export const cascaderMachine = createMachine({
   context: ({ prop, cell }) => ({
     // 首帧标记：挂载时开着、还没收起过
     openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
+    // 首帧即展开也算展开过：lazyMount 下列照常首屏就在
+    opened: openedCell(cell, openAtMount(prop)),
     // 位置结果由 trackPosition 里的引擎回填
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     value: cell<string[][]>(() => ({
@@ -301,7 +304,7 @@ export const cascaderMachine = createMachine({
     },
     open: {
       // 展开那一刻把列一路铺到选中路径上并挑好焦点锚点，全程纯计算
-      entry: ['setInitialFocusedPath', 'loadActiveBranches'],
+      entry: ['markOpened', 'setInitialFocusedPath', 'loadActiveBranches'],
       // 收起即松开：按住 Enter 选中叶子后浮层收起，条目随内容一起藏起，不会再来 keyup；在途的分支请求一并中止
       exit: ['clearFocusedPath', 'clearInput', 'releasePress', 'cancelBranchLoads'],
       // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
@@ -354,6 +357,7 @@ export const cascaderMachine = createMachine({
       ...controlledOpenActions<CascaderSchema>({ reason: true }),
       markTagListTracked: ({ context }) => context.set('tagListTracked', true),
       clearOpenedAtMount,
+      markOpened,
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'PRESS.START')

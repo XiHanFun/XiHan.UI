@@ -14936,6 +14936,7 @@
       "form",
       "invalid",
       "labelled",
+      "lazyMount",
       "loadChildren",
       "loading",
       "loop",
@@ -14960,6 +14961,7 @@
       "size",
       "tone",
       "translations",
+      "unmountOnExit",
       "value",
       "variant"
     ],
@@ -23782,6 +23784,7 @@
         "form",
         "invalid",
         "label",
+        "lazy-mount",
         "loading",
         "loop",
         "max-selected",
@@ -23798,6 +23801,7 @@
         "separator",
         "size",
         "tone",
+        "unmount-on-exit",
         "variant"
       ],
       "events": [

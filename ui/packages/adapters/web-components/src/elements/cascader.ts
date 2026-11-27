@@ -28,6 +28,7 @@ import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { PART_ATTR } from '../dom/parts'
 import { withoutHidden } from '../overlay-exit'
+import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayController } from '../runtime/overlay-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
@@ -86,6 +87,8 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
  * @attr {boolean} loop - 列内上下键到达首尾回绕，默认开启；写 loop="false" 关闭
+ * @attr {boolean} lazy-mount - 第一次展开时才挂载各列与搜索框：生成的列第一次展开才铺；手写的写进 content 里的一个 `<template>`，第一次展开才克隆、之后常驻。没写模板的手写内容始终常驻
+ * @attr {boolean} unmount-on-exit - 收起动画播完后撤走各列与搜索框（生成的与 `<template>` 克隆出的），下次展开重新铺，默认 false
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的进入子列 / 返回上一列语义，默认 ltr
  * @fires value-change - 选中路径集合变化；detail 为 `{ value: string[][] }`
  * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
@@ -145,6 +148,8 @@ export class XhCascaderElement extends XhPortalHostElement {
           clearable: host.clearable,
           searchable: host.searchable,
           slotted: name => host.slotted(name),
+          // 结构排在 wire() 之前，闸门这一轮还没跟上 open：展开中或退场没播完都算在场，退场播完由闸门叫的那一轮撤掉各列
+          contentMounted: host.contentMounted(),
         })
       : undefined,
   }
@@ -187,6 +192,8 @@ export class XhCascaderElement extends XhPortalHostElement {
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
+    lazyMount: { converter: BOOLEAN_CONVERTER, attribute: 'lazy-mount' },
+    unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
   }
 
@@ -224,6 +231,8 @@ export class XhCascaderElement extends XhPortalHostElement {
   declare placement?: Placement
   declare offset?: number
   declare loop?: boolean
+  declare lazyMount?: boolean
+  declare unmountOnExit?: boolean
   declare direction?: Direction
   declare translations?: CascaderSchema['props']['translations']
 
@@ -376,6 +385,15 @@ export class XhCascaderElement extends XhPortalHostElement {
     { scope: this.cascaderScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
+  /** content 里 `<template>` 写的列与搜索框按 headless 的挂卸判定克隆进来或撤走；没写模板的作者节点照旧常驻 */
+  private readonly lazyContent = new LazyContent({ stash: false })
+
+  /** 生成结构时 content 里铺不铺各列与搜索框。 */
+  private contentMounted(): boolean {
+    const api = connectCascader(this.ctrl.service, wcNormalize)
+    return api.isContentMounted(api.open || this.overlay.visible)
+  }
+
   /**
    * 列区的自绘滚动条：与 content 同级挂在已经 fixed 的 positioner 上。
    * 只排布横向：列多到放不下时整体横向滚动，纵向溢出归每一列自身；
@@ -451,6 +469,8 @@ export class XhCascaderElement extends XhPortalHostElement {
       placement: this.placement,
       offset: this.offset,
       loop: this.loop,
+      lazyMount: this.lazyMount,
+      unmountOnExit: this.unmountOnExit,
       dir: this.direction,
       translations: this.translations,
       onValueChange: this.notifyValue,
@@ -748,6 +768,8 @@ export class XhCascaderElement extends XhPortalHostElement {
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     const visible = this.overlay.sync(api.open, this.getPart('content'))
     this.setPartHidden(this.getPart('content'), !visible, { attribute: true })
+    // 手写在 content 里 <template> 中的列与搜索框按 headless 的判定克隆或撤走；新挂上的部件由部件观察器补一轮 wire 接上属性
+    this.lazyContent.sync(this.getPart('content'), api.isContentMounted(visible))
     this.getParts('column').forEach((el, position) => {
       this.setPartHidden(el, this.levelOf(el, position) >= api.columns.length)
     })

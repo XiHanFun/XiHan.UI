@@ -345,6 +345,13 @@ export interface CascaderSchema extends MachineSchema {
     offset?: number
     /** 列内上下键到达首尾是否回绕，默认 true。 */
     loop?: boolean
+    /**
+     * 第一次展开时才挂载 content 里的各列与搜索框，默认 false。页面上级联选择很多（表格每行一个）时，
+     * 收起态每个实例背着的整份列是挂载开销的大头。positioner、content 与空态、在途两个占位照旧常驻，触发器的 aria-controls 始终指得到它。
+     */
+    lazyMount?: boolean
+    /** 收起动画播完后卸载 content 里的各列与搜索框，默认 false；下次展开重新挂载。 */
+    unmountOnExit?: boolean
     /** 文字方向，默认 ltr；只对调左右方向键的进入子列 / 返回上一列语义。 */
     dir?: Direction
     /** value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
@@ -366,6 +373,8 @@ export interface CascaderSchema extends MachineSchema {
      * 第一次收起时清掉，之后的每一次打开照常进场。
      */
     openedAtMount: boolean
+    /** 挂载之后展开过没有（含首帧即展开）。lazyMount 下 content 里的各列与搜索框从第一次展开起才挂载。 */
+    opened: boolean
     /** 定位引擎回填的最新结果；connect 只读取它，不涉及 DOM 也不调用引擎。 */
     position: PositionResult | null
     /** 选中路径集合，恒为数组的数组。受控（value 提供）时 cell 直读 prop。 */
@@ -476,6 +485,7 @@ export interface CascaderSchema extends MachineSchema {
     | 'retryBranch'
     | 'cancelBranchLoads'
     | 'clearOpenedAtMount'
+    | 'markOpened'
   effect: 'trackPosition' | 'trackLayer' | 'trackTagListMotion' | 'trackBranchLoads'
 }
 
@@ -600,4 +610,10 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   getItemDescriptionProps: (props: CascaderItemProps) => T['element']
   getItemSuffixProps: (props: CascaderItemProps) => T['element']
   getItemIndicatorProps: (props: CascaderItemProps) => T['element']
+  /**
+   * content 里的各列与搜索框此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。
+   * 缺省恒为真；lazyMount 下没展开过为假；unmountOnExit 下闸门落下（退场播完）即为假。
+   * positioner、content 与空态、在途两个占位不受它管，一向常驻。
+   */
+  isContentMounted: (present: boolean) => boolean
 }

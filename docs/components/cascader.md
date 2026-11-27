@@ -82,6 +82,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 - 支持空状态、整浮层加载状态与原生表单提交。
 - 浮层锚在字段盒上、与盒起始缘对齐，宽度按内容定：每一列按条目的自然宽度，不随字段盒拉伸，长选项撑到条目上限为止、余下的在条目里截断；搜索框不参与定宽，铺满列撑出的宽度；面板随列数伸展，宽过可用区时收成可用宽度并在面内横滚。
 - 面板含多列，取不透景的实体浮起面，与时间选择同一档。
+- content 里的各列与搜索框缺省常驻、收起只隐藏。`lazyMount` 让它们第一次展开时才挂载、之后常驻：表格每行一个级联选择时省下收起态的整份列；`unmountOnExit` 让它们在退场动画播完后卸载、下次展开重新挂载。触发器里的选中文字与标签按 `collection` 算，不受这两项影响；positioner、content 与空态、在途两个占位一向常驻。Web Components 生成的内容照同一规则增删；手写的内容写进 content 里一个 `<template>`，按同一规则克隆或撤走。
 - 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、只报 `aria-busy`，选项照常可选、不淡化（淡到禁用透明度会把文字压到 4.5:1 以下），在途占位让位；空态与加载文字取次要文字、上下内距一档。
 - 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是盒（触发钮，`clearable` 时带清空钮）与浮层。触发钮里是值串、多选的标签行（只作展示，摆不下的折进 +N）与展开箭头；浮层里开了 `searchable` 时先是搜索框与候选列表，再是当前展开的各列（懒分支那一列末尾带在途、失败与重试三块），末尾是空态与在途占位。分组、条目行尾与底部操作区不在其中，要用时手写结构。Web Components 里标题可以写在宿主的直接子节点 `slot="label"` 上接管。
 
@@ -150,6 +151,8 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `placement` | `Placement` |  |  |
 | `offset` | `number` |  |  |
 | `loop` | `boolean` |  | 列内上下键到达首尾是否回绕，默认 true。 |
+| `lazyMount` | `boolean` |  | 第一次展开时才挂载 content 里的各列与搜索框，默认 false。页面上级联选择很多（表格每行一个）时， 收起态每个实例背着的整份列是挂载开销的大头。positioner、content 与空态、在途两个占位照旧常驻，触发器的 aria-controls 始终指得到它。 |
+| `unmountOnExit` | `boolean` |  | 收起动画播完后卸载 content 里的各列与搜索框，默认 false；下次展开重新挂载。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的进入子列 / 返回上一列语义。 |
 | `onValueChange` | `(details: CascaderValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
@@ -318,6 +321,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `getItemDescriptionProps` | `(props: CascaderItemProps) => T['element']` |  |
 | `getItemSuffixProps` | `(props: CascaderItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: CascaderItemProps) => T['element']` |  |
+| `isContentMounted` | `(present: boolean) => boolean` | content 里的各列与搜索框此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。 缺省恒为真；lazyMount 下没展开过为假；unmountOnExit 下闸门落下（退场播完）即为假。 positioner、content 与空态、在途两个占位不受它管，一向常驻。 |
 
 ## 无障碍
 

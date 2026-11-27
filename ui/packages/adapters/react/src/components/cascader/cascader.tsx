@@ -117,6 +117,10 @@ export interface XhCascaderRootProps extends RootElementProps {
   placement?: Placement
   offset?: number
   loop?: boolean
+  /** 第一次展开时才挂载 content 里的各列与搜索框，默认 false。 */
+  lazyMount?: boolean
+  /** 收起动画播完后卸载 content 里的各列与搜索框，默认 false；下次展开重新挂载。 */
+  unmountOnExit?: boolean
   dir?: Direction
   onValueChange?: CascaderProps['onValueChange']
   /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
@@ -163,6 +167,8 @@ export function XhCascaderRoot({
   placement,
   offset,
   loop,
+  lazyMount,
+  unmountOnExit,
   dir,
   onValueChange,
   onClear,
@@ -206,6 +212,8 @@ export function XhCascaderRoot({
     placement,
     offset,
     loop,
+    lazyMount,
+    unmountOnExit,
     dir,
     onValueChange,
     onClear,
@@ -471,7 +479,8 @@ export function XhCascaderContent({ children, empty, ...rest }: XhCascaderConten
           },
         )}
       >
-        {children}
+        {/* 各列与搜索框挂不挂由 headless 按 lazyMount / unmountOnExit 判，手写与按数据铺的都走这一处；空态与在途占位常挂 */}
+        {api.isContentMounted(ctx.rendered) ? children : null}
         {/* 空态占位常挂在列后，露不露面归连接层 */}
         <div {...api.getEmptyProps()}>
           {empty ?? (api.searching ? api.translations.noMatch : api.translations.empty)}
