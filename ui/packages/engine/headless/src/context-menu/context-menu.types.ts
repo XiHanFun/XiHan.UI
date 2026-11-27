@@ -198,6 +198,13 @@ export interface ContextMenuSchema extends MachineSchema {
     dir?: Direction
     /** 连打检索，默认开启。关闭后可打印字符一律放行给页面。 */
     typeahead?: boolean
+    /**
+     * 第一次展开时才挂载 content 里的条目，默认 false。页面上上下文菜单很多（列表每行一个）时，
+     * 收起态每个实例背着的整份条目是挂载开销的大头。positioner 与 content 节点照旧常驻。
+     */
+    lazyMount?: boolean
+    /** 收起动画播完后卸载 content 里的条目，默认 false；下次展开重新挂载。 */
+    unmountOnExit?: boolean
     /** 读屏文案，默认英文。 */
     translations?: Partial<ContextMenuTranslations>
     /** 触摸端长按多久视为触发（ms），默认 700。 */
@@ -228,6 +235,8 @@ export interface ContextMenuSchema extends MachineSchema {
      * 第一次收起时清掉，之后的每一次打开照常进场。
      */
     openedAtMount: boolean
+    /** 挂载之后展开过没有（含首帧即展开）。lazyMount 下 content 里的条目从第一次展开起才挂载。 */
+    opened: boolean
     /** 定位引擎回填的最新结果；connect 只读取它，不涉及 DOM 也不调用引擎。 */
     position: PositionResult | null
     /** 当前锚点坐标：菜单固定在该点上，展开期间再次右键只修改它。 */
@@ -306,6 +315,7 @@ export interface ContextMenuSchema extends MachineSchema {
     | 'setRadioValue'
     | 'closeWhenDisabled'
     | 'clearOpenedAtMount'
+    | 'markOpened'
   effect: 'trackPosition' | 'trackLayer' | 'trackLongPress' | 'trackInnerTabStop'
 }
 
@@ -350,4 +360,10 @@ export interface ContextMenuApi<T extends PropTypes = PropTypes> {
   getRadioGroupProps: (props: ContextMenuGroupProps) => T['element']
   getGroupLabelProps: (props: ContextMenuGroupProps) => T['element']
   getArrowProps: () => T['element']
+  /**
+   * content 里的条目此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。
+   * 缺省恒为真；lazyMount 下没展开过为假；unmountOnExit 下闸门落下（退场播完）即为假。
+   * positioner 与 content 节点不受它管，一向常驻。
+   */
+  isContentMounted: (present: boolean) => boolean
 }

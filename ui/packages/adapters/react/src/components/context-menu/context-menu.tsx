@@ -80,6 +80,10 @@ export interface XhContextMenuRootProps extends Omit<ComponentPropsWithRef<'div'
   offset?: number
   loop?: boolean
   typeahead?: boolean
+  /** 第一次展开时才挂载 content 里的条目，默认 false。 */
+  lazyMount?: boolean
+  /** 收起动画播完后卸载 content 里的条目，默认 false；下次展开重新挂载。 */
+  unmountOnExit?: boolean
   translations?: ContextMenuProps['translations']
   /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
   dir?: Direction
@@ -116,6 +120,8 @@ export function XhContextMenuRoot({
   offset,
   loop,
   typeahead,
+  lazyMount,
+  unmountOnExit,
   translations,
   dir,
   longPressDelay,
@@ -145,6 +151,8 @@ export function XhContextMenuRoot({
     offset,
     loop,
     typeahead,
+    lazyMount,
+    unmountOnExit,
     translations,
     dir,
     longPressDelay,
@@ -240,7 +248,8 @@ export function XhContextMenuContent({ children, ...rest }: XhContextMenuContent
         },
       )}
     >
-      {children}
+      {/* content 节点常驻；里面的条目挂不挂由 headless 按 lazyMount / unmountOnExit 判，手写与按数据铺的都走这一处 */}
+      {ctx.api.isContentMounted(ctx.rendered) ? children : null}
     </div>
   )
 }

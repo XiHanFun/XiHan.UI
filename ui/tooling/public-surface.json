@@ -15240,6 +15240,7 @@
       "defaultRadioValue",
       "dir",
       "disabled",
+      "lazyMount",
       "longPressDelay",
       "loop",
       "offset",
@@ -15253,7 +15254,8 @@
       "size",
       "tone",
       "translations",
-      "typeahead"
+      "typeahead",
+      "unmountOnExit"
     ],
     "date-field": [
       "ariaLabel",
@@ -24122,6 +24124,7 @@
         "default-open",
         "dir",
         "disabled",
+        "lazy-mount",
         "long-press-delay",
         "loop",
         "offset",
@@ -24129,7 +24132,8 @@
         "placement",
         "size",
         "tone",
-        "typeahead"
+        "typeahead",
+        "unmount-on-exit"
       ],
       "events": [
         "checkbox-value-change",

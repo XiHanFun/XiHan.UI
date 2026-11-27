@@ -68,6 +68,7 @@
 - 条目可逐条声明语气，删除一类命令自带该族字色与高亮底。
 - 说明与快捷键提示都可写进 `collection`；快捷键贴行尾，与说明同档同色。快捷键提示只是看的，读屏不念；要读屏念出快捷键，条目再写 `keyshortcuts`，落成条目的 `aria-keyshortcuts`。勾选与单选条目的勾是条目的最后一个部件，排在正文、说明与快捷键之后，与子菜单箭头同列，图标与普通条目左缘对齐；手写部件时写在哪都排到行尾。同一层有勾选条目时，普通条目的快捷键与它们同列。
 - `typeahead` 控制首字符检索，`longPressDelay` 设置长按时间。
+- content 里的条目缺省常驻、收起只隐藏。`lazyMount` 让它们第一次展开时才挂载、之后常驻：列表每行一个上下文菜单时省下收起态的整份条目；`unmountOnExit` 让它们在退场动画播完后卸载、下次展开重新挂载。子菜单随父层的条目一起挂卸；positioner 与 content 节点一向常驻。Web Components 按数据铺的条目照同一规则增删；手写的条目写进 content 里一个 `<template>`，按同一规则克隆或撤走。
 - 条目可组合图标、文字、说明和快捷键提示。同一层（跨分组与分隔线，子菜单另算）里只要有一条带图标，所有条目都空出图标那一格，正文左缘对齐；整层都没有图标就不留。
 - `CheckboxItem` 与 `RadioGroup / RadioItem` 可直接修改视图开关和互斥选项，默认切换后保持上下文菜单展开。
 - 选中任意层级的命令后发出根级 `item-select` 并关闭菜单链。
@@ -118,6 +119,8 @@
 | `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
 | `typeahead` | `boolean` |  | 连打检索，默认开启。关闭后可打印字符一律放行给页面。 |
+| `lazyMount` | `boolean` |  | 第一次展开时才挂载 content 里的条目，默认 false。页面上上下文菜单很多（列表每行一个）时， 收起态每个实例背着的整份条目是挂载开销的大头。positioner 与 content 节点照旧常驻。 |
+| `unmountOnExit` | `boolean` |  | 收起动画播完后卸载 content 里的条目，默认 false；下次展开重新挂载。 |
 | `translations` | `Partial<ContextMenuTranslations>` |  | 读屏文案，默认英文。 |
 | `longPressDelay` | `number` |  | 触摸端长按多久视为触发（ms），默认 700。 |
 | `disabled` | `boolean` |  | 整张菜单禁用：右键、长按、菜单键与 Shift+F10 都不再展开，也不拦截浏览器自己的右键菜单； 触发区退出 Tab 序列，条目全部为 aria-disabled，展开途中转为禁用即收起。与 Menu 的 disabled 同名同义。 |
@@ -271,6 +274,7 @@
 | `getRadioGroupProps` | `(props: ContextMenuGroupProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: ContextMenuGroupProps) => T['element']` |  |
 | `getArrowProps` | `() => T['element']` |  |
+| `isContentMounted` | `(present: boolean) => boolean` | content 里的条目此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。 缺省恒为真；lazyMount 下没展开过为假；unmountOnExit 下闸门落下（退场播完）即为假。 positioner 与 content 节点不受它管，一向常驻。 |
 
 ## 无障碍
 

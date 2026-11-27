@@ -18253,7 +18253,7 @@
                 "text": "ElementStructure<XhContextMenuElement>"
               },
               "static": true,
-              "default": "{ build: host => host.ctrl.service ? contextMenuStructure(connectContextMenu(host.ctrl.service, wcNormalize), { slotted: (name, key) => host.slotted(name, key) }) : undefined, }"
+              "default": "{ build: host => host.ctrl.service ? contextMenuStructure(connectContextMenu(host.ctrl.service, wcNormalize), { slotted: (name, key) => host.slotted(name, key), // 结构排在 wire() 之前，闸门这一轮还没跟上 open：展开中或退场没播完都算在场，退场播完由闸门叫的那一轮撤掉条目 contentMounted: host.contentMounted(), }) : undefined, }"
             },
             {
               "kind": "field",
@@ -18348,6 +18348,24 @@
                 "text": "boolean | undefined"
               },
               "attribute": "typeahead"
+            },
+            {
+              "kind": "field",
+              "name": "lazyMount",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "lazy-mount"
+            },
+            {
+              "kind": "field",
+              "name": "unmountOnExit",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "unmount-on-exit"
             },
             {
               "kind": "field",
@@ -18598,6 +18616,25 @@
               "description": "条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。"
             },
             {
+              "kind": "field",
+              "name": "lazyContent",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new LazyContent({ stash: false })",
+              "description": "content 里 `<template>` 写的条目按 headless 的挂卸判定克隆进来或撤走；没写模板的作者节点照旧常驻"
+            },
+            {
+              "kind": "method",
+              "name": "contentMounted",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "description": "生成结构时 content 里铺不铺条目。"
+            },
+            {
               "kind": "method",
               "name": "itemDisabled",
               "privacy": "private",
@@ -18786,6 +18823,22 @@
               "description": "连打检索，默认开启；写 typeahead=\"false\" 关闭",
               "name": "typeahead",
               "fieldName": "typeahead"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "第一次展开时才挂载条目：按数据铺的条目第一次展开才生成；手写的条目写进 content 里的一个 `<template>`，第一次展开才克隆、之后常驻。没写模板的手写条目始终常驻",
+              "name": "lazy-mount",
+              "fieldName": "lazyMount"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "收起动画播完后撤走条目（按数据铺的与 `<template>` 克隆出的），下次展开重新铺，默认 false",
+              "name": "unmount-on-exit",
+              "fieldName": "unmountOnExit"
             },
             {
               "type": {

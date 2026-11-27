@@ -9,6 +9,7 @@ import type { Layer, PositionResult, VirtualAnchor } from '@xihan-ui/core'
 import type { ContextMenuFocusIntent, ContextMenuPoint, ContextMenuSchema } from './context-menu.types'
 import { createTypeahead, DIAGNOSTIC_CODES, itemValue, navigateItems, queryItems, reportDiagnostic, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
+import { markOpened, openedCell } from '../shared/disclosure-mount'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { equalMenuRadioValue, setMenuRadioValue, toggleMenuCheckboxValue } from '../shared/menu-choice'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
@@ -53,6 +54,8 @@ export const contextMenuMachine = createMachine({
   context: ({ cell, prop }) => ({
     // 首帧标记：挂载时开着、还没收起过
     openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
+    // 首帧即展开也算展开过：lazyMount 下条目照常首屏就在
+    opened: openedCell(cell, openAtMount(prop)),
     // 位置结果由 trackPosition 里的引擎回填；connect 只读这里，不碰 DOM
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     point: cell<ContextMenuPoint | null>(() => ({ defaultValue: null, isEqual: samePoint })),
@@ -156,7 +159,8 @@ export const contextMenuMachine = createMachine({
     },
     open: {
       // 锚点在进入展开态时就位（条目常挂，收起时只是 hidden）；锚点定了才有条目认领 tabindex=0
-      entry: ['setInitialFocusedValue'],
+      // lazyMount 下条目这一帧才挂上，挑锚点靠推迟一拍的补挑
+      entry: ['markOpened', 'setInitialFocusedValue'],
       // 收起即松开：按住 Enter 选中条目后菜单收起，条目随内容一起藏起，不会再来 keyup 或 blur
       exit: ['clearFocusedValue', 'clearTypeahead', 'releaseItemPress'],
       // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
@@ -212,6 +216,7 @@ export const contextMenuMachine = createMachine({
     actions: {
       ...controlledOpenActions<ContextMenuSchema>({ reason: true }),
       clearOpenedAtMount,
+      markOpened,
       startItemPress: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'ITEM.PRESS.START')

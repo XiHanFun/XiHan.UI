@@ -44,6 +44,11 @@ export interface ContextMenuStructureOptions {
    * item-suffix（行尾），后三个按条目的值带 key。子菜单那一层按数据铺，不认这几个插槽。
    */
   slotted?: StructureSlotted
+  /**
+   * content 里的条目这一刻铺不铺，缺省铺；取 isContentMounted 的判定。Web Components 生成节点时按它增删条目，
+   * Vue / React 由 content 部件自己按判定渲不渲子节点，不必传。
+   */
+  contentMounted?: boolean
 }
 
 const NOTHING_SLOTTED: StructureSlotted = () => false
@@ -63,7 +68,8 @@ export function contextMenuStructure(model: Pick<ContextMenuApi, 'collection'>, 
       key: 'positioner',
       tag: 'div',
       part: 'positioner',
-      children: [{ key: 'content', tag: 'div', part: 'content', children: menuNodesStructure(model.collection, slotted, { itemSlot: 'item-text' }) }],
+      // lazyMount / unmountOnExit 判为不挂时 content 节点照旧在，里面不铺条目
+      children: [{ key: 'content', tag: 'div', part: 'content', children: options.contentMounted === false ? [] : menuNodesStructure(model.collection, slotted, { itemSlot: 'item-text' }) }],
     },
   ]
 }

@@ -22,6 +22,7 @@ import {
   queryItems,
 } from '@xihan-ui/core'
 import { CONTEXT_MENU_EN_US } from '../locale/en-US'
+import { overlayContentMounted } from '../shared/disclosure-mount'
 import { menuChoiceCloses } from '../shared/menu-choice'
 import { overlayArrowVars, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { resolveTranslations } from '../shared/translations'
@@ -251,6 +252,8 @@ export function connectContextMenu<T extends PropTypes>(
     open,
     disabled: menuDisabled,
     collection,
+    // 挂卸只管 content 里的条目：positioner 与 content 节点常驻，定位引擎总有节点可量
+    isContentMounted: overlayContentMounted(prop, context.get('opened')),
     pressing,
     point,
     focusedValue: anchor,

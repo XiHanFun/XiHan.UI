@@ -69,6 +69,10 @@ export const XhContextMenuRoot = defineComponent({
     offset: { type: Number },
     loop: { type: Boolean, default: undefined },
     typeahead: { type: Boolean, default: undefined },
+    /** 第一次展开时才挂载 content 里的条目，默认 false。 */
+    lazyMount: { type: Boolean, default: undefined },
+    /** 收起动画播完后卸载 content 里的条目，默认 false；下次展开重新挂载。 */
+    unmountOnExit: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<ContextMenuProps['translations']> },
     dir: { type: String as PropType<Direction> },
     longPressDelay: { type: Number },
@@ -202,7 +206,8 @@ export const XhContextMenuContent = defineComponent({
       hidden: !ctx.visible.value || undefined,
       style: ctx.visible.value ? undefined : { display: 'none' },
       ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
-    }, slots.default?.())
+      // content 节点常驻；里面的条目挂不挂由 headless 按 lazyMount / unmountOnExit 判，手写与按数据铺的都走这一处
+    }, ctx.api.value.isContentMounted(ctx.visible.value) ? slots.default?.() : undefined)
   },
 })
 

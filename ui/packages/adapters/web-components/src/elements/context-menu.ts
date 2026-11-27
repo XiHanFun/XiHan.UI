@@ -17,6 +17,7 @@ import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { withoutHidden } from '../overlay-exit'
+import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { setMenuSubmenuOwner } from '../runtime/menu-submenu-owner'
 import { OverlayController } from '../runtime/overlay-controller'
@@ -47,6 +48,8 @@ import { XhMenuElement } from './menu'
  * @attr {number} offset - 浮层与光标的间距（px），默认 0
  * @attr {boolean} loop - 方向键到达末尾回绕，默认 true；写 loop="false" 关闭
  * @attr {boolean} typeahead - 连打检索，默认开启；写 typeahead="false" 关闭
+ * @attr {boolean} lazy-mount - 第一次展开时才挂载条目：按数据铺的条目第一次展开才生成；手写的条目写进 content 里的一个 `<template>`，第一次展开才克隆、之后常驻。没写模板的手写条目始终常驻
+ * @attr {boolean} unmount-on-exit - 收起动画播完后撤走条目（按数据铺的与 `<template>` 克隆出的），下次展开重新铺，默认 false
  * @attr {'ltr'|'rtl'} dir - 文字方向，默认 ltr
  * @attr {number} long-press-delay - 触摸端长按触发时长（ms），默认 700
  * @attr {boolean} disabled - 整张菜单禁用：不再展开，浏览器自己的右键菜单照常出现，条目全部禁用
@@ -83,7 +86,11 @@ export class XhContextMenuElement extends XhPortalHostElement {
 
   static override structure: ElementStructure<XhContextMenuElement> = {
     build: host => host.ctrl.service
-      ? contextMenuStructure(connectContextMenu(host.ctrl.service, wcNormalize), { slotted: (name, key) => host.slotted(name, key) })
+      ? contextMenuStructure(connectContextMenu(host.ctrl.service, wcNormalize), {
+          slotted: (name, key) => host.slotted(name, key),
+          // 结构排在 wire() 之前，闸门这一轮还没跟上 open：展开中或退场没播完都算在场，退场播完由闸门叫的那一轮撤掉条目
+          contentMounted: host.contentMounted(),
+        })
       : undefined,
   }
 
@@ -103,6 +110,8 @@ export class XhContextMenuElement extends XhPortalHostElement {
     offset: { converter: NUMBER_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
     typeahead: { converter: BOOLEAN_CONVERTER },
+    lazyMount: { converter: BOOLEAN_CONVERTER, attribute: 'lazy-mount' },
+    unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
     translations: { attribute: false },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     longPressDelay: { converter: NUMBER_CONVERTER, attribute: 'long-press-delay' },
@@ -122,6 +131,8 @@ export class XhContextMenuElement extends XhPortalHostElement {
   declare offset?: number
   declare loop?: boolean
   declare typeahead?: boolean
+  declare lazyMount?: boolean
+  declare unmountOnExit?: boolean
   /** 读屏文案（菜单名称）；对象无法表达为属性，只作为 property 暴露。 */
   declare translations?: ContextMenuSchema['props']['translations']
   declare direction?: Direction
@@ -275,6 +286,15 @@ export class XhContextMenuElement extends XhPortalHostElement {
   /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。 */
   private readonly declaredDisabled = createDisabledDeclarations()
 
+  /** content 里 `<template>` 写的条目按 headless 的挂卸判定克隆进来或撤走；没写模板的作者节点照旧常驻 */
+  private readonly lazyContent = new LazyContent({ stash: false })
+
+  /** 生成结构时 content 里铺不铺条目。 */
+  private contentMounted(): boolean {
+    const api = connectContextMenu(this.ctrl.service, wcNormalize)
+    return api.isContentMounted(api.open || this.overlay.visible)
+  }
+
   /** 条目的禁用：给了 collection 时作者没写为 undefined，交给数据定夺。 */
   private itemDisabled(el: HTMLElement): boolean | undefined {
     const declared = this.declaredDisabled.read(el)
@@ -294,6 +314,8 @@ export class XhContextMenuElement extends XhPortalHostElement {
       offset: this.offset,
       loop: this.loop,
       typeahead: this.typeahead,
+      lazyMount: this.lazyMount,
+      unmountOnExit: this.unmountOnExit,
       translations: this.translations,
       dir: this.direction,
       longPressDelay: this.longPressDelay,
@@ -433,6 +455,8 @@ export class XhContextMenuElement extends XhPortalHostElement {
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     const visible = this.overlay.sync(api.open, content)
     this.setPartHidden(content, !visible, { attribute: true })
+    // 手写在 content 里 <template> 中的条目按 headless 的判定克隆或撤走；新挂上的部件由部件观察器补一轮 wire 接上属性
+    this.lazyContent.sync(content, api.isContentMounted(visible))
 
     this.bars.wire()
     this.portal.sync(visible)
