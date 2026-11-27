@@ -12,7 +12,7 @@
 
 ## 用法
 
-root 持有状态，control 是视觉盒；不传 value 与 revealed 即为非受控，明暗由组件自行管理，按钮中的图标随明暗切换
+只写根组件就按标准结构铺出标题与盒：输入框、大写锁定提示与明暗切换钮；不传 value 与 revealed 即为非受控，明暗由组件自行管理
 
 <XhDemo src="password-input/01-basic" />
 
