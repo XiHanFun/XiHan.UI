@@ -28,6 +28,7 @@ import { sameArray } from '../shared/array'
 import { sortIso } from '../shared/calendar'
 import { alignColumnsOnOpen, followColumnSelection } from '../shared/column-scroll'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
+import { markOpened, openedCell } from '../shared/disclosure-mount'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
@@ -309,6 +310,8 @@ export const dateRangePickerMachine = createMachine({
   context: ({ prop, cell }) => ({
     // 首帧标记：挂载时开着、还没收起过
     openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
+    // 首帧即展开也算展开过：lazyMount 下面板照常首屏就在
+    opened: openedCell(cell, openAtMount(prop)),
     // 位置结果由 trackPosition 里的引擎回填；connect 只读这里，不碰 DOM
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     value: cell<string[]>(() => ({
@@ -398,7 +401,7 @@ export const dateRangePickerMachine = createMachine({
     },
     open: {
       // 焦点域靠这个值去活 DOM 里找落点格子；钻到哪一层也一并拨回作者要的那一档
-      entry: ['focusSelectedDay', 'resetActiveView'],
+      entry: ['markOpened', 'focusSelectedDay', 'resetActiveView'],
       // 按住快捷选项 / 确认钮途中收起（Enter 在 keydown 即写值 / 确认收起）：浮层里的部件不会再来 keyup
       exit: ['releasePress'],
       // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
@@ -466,6 +469,7 @@ export const dateRangePickerMachine = createMachine({
           followColumnSelection(columnScrollTarget(params))
       },
       clearOpenedAtMount,
+      markOpened,
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'PRESS.START')

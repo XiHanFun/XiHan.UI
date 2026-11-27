@@ -98,6 +98,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 - 时间列与时间选择器共用一份约束：`hourCycle`、按单位的 `timeStep`、带上下文的 `isTimeUnavailable`（`context.index` 是哪一端、`context.date` 是这一端的日期）；`min` / `max` 可以带时间段，同一天界外的时刻标为不可选。起止落在同一天时，终点列早于起点时刻的格自动不可选；两端按日期时间比先后，终点早于起点即整份标为不合法。
 - `activeIndex` 表示当前编辑哪一端，可受控：从终点那组段位展开（点它或在它上面按 Alt+ArrowDown）为 1，其余为 0；聚焦某一组段位、点某一端的时间格时随之改写；正在编辑的那一组时间列与小标题投影 `data-editing`，缺省皮肤不据此给两组标题分档，起止两组标题同一副样式。为 1 且已有起点时日历只改终点——点在起点那一天或之后即落终点、起点不动，点在起点之前的日子从那一天重新开始挑；从触发钮展开照旧是先点起点再点终点。这与 antd 的「从终点输入框继续改」一致，React Aria 的区间日历每次点选都重新开始、没有这一档。
 - 浮层收起时 `onOpenChange` 带上关闭原因 `reason`：Escape 报 `esc`，点在浮层外或焦点移出浮层报 `interact-outside`；再点一次日历钮或输入行、在段位上按 Enter、按确认钮报 `close-trigger`；在日历上落下终点或点快捷选项随之收起报 `selection`；`setOpen(false)` 报 `programmatic`。展开时不带。
+- content 里的面板（两张日历、快捷选项、时间列与底栏）缺省常驻、收起只隐藏。`lazyMount` 让它们第一次展开时才挂载、之后常驻：表格每行一个日期范围选择器时省下收起态的两张日历；`unmountOnExit` 让它们在退场动画播完后卸载、下次展开重新挂载。日历的翻页、聚焦日与选中值都记在机器里，不随面板挂卸丢掉；两组输入行、positioner 与 content 节点一向常驻。Web Components 生成的面板照同一规则增删；手写的面板写进 content 里一个 `<template>`，按同一规则克隆或撤走。
 
 ### 组合
 
@@ -174,6 +175,8 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `offset` | `number` |  |  |
 | `translations` | `Partial<DateRangePickerTranslations>` |  |  |
 | `closeOnSelect` | `boolean` |  | 选完即收起，默认 true。两端都落定才视为选完；showTime 下不收，由确认按钮收口。 |
+| `lazyMount` | `boolean` |  | 第一次展开时才挂载 content 里的面板（日历、快捷选项、时间列与底栏），默认 false。页面上日期范围选择器很多（表格每行一个）时， 收起态每个实例背着的两张日历是挂载开销的大头。positioner 与 content 节点照旧常驻；日历的状态归机器，不随面板挂卸丢掉。 |
+| `unmountOnExit` | `boolean` |  | 收起动画播完后卸载 content 里的面板，默认 false；下次展开重新挂载。 |
 | `showTime` | `boolean` |  | 一体化时间：两端都升格为 'YYYY-MM-DDTHH:mm[:ss]'（不带时区），输入行两组段位带上时刻段， 浮层里起止各多出一组时间列，选完日期不收起、由确认按钮收口。只在 granularity=day 下生效。 此时 min / max 可以带时间段：日历按日期段收，时间列在与它同一天时按时间段标不可选。 |
 | `timeGranularity` | `DatePickerTimeGranularity` |  | showTime 的时间段精度，默认 minute。 |
 | `hourCycle` | `TimeHourCycle` |  | showTime 的小时制，缺省按 locale 推断（与 TimePicker 同一口径，没给 locale 时 24）。12 时两组时间列多出上下午列、两组段位多出上下午段。 |
@@ -324,6 +327,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `getTimeItemProps` | `(props: DateRangePickerTimeItemProps) => T['element']` | 时间选项：点击把该单位写进这一端的时刻（那一端还没有日期时借另一端的日期，再没有就用聚焦日）。 |
 | `getFooterProps` | `() => T['element']` | 浮层底部的操作区：放在 content 中、排在面板主体之后，确认按钮通常写在这里；不进入任何集合的拥有关系，方向键也无法到达。 |
 | `getConfirmTriggerProps` | `() => T['button']` | 确认按钮：showTime 的收口；未开启 showTime 时带 hidden。 |
+| `isContentMounted` | `(present: boolean) => boolean` | content 里的面板此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。 缺省恒为真；lazyMount 下没展开过为假；unmountOnExit 下闸门落下（退场播完）即为假。 positioner 与 content 节点不受它管，一向常驻。 |
 
 ## 无障碍
 
