@@ -52,7 +52,7 @@ function stripDemoHeading(source) {
     .trimEnd();
 }
 
-/** 把 <XhDemo src="x/y" /> 换成两个适配器的示例源码围栏块。 */
+/** 把 <XhDemo src="x/y" /> 换成三个适配器的示例源码围栏块：Vue、React、Web Components 依次排。 */
 async function inlineDemos(body) {
   const hits = [...body.matchAll(/<XhDemo\s+src="([^"]+)"\s*\/>/g)];
   let out = body;
@@ -60,6 +60,7 @@ async function inlineDemos(body) {
     const blocks = [];
     for (const [lang, ext] of [
       ["vue", ".vue"],
+      ["tsx", ".tsx"],
       ["html", ".html"],
     ]) {
       const source = await readOrNull(join(DEMOS, `${src}${ext}`));

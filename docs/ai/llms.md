@@ -7,7 +7,7 @@
 | 文件 | 说明 |
 | --- | --- |
 | [llms.txt](https://ui.docs.xihanfun.com/llms.txt) | 索引：全部页面的标题、一句话摘要与地址，以及下列资产的入口 |
-| [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt) | 全站正文，组件示例已内联为 Vue 与 Web Components 源码 |
+| [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt) | 全站正文，组件示例已内联为 Vue、React 与 Web Components 源码 |
 | [llms-components.txt](https://ui.docs.xihanfun.com/llms-components.txt) | 组件参考：部件、Props、事件、状态、键盘、数据属性、CSS 变量与示例 |
 | [llms-guide.txt](https://ui.docs.xihanfun.com/llms-guide.txt) | 核心概念、适配器与服务运行时 |
 | [llms-tokens.txt](https://ui.docs.xihanfun.com/llms-tokens.txt) | 设计令牌全表：名字、类型、缺省取值与改写档 |
