@@ -33,9 +33,10 @@ export class LazyContent {
     this.#stashAuthorNodes = options.stash ?? true
   }
 
-  sync(content: HTMLElement | null, mounted: boolean): void {
+  /** 按判定挂卸；返回这一轮有没有动 DOM。刚克隆进来的部件要等部件观察器补的那一轮 wire 才接上属性。 */
+  sync(content: HTMLElement | null, mounted: boolean): boolean {
     if (!content)
-      return
+      return false
     if (this.#template === undefined)
       this.#template = [...content.children].find((el): el is HTMLTemplateElement => el instanceof HTMLTemplateElement) ?? null
 
@@ -45,26 +46,31 @@ export class LazyContent {
         const fragment = template.content.cloneNode(true) as DocumentFragment
         this.#clones = [...fragment.childNodes]
         template.after(fragment)
+        return true
       }
-      else if (!mounted && this.#clones.length > 0) {
+      if (!mounted && this.#clones.length > 0) {
         for (const node of this.#clones)
           node.parentNode?.removeChild(node)
         this.#clones = []
+        return true
       }
-      return
+      return false
     }
 
     if (!this.#stashAuthorNodes)
-      return
+      return false
     if (!mounted && !this.#stash) {
       const stash = content.ownerDocument.createDocumentFragment()
       while (content.firstChild)
         stash.append(content.firstChild)
       this.#stash = stash
+      return true
     }
-    else if (mounted && this.#stash) {
+    if (mounted && this.#stash) {
       content.append(this.#stash)
       this.#stash = null
+      return true
     }
+    return false
   }
 }

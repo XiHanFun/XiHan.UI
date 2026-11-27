@@ -10,6 +10,7 @@ import type { ComboboxFocusIntent, ComboboxNode, ComboboxPressedPart, ComboboxSc
 import { isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
+import { markOpened, openedCell } from '../shared/disclosure-mount'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { trackOverlayLoadMore } from '../shared/load-more'
 import { resolveMaxSelected } from '../shared/max-selected'
@@ -56,6 +57,8 @@ export const comboboxMachine = createMachine({
   context: ({ prop, cell }) => ({
     // 首帧标记：挂载时开着、还没收起过
     openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
+    // 首帧即展开也算展开过：lazyMount 下候选照常首屏就在
+    opened: openedCell(cell, openAtMount(prop)),
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     value: cell<string[]>(() => ({
       value: toValues(prop('value')),
@@ -146,7 +149,9 @@ export const comboboxMachine = createMachine({
     },
     open: {
       // 先结算候选条数（空态节点据此显形），再按落点意图挑高亮
-      entry: ['syncItems', 'setInitialHighlightedValue'],
+      // markOpened 排在结算之后：lazyMount 第一次展开时候选这一帧才挂上，结算要认得出「还没挂」。
+      // 挑高亮查不到候选时靠推迟一拍的补挑
+      entry: ['syncItems', 'markOpened', 'setInitialHighlightedValue'],
       // 收起即松开：按住 Enter 选中候选后浮层收起，候选随内容一起藏起，不会再来 keyup
       exit: ['clearHighlightedValue', 'releasePress'],
       // 定位与触底取数只服务逻辑展开；Layer 与消解资源由顶层 effect 延后到真实退场释放。
@@ -210,6 +215,7 @@ export const comboboxMachine = createMachine({
       }),
       markTagListTracked: ({ context }) => context.set('tagListTracked', true),
       clearOpenedAtMount,
+      markOpened,
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'PRESS.START')
@@ -324,7 +330,7 @@ export const comboboxMachine = createMachine({
        * 候选集合重新结算：条数供空态节点用，同时把悬空的高亮摘掉。
        * 没给 filter 时过滤是调用方做的，机器无从预知何时变，所以适配器每次提交完 DOM 都要发一次 ITEMS.SYNC。
        */
-      syncItems: ({ refs, prop, context }) => {
+      syncItems: ({ refs, prop, context, event }) => {
         const collection = visibleCollection({ prop, context })
         if (collection) {
           context.set('itemCount', collection.length)
@@ -337,6 +343,12 @@ export const comboboxMachine = createMachine({
         if (!content)
           return
         const items = queryItems(content, comboboxItemQuery)
+        // 展开那一刻手写的候选可能还没挂（lazyMount 第一次展开、unmountOnExit 退场播完之后）：
+        // 先记成没结算，空态不抢跑，等适配器提交完 DOM 发来的 ITEMS.SYNC 再数
+        if (items.length === 0 && event.current().type !== 'ITEMS.SYNC' && (prop('lazyMount') || prop('unmountOnExit'))) {
+          context.set('itemCount', null)
+          return
+        }
         context.set('itemCount', items.length)
         const highlighted = context.get('highlightedValue')
         // 高亮项被筛掉时必须摘掉，否则 aria-activedescendant 指向一个不存在的 id
@@ -423,7 +435,10 @@ export const comboboxMachine = createMachine({
        * 单选选中项的显示文本。给了 collection 就按数据取，一次算完；
        * 没给才回到活 DOM 现查那条老路，那条路上首帧条目可能还没挂上身份标记，查不到就推迟一拍再来一次。
        */
-      syncValueText: ({ refs, prop, context, flush }) => {
+      syncValueText: ({ refs, prop, context, state, flush }) => {
+        // 手写的候选此刻不在 DOM 里：lazyMount 还没展开过，或 unmountOnExit 收起后撤走了。查不到的选中项不再等，
+        // 取记下的文字，没记过就退回值本身
+        const detached = (): boolean => (!!prop('lazyMount') && !context.get('opened')) || (!!prop('unmountOnExit') && state.get() !== 'open')
         // 每个已选项的文字记进 valueLabels：给了 collection 就按数据取，没给才回到活 DOM 现查；
         // 这一刻查不到的（已被宿主筛出候选）留着上一次记下的，返回 false 让下一拍再试一次
         const remember = (): boolean => {
@@ -450,8 +465,9 @@ export const comboboxMachine = createMachine({
         }
         const resolve = (): boolean => {
           const value = context.get('value')
+          const only = value[0]
           // 多选没有「那一个」显示文本，恒为空；输入串在多选下只是筛选用的草稿
-          if (value.length !== 1) {
+          if (value.length !== 1 || only === undefined) {
             context.set('valueText', null)
             return true
           }
@@ -464,11 +480,13 @@ export const comboboxMachine = createMachine({
             return true
           }
           const content = refs.get('getContentEl')()
-          if (!content)
-            return false
-          const el = queryItems(content, comboboxItemQuery).find(item => itemValue(item) === value[0])
-          if (!el)
-            return false
+          const el = content ? queryItems(content, comboboxItemQuery).find(item => itemValue(item) === value[0]) : undefined
+          if (!el) {
+            if (!detached())
+              return false
+            context.set('valueText', context.get('valueLabels')[only] ?? only)
+            return true
+          }
           context.set('valueText', comboboxItemText(el))
           return true
         }

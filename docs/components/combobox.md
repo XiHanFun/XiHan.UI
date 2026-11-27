@@ -95,6 +95,7 @@ variant 设置输入框外观，invalid 标记无效输入
 - 内置过滤：给了 `collection` 再写 `filter` 即按用户打的字筛候选，`contains` 显示文本包含检索词、`startsWith` 以检索词开头，都不分大小写，也可以给函数 `(node, query) => boolean` 自己判。检索词是用户打的那段字，不是输入框里的字：选中后回显的选中项文字、`inputBehavior="autocomplete"` 补出的那段都不拿去筛，再展开看到全部候选。没写 `filter` 即不过滤，候选由调用方按 `onInputValueChange` 换，远程搜索就这么写。
 - 支持异步候选和自定义条目内容。
 - 候选面板与输入框所在的字段盒等宽，长候选在条目里截断。
+- content 里的候选缺省常驻、收起只隐藏。`lazyMount` 让它们第一次展开时才挂载、之后常驻：表格每行一个组合框时，收起态每个实例背着的整份候选是挂载开销的大头；`unmountOnExit` 让它们在退场动画播完后卸载、下次展开重新挂载。输入框、positioner、content 与空态、在途两个占位一向常驻。打开前的选中文字按 `collection` 算；没给 `collection` 时手写的候选还不在页面上，选中文字退回值本身。Web Components 按数据铺的候选照同一规则增删；手写的候选写进 content 里一个 `<template>`，按同一规则克隆或撤走。
 - 通过隐藏输入参与原生表单提交。
 - 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、只报 `aria-busy`，选项照常可选、不淡化（淡到禁用透明度会把文字压到 4.5:1 以下），在途占位让位；空态与加载文字取次要文字、上下内距一档。
 - `onLoadMore` 接分页候选：浮层里的列表（开了虚拟化时是视口）滚到末端时派发，只在跨进末端那一下派发，停在末端来回微滚不重复；`loading`、`disabled` 为真时不派发。新一页接到 `collection` 末尾、内容变长之后再滚到底才派发下一次，一下跳到新末端（End 键、命令式滚动）也算。内容不溢出、滚不动时不派发，第一页要多到能填满浮层；取下一页期间照旧只报 `aria-busy`。输入串一变由宿主照常从第一页重取；没有下一页时不给它。Vue 为 `@load-more`，Web Components 派发 `load-more` 事件。
@@ -140,6 +141,8 @@ variant 设置输入框外观，invalid 标记无效输入
 | `valueKey` | `SelectionValueKey<V>` |  | 对象值怎样取键：字段名或取值函数。同一个选项每次都是新对象（接口刚取回来）时给它； 不给时按对象身份认。值不是对象时用不着。键也是条目的 data-value 与随表单提交的值。 |
 | `filter` | `ComboboxFilterMode \| ComboboxFilter<V>` |  | 内置过滤：'contains' 显示文本包含检索词，'startsWith' 以检索词开头，都不分大小写；也可以给一个函数自己判。 检索词是用户打的那段字，不是输入框里的字：选中后回显的选中项文字、内联补全补出的那段都不拿去筛， 再展开时看到的是全部候选。没给即不过滤（远程搜索就不给，候选由调用方按 onInputValueChange 换）。 只作用于 collection，不给 collection 时没有效果。 |
 | `virtualizer` | `CollectionVirtualizer` |  | 当前候选（给了 filter 即筛过的那份，见 api.collection）与 Virtualizer 的滚动桥；count 必须与 api.collection.length 一致。 |
+| `lazyMount` | `boolean` |  | 第一次展开时才挂载 content 里的候选，默认 false。页面上组合框很多（表格每行一个）时， 收起态每个实例背着的整份候选是挂载开销的大头。positioner 与 content 节点照旧常驻，输入框的 aria-controls 始终指得到它。 打开前的选中文字按 collection 计算；没给 collection 时退回值本身。 |
+| `unmountOnExit` | `boolean` |  | 收起动画播完后卸载 content 里的候选，默认 false；下次展开重新挂载。没给 collection 时，收起期间换了值，选中文字退回值本身。 |
 | `value` | `V \| V[]` |  | 选中值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 单选写为裸串是简写，内部一律归一为数组。 |
 | `defaultValue` | `V \| V[]` |  |  |
 | `inputValue` | `string` |  | 输入框中的字符串。提供即受控，与选中值各自独立。 没给 filter 时过滤不由组件完成：调用方用该串筛选条目，把筛选结果重新渲染进来。 |
@@ -315,6 +318,7 @@ variant 设置输入框外观，invalid 标记无效输入
 | `getEmptyProps` | `() => T['element']` |  |
 | `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 与 content 是兄弟，同样不进入 role=listbox。 |
 | `getHiddenInputProps` | `(props?: { value: string }) => T['input']` | 单值表单出口；按 api.value 逐个调用并生成同名 input，零选中不生成提交项。不给 value 是必填且没选值时的空值占位，带原生 required。 |
+| `isContentMounted` | `(present: boolean) => boolean` | content 里的候选此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。 缺省恒为真；lazyMount 下没展开过为假；unmountOnExit 下闸门落下（退场播完）即为假。 positioner、content、空态与在途占位不受它管，一向常驻。 |
 
 ## 无障碍
 

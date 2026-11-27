@@ -30,6 +30,7 @@ import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
 import { withoutHidden } from '../overlay-exit'
+import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayController } from '../runtime/overlay-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
@@ -77,6 +78,8 @@ import { XhPortalHostElement } from '../runtime/portal-host'
  * @attr {boolean} required - 必填：输入框报告 aria-required；没选值时表单的空值占位影子带原生 required
  * @attr {boolean} loading - 候选加载中：列表报告 aria-busy，显示在途占位、隐藏空态占位
  * @attr {boolean} loop - 方向键到达末尾回绕，默认 true；写 loop="false" 关闭
+ * @attr {boolean} lazy-mount - 第一次展开时才挂载候选：按数据铺的候选第一次展开才生成；手写的候选写进 content 里的一个 `<template>`，第一次展开才克隆、之后常驻。没写模板的手写候选始终常驻；打开前的选中文字按 collection 算，没给时退回值本身
+ * @attr {boolean} unmount-on-exit - 收起动画播完后撤走候选（按数据铺的与 `<template>` 克隆出的），下次展开重新铺，默认 false
  * @attr {string} placeholder - 输入框占位文字
  * @attr {boolean} allow-custom-value - 允许提交候选列表中没有的值
  * @attr {boolean} open-on-click - 点击输入框即展开，默认 false
@@ -143,6 +146,8 @@ export class XhComboboxElement<V = string> extends XhPortalHostElement {
           clearable: host.clearable,
           name: host.name,
           slotted: (name, key) => host.slotted(name, key),
+          // 结构排在 wire() 之前，闸门这一轮还没跟上 open：展开中或退场没播完都算在场，退场播完由闸门叫的那一轮撤掉候选
+          contentMounted: host.contentMounted(),
         })
       : undefined,
   }
@@ -153,6 +158,8 @@ export class XhComboboxElement<V = string> extends XhPortalHostElement {
     collection: { attribute: false },
     valueKey: { converter: STRING_CONVERTER, attribute: 'value-key' },
     virtualizer: { attribute: false },
+    lazyMount: { converter: BOOLEAN_CONVERTER, attribute: 'lazy-mount' },
+    unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
     label: { converter: STRING_CONVERTER },
     empty: { converter: STRING_CONVERTER },
     clearable: { converter: BOOLEAN_CONVERTER },
@@ -197,6 +204,8 @@ export class XhComboboxElement<V = string> extends XhPortalHostElement {
   declare empty?: string
   declare clearable?: boolean
   declare virtualizer?: CollectionVirtualizer
+  declare lazyMount?: boolean
+  declare unmountOnExit?: boolean
   declare translations?: ComboboxSchema['props']['translations']
   declare value?: V | V[]
   declare defaultValue?: V | V[]
@@ -291,6 +300,16 @@ export class XhComboboxElement<V = string> extends XhPortalHostElement {
 
   /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。 */
   private readonly declaredDisabled = createDisabledDeclarations()
+
+  /** content 里 `<template>` 写的候选按 headless 的挂卸判定克隆进来或撤走；没写模板的作者节点照旧常驻 */
+  private readonly lazyContent = new LazyContent({ stash: false })
+
+  /** 生成结构时 content 里铺不铺候选。 */
+  private contentMounted(): boolean {
+    const api = connectCombobox(this.ctrl.service, wcNormalize)
+    return api.isContentMounted(api.open || this.overlay.visible)
+  }
+
   private readonly hiddenInputs = createRepeatedHiddenInputs(this.spreader)
   /** overflow-tag 的文字是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。 */
   private readonly ownsText = new WeakMap<HTMLElement, boolean>()
@@ -319,6 +338,8 @@ export class XhComboboxElement<V = string> extends XhPortalHostElement {
       ariaLabel: this.hostAriaLabel(),
       ...valueTyped,
       virtualizer: this.virtualizer,
+      lazyMount: this.lazyMount,
+      unmountOnExit: this.unmountOnExit,
       translations: this.translations,
       inputValue: this.inputValue,
       defaultInputValue: this.defaultInputValue,
@@ -527,11 +548,14 @@ export class XhComboboxElement<V = string> extends XhPortalHostElement {
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     const visible = this.overlay.sync(api.open, this.getPart('content'))
+    // 手写在 content 里 <template> 中的候选按 headless 的判定克隆或撤走；新挂上的部件由部件观察器补一轮 wire 接上属性
+    const remounted = this.lazyContent.sync(this.getPart('content'), api.isContentMounted(visible))
     this.setPartHidden(this.getPart('content'), !visible, { attribute: true })
     this.setPartHidden(this.getPart('empty'), !api.empty)
 
-    // 每次接线完上报一次候选集合，让机器重算候选条数与悬空高亮
-    if (this.ctrl.service.getStatus() === 'Started')
+    // 每次接线完上报一次候选集合，让机器重算候选条数与悬空高亮。模板刚克隆进来的这一轮候选还没接线、查不到，
+    // 这时报上去会数成零、闪一帧空态：留给部件观察器补的那一轮 wire 再报
+    if (!remounted && this.ctrl.service.getStatus() === 'Started')
       this.ctrl.service.send({ type: 'ITEMS.SYNC' })
 
     this.bars.wire()

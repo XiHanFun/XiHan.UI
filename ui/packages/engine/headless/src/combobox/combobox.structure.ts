@@ -65,6 +65,11 @@ export interface ComboboxStructureOptions {
    * 条目文字没给插槽时铺 collection 里的 label；行首、行尾没给插槽时不铺这两格。
    */
   slotted?: StructureSlotted
+  /**
+   * content 里的候选这一刻铺不铺，缺省铺；取 isContentMounted 的判定。Web Components 生成节点时按它增删候选，
+   * Vue / React 由 content 部件自己按判定渲不渲子节点，不必传。
+   */
+  contentMounted?: boolean
 }
 
 // 值不论什么类型，结构只用元信息里的键：按 unknown 收，带具体值类型的 api 都交得进来
@@ -135,7 +140,8 @@ export function comboboxStructure(model: ComboboxStructureModel, options: Combob
       tag: 'div',
       part: 'positioner',
       children: [
-        { key: 'content', tag: 'div', part: 'content', children: model.collection.map(node => itemStructure(node, slotted)) },
+        // lazyMount / unmountOnExit 判为不挂时 content 节点照旧在，里面不铺候选
+        { key: 'content', tag: 'div', part: 'content', children: options.contentMounted === false ? [] : model.collection.map(node => itemStructure(node, slotted)) },
         slotted('empty')
           ? { key: 'empty', tag: 'div', part: 'empty', slot: { name: 'empty' } }
           : { key: 'empty', tag: 'div', part: 'empty', ...(options.empty == null ? {} : { text: options.empty }) },

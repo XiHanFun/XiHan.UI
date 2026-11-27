@@ -177,6 +177,14 @@ export interface ComboboxSchema<V = string> extends MachineSchema {
     /** 当前候选（给了 filter 即筛过的那份，见 api.collection）与 Virtualizer 的滚动桥；count 必须与 api.collection.length 一致。 */
     virtualizer?: CollectionVirtualizer
     /**
+     * 第一次展开时才挂载 content 里的候选，默认 false。页面上组合框很多（表格每行一个）时，
+     * 收起态每个实例背着的整份候选是挂载开销的大头。positioner 与 content 节点照旧常驻，输入框的 aria-controls 始终指得到它。
+     * 打开前的选中文字按 collection 计算；没给 collection 时退回值本身。
+     */
+    lazyMount?: boolean
+    /** 收起动画播完后卸载 content 里的候选，默认 false；下次展开重新挂载。没给 collection 时，收起期间换了值，选中文字退回值本身。 */
+    unmountOnExit?: boolean
+    /**
      * 选中值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。
      * 单选写为裸串是简写，内部一律归一为数组。
      */
@@ -260,6 +268,8 @@ export interface ComboboxSchema<V = string> extends MachineSchema {
      * 第一次收起时清掉，之后的每一次打开照常进场。
      */
     openedAtMount: boolean
+    /** 挂载之后展开过没有（含首帧即展开）。lazyMount 下 content 里的候选从第一次展开起才挂载。 */
+    opened: boolean
     /** 定位引擎回填的最新结果；connect 只读取它，不涉及 DOM 也不调用引擎。 */
     position: PositionResult | null
     /** 选中集合，恒为数组。受控（value 提供）时 cell 直读 prop。 */
@@ -362,6 +372,7 @@ export interface ComboboxSchema<V = string> extends MachineSchema {
     | 'releasePress'
     | 'releaseWhenInert'
     | 'clearOpenedAtMount'
+    | 'markOpened'
   effect: 'trackPosition' | 'trackLoadMore' | 'trackLayer' | 'trackTagListMotion'
 }
 
@@ -457,6 +468,12 @@ export interface ComboboxApi<T extends PropTypes = PropTypes, V = string> {
   getLoadingProps: () => T['element']
   /** 单值表单出口；按 api.value 逐个调用并生成同名 input，零选中不生成提交项。不给 value 是必填且没选值时的空值占位，带原生 required。 */
   getHiddenInputProps: (props?: { value: string }) => T['input']
+  /**
+   * content 里的候选此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。
+   * 缺省恒为真；lazyMount 下没展开过为假；unmountOnExit 下闸门落下（退场播完）即为假。
+   * positioner、content、空态与在途占位不受它管，一向常驻。
+   */
+  isContentMounted: (present: boolean) => boolean
 }
 
 /** 读屏文案。 */

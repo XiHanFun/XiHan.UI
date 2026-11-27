@@ -52,6 +52,10 @@ const XhComboboxRootImpl = defineComponent({
     /** 对象值怎样取键：字段名或取值函数；同一个选项每次都是新对象时给它，不给按对象身份认。 */
     valueKey: { type: [String, Function] as PropType<string | ((value: never) => string)> },
     virtualizer: { type: Object as PropType<CollectionVirtualizer> },
+    /** 第一次展开时才挂载 content 里的候选，默认 false。打开前的选中文字按 collection 算，没给时退回值本身。 */
+    lazyMount: { type: Boolean, default: undefined },
+    /** 收起动画播完后卸载 content 里的候选，默认 false；下次展开重新挂载。 */
+    unmountOnExit: { type: Boolean, default: undefined },
     /** 标题文字。提供后不必再写 label 部件；需要放置其他内容时改用 label 插槽。 */
     label: { type: String },
     /** 无匹配时的提示语。提供后不必再写 empty 部件；需要放置其他内容时改用 empty 插槽。 */
@@ -368,7 +372,8 @@ export const XhComboboxContent = defineComponent({
       hidden: !ctx.visible.value || undefined,
       style: ctx.visible.value ? undefined : { display: 'none' },
       ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
-    }, slots.default?.())
+      // content 节点常驻；里面的候选挂不挂由 headless 按 lazyMount / unmountOnExit 判，手写与按数据铺的都走这一处
+    }, ctx.api.value.isContentMounted(ctx.visible.value) ? slots.default?.() : undefined)
   },
 })
 

@@ -54,6 +54,10 @@ export interface XhComboboxRootProps<V = string> extends RootElementProps {
   /** 对象值怎样取键：字段名或取值函数；同一个选项每次都是新对象时给它，不给按对象身份认。 */
   valueKey?: SelectionValueKey<V>
   virtualizer?: CollectionVirtualizer
+  /** 第一次展开时才挂载 content 里的候选，默认 false。打开前的选中文字按 collection 算，没给时退回值本身。 */
+  lazyMount?: boolean
+  /** 收起动画播完后卸载 content 里的候选，默认 false；下次展开重新挂载。 */
+  unmountOnExit?: boolean
   /** 标题文字。提供后不必再写 label 部件。 */
   label?: ReactNode
   /** 无匹配时的提示语。提供后不必再写 empty 部件。 */
@@ -115,6 +119,8 @@ export function XhComboboxRoot<V = string>({
   ariaLabel,
   collection,
   virtualizer,
+  lazyMount,
+  unmountOnExit,
   label,
   empty,
   value,
@@ -162,6 +168,8 @@ export function XhComboboxRoot<V = string>({
     ariaLabel,
     collection,
     virtualizer,
+    lazyMount,
+    unmountOnExit,
     value,
     defaultValue,
     inputValue,
@@ -403,7 +411,8 @@ export function XhComboboxContent({ children, ...rest }: XhComboboxContentProps)
         },
       )}
     >
-      {children}
+      {/* content 节点常驻；里面的候选挂不挂由 headless 按 lazyMount / unmountOnExit 判，手写与按数据铺的都走这一处 */}
+      {ctx.api.isContentMounted(ctx.rendered) ? children : null}
     </div>
   )
 }
