@@ -97,6 +97,10 @@ export interface XhColorPickerRootProps extends RootElementProps {
   dir?: Direction
   placement?: Placement
   offset?: number
+  /** 第一次展开时才挂载 content 里的面板（色域、滑块、通道输入与色板），默认 false；inline 时不起作用。 */
+  lazyMount?: boolean
+  /** 收起动画播完后卸载 content 里的面板，默认 false；下次展开重新挂载。 */
+  unmountOnExit?: boolean
   translations?: Partial<ColorPickerTranslations>
   onValueChange?: ColorPickerProps['onValueChange']
   onOpenChange?: ColorPickerProps['onOpenChange']
@@ -136,6 +140,8 @@ export function XhColorPickerRoot({
   dir,
   placement,
   offset,
+  lazyMount,
+  unmountOnExit,
   translations,
   onValueChange,
   onOpenChange,
@@ -173,6 +179,8 @@ export function XhColorPickerRoot({
     dir,
     placement,
     offset,
+    lazyMount,
+    unmountOnExit,
     translations,
     onValueChange,
     onOpenChange,
@@ -346,7 +354,8 @@ export function XhColorPickerContent({ children, ...rest }: XhColorPickerContent
         },
       )}
     >
-      {children}
+      {/* content 节点常驻；里面的面板挂不挂由 headless 按 lazyMount / unmountOnExit 判，手写与按数据铺的都走这一处 */}
+      {ctx.api.isContentMounted(ctx.rendered) ? children : null}
     </div>
   )
 }

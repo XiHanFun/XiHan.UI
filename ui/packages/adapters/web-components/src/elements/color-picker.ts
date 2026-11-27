@@ -49,6 +49,7 @@ import { emitEvent } from '../dom/emit-event'
 import { wcNormalize } from '../dom/normalize'
 import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
 import { withoutHidden } from '../overlay-exit'
+import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayController } from '../runtime/overlay-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
@@ -100,6 +101,8 @@ import { XhPortalHostElement } from '../runtime/portal-host'
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写横轴上左右两键与指针的语义，默认 ltr
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
+ * @attr {boolean} lazy-mount - 第一次展开时才挂载面板：生成的面板第一次展开才铺；手写的写进 content 里的一个 `<template>`，第一次展开才克隆、之后常驻。没写模板的手写面板始终常驻；inline 时不起作用
+ * @attr {boolean} unmount-on-exit - 收起动画播完后撤走面板（生成的与 `<template>` 克隆出的），下次展开重新铺，默认 false
  * @attr {string} name - 表单字段名；提供后 hidden-input 才带 name 并参与提交
  * @attr {string} placeholder - 单选未选时 value-text 显示的提示；缺省取 translations.placeholder
  * @fires value-change - 选中的颜色变化；detail 为 `{ value: string[] }`，单选恒为一项
@@ -157,6 +160,8 @@ export class XhColorPickerElement extends XhPortalHostElement {
           label: host.label,
           hiddenInput: host.name !== undefined,
           slotted: name => host.slotted(name),
+          // 结构排在 wire() 之前，闸门这一轮还没跟上 open：展开中或退场没播完都算在场，退场播完由闸门叫的那一轮撤掉面板
+          contentMounted: host.contentMounted(),
         })
       : undefined,
   }
@@ -191,6 +196,8 @@ export class XhColorPickerElement extends XhPortalHostElement {
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
+    lazyMount: { converter: BOOLEAN_CONVERTER, attribute: 'lazy-mount' },
+    unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
     // 文案表是对象，只走 property
     translations: { attribute: false },
   }
@@ -222,6 +229,8 @@ export class XhColorPickerElement extends XhPortalHostElement {
   declare direction?: Direction
   declare placement?: Placement
   declare offset?: number
+  declare lazyMount?: boolean
+  declare unmountOnExit?: boolean
   declare translations?: Partial<ColorPickerTranslations>
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
@@ -331,6 +340,15 @@ export class XhColorPickerElement extends XhPortalHostElement {
     }
   }
 
+  /** content 里 `<template>` 写的面板按 headless 的挂卸判定克隆进来或撤走；没写模板的作者节点照旧常驻 */
+  private readonly lazyContent = new LazyContent({ stash: false })
+
+  /** 生成结构时 content 里铺不铺面板。 */
+  private contentMounted(): boolean {
+    const api = connectColorPicker(this.services(), wcNormalize)
+    return api.isContentMounted(api.open || this.overlay.visible)
+  }
+
   /** 面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；条子走浮层 4px 档 */
   private readonly bars = new OverlayScrollbarsController(this, {
     present: () => this.overlay.visible,
@@ -376,6 +394,8 @@ export class XhColorPickerElement extends XhPortalHostElement {
       dir: this.direction,
       placement: this.placement,
       offset: this.offset,
+      lazyMount: this.lazyMount,
+      unmountOnExit: this.unmountOnExit,
       translations: this.translations,
       onValueChange: this.notifyValue,
       onOpenChange: this.notifyOpen,
@@ -676,6 +696,8 @@ export class XhColorPickerElement extends XhPortalHostElement {
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     const visible = this.overlay.sync(api.open, this.getPart('content'))
     this.setPartHidden(this.getPart('content'), !visible, { attribute: true })
+    // 手写在 content 里 <template> 中的面板按 headless 的判定克隆或撤走；新挂上的部件由部件观察器补一轮 wire 接上属性
+    this.lazyContent.sync(this.getPart('content'), api.isContentMounted(visible))
 
     this.bars.wire()
     this.portal.sync(visible)

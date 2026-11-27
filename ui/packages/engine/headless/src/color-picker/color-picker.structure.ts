@@ -57,6 +57,11 @@ export interface ColorPickerStructureOptions {
   hiddenInput?: boolean
   /** 作者给了哪些插槽的内容，只认 label。 */
   slotted?: StructureSlotted
+  /**
+   * content 里的面板这一刻铺不铺，缺省铺；取 isContentMounted 的判定。Web Components 生成节点时按它增删，
+   * Vue / React 由 content 部件自己按判定渲不渲子节点，不必传。
+   */
+  contentMounted?: boolean
 }
 
 type ColorPickerStructureModel = Pick<ColorPickerApi, 'inline' | 'multiple' | 'clearable' | 'alpha' | 'tags' | 'swatchPicker' | 'recentSwatchPicker' | 'translations'>
@@ -125,7 +130,8 @@ export function colorPickerStructure(model: ColorPickerStructureModel, options: 
   panel.push(swatchPickerStructure('recent-swatch-picker', 'recent-swatch-picker', model.recentSwatchPicker.swatches.map(node => node.value)))
   if (multiple)
     panel.push({ key: 'confirm-trigger', tag: 'button', part: 'confirm-trigger', text: model.translations.confirmTrigger })
-  const content: ColorPickerNode = { key: 'content', tag: 'div', part: 'content', children: panel }
+  // lazyMount / unmountOnExit 判为不挂时 content 节点照旧在，面板不铺
+  const content: ColorPickerNode = { key: 'content', tag: 'div', part: 'content', children: options.contentMounted === false ? [] : panel }
 
   const nodes: ColorPickerNode[] = []
   if (slotted('label'))

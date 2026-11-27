@@ -15100,6 +15100,7 @@
       "inline",
       "invalid",
       "labelled",
+      "lazyMount",
       "maxRecentColors",
       "maxSelected",
       "maxTagCount",
@@ -15120,6 +15121,7 @@
       "size",
       "swatches",
       "translations",
+      "unmountOnExit",
       "value",
       "variant"
     ],
@@ -23974,6 +23976,7 @@
         "inline",
         "invalid",
         "label",
+        "lazy-mount",
         "max-recent-colors",
         "max-selected",
         "max-tag-count",
@@ -23988,6 +23991,7 @@
         "required",
         "size",
         "swatches",
+        "unmount-on-exit",
         "value",
         "variant"
       ],

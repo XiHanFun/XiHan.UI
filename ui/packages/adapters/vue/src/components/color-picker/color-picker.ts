@@ -82,6 +82,10 @@ export const XhColorPickerRoot = defineComponent({
     dir: { type: String as PropType<Direction> },
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
+    /** 第一次展开时才挂载 content 里的面板（色域、滑块、通道输入与色板），默认 false；inline 时不起作用。 */
+    lazyMount: { type: Boolean, default: undefined },
+    /** 收起动画播完后卸载 content 里的面板，默认 false；下次展开重新挂载。 */
+    unmountOnExit: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<Partial<ColorPickerTranslations>> },
   },
   // *-change 携带 details 对象，update:* 携带裸值
@@ -250,7 +254,8 @@ export const XhColorPickerContent = defineComponent({
       hidden: !ctx.visible.value || undefined,
       style: ctx.visible.value ? undefined : { display: 'none' },
       ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
-    }, slots.default?.())
+      // content 节点常驻；里面的面板挂不挂由 headless 按 lazyMount / unmountOnExit 判，手写与按数据铺的都走这一处
+    }, ctx.api.value.isContentMounted(ctx.visible.value) ? slots.default?.() : undefined)
   },
 })
 

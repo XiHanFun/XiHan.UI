@@ -18,6 +18,7 @@ import { COLOR_PICKER_EN_US } from '../locale/en-US'
 import { sameArray } from '../shared/array'
 import { COLOR_FALLBACK, colorHsvaToRgba, colorParse, colorResolveFormat, colorResolveHsva, colorRgbaToHsva, colorSameColor, colorToString } from '../shared/color'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
+import { markOpened, openedCell } from '../shared/disclosure-mount'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { resolveMaxSelected } from '../shared/max-selected'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
@@ -348,6 +349,8 @@ export const colorPickerMachine = createMachine({
   context: ({ prop, cell }) => ({
     // 首帧标记：挂载时开着、还没收起过
     openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
+    // 首帧即展开也算展开过：lazyMount 下面板照常首屏就在
+    opened: openedCell(cell, openAtMount(prop)),
     // 工作色：单选时它就是选中值（受控时直读 prop 的首项），多选时是浮层里调着的草稿、不对外通知
     value: cell<string>(() => {
       if (prop('multiple') === true)
@@ -468,6 +471,7 @@ export const colorPickerMachine = createMachine({
     },
     open: {
       initial: 'idle',
+      entry: ['markOpened'],
       // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
       effects: ['trackPosition'],
       // 收起时丢掉没收下的草稿，再展开时输入框显示当前颜色；取色按钮随浮层一起离场，按压面一并撤下。
@@ -528,6 +532,7 @@ export const colorPickerMachine = createMachine({
     actions: {
       ...controlledOpenActions<ColorPickerSchema>({ reason: true }),
       clearOpenedAtMount,
+      markOpened,
       markTagListTracked: ({ context }) => context.set('tagListTracked', true),
 
       /** 多选的整份替换：解析不出的颜色丢掉，同一个颜色只留第一次出现的那一份。 */

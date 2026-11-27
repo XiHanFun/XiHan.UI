@@ -16,6 +16,7 @@ import { contains, dataAttr, isComposingEvent, mergeProps } from '@xihan-ui/core
 import { connectColorSlider } from '../color-slider'
 import { connectColorSwatchPicker } from '../color-swatch-picker'
 import { COLOR_PICKER_EN_US } from '../locale/en-US'
+import { overlayContentMounted } from '../shared/disclosure-mount'
 import { colorCss, colorHsvaToRgba, colorHueCss, colorParse, colorResolveFormat, colorResolveHsva } from '../shared/color'
 import { resolveMaxSelected } from '../shared/max-selected'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
@@ -172,6 +173,8 @@ export function connectColorPicker<T extends PropTypes>(
 
   return {
     open,
+    // 挂卸只管 content 里的面板：positioner 与 content 节点常驻，触发钮的 aria-controls 始终指得到它；常驻形态的面板一向在
+    isContentMounted: inline ? () => true : overlayContentMounted(prop, context.get('opened')),
     value: values,
     multiple,
     color: value,

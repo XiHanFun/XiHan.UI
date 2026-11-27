@@ -252,6 +252,14 @@ export interface ColorPickerSchema extends MachineSchema {
     dir?: Direction
     placement?: Placement
     offset?: number
+    /**
+     * 第一次展开时才挂载 content 里的面板（色域、滑块、通道输入与色板），默认 false。页面上颜色选择器很多（表格每行一个）时，
+     * 收起态每个实例背着的整块面板是挂载开销的大头。positioner 与 content 节点照旧常驻；工作色与选中值归机器，不随面板挂卸丢掉。
+     * inline 时面板常驻，这一项不起作用。
+     */
+    lazyMount?: boolean
+    /** 收起动画播完后卸载 content 里的面板，默认 false；下次展开重新挂载。inline 时不起作用。 */
+    unmountOnExit?: boolean
     translations?: Partial<ColorPickerTranslations>
     /** value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onValueChange?: (details: ColorPickerValueChangeDetails) => void
@@ -270,6 +278,8 @@ export interface ColorPickerSchema extends MachineSchema {
      * 第一次收起时清掉，之后的每一次打开照常进场。
      */
     openedAtMount: boolean
+    /** 挂载之后展开过没有（含首帧即展开）。lazyMount 下 content 里的面板从第一次展开起才挂载。 */
+    opened: boolean
     /**
      * 工作色的值串：取色区、滑块、数值框与触发钮里的色块读的都是它。
      * 单选时它就是选中值（受控时直读 prop 的首项）；多选时它是浮层里调着的草稿，按「添加」才收进 selected。
@@ -393,6 +403,7 @@ export interface ColorPickerSchema extends MachineSchema {
     | 'clearRecent'
     | 'syncInline'
     | 'clearOpenedAtMount'
+    | 'markOpened'
     | 'setSelected'
     | 'clearValue'
     | 'addValue'
@@ -510,4 +521,10 @@ export interface ColorPickerApi<T extends PropTypes = PropTypes> {
    * 多选时一个选中值一份同名输入：传 `{ value }` 产出那一份，不传是首个选中值那一份。
    */
   getHiddenInputProps: (props?: ColorPickerHiddenInputProps) => T['input']
+  /**
+   * content 里的面板此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。
+   * 缺省与 inline 时恒为真；lazyMount 下没展开过为假；unmountOnExit 下闸门落下（退场播完）即为假。
+   * positioner 与 content 节点不受它管，一向常驻。
+   */
+  isContentMounted: (present: boolean) => boolean
 }

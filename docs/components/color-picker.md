@@ -105,6 +105,7 @@ multiple 时浮层里调出的颜色是草稿，按「添加」收进值、浮�
 - 多选（`multiple`）时浮层里调出的工作色是草稿，按「添加」（`confirm-trigger`）收进值，浮层不收、工作色留着，接着调就能添下一个；预设色板点一下切换选中，格子本身不再标选中。工作色解析不出、已经选过（按颜色比较，写法不同也算同一个）或到了 `maxSelected` 时「添加」不可按。
 - 多选的选中值在输入行里排成标签（与[选择器](./select)多选同一套库内[标签](./tag)），按加入先后：每枚标签前一个该颜色的色点，值文字收起，触发钮只剩一颗显示工作色的色块并成为键盘入口，在它上面按退格摘掉最后一个，点标签上的叉摘掉那一个；标签不截短、一行放不下就折行，超过 `maxTagCount`（默认 3）的折进 +N；表单一个选中值一份同名隐藏输入。
 - `inline` 是常驻形态：取色面直接铺在页面里，与浮层形态同一台机器、同一组部件，只是不写 `control` / `trigger` / `positioner`。取色面是静态内容面（surface 圆角、描边、不落影），不抢焦点、不入层栈，点外与 Escape 都不收起。
+- content 里的面板（色域、滑块、通道输入与色板）缺省常驻、收起只隐藏。`lazyMount` 让它们第一次展开时才挂载、之后常驻：表格每行一个颜色选择器时省下收起态的整块面板；`unmountOnExit` 让它们在退场动画播完后卸载、下次展开重新挂载。工作色、选中值与最近使用色都记在机器里，不随面板挂卸丢掉；`inline` 时面板常驻，两项都不起作用。Web Components 生成的面板照同一规则增删；手写的面板写进 content 里一个 `<template>`，按同一规则克隆或撤走。
 - 最近使用色：一轮取色结束且颜色变了就记一笔，最新的在最前、同色只留一份、最多留 `maxRecentColors` 个（缺省 8）。浮层形态以收起为一轮，常驻形态以焦点离开取色面为一轮；只经 `setValue` 改的不记。`recentColors` 可受控，由宿主持久化；`recent-swatch-picker` 挂载点渲染它们，还没有时收起。
 - 浮层收起时 `onOpenChange` 带上关闭原因 `reason`：Escape 报 `esc`，点在浮层外或焦点移出浮层报 `interact-outside`，再点一次触发钮报 `close-trigger`，`setOpen(false)` 报 `programmatic`；展开时不带。选色、「添加」都不收起浮层，没有 `selection`；常驻形态不收起，也就不报。
 
@@ -171,6 +172,8 @@ multiple 时浮层里调出的颜色是草稿，按「添加」收进值、浮�
 | `dir` | `Direction` |  | 文字方向。只改写横轴（取色区的饱和度、通道滑杆）上左右两键与指针的语义。 |
 | `placement` | `Placement` |  |  |
 | `offset` | `number` |  |  |
+| `lazyMount` | `boolean` |  | 第一次展开时才挂载 content 里的面板（色域、滑块、通道输入与色板），默认 false。页面上颜色选择器很多（表格每行一个）时， 收起态每个实例背着的整块面板是挂载开销的大头。positioner 与 content 节点照旧常驻；工作色与选中值归机器，不随面板挂卸丢掉。 inline 时面板常驻，这一项不起作用。 |
+| `unmountOnExit` | `boolean` |  | 收起动画播完后卸载 content 里的面板，默认 false；下次展开重新挂载。inline 时不起作用。 |
 | `translations` | `Partial<ColorPickerTranslations>` |  |  |
 | `onValueChange` | `(details: ColorPickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onClear` | `() => void` |  | 用户按清空钮清掉了值：先发 onValueChange（value 为空数组），再发它。程序化的 setValue 不发。 |
@@ -306,6 +309,7 @@ multiple 时浮层里调出的颜色是草稿，按「添加」收进值、浮�
 | `getRecentSwatchPickerProps` | `() => T['element']` | 最近使用色的挂载点，同上；还没有最近使用色时收起。 |
 | `getConfirmTriggerProps` | `() => T['button']` | 「添加」：多选时把工作色收进值，浮层不收；单选时 hidden。文字由作者写。 |
 | `getHiddenInputProps` | `(props?: ColorPickerHiddenInputProps) => T['input']` | 表单影子：值随表单提交。提供 name 后才带 name，未提供时不参与提交。 多选时一个选中值一份同名输入：传 `{ value }` 产出那一份，不传是首个选中值那一份。 |
+| `isContentMounted` | `(present: boolean) => boolean` | content 里的面板此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。 缺省与 inline 时恒为真；lazyMount 下没展开过为假；unmountOnExit 下闸门落下（退场播完）即为假。 positioner 与 content 节点不受它管，一向常驻。 |
 
 ## 无障碍
 
