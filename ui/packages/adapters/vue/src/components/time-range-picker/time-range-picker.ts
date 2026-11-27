@@ -122,6 +122,10 @@ export const XhTimeRangePickerRoot = defineComponent({
     size: { type: String as PropType<Size> },
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
+    /** 第一次展开时才挂载 content 里的面板（快捷选项、起止两套时间列与底栏），默认 false。 */
+    lazyMount: { type: Boolean, default: undefined },
+    /** 收起动画播完后卸载 content 里的面板，默认 false；下次展开重新挂载。 */
+    unmountOnExit: { type: Boolean, default: undefined },
     /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
     dir: { type: String as PropType<Direction> },
   },
@@ -309,7 +313,8 @@ export const XhTimeRangePickerContent = defineComponent({
       hidden: !ctx.visible.value || undefined,
       style: ctx.visible.value ? undefined : { display: 'none' },
       ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
-    }, slots.default?.())
+      // content 节点常驻；里面的面板挂不挂由 headless 按 lazyMount / unmountOnExit 判，手写与按数据铺的都走这一处
+    }, ctx.api.value.isContentMounted(ctx.visible.value) ? slots.default?.() : undefined)
   },
 })
 

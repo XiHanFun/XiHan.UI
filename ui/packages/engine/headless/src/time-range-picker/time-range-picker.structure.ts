@@ -47,6 +47,11 @@ export interface TimeRangePickerStructureOptions {
   label?: string
   /** 作者给了哪些插槽的内容：只有 label。 */
   slotted?: StructureSlotted
+  /**
+   * content 里的面板这一刻铺不铺，缺省铺；取 isContentMounted 的判定。Web Components 生成节点时按它增删，
+   * Vue / React 由 content 部件自己按判定渲不渲子节点，不必传。
+   */
+  contentMounted?: boolean
 }
 
 type TimeRangePickerStructureModel = Pick<TimeRangePickerApi, 'clearable' | 'segments' | 'presets' | 'columnGroups' | 'getItemText' | 'translations'>
@@ -123,7 +128,8 @@ export function timeRangePickerStructure(model: TimeRangePickerStructureModel, o
       key: 'positioner',
       tag: 'div',
       part: 'positioner',
-      children: [{ key: 'content', tag: 'div', part: 'content', children: content }],
+      // lazyMount / unmountOnExit 判为不挂时 content 节点照旧在，面板不铺
+      children: [{ key: 'content', tag: 'div', part: 'content', children: options.contentMounted === false ? [] : content }],
     },
   )
   return nodes

@@ -74,6 +74,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 - 终点早于起点、任一端越界时整个字段标为不合法，也可以用 `invalid` 显式声明。
 - 触发器打开空值时焦点直接落到起点组的第一项；从输入段打开时继续保留键入焦点，展开后落到正在编辑一端的时间列。
 - 浮层收起时 `onOpenChange` 带上关闭原因 `reason`：Escape 报 `esc`，点在浮层外或焦点移出浮层报 `interact-outside`；再点一次时钟钮或输入行、在段位上按 Enter 报 `close-trigger`；点快捷选项随之收起报 `selection`（在列里挑时分秒不收起）；`setOpen(false)` 报 `programmatic`。展开时不带。
+- content 里的面板（快捷选项、起止两套时间列与底栏）缺省常驻、收起只隐藏。`lazyMount` 让它们第一次展开时才挂载、之后常驻：表格每行一个时间范围选择器时省下收起态的两套时间列；`unmountOnExit` 让它们在退场动画播完后卸载、下次展开重新挂载。聚焦的格与选中值都记在机器里，不随面板挂卸丢掉；输入行、positioner 与 content 节点一向常驻。Web Components 生成的面板照同一规则增删；手写的面板写进 content 里一个 `<template>`，按同一规则克隆或撤走。
 
 ### 组合
 
@@ -138,6 +139,8 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `placement` | `Placement` |  |  |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
+| `lazyMount` | `boolean` |  | 第一次展开时才挂载 content 里的面板（快捷选项、起止两套时间列与底栏），默认 false。页面上时间范围选择器很多（表格每行一个）时， 收起态每个实例背着的起止两套时间列是挂载开销的大头。positioner 与 content 节点照旧常驻；聚焦的格与选中值归机器，不随面板挂卸丢掉。 |
+| `unmountOnExit` | `boolean` |  | 收起动画播完后卸载 content 里的面板，默认 false；下次展开重新挂载。 |
 | `isTimeUnavailable` | `TimeUnavailablePredicate` |  | 逐值可选性。value 是两位补零的格值，时列恒按 24 小时制给出（12 小时制下也换算成真实的时）； unit 区分同一个 '30' 属于哪一列；context 带这一端已选的时（24 小时制）与分，以及是哪一端（index）， 起点与终点可以各有规则；date 在本组件恒为 null。 与 min / max 的界外值同等处理：判定为真的格子仍可聚焦，只是不可选中。 |
 | `translations` | `Partial<TimeRangePickerTranslations>` |  | 段位与两端读屏名的覆盖；未提供时取英文语言包里的语义名。 |
 | `onValueChange` | `(details: TimeRangePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
@@ -273,6 +276,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `getColumnProps` | `(props: TimeRangePickerColumnProps) => T['element']` |  |
 | `getItemProps` | `(props: TimeRangePickerItemProps) => T['element']` |  |
 | `getHiddenInputProps` | `(props: TimeRangePickerEndProps) => T['input']` | 表单出口：起止各一份 type=hidden 的原生输入，随表单提交各自的 ISO 串。 |
+| `isContentMounted` | `(present: boolean) => boolean` | content 里的面板此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。 缺省恒为真；lazyMount 下没展开过为假；unmountOnExit 下闸门落下（退场播完）即为假。 positioner 与 content 节点不受它管，一向常驻。 |
 
 ## 无障碍
 

@@ -13,6 +13,7 @@ import type { TimeRangePickerColumnRef, TimeRangePickerEndIndex, TimeRangePicker
 import { canTakeFocus, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { alignColumnsOnOpen, followColumnSelection } from '../shared/column-scroll'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
+import { markOpened, openedCell } from '../shared/disclosure-mount'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
@@ -194,6 +195,8 @@ export const timeRangePickerMachine = createMachine({
   context: ({ prop, cell }) => ({
     // 首帧标记：挂载时开着、还没收起过
     openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
+    // 首帧即展开也算展开过：lazyMount 下面板照常首屏就在
+    opened: openedCell(cell, openAtMount(prop)),
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     value: cell<string[]>(() => ({
       value: prop('value'),
@@ -276,7 +279,7 @@ export const timeRangePickerMachine = createMachine({
     },
     open: {
       // 锚点在进入展开态时就位：列是按当前值算出来的，不必等 DOM
-      entry: ['setInitialFocusedItem'],
+      entry: ['markOpened', 'setInitialFocusedItem'],
       // 按住快捷选项途中收起（Enter 在 keydown 即写值收起）或按住格子时 Escape：浮层里的部件不会再来 keyup
       exit: ['clearFocusedItem', 'releasePress'],
       // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
@@ -339,6 +342,7 @@ export const timeRangePickerMachine = createMachine({
           followColumnSelection(columnScrollTarget(params))
       },
       clearOpenedAtMount,
+      markOpened,
       resetToDefault: (params) => {
         resetDeclaredValue(params, 'value', 'value', 'defaultValue')
         params.context.reset('drafts')

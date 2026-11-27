@@ -26,6 +26,7 @@
 - 终点早于起点、任一端越界时整个字段标为不合法，也可以用 `invalid` 显式声明。
 - 触发器打开空值时焦点直接落到起点组的第一项；从输入段打开时继续保留键入焦点，展开后落到正在编辑一端的时间列。
 - 浮层收起时 `onOpenChange` 带上关闭原因 `reason`：Escape 报 `esc`，点在浮层外或焦点移出浮层报 `interact-outside`；再点一次时钟钮或输入行、在段位上按 Enter 报 `close-trigger`；点快捷选项随之收起报 `selection`（在列里挑时分秒不收起）；`setOpen(false)` 报 `programmatic`。展开时不带。
+- content 里的面板（快捷选项、起止两套时间列与底栏）缺省常驻、收起只隐藏。`lazyMount` 让它们第一次展开时才挂载、之后常驻：表格每行一个时间范围选择器时省下收起态的两套时间列；`unmountOnExit` 让它们在退场动画播完后卸载、下次展开重新挂载。聚焦的格与选中值都记在机器里，不随面板挂卸丢掉；输入行、positioner 与 content 节点一向常驻。Web Components 生成的面板照同一规则增删；手写的面板写进 content 里一个 `<template>`，按同一规则克隆或撤走。
 
 ## 组合
 
