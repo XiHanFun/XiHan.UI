@@ -81693,7 +81693,7 @@
                 "text": "ElementStructure<XhTreeSelectElement>"
               },
               "static": true,
-              "default": "{ build: host => host.ctrl.service ? treeSelectStructure(connectTreeSelect(host.ctrl.service, wcNormalize), { label: host.label, clearable: host.clearable ?? false, searchable: host.searchable ?? false, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
+              "default": "{ build: host => host.ctrl.service ? treeSelectStructure(connectTreeSelect(host.ctrl.service, wcNormalize), { label: host.label, clearable: host.clearable ?? false, searchable: host.searchable ?? false, slotted: (name, key) => host.slotted(name, key), // 结构排在 wire() 之前，闸门这一轮还没跟上 open：展开中或退场没播完都算在场，退场播完由闸门叫的那一轮撤掉树 contentMounted: host.contentMounted(), }) : undefined, }"
             },
             {
               "kind": "field",
@@ -81988,6 +81988,24 @@
                 "text": "boolean | undefined"
               },
               "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "lazyMount",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "lazy-mount"
+            },
+            {
+              "kind": "field",
+              "name": "unmountOnExit",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "unmount-on-exit"
             },
             {
               "kind": "field",
@@ -82289,6 +82307,25 @@
                 }
               ],
               "description": "标签里只有文字时替它包一层 tag 的 label：截断规则挂在 label 上。作者自己写了子节点就原样放行，\n返回 null。补出来的那层不打 data-xh-part，不进角色节点表。"
+            },
+            {
+              "kind": "field",
+              "name": "lazyContent",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new LazyContent({ stash: false })",
+              "description": "content 里 `<template>` 写的树与搜索框按 headless 的挂卸判定克隆进来或撤走；没写模板的作者节点照旧常驻"
+            },
+            {
+              "kind": "method",
+              "name": "contentMounted",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "description": "生成结构时 content 里铺不铺树与搜索框。"
             },
             {
               "kind": "field",
@@ -82700,6 +82737,22 @@
               "description": "上下键到达首尾回绕，默认关闭；写 loop=\"true\" 开启",
               "name": "loop",
               "fieldName": "loop"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "第一次展开时才挂载树与搜索框：生成的树第一次展开才铺；手写的写进 content 里的一个 `<template>`，第一次展开才克隆、之后常驻。没写模板的手写内容始终常驻",
+              "name": "lazy-mount",
+              "fieldName": "lazyMount"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "收起动画播完后撤走树与搜索框（生成的与 `<template>` 克隆出的），下次展开重新铺，默认 false",
+              "name": "unmount-on-exit",
+              "fieldName": "unmountOnExit"
             },
             {
               "type": {

@@ -115,6 +115,7 @@ searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树
 - 支持只选叶子不选分支、子节点异步加载：节点用 `hasChildren: true` 声明懒分支，首次展开由 `loadChildren({ node, signal })` 获取直接子项；失败保留 cause，默认 `branch-error` 与 `branch-retry-trigger` 直接可用。
 - 整树空（`empty`）与在途（`loading`）默认自动渲染；collection 看有效树长度，手写节点由适配器只上报挂载事实、Headless 统一判空。`loading` 为真时树报 `aria-busy`，空态让位；作者写同名部件时保留作者结构与文案。
 - 输入框保持实体；浮层使用实体弹出面（描边加投影）和四向短位移，不缩放树中文字。树、空态与加载态共用一个外壳，底部操作使用同材质分隔线；滚动归树，搜索框与底部操作区钉在树的上下沿不随行滚走；增强对比度时材质自动实体化。面板与字段盒等宽，长节点在行里截断、不撑宽面板；字段盒比可用区还宽时收成可用宽度。
+- content 里的树与搜索框缺省常驻、收起只隐藏。`lazyMount` 让它们第一次展开时才挂载、之后常驻：表格每行一个树选择时省下收起态的整棵树；`unmountOnExit` 让它们在退场动画播完后卸载、下次展开重新挂载，展开状态记在机器里、不随之丢掉。触发器里的选中文字与标签按 `collection` 算，不受这两项影响；positioner、content 与空态、在途两个占位一向常驻。Web Components 生成的树照同一规则增删；手写的树写进 content 里一个 `<template>`，按同一规则克隆或撤走。
 - 仅 `{ hasChildren: true, children: undefined }` 触发 `loadChildren({ node, signal })`；`children: []` 是已知为空目录，永不请求。成功子项、可见行、键盘导航与级联选择由 headless 的同一有效树计算，三端不各自缓存结果。
 - 分支状态不互相降级：`api.branchLoadState(value)` 公开 `idle` / `loading` / `loaded` / `error`；`loaded` 的 `empty` 明确区分成功空数组，`error` 保留原始 cause。默认结构提供 `branch-loading`、`branch-error`、`branch-retry-trigger`、`branch-empty`，也可用同名部件替换文案；错误分支行上的 Enter/Space 是不破坏 tree roving 的正式键盘重试入口。
 - `onBranchLoadStart`、`onBranchLoad`、`onBranchLoadError`（三端事件为 `branch-load-start` / `branch-load` / `branch-load-error`）公开有效请求生命周期。分支或整浮层收起、重试、节点移除/同 value 换代、组件卸载都会中止并作废旧请求；迟到兑现或拒绝不能写回当前树，也不发成功/失败事件。
@@ -184,6 +185,8 @@ searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树
 | `placement` | `Placement` |  |  |
 | `offset` | `number` |  |  |
 | `loop` | `boolean` |  | 上下键到达首尾是否回绕，默认 false。 |
+| `lazyMount` | `boolean` |  | 第一次展开时才挂载 content 里的树与搜索框，默认 false。页面上树选择很多（表格每行一个）时， 收起态每个实例背着的整棵树是挂载开销的大头。positioner、content 与空态、在途两个占位照旧常驻，触发器的 aria-controls 始终指得到它。 |
+| `unmountOnExit` | `boolean` |  | 收起动画播完后卸载 content 里的树与搜索框，默认 false；下次展开重新挂载。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的展开 / 收起语义。 |
 | `name` | `string` |  | 表单字段名。提供后表单出口才带 name，选中值随表单一并提交。 |
 | `form` | `string` |  | 原生表单 ID；显式关联外部表单，提交与 reset 使用同一所有者。 |
@@ -363,6 +366,7 @@ searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树
 | `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 collection 与手写节点都由连接层按 Headless 空态收放。 |
 | `getFooterProps` | `() => T['element']` | 浮层底部的操作区：放在 content 中、tree 的兄弟，不进入树的拥有关系，方向键也无法到达。 |
 | `getHiddenInputProps` | `(props?: { value: string }) => T['input']` | 一个选中值的表单影子；不给 value 是必填且没选值时的空值占位，带原生 required。 |
+| `isContentMounted` | `(present: boolean) => boolean` | content 里的树与搜索框此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。 缺省恒为真；lazyMount 下没展开过为假；unmountOnExit 下闸门落下（退场播完）即为假。 positioner、content 与空态、在途两个占位不受它管，一向常驻。 |
 
 ## 无障碍
 

@@ -135,6 +135,10 @@ export interface XhTreeSelectRootProps extends Omit<ComponentPropsWithRef<'div'>
   placement?: Placement
   offset?: number
   loop?: boolean
+  /** 第一次展开时才挂载 content 里的树与搜索框，默认 false。 */
+  lazyMount?: boolean
+  /** 收起动画播完后卸载 content 里的树与搜索框，默认 false；下次展开重新挂载。 */
+  unmountOnExit?: boolean
   dir?: Direction
   name?: string
   /** 显式关联的原生表单 ID。 */
@@ -184,6 +188,8 @@ export function XhTreeSelectRoot({
   placement,
   offset,
   loop,
+  lazyMount,
+  unmountOnExit,
   dir,
   name,
   form,
@@ -230,6 +236,8 @@ export function XhTreeSelectRoot({
     placement,
     offset,
     loop,
+    lazyMount,
+    unmountOnExit,
     dir,
     name,
     form,
@@ -509,7 +517,8 @@ export function XhTreeSelectContent({ children, ...rest }: XhTreeSelectContentPr
           },
         )}
       >
-        {children}
+        {/* 树与搜索框挂不挂由 headless 按 lazyMount / unmountOnExit 判，手写与按数据铺的都走这一处；空态与在途占位常挂 */}
+        {ctx.api.isContentMounted(ctx.rendered) ? children : null}
         <TreeSelectAutoEmpty content={content} />
         <TreeSelectAutoLoading content={content} />
       </div>

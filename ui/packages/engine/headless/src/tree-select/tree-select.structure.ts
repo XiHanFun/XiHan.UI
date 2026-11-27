@@ -70,6 +70,11 @@ export interface TreeSelectStructureOptions {
   searchable?: boolean
   /** 作者给了哪些插槽的内容：label。 */
   slotted?: StructureSlotted
+  /**
+   * content 里的树与搜索框这一刻铺不铺，缺省铺；取 isContentMounted 的判定。Web Components 生成节点时按它增删，
+   * Vue / React 由 content 部件自己按判定渲不渲子节点，不必传。
+   */
+  contentMounted?: boolean
 }
 
 type TreeSelectStructureModel = Pick<TreeSelectApi, 'collection' | 'multiple' | 'tags'>
@@ -160,10 +165,13 @@ export function treeSelectStructure(model: TreeSelectStructureModel, options: Tr
         key: 'content',
         tag: 'div',
         part: 'content',
-        children: [
-          ...(options.searchable ? [{ key: 'input', tag: 'input', part: 'input' } satisfies TreeSelectStructureNode] : []),
-          { key: 'tree', tag: 'div', part: 'tree', children: model.collection.map(nodeStructure) },
-        ],
+        // lazyMount / unmountOnExit 判为不挂时 content 节点照旧在，树与搜索框不铺
+        children: options.contentMounted === false
+          ? []
+          : [
+              ...(options.searchable ? [{ key: 'input', tag: 'input', part: 'input' } satisfies TreeSelectStructureNode] : []),
+              { key: 'tree', tag: 'div', part: 'tree', children: model.collection.map(nodeStructure) },
+            ],
       }],
     },
   )

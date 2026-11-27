@@ -10,6 +10,7 @@ import type { TreeNodeMeta, TreeVisibleNode } from '../tree'
 import type { TreeSelectApi, TreeSelectBranchLoadSnapshot, TreeSelectPressedPart, TreeSelectSchema, TreeSelectTranslations } from './tree-select.types'
 import { cascadeState, createPressTracker, dataAttr, focusItem, indexOfValue, isComposingEvent, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey } from '@xihan-ui/core'
 import { TREE_SELECT_EN_US } from '../locale/en-US'
+import { overlayContentMounted } from '../shared/disclosure-mount'
 import { expandableBranches } from '../shared/expand-all'
 import { resolveMaxSelected } from '../shared/max-selected'
 import { overlayPositioned } from '../shared/overlay'
@@ -334,6 +335,8 @@ export function connectTreeSelect<T extends PropTypes>(
     open,
     collection,
     visibleNodes: rows,
+    // 挂卸只管 content 里的树与搜索框：positioner、content 与两个占位常驻，aria-controls 始终指得到它
+    isContentMounted: overlayContentMounted(prop, context.get('opened')),
     value,
     expandedValue,
     valueText,

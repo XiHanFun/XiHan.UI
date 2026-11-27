@@ -14,6 +14,7 @@ import { sameArray as sameValues, toArray as toValues, uniqueArray as unique } f
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { attachDisclosureMotion } from '../shared/disclosure-motion'
 import { awaitsExpandAll, expandableBranches, seedExpandedValue } from '../shared/expand-all'
+import { markOpened, openedCell } from '../shared/disclosure-mount'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import {
   abortBranchLoads,
@@ -191,6 +192,8 @@ export const treeSelectMachine = createMachine({
   context: ({ prop, cell }) => ({
     // 首帧标记：挂载时开着、还没收起过
     openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
+    // 首帧即展开也算展开过：lazyMount 下树照常首屏就在
+    opened: openedCell(cell, openAtMount(prop)),
     // 位置结果由 trackPosition 里的引擎回填；connect 只读这里，不碰 DOM
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     value: cell<string[]>(() => ({
@@ -302,8 +305,8 @@ export const treeSelectMachine = createMachine({
       },
     },
     open: {
-      // 锚点在进入展开态时就位；节点常挂，此刻查到的顺序即最终顺序。
-      entry: ['setInitialFocusedValue'],
+      // 锚点在进入展开态时就位；节点常挂，此刻查到的顺序即最终顺序。lazyMount 下树这一帧才挂上，挑锚点靠推迟一拍的补挑
+      entry: ['markOpened', 'setInitialFocusedValue'],
       // 收起就丢缓冲，否则下次展开首字母会拼进上一轮查询串。
       // 收起即松开：按住 Enter 选中后节点随浮层藏起，不会再来 keyup
       // 收起即清掉检索词：下次展开还是整棵树
@@ -348,6 +351,7 @@ export const treeSelectMachine = createMachine({
       ...controlledOpenActions<TreeSelectSchema>({ reason: true }),
       markTagListTracked: ({ context }) => context.set('tagListTracked', true),
       clearOpenedAtMount,
+      markOpened,
       resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
 
       startPress: ({ context, event }) => {

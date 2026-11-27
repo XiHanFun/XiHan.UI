@@ -17320,6 +17320,7 @@
       "form",
       "invalid",
       "labelled",
+      "lazyMount",
       "loadChildren",
       "loading",
       "loop",
@@ -17344,6 +17345,7 @@
       "size",
       "tone",
       "translations",
+      "unmountOnExit",
       "value",
       "variant",
       "virtualizer"
@@ -26333,6 +26335,7 @@
         "form",
         "invalid",
         "label",
+        "lazy-mount",
         "loading",
         "loop",
         "max-selected",
@@ -26348,6 +26351,7 @@
         "searchable",
         "size",
         "tone",
+        "unmount-on-exit",
         "value",
         "variant"
       ],

@@ -263,6 +263,13 @@ export interface TreeSelectSchema extends MachineSchema {
     offset?: number
     /** 上下键到达首尾是否回绕，默认 false。 */
     loop?: boolean
+    /**
+     * 第一次展开时才挂载 content 里的树与搜索框，默认 false。页面上树选择很多（表格每行一个）时，
+     * 收起态每个实例背着的整棵树是挂载开销的大头。positioner、content 与空态、在途两个占位照旧常驻，触发器的 aria-controls 始终指得到它。
+     */
+    lazyMount?: boolean
+    /** 收起动画播完后卸载 content 里的树与搜索框，默认 false；下次展开重新挂载。 */
+    unmountOnExit?: boolean
     /** 文字方向，默认 ltr；只对调左右方向键的展开 / 收起语义。 */
     dir?: Direction
     /** 表单字段名。提供后表单出口才带 name，选中值随表单一并提交。 */
@@ -290,6 +297,8 @@ export interface TreeSelectSchema extends MachineSchema {
      * 第一次收起时清掉，之后的每一次打开照常进场。
      */
     openedAtMount: boolean
+    /** 挂载之后展开过没有（含首帧即展开）。lazyMount 下 content 里的树与搜索框从第一次展开起才挂载。 */
+    opened: boolean
     /** 定位引擎回填的最新结果；connect 只读取它，不涉及 DOM 也不调用引擎。 */
     position: PositionResult | null
     /** 选中集合，恒为数组。受控（value 提供）时 cell 直读 prop。 */
@@ -398,6 +407,7 @@ export interface TreeSelectSchema extends MachineSchema {
     | 'releasePress'
     | 'releaseWhenInert'
     | 'clearOpenedAtMount'
+    | 'markOpened'
   effect: 'trackPosition' | 'trackLayer' | 'trackBranchLoads' | 'trackTagListMotion' | 'trackBranchDisclosure'
 }
 
@@ -522,4 +532,10 @@ export interface TreeSelectApi<T extends PropTypes = PropTypes> {
   /** 单值表单出口；按 api.value 逐个调用并生成同名 input，零选中不生成提交项。 */
   /** 一个选中值的表单影子；不给 value 是必填且没选值时的空值占位，带原生 required。 */
   getHiddenInputProps: (props?: { value: string }) => T['input']
+  /**
+   * content 里的树与搜索框此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。
+   * 缺省恒为真；lazyMount 下没展开过为假；unmountOnExit 下闸门落下（退场播完）即为假。
+   * positioner、content 与空态、在途两个占位不受它管，一向常驻。
+   */
+  isContentMounted: (present: boolean) => boolean
 }

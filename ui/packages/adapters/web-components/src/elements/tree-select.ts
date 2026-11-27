@@ -31,6 +31,7 @@ import { FeedbackNodes } from '../dom/feedback-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
 import { withoutHidden } from '../overlay-exit'
+import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayController } from '../runtime/overlay-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
@@ -85,6 +86,8 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
  * @attr {boolean} loop - 上下键到达首尾回绕，默认关闭；写 loop="true" 开启
+ * @attr {boolean} lazy-mount - 第一次展开时才挂载树与搜索框：生成的树第一次展开才铺；手写的写进 content 里的一个 `<template>`，第一次展开才克隆、之后常驻。没写模板的手写内容始终常驻
+ * @attr {boolean} unmount-on-exit - 收起动画播完后撤走树与搜索框（生成的与 `<template>` 克隆出的），下次展开重新铺，默认 false
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开 / 收起语义，默认 ltr
  * @attr {string} name - 表单字段名；每个选中值提交为一个同名字段
  * @attr {string} form - 显式关联的原生表单 ID，提交与 reset 使用同一所有者
@@ -148,6 +151,8 @@ export class XhTreeSelectElement extends XhPortalHostElement {
           clearable: host.clearable ?? false,
           searchable: host.searchable ?? false,
           slotted: (name, key) => host.slotted(name, key),
+          // 结构排在 wire() 之前，闸门这一轮还没跟上 open：展开中或退场没播完都算在场，退场播完由闸门叫的那一轮撤掉树
+          contentMounted: host.contentMounted(),
         })
       : undefined,
   }
@@ -190,6 +195,8 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
+    lazyMount: { converter: BOOLEAN_CONVERTER, attribute: 'lazy-mount' },
+    unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     name: { converter: STRING_CONVERTER },
     form: { converter: STRING_CONVERTER },
@@ -231,6 +238,8 @@ export class XhTreeSelectElement extends XhPortalHostElement {
   declare placement?: Placement
   declare offset?: number
   declare loop?: boolean
+  declare lazyMount?: boolean
+  declare unmountOnExit?: boolean
   declare direction?: Direction
   declare name?: string
   declare form?: string
@@ -385,6 +394,15 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     return label
   }
 
+  /** content 里 `<template>` 写的树与搜索框按 headless 的挂卸判定克隆进来或撤走；没写模板的作者节点照旧常驻 */
+  private readonly lazyContent = new LazyContent({ stash: false })
+
+  /** 生成结构时 content 里铺不铺树与搜索框。 */
+  private contentMounted(): boolean {
+    const api = connectTreeSelect(this.ctrl.service, wcNormalize)
+    return api.isContentMounted(api.open || this.overlay.visible)
+  }
+
   /**
    * 树的自绘滚动条：与 content 同级挂在已经 fixed 的 positioner 上。
    * 两条轴都排布：深层节点依靠缩进向行末推，横向溢出与纵向一样是常态；
@@ -452,6 +470,8 @@ export class XhTreeSelectElement extends XhPortalHostElement {
       placement: this.placement,
       offset: this.offset,
       loop: this.loop,
+      lazyMount: this.lazyMount,
+      unmountOnExit: this.unmountOnExit,
       dir: this.direction,
       name: this.name,
       form: this.form,
@@ -650,6 +670,8 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     const visible = this.overlay.sync(api.open, this.getPart('content'))
     this.setPartHidden(this.getPart('content'), !visible, { attribute: true })
+    // 手写在 content 里 <template> 中的树与搜索框按 headless 的判定克隆或撤走；新挂上的部件由部件观察器补一轮 wire 接上属性
+    this.lazyContent.sync(this.getPart('content'), api.isContentMounted(visible))
     for (const el of this.getParts('branch-content'))
       this.setPartHidden(el, !api.isExpanded(this.nodeOf(el, BRANCH_SELECTOR).value))
 

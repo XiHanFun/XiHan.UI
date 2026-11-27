@@ -143,6 +143,10 @@ export const XhTreeSelectRoot = defineComponent({
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
     loop: { type: Boolean, default: undefined },
+    /** 第一次展开时才挂载 content 里的树与搜索框，默认 false。 */
+    lazyMount: { type: Boolean, default: undefined },
+    /** 收起动画播完后卸载 content 里的树与搜索框，默认 false；下次展开重新挂载。 */
+    unmountOnExit: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction> },
     name: { type: String },
     form: { type: String },
@@ -453,7 +457,8 @@ export const XhTreeSelectContent = defineComponent({
       hidden: !ctx.visible.value || undefined,
       style: ctx.visible.value ? undefined : { display: 'none' },
       ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
-    }, [slots.default?.(), h(XhTreeSelectAutoEmpty), h(XhTreeSelectAutoLoading)])
+      // 树与搜索框挂不挂由 headless 按 lazyMount / unmountOnExit 判，手写与按数据铺的都走这一处；空态与在途占位常挂
+    }, [ctx.api.value.isContentMounted(ctx.visible.value) ? slots.default?.() : undefined, h(XhTreeSelectAutoEmpty), h(XhTreeSelectAutoLoading)])
   },
 })
 
