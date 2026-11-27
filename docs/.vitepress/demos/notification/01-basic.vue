@@ -1,4 +1,4 @@
-<!-- 全局服务 | createNotificationService 自带宿主，传 preset: 'toast' 即轻提示；模块作用域随处可调用（请求拦截器、store） -->
+<!-- 基础用法 | createNotificationService 自带宿主，传 preset: 'toast' 即轻提示；模块作用域随处可调用（请求拦截器、store） -->
 <script setup lang="ts">
 import type { NotificationService } from "@xihan-ui/vue";
 import { createNotificationService, XhButton } from "@xihan-ui/vue";

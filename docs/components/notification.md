@@ -12,7 +12,7 @@
 
 ## 用法
 
-create 入队并返回 id，队列中的每条由作者渲染为一条通知；退场动画播完后只收起不删除，宿主在 status-change 中把它移出队列
+createNotificationService 自带宿主，传 preset: 'toast' 即轻提示；模块作用域随处可调用（请求拦截器、store）
 
 <XhDemo src="notification/01-basic" />
 
@@ -54,11 +54,11 @@ preset="toast" 换成一句话的轻提示：落底部居中、最多 3 条、�
 
 <XhDemo src="notification/07-toast" />
 
-### 全局服务
+### 手写队列
 
-createNotificationService 自带宿主，传 preset: 'toast' 即轻提示；模块作用域随处可调用（请求拦截器、store）
+create 入队并返回 id，队列中的每条由作者渲染为一条通知；退场动画播完后只收起不删除，宿主在 status-change 中把它移出队列
 
-<XhDemo src="notification/08-service" />
+<XhDemo src="notification/08-queue" />
 
 ### 计时与暂停
 
