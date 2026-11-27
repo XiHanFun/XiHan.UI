@@ -30,6 +30,7 @@ import {
   segmentMaxDigits,
 } from '../date-field'
 import { DATE_PICKER_EN_US } from '../locale/en-US'
+import { overlayContentMounted } from '../shared/disclosure-mount'
 import { sameArray as sameDates } from '../shared/array'
 import { CALENDAR_LOCALE, calendarPeriodOf, calendarPeriodValue, parseCalendarDate } from '../shared/calendar'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
@@ -407,6 +408,8 @@ export function connectDatePicker<T extends PropTypes>(
 
   return {
     open,
+    // 挂卸只管 content 里的面板：positioner 与 content 节点常驻，触发钮的 aria-controls 始终指得到它
+    isContentMounted: overlayContentMounted(prop, context.get('opened')),
     value,
     valueAsString: value[0] ?? null,
     multiple,

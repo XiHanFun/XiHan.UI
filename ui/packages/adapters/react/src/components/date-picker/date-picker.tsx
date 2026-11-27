@@ -155,6 +155,10 @@ export interface XhDatePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
   dir?: Direction
   closeOnSelect?: boolean
+  /** 第一次展开时才挂载 content 里的面板（日历、快捷选项、时间列与底栏），默认 false。 */
+  lazyMount?: boolean
+  /** 收起动画播完后卸载 content 里的面板，默认 false；下次展开重新挂载。 */
+  unmountOnExit?: boolean
   showTime?: boolean
   timeGranularity?: DatePickerProps['timeGranularity']
   /** showTime 的小时制，默认 24；12 时多出上下午列与上下午段。 */
@@ -217,6 +221,8 @@ export function XhDatePickerRoot({
   offset,
   dir,
   closeOnSelect,
+  lazyMount,
+  unmountOnExit,
   showTime,
   timeGranularity,
   hourCycle,
@@ -267,6 +273,8 @@ export function XhDatePickerRoot({
     offset,
     dir,
     closeOnSelect,
+    lazyMount,
+    unmountOnExit,
     showTime,
     timeGranularity,
     hourCycle,
@@ -525,7 +533,8 @@ export function XhDatePickerContent({ children, ...rest }: XhDatePickerContentPr
         },
       )}
     >
-      {children}
+      {/* content 节点常驻；里面的面板挂不挂由 headless 按 lazyMount / unmountOnExit 判，手写与按数据铺的都走这一处 */}
+      {ctx.api.isContentMounted(ctx.rendered) ? children : null}
     </div>
   )
 }

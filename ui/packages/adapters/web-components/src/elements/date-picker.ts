@@ -46,6 +46,7 @@ import { wcNormalize } from '../dom/normalize'
 import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
 import { TIME_STEP_CONVERTER } from '../dom/time-step'
 import { withoutHidden } from '../overlay-exit'
+import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayController } from '../runtime/overlay-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
@@ -143,6 +144,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {number} offset - 浮层与锚点的间距（px）
  * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上
  * @attr {boolean} close-on-select - 选完即收起，默认 true；写 close-on-select="false" 关闭
+ * @attr {boolean} lazy-mount - 第一次展开时才挂载面板：生成的面板第一次展开才铺；手写的写进 content 里的一个 `<template>`，第一次展开才克隆、之后常驻。没写模板的手写面板始终常驻
+ * @attr {boolean} unmount-on-exit - 收起动画播完后撤走面板（生成的与 `<template>` 克隆出的），下次展开重新铺，默认 false
  * @attr {boolean} show-time - 一体化时间：值升格为日期时间，面板中多出时间列，由确认按钮收口；只在 day + single 下生效
  * @attr {'minute'|'second'} time-granularity - showTime 的时间段精度，默认 minute
  * @attr {'12'|'24'} hour-cycle - showTime 的小时制，默认 24；12 时多出上下午列与上下午段
@@ -211,7 +214,12 @@ export class XhDatePickerElement extends XhPortalHostElement {
   /** 作者没写结构时按标准结构生成：标题、盒、表单影子与浮层里的快捷选项、日历、时间列与底栏。 */
   static override structure: ElementStructure<XhDatePickerElement> = {
     build: host => host.rootCtrl.service
-      ? datePickerStructure(connectDatePicker(host.services(), wcNormalize), { label: host.label, slotted: (name, key) => host.slotted(name, key) })
+      ? datePickerStructure(connectDatePicker(host.services(), wcNormalize), {
+          label: host.label,
+          slotted: (name, key) => host.slotted(name, key),
+          // 结构排在 wire() 之前，闸门这一轮还没跟上 open：展开中或退场没播完都算在场，退场播完由闸门叫的那一轮撤掉面板
+          contentMounted: host.contentMounted(),
+        })
       : undefined,
   }
 
@@ -257,6 +265,8 @@ export class XhDatePickerElement extends XhPortalHostElement {
     // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     closeOnSelect: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-select' },
+    lazyMount: { converter: BOOLEAN_CONVERTER, attribute: 'lazy-mount' },
+    unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
     showTime: { converter: BOOLEAN_CONVERTER, attribute: 'show-time' },
     timeGranularity: { converter: STRING_CONVERTER, attribute: 'time-granularity' },
     hourCycle: { converter: HOUR_CYCLE_CONVERTER, attribute: 'hour-cycle' },
@@ -301,6 +311,8 @@ export class XhDatePickerElement extends XhPortalHostElement {
   declare offset?: number
   declare direction?: Direction
   declare closeOnSelect?: boolean
+  declare lazyMount?: boolean
+  declare unmountOnExit?: boolean
   declare showTime?: boolean
   declare timeGranularity?: DatePickerSchema['props']['timeGranularity']
   declare hourCycle?: TimeHourCycle
@@ -383,6 +395,15 @@ export class XhDatePickerElement extends XhPortalHostElement {
     () => datePickerFieldProps(this.rootCtrl.service),
     { scope: this.pickerScope, formField: false },
   )
+
+  /** content 里 `<template>` 写的面板按 headless 的挂卸判定克隆进来或撤走；没写模板的作者节点照旧常驻 */
+  private readonly lazyContent = new LazyContent({ stash: false })
+
+  /** 生成结构时 content 里铺不铺面板。 */
+  private contentMounted(): boolean {
+    const api = connectDatePicker(this.services(), wcNormalize)
+    return api.isContentMounted(api.open || this.overlay.visible)
+  }
 
   /** 浮层面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；面板两轴都滚，条子走浮层 4px 档 */
   private readonly bars = new OverlayScrollbarsController(this, {
@@ -468,6 +489,8 @@ export class XhDatePickerElement extends XhPortalHostElement {
       offset: this.offset,
       dir: this.direction,
       closeOnSelect: this.closeOnSelect,
+      lazyMount: this.lazyMount,
+      unmountOnExit: this.unmountOnExit,
       showTime: this.showTime,
       timeGranularity: this.timeGranularity,
       hourCycle: this.hourCycle,
@@ -804,6 +827,8 @@ export class XhDatePickerElement extends XhPortalHostElement {
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     const visible = this.overlay.sync(api.open, this.getPart('content'))
     this.setPartHidden(this.getPart('content'), !visible, { attribute: true })
+    // 手写在 content 里 <template> 中的面板按 headless 的判定克隆或撤走；新挂上的部件由部件观察器补一轮 wire 接上属性
+    this.lazyContent.sync(this.getPart('content'), api.isContentMounted(visible))
 
     this.bars.wire()
     this.presetBars.wire()

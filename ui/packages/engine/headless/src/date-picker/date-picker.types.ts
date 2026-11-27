@@ -265,6 +265,13 @@ export interface DatePickerSchema extends MachineSchema {
     /** 选完即收起，默认 true。多选不收起。 */
     closeOnSelect?: boolean
     /**
+     * 第一次展开时才挂载 content 里的面板（日历、快捷选项、时间列与底栏），默认 false。页面上日期选择器很多（表格每行一个）时，
+     * 收起态每个实例背着的整张日历是挂载开销的大头。positioner 与 content 节点照旧常驻；日历的状态归机器，不随面板挂卸丢掉。
+     */
+    lazyMount?: boolean
+    /** 收起动画播完后卸载 content 里的面板，默认 false；下次展开重新挂载。 */
+    unmountOnExit?: boolean
+    /**
      * 一体化时间：值升格为 'YYYY-MM-DDTHH:mm[:ss]'，面板中多出时间列，
      * 选完日期不收起、由确认按钮收口。只在 day + single 下生效。
      * 此时 min / max 可以带时间段（'2026-09-28T09:30'）：日历按日期段收，时间列在与它同一天时按时间段标不可选。
@@ -305,6 +312,8 @@ export interface DatePickerSchema extends MachineSchema {
      * 第一次收起时清掉，之后的每一次打开照常进场。
      */
     openedAtMount: boolean
+    /** 挂载之后展开过没有（含首帧即展开）。lazyMount 下 content 里的面板从第一次展开起才挂载。 */
+    opened: boolean
     /** 定位引擎回填的最新结果；connect 只读取它，不涉及 DOM 也不调用引擎。 */
     position: PositionResult | null
     /** 选中集合，恒为数组。受控（value 提供）时直读 prop。 */
@@ -382,6 +391,7 @@ export interface DatePickerSchema extends MachineSchema {
     | 'focusSelectedDay'
     | 'resetToDefault'
     | 'clearOpenedAtMount'
+    | 'markOpened'
     | 'removeValue'
     | 'markTagListTracked'
   effect: 'trackPosition' | 'trackLayer' | 'trackColumnScroll' | 'trackTagListMotion'
@@ -524,4 +534,10 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   getFooterProps: () => T['element']
   /** 确认按钮：showTime 的收口；未开启 showTime 时带 hidden。 */
   getConfirmTriggerProps: () => T['button']
+  /**
+   * content 里的面板此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。
+   * 缺省恒为真；lazyMount 下没展开过为假；unmountOnExit 下闸门落下（退场播完）即为假。
+   * positioner 与 content 节点不受它管，一向常驻。
+   */
+  isContentMounted: (present: boolean) => boolean
 }

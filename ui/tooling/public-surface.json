@@ -15305,6 +15305,7 @@
       "isDateUnavailable",
       "isTimeUnavailable",
       "labelled",
+      "lazyMount",
       "locale",
       "max",
       "maxSelected",
@@ -15332,6 +15333,7 @@
       "timeZone",
       "tone",
       "translations",
+      "unmountOnExit",
       "value",
       "variant",
       "visibleCount"
@@ -24196,6 +24198,7 @@
         "hour-cycle",
         "invalid",
         "label",
+        "lazy-mount",
         "locale",
         "max",
         "max-selected",
@@ -24215,6 +24218,7 @@
         "time-step",
         "time-zone",
         "tone",
+        "unmount-on-exit",
         "value",
         "variant",
         "visible-count"
