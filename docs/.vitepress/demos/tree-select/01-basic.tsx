@@ -1,34 +1,15 @@
-// 基础用法 | 收起时整个控件只占触发器一个 Tab 位，展开时焦点真正进入树、落在已选中的行上
+// 基础用法 | 不写部件时按 collection 铺开整套结构：带 children 的节点渲染为 branch、其余渲染为 item，文本与禁用都查询数据；label 提供标题，clearable 带上清空按钮（手写部件不使用它），产出的 DOM 与手写全套部件完全一致；Web Components 只写一个空的 root
 import type { ReactNode } from "react";
-import {
-  XhTreeSelectBranch,
-  XhTreeSelectBranchContent,
-  XhTreeSelectBranchControl,
-  XhTreeSelectBranchText,
-  XhTreeSelectBranchTrigger,
-  XhTreeSelectContent,
-  XhTreeSelectControl,
-  XhTreeSelectIndicator,
-  XhTreeSelectItem,
-  XhTreeSelectItemIndicator,
-  XhTreeSelectItemText,
-  XhTreeSelectLabel,
-  XhTreeSelectPositioner,
-  XhTreeSelectRoot,
-  XhTreeSelectTree,
-  XhTreeSelectTrigger,
-  XhTreeSelectValueText,
-} from "@xihan-ui/react";
+import { XhTreeSelectRoot } from "@xihan-ui/react";
 import { useState } from "react";
 
-// 层级、显示文本与节点禁用都查这份树数据，标记只管长相
 const files = [
   {
     value: "docs",
     label: "docs",
     children: [
       { value: "guide", label: "guide.md" },
-      { value: "api", label: "api.md" },
+      { value: "api", label: "api.md", disabled: true },
     ],
   },
   {
@@ -40,7 +21,7 @@ const files = [
 ];
 
 export default function Demo(): ReactNode {
-  const [doc, setDoc] = useState<string[]>([]);
+  const [doc, setDoc] = useState<string[]>(["guide"]);
 
   return (
     <>
@@ -49,56 +30,11 @@ export default function Demo(): ReactNode {
         onValueChange={details => setDoc(details.value)}
         collection={files}
         defaultExpandedValue={["docs"]}
+        translations={{ clearTrigger: "清空所选" }}
+        label="文档"
         placeholder="选一个文件"
-      >
-        <XhTreeSelectLabel>文档</XhTreeSelectLabel>
-        <XhTreeSelectControl>
-          <XhTreeSelectTrigger>
-            <XhTreeSelectValueText />
-            <XhTreeSelectIndicator />
-          </XhTreeSelectTrigger>
-        </XhTreeSelectControl>
-        <XhTreeSelectPositioner>
-          <XhTreeSelectContent>
-            <XhTreeSelectTree>
-              <XhTreeSelectBranch value="docs">
-                <XhTreeSelectBranchControl>
-                  <XhTreeSelectBranchTrigger />
-                  <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
-                  <XhTreeSelectItemIndicator />
-                </XhTreeSelectBranchControl>
-                <XhTreeSelectBranchContent>
-                  <XhTreeSelectItem value="guide">
-                    <XhTreeSelectItemIndicator />
-                    <XhTreeSelectItemText>guide.md</XhTreeSelectItemText>
-                  </XhTreeSelectItem>
-                  <XhTreeSelectItem value="api">
-                    <XhTreeSelectItemIndicator />
-                    <XhTreeSelectItemText>api.md</XhTreeSelectItemText>
-                  </XhTreeSelectItem>
-                </XhTreeSelectBranchContent>
-              </XhTreeSelectBranch>
-              <XhTreeSelectBranch value="assets">
-                <XhTreeSelectBranchControl>
-                  <XhTreeSelectBranchTrigger />
-                  <XhTreeSelectBranchText>assets</XhTreeSelectBranchText>
-                  <XhTreeSelectItemIndicator />
-                </XhTreeSelectBranchControl>
-                <XhTreeSelectBranchContent>
-                  <XhTreeSelectItem value="logo">
-                    <XhTreeSelectItemIndicator />
-                    <XhTreeSelectItemText>logo.svg</XhTreeSelectItemText>
-                  </XhTreeSelectItem>
-                </XhTreeSelectBranchContent>
-              </XhTreeSelectBranch>
-              <XhTreeSelectItem value="readme">
-                <XhTreeSelectItemIndicator />
-                <XhTreeSelectItemText>README.md</XhTreeSelectItemText>
-              </XhTreeSelectItem>
-            </XhTreeSelectTree>
-          </XhTreeSelectContent>
-        </XhTreeSelectPositioner>
-      </XhTreeSelectRoot>
+        clearable
+      />
       <p data-demo-output>{`已选：${doc.length ? doc.join("、") : "（无）"}`}</p>
     </>
   );

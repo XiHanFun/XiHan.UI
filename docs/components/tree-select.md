@@ -12,7 +12,7 @@
 
 ## 用法
 
-收起时整个控件只占触发器一个 Tab 位，展开时焦点真正进入树、落在已选中的行上
+不写部件时按 collection 铺开整套结构：带 children 的节点渲染为 branch、其余渲染为 item，文本与禁用都查询数据；label 提供标题，clearable 带上清空按钮（手写部件不使用它），产出的 DOM 与手写全套部件完全一致；Web Components 只写一个空的 root
 
 <XhDemo src="tree-select/01-basic" />
 
@@ -72,11 +72,11 @@ searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树
 
 <XhDemo src="tree-select/12-file-picker" />
 
-### 只提供数据自动渲染
+### 手写部件
 
-不写部件时按 collection 铺开整套结构：带 children 的节点渲染为 branch、其余渲染为 item，文本与禁用都查询数据；label 提供标题，clearable 带上清空按钮（手写部件不使用它），产出的 DOM 与手写全套部件完全一致；Web Components 只写一个空的 root
+收起时整个控件只占触发器一个 Tab 位，展开时焦点真正进入树、落在已选中的行上
 
-<XhDemo src="tree-select/13-collection" />
+<XhDemo src="tree-select/13-parts" />
 
 ### 大树虚拟化
 
