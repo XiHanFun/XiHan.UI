@@ -1,31 +1,22 @@
-<!-- 基础用法 | 不传 open 即为非受控；Esc 或点击遮罩关闭，关闭后焦点回到触发按钮 -->
-<xh-dialog id="dialog-basic">
-  <button data-xh-part="trigger">打开对话框</button>
-  <div data-xh-part="backdrop"></div>
-  <div data-xh-part="positioner">
-    <div data-xh-part="content">
-      <h2 data-xh-part="title">确认发布</h2>
-      <p data-xh-part="description">
-        发布后这篇文档对所有人可见，之后仍可撤回。
-      </p>
-      <div style="display: flex; justify-content: flex-end; gap: 8px">
-        <xh-button variant="ghost">
-          <button data-xh-part="root" data-dismiss>取消</button>
-        </xh-button>
-        <xh-button variant="solid">
-          <button data-xh-part="root" data-dismiss>发布</button>
-        </xh-button>
-      </div>
-      <button data-xh-part="close-trigger" aria-label="关闭"></button>
-    </div>
-  </div>
-</xh-dialog>
+<!-- props 写法 | 不写结构时按标准结构铺：标题、说明与触发器文字三项写出一个确认对话框；确认动作返回 Promise 时等它落定才收起，期间确定钮转圈 -->
+<xh-dialog
+  id="dialog-props"
+  trigger-text="归档这个项目"
+  title-text="归档项目"
+  description="归档后项目转为只读，随时可以恢复。"
+  confirm-text="确认归档"
+></xh-dialog>
+<span data-demo-output>项目状态：<span id="dialog-props-state">未归档</span></span>
 
 <script type="module">
-  // 底部两个按钮把关闭转交给已接线的关闭部件
-  const dialog = document.getElementById("dialog-basic");
-  const close = dialog.querySelector('[data-xh-part="close-trigger"]');
-  for (const button of dialog.querySelectorAll("[data-dismiss]")) {
-    button.addEventListener("click", () => close.click());
-  }
+  const dialog = document.getElementById("dialog-props");
+  const state = document.getElementById("dialog-props-state");
+
+  // 事件拿不到监听函数的返回值：异步动作交给 confirmAction，元素等它兑现才收起
+  dialog.confirmAction = () => new Promise((resolve) => {
+    setTimeout(() => {
+      state.textContent = "已归档";
+      resolve();
+    }, 1200);
+  });
 </script>

@@ -1,29 +1,27 @@
-<!-- 基础用法 | 不传 open 即为非受控；Esc 或点击遮罩关闭，关闭后焦点回到触发按钮 -->
+<!-- props 写法 | 不写结构时按标准结构铺：标题、说明与触发器文字三项写出一个确认对话框；确认动作返回 Promise 时等它落定才收起，期间确定钮转圈 -->
 <script setup lang="ts">
-import {
-  XhButton,
-  XhDialogCloseTrigger,
-  XhDialogContent,
-  XhDialogDescription,
-  XhDialogRoot,
-  XhDialogTitle,
-  XhDialogTrigger,
-} from "@xihan-ui/vue";
+import { XhDialogRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const archived = ref(false);
+
+function archive(): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      archived.value = true;
+      resolve();
+    }, 1200);
+  });
+}
 </script>
 
 <template>
-  <XhDialogRoot v-slot="{ setOpen }" :translations="{ close: '关闭' }">
-    <XhDialogTrigger>打开对话框</XhDialogTrigger>
-    <XhDialogContent>
-      <XhDialogTitle>确认发布</XhDialogTitle>
-      <XhDialogDescription>
-        发布后这篇文档对所有人可见，之后仍可撤回。
-      </XhDialogDescription>
-      <div style="display: flex; justify-content: flex-end; gap: 8px">
-        <XhButton variant="ghost" @click="setOpen(false)">取消</XhButton>
-        <XhButton variant="solid" @click="setOpen(false)">发布</XhButton>
-      </div>
-      <XhDialogCloseTrigger />
-    </XhDialogContent>
-  </XhDialogRoot>
+  <XhDialogRoot
+    trigger-text="归档这个项目"
+    title="归档项目"
+    description="归档后项目转为只读，随时可以恢复。"
+    confirm-text="确认归档"
+    @confirm="archive"
+  />
+  <span data-demo-output>项目状态：{{ archived ? "已归档" : "未归档" }}</span>
 </template>

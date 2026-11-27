@@ -1,50 +1,38 @@
-<!-- 基础用法 | columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一事实源，标记只负责外观；列名装在 column-label 里，它是列头里唯一可收窄的一格，排序与列宽把手写在它旁边 -->
-<div style="width: 100%; max-width: 560px">
-  <xh-table id="table-basic">
-    <div data-xh-part="root">
-      <div data-xh-part="caption">团队成员</div>
-      <div data-xh-part="header">
-        <!-- 表头行不给 value，它恒占行号空间的第 1 行 -->
-        <div data-xh-part="row">
-          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
-          <div data-xh-part="column-header" value="dept"><span data-xh-part="column-label">部门</span></div>
-          <div data-xh-part="column-header" value="level"><span data-xh-part="column-label">职级</span></div>
-        </div>
-      </div>
-      <div data-xh-part="body">
-        <div data-xh-part="row" value="u1">
-          <div data-xh-part="cell" value="name">赵一</div>
-          <div data-xh-part="cell" value="dept">平台研发</div>
-          <div data-xh-part="cell" value="level">P6</div>
-        </div>
-        <div data-xh-part="row" value="u2">
-          <div data-xh-part="cell" value="name">钱二</div>
-          <div data-xh-part="cell" value="dept">前端体验</div>
-          <div data-xh-part="cell" value="level">P7</div>
-        </div>
-        <div data-xh-part="row" value="u3">
-          <div data-xh-part="cell" value="name">孙三</div>
-          <div data-xh-part="cell" value="dept">基础架构</div>
-          <div data-xh-part="cell" value="level">P6</div>
-        </div>
-        <div data-xh-part="row" value="u4">
-          <div data-xh-part="cell" value="name">李四</div>
-          <div data-xh-part="cell" value="dept">质量保障</div>
-          <div data-xh-part="cell" value="level">P5</div>
-        </div>
-      </div>
-    </div>
+<!-- 基础用法 | 给 data 与 columns 就是一张会排序、会筛选、会分页的表：列 id 即字段名，排序、筛选与切页都由表格自己算，表后自动铺一组分页 -->
+<div style="width: 100%; max-width: 640px; display: grid; gap: 12px">
+  <!-- 只写 root：表头、表体与空态由元素照标准结构生成，分页生成在 root 之后 -->
+  <xh-table id="table-data-driven" pagination page-size="8">
+    <div data-xh-part="root" aria-label="成员"></div>
   </xh-table>
+  <span id="table-data-driven-value" data-demo-output></span>
 </div>
 
 <script type="module">
-  // 两份定义都是数组，只能走 property
-  const table = document.getElementById("table-basic");
+  const depts = ["平台研发", "前端体验", "基础架构", "质量保障"];
+  const levels = ["P5", "P6", "P7", "P8"];
 
+  const table = document.getElementById("table-data-driven");
+  const readout = document.getElementById("table-data-driven-value");
+
+  // 列 id 即字段名：排序按字段值比，给了 filterOptions 的列在列头铺一颗筛选钮
   table.columns = [
-    { id: "name", label: "姓名", width: "8rem" },
-    { id: "dept", label: "部门" },
-    { id: "level", label: "职级", width: "6rem" },
+    { id: "name", label: "姓名", width: "8rem", sortable: true },
+    { id: "dept", label: "部门", sortable: true, filterOptions: depts.map((value) => ({ value })) },
+    { id: "level", label: "职级", width: "6rem", sortable: true, filterOptions: levels.map((value) => ({ value })) },
+    { id: "joined", label: "入职", width: "6rem", sortable: true, format: (value) => `${value} 年` },
   ];
-  table.rows = [{ id: "u1" }, { id: "u2" }, { id: "u3" }, { id: "u4" }];
+
+  table.data = Array.from({ length: 36 }, (_, i) => ({
+    id: `u${i + 1}`,
+    name: `员工 ${i + 1}`,
+    dept: depts[i % depts.length],
+    level: levels[(i * 7) % levels.length],
+    joined: 2016 + ((i * 5) % 9),
+  }));
+
+  const show = (page) => {
+    readout.textContent = `第 ${page} 页`;
+  };
+  table.addEventListener("page-change", (event) => show(event.detail.value));
+  show(1);
 </script>

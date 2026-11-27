@@ -1,66 +1,28 @@
-<!-- 基础用法 | create 入队并返回 id，队列中的每条由作者渲染为一条通知；退场动画播完后只收起不删除，宿主在 status-change 中把它移出队列 -->
+<!-- 全局服务 | createNotificationService 自带宿主，传 preset: 'toast' 即轻提示；模块作用域随处可调用（请求拦截器、store） -->
 <script setup lang="ts">
-import {
-  XhButton,
-  XhNotificationGroup,
-  XhNotificationItem,
-  XhNotificationItemCloseTrigger,
-  XhNotificationItemContent,
-  XhNotificationItemDescription,
-  XhNotificationItemIndicator,
-  XhNotificationItemTitle,
-  XhNotificationRoot,
-} from "@xihan-ui/vue";
+import type { NotificationService } from "@xihan-ui/vue";
+import { createNotificationService, XhButton } from "@xihan-ui/vue";
+import { onBeforeUnmount } from "vue";
 
-// 存一份放在外面：写在模板里每渲染一次都是个新对象，白白惊动一轮 props
-const itemTranslations = { close: "关闭" };
+// 惰性建单例：服务要 document，等到第一次调用（必然在客户端）再建
+let toast: NotificationService | undefined;
+function use(): NotificationService {
+  toast ??= createNotificationService({ preset: "toast" });
+  return toast;
+}
+onBeforeUnmount(() => toast?.dispose());
+
+function save(): void {
+  const id = use().loading("保存中");
+  setTimeout(() => use().update(id, { loading: false, tone: "success", title: "已保存" }), 900);
+}
 </script>
 
 <template>
-  <XhNotificationRoot v-slot="{ create, dismiss, count }">
-    <XhButton
-      variant="solid"
-      @click="create({ title: '草稿已保存', description: '内容已同步到云端' })"
-    >
-      弹一条
-    </XhButton>
-    <XhButton
-      variant="outline"
-      @click="
-        create({
-          tone: 'danger',
-          title: '同步失败',
-          description: '网络中断，稍后自动重试',
-        })
-      "
-    >
-      弹一条 danger
-    </XhButton>
-    <span data-demo-output>队列：{{ count }} 条</span>
-
-    <XhNotificationGroup>
-      <template #default="{ item }">
-        <XhNotificationItem
-          :id="item.id"
-          :title="item.title"
-          :description="item.description"
-          :tone="item.tone"
-          :loading="item.loading"
-          :duration="item.duration"
-          :closable="item.closable"
-          :translations="itemTranslations"
-          @status-change="
-            ({ id, status }) => status === 'unmounted' && dismiss(id)
-          "
-        >
-          <XhNotificationItemIndicator />
-          <XhNotificationItemContent>
-            <XhNotificationItemTitle />
-            <XhNotificationItemDescription />
-          </XhNotificationItemContent>
-          <XhNotificationItemCloseTrigger />
-        </XhNotificationItem>
-      </template>
-    </XhNotificationGroup>
-  </XhNotificationRoot>
+  <div style="display: flex; flex-wrap: wrap; gap: 8px">
+    <XhButton variant="solid" @click="save()">保存（loading 收尾成 success）</XhButton>
+    <XhButton variant="outline" @click="use().success('已发布')">success</XhButton>
+    <XhButton variant="outline" @click="use().warning('配额即将用尽')">warning</XhButton>
+    <XhButton variant="outline" @click="use().danger('同步失败')">danger</XhButton>
+  </div>
 </template>

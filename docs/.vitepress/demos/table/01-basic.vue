@@ -1,51 +1,50 @@
-<!-- 基础用法 | columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一事实源，标记只负责外观；列名装在 column-label 里，它是列头里唯一可收窄的一格，排序与列宽把手写在它旁边 -->
+<!-- 基础用法 | 给 data 与 columns 就是一张会排序、会筛选、会分页的表：列 id 即字段名，排序、筛选与切页都由表格自己算，表后自动铺一组分页 -->
 <script setup lang="ts">
-import {
-  XhTableBody,
-  XhTableCaption,
-  XhTableCell,
-  XhTableColumnHeader,
-  XhTableColumnLabel,
-  XhTableHeader,
-  XhTableRoot,
-  XhTableRow,
-} from "@xihan-ui/vue";
+import type { TableColumnDef } from "@xihan-ui/headless";
+import { XhTableRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
 
-const columns = [
-  { id: "name", label: "姓名", width: "8rem" },
-  { id: "dept", label: "部门" },
-  { id: "level", label: "职级", width: "6rem" },
+const depts = ["平台研发", "前端体验", "基础架构", "质量保障"];
+const levels = ["P5", "P6", "P7", "P8"];
+
+interface Member {
+  id: string;
+  name: string;
+  dept: string;
+  level: string;
+  joined: number;
+}
+
+// 列 id 即字段名：排序按字段值比，给了 filterOptions 的列在列头铺一颗筛选钮。
+// 标上行类型后 id 只能写 Member 的字段，format 的 value 也是那个字段的类型
+const columns: TableColumnDef<Member>[] = [
+  { id: "name", label: "姓名", width: "8rem", sortable: true },
+  { id: "dept", label: "部门", sortable: true, filterOptions: depts.map(value => ({ value })) },
+  { id: "level", label: "职级", width: "6rem", sortable: true, filterOptions: levels.map(value => ({ value })) },
+  { id: "joined", label: "入职", width: "6rem", sortable: true, format: value => `${value} 年` },
 ];
 
-const members = [
-  { id: "u1", name: "赵一", dept: "平台研发", level: "P6" },
-  { id: "u2", name: "钱二", dept: "前端体验", level: "P7" },
-  { id: "u3", name: "孙三", dept: "基础架构", level: "P6" },
-  { id: "u4", name: "李四", dept: "质量保障", level: "P5" },
-];
+const members: Member[] = Array.from({ length: 36 }, (_, i) => ({
+  id: `u${i + 1}`,
+  name: `员工 ${i + 1}`,
+  dept: depts[i % depts.length]!,
+  level: levels[(i * 7) % levels.length]!,
+  joined: 2016 + ((i * 5) % 9),
+}));
 
-const rows = members.map(m => ({ id: m.id }));
+const page = ref(1);
 </script>
 
 <template>
-  <div style="width: 100%; max-width: 560px">
-    <XhTableRoot :columns="columns" :rows="rows">
-      <XhTableCaption>团队成员</XhTableCaption>
-      <XhTableHeader>
-        <!-- 表头行不给 value，它恒占行号空间的第 1 行 -->
-        <XhTableRow>
-          <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
-          </XhTableColumnHeader>
-        </XhTableRow>
-      </XhTableHeader>
-      <XhTableBody>
-        <XhTableRow v-for="m in members" :key="m.id" :value="m.id">
-          <XhTableCell value="name">{{ m.name }}</XhTableCell>
-          <XhTableCell value="dept">{{ m.dept }}</XhTableCell>
-          <XhTableCell value="level">{{ m.level }}</XhTableCell>
-        </XhTableRow>
-      </XhTableBody>
-    </XhTableRoot>
+  <div style="width: 100%; max-width: 640px; display: grid; gap: 12px">
+    <XhTableRoot
+      v-model:page="page"
+      :columns="columns"
+      :data="members"
+      :page-size="8"
+      pagination
+      aria-label="成员"
+    />
+    <span data-demo-output>第 {{ page }} 页</span>
   </div>
 </template>

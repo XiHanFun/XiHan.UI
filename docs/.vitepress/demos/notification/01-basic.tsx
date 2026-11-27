@@ -1,71 +1,29 @@
-// 基础用法 | create 入队并返回 id，队列中的每条由作者渲染为一条通知；退场动画播完后只收起不删除，宿主在 status-change 中把它移出队列
+// 全局服务 | createNotificationService 自带宿主，传 preset: 'toast' 即轻提示；模块作用域随处可调用（请求拦截器、store）
+import type { NotificationService } from "@xihan-ui/react";
 import type { ReactNode } from "react";
-import {
-  XhButton,
-  XhNotificationGroup,
-  XhNotificationItem,
-  XhNotificationItemCloseTrigger,
-  XhNotificationItemContent,
-  XhNotificationItemDescription,
-  XhNotificationItemIndicator,
-  XhNotificationItemTitle,
-  XhNotificationRoot,
-} from "@xihan-ui/react";
-
-// 存一份放在外面：写在渲染里每渲染一次都是个新对象，白白惊动一轮 props
-const itemTranslations = { close: "关闭" };
+import { createNotificationService, XhButton } from "@xihan-ui/react";
+import { useEffect, useRef } from "react";
 
 export default function Demo(): ReactNode {
-  return (
-    <XhNotificationRoot>
-      {({ create, dismiss, count }) => (
-        <>
-          <XhButton
-            variant="solid"
-            onClick={() => create({ title: "草稿已保存", description: "内容已同步到云端" })}
-          >
-            弹一条
-          </XhButton>
-          <XhButton
-            variant="outline"
-            onClick={() => create({
-              tone: "danger",
-              title: "同步失败",
-              description: "网络中断，稍后自动重试",
-            })}
-          >
-            弹一条 danger
-          </XhButton>
-          <span data-demo-output>{`队列：${count} 条`}</span>
+  // 惰性建单例：服务要 document，等到第一次调用（必然在客户端）再建
+  const toast = useRef<NotificationService | undefined>(undefined);
+  function use(): NotificationService {
+    toast.current ??= createNotificationService({ preset: "toast" });
+    return toast.current;
+  }
+  useEffect(() => () => toast.current?.dispose(), []);
 
-          <XhNotificationGroup>
-            {({ item }) => (
-              <XhNotificationItem
-                id={item.id}
-                title={item.title}
-                description={item.description}
-                tone={item.tone}
-                loading={item.loading}
-                duration={item.duration}
-                closable={item.closable}
-                translations={itemTranslations}
-                onStatusChange={({ id, status }) => {
-                  if (status === "unmounted") {
-                    dismiss(id);
-                  }
-                }}
-              >
-                <XhNotificationItemIndicator />
-                <XhNotificationItemContent>
-                  <XhNotificationItemTitle />
-                  <XhNotificationItemDescription />
-                </XhNotificationItemContent>
-                <XhNotificationItemCloseTrigger />
-              </XhNotificationItem>
-            )}
-          </XhNotificationGroup>
-        </>
-      )}
-    </XhNotificationRoot>
+  function save(): void {
+    const id = use().loading("保存中");
+    setTimeout(() => use().update(id, { loading: false, tone: "success", title: "已保存" }), 900);
+  }
+
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+      <XhButton variant="solid" onClick={() => save()}>保存（loading 收尾成 success）</XhButton>
+      <XhButton variant="outline" onClick={() => use().success("已发布")}>success</XhButton>
+      <XhButton variant="outline" onClick={() => use().warning("配额即将用尽")}>warning</XhButton>
+      <XhButton variant="outline" onClick={() => use().danger("同步失败")}>danger</XhButton>
+    </div>
   );
 }

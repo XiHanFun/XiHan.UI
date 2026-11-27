@@ -12,7 +12,7 @@
 
 ## 用法
 
-columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一事实源，标记只负责外观；列名装在 column-label 里，它是列头里唯一可收窄的一格，排序与列宽把手写在它旁边
+给 data 与 columns 就是一张会排序、会筛选、会分页的表：列 id 即字段名，排序、筛选与切页都由表格自己算，表后自动铺一组分页
 
 <XhDemo src="table/01-basic" />
 
@@ -180,11 +180,11 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 
 <XhDemo src="table/29-cell-navigation" />
 
-### 数据驱动
+### 手写部件
 
-给 data 与 columns 就是一张会排序、会筛选、会分页的表：列 id 即字段名，排序、筛选与切页都由表格自己算，表后自动铺一组分页
+columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一事实源，标记只负责外观；列名装在 column-label 里，它是列头里唯一可收窄的一格，排序与列宽把手写在它旁边
 
-<XhDemo src="table/30-data-driven" />
+<XhDemo src="table/30-parts" />
 
 ### 格子插槽
 
