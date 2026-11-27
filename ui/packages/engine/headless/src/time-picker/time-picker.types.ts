@@ -221,6 +221,13 @@ export interface TimePickerSchema extends MachineSchema {
     dir?: Direction
     offset?: number
     /**
+     * 第一次展开时才挂载 content 里的面板（快捷选项、时间列与底栏），默认 false。页面上时间选择器很多（表格每行一个）时，
+     * 收起态每个实例背着的整套时间列是挂载开销的大头。positioner 与 content 节点照旧常驻；聚焦的格与选中值归机器，不随面板挂卸丢掉。
+     */
+    lazyMount?: boolean
+    /** 收起动画播完后卸载 content 里的面板，默认 false；下次展开重新挂载。 */
+    unmountOnExit?: boolean
+    /**
      * 逐值可选性。value 是两位补零的格值，时列恒按 24 小时制给出（12 小时制下也换算成真实的时）；
      * unit 区分同一个 '30' 属于哪一列；context 带这份值里已选的时（24 小时制）与分，
      * 写得出「9 点只能选 30 分以后」。date 与 index 在本组件恒为 null。
@@ -243,6 +250,8 @@ export interface TimePickerSchema extends MachineSchema {
      * 第一次收起时清掉，之后的每一次打开照常进场。
      */
     openedAtMount: boolean
+    /** 挂载之后展开过没有（含首帧即展开）。lazyMount 下 content 里的面板从第一次展开起才挂载。 */
+    opened: boolean
     /** 定位引擎回填的最新结果；connect 只读取它，不涉及 DOM 也不调用引擎。 */
     position: PositionResult | null
     /** 选中的时刻，ISO 时间串数组；单选至多一项。受控（value 提供）时 cell 直读 prop。 */
@@ -351,6 +360,7 @@ export interface TimePickerSchema extends MachineSchema {
     | 'syncDraft'
     | 'resetToDefault'
     | 'clearOpenedAtMount'
+    | 'markOpened'
     | 'addValue'
     | 'removeValue'
     | 'toggleValue'
@@ -455,6 +465,12 @@ export interface TimePickerApi<T extends PropTypes = PropTypes> {
    * 多选时一个选中值一份同名输入：传 `{ value }` 产出那一份，不传是首个选中值那一份。
    */
   getHiddenInputProps: (props?: TimePickerHiddenInputProps) => T['input']
+  /**
+   * content 里的面板此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。
+   * 缺省恒为真；lazyMount 下没展开过为假；unmountOnExit 下闸门落下（退场播完）即为假。
+   * positioner 与 content 节点不受它管，一向常驻。
+   */
+  isContentMounted: (present: boolean) => boolean
 }
 
 /** 读屏文案。 */

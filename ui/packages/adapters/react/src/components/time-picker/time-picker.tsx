@@ -106,6 +106,10 @@ export interface XhTimePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   size?: Size
   placement?: Placement
   offset?: number
+  /** 第一次展开时才挂载 content 里的面板（快捷选项、时间列与底栏），默认 false。 */
+  lazyMount?: boolean
+  /** 收起动画播完后卸载 content 里的面板，默认 false；下次展开重新挂载。 */
+  unmountOnExit?: boolean
   /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
   dir?: Direction
   onValueChange?: TimePickerProps['onValueChange']
@@ -149,6 +153,8 @@ export function XhTimePickerRoot({
   size,
   placement,
   offset,
+  lazyMount,
+  unmountOnExit,
   dir,
   onValueChange,
   onClear,
@@ -186,6 +192,8 @@ export function XhTimePickerRoot({
     size,
     placement,
     offset,
+    lazyMount,
+    unmountOnExit,
     dir,
     onValueChange,
     onClear,
@@ -409,7 +417,8 @@ export function XhTimePickerContent({ children, ...rest }: XhTimePickerContentPr
         },
       )}
     >
-      {children}
+      {/* content 节点常驻；里面的面板挂不挂由 headless 按 lazyMount / unmountOnExit 判，手写与按数据铺的都走这一处 */}
+      {ctx.api.isContentMounted(ctx.rendered) ? children : null}
     </div>
   )
 }

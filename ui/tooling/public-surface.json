@@ -17043,6 +17043,7 @@
       "invalid",
       "isTimeUnavailable",
       "labelled",
+      "lazyMount",
       "locale",
       "max",
       "maxSelected",
@@ -17064,6 +17065,7 @@
       "timeStep",
       "tone",
       "translations",
+      "unmountOnExit",
       "value",
       "variant"
     ],
@@ -26083,6 +26085,7 @@
         "hour-cycle",
         "invalid",
         "label",
+        "lazy-mount",
         "locale",
         "max",
         "max-selected",
@@ -26099,6 +26102,7 @@
         "size",
         "time-step",
         "tone",
+        "unmount-on-exit",
         "value",
         "variant"
       ],

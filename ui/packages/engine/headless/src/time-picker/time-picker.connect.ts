@@ -10,6 +10,7 @@ import type { TimeGranularity, TimeHourCycle, TimeSegmentType } from '../time-fi
 import type { TimePickerApi, TimePickerColumnUnit, TimePickerPresetState, TimePickerPressedKey, TimePickerSchema, TimePickerTagMeta } from './time-picker.types'
 import { createPressTracker, dataAttr, focusItem, focusSafely, isItemDisabled, ITEM_VALUE_ATTR, itemValue, mergeProps, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { TIME_PICKER_EN_US } from '../locale/en-US'
+import { overlayContentMounted } from '../shared/disclosure-mount'
 import { resolveMaxSelected } from '../shared/max-selected'
 import { overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
@@ -342,6 +343,8 @@ export function connectTimePicker<T extends PropTypes>(
 
   return {
     open,
+    // 挂卸只管 content 里的面板：positioner 与 content 节点常驻，触发钮的 aria-controls 始终指得到它
+    isContentMounted: overlayContentMounted(prop, context.get('opened')),
     value: values,
     multiple,
     draftValue: value,
