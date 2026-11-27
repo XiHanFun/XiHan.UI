@@ -72,7 +72,7 @@ describe('list 根面', () => {
     expect(list.root.getBoundingClientRect().height).toBe(mount('outline').root.getBoundingClientRect().height)
   })
 
-  it('ghost 不画壳，split 只在条目之间画一条 border-default 分隔线', () => {
+  it('ghost 不画壳，split 只在条目之间画一条 border-subtle 分隔线（面内分隔，不取描边档）', () => {
     const list = mount()
     const style = getComputedStyle(list.root)
 
@@ -81,7 +81,8 @@ describe('list 根面', () => {
     expect(style.boxShadow).toBe('none')
     expect(Number.parseFloat(getComputedStyle(list.items[0]!).borderTopWidth)).toBe(0)
     expect(Number.parseFloat(getComputedStyle(list.items[1]!).borderTopWidth)).toBe(1)
-    expect(getComputedStyle(list.items[1]!).borderTopColor).toBe(tokenColor('--xh-border-default'))
+    expect(getComputedStyle(list.items[1]!).borderTopColor).toBe(tokenColor('--xh-border-subtle'))
+    expect(tokenColor('--xh-border-subtle')).not.toBe(tokenColor('--xh-border-default'))
   })
 })
 

@@ -598,7 +598,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-empty-fg` | `empty` | `--xh-placeholder-fg` | `default` | `--xh-fg-muted` | cascader 的 empty 部件 --xh-placeholder-fg 覆盖槽。 |
 | `--xh-cascader-empty-min-h` | `empty` | `min-block-size` | `default` | `--xh-viewport-h-sm` | cascader 的 empty 部件 min-block-size 覆盖槽。 |
 | `--xh-cascader-empty-p` | `empty` | `--xh-placeholder-px`<br>`--xh-placeholder-py` | `default` | `--xh-_cascader-row-px`<br>`--xh-space-3` | cascader 的 empty 部件 --xh-placeholder-px、--xh-placeholder-py 覆盖槽。 |
-| `--xh-cascader-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-solid-border` | cascader 的 footer 部件 border-block-start 覆盖槽。 |
+| `--xh-cascader-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-solid-separator` | cascader 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-cascader-footer-fg` | `footer` | `color` | `default` | `--xh-fg-muted` | cascader 的 footer 部件 color 覆盖槽。 |
 | `--xh-cascader-footer-font-size` | `footer` | `font-size` | `default` | `--xh-text-secondary-size` | cascader 的 footer 部件 font-size 覆盖槽。 |
 | `--xh-cascader-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | cascader 的 footer 部件 gap 覆盖槽。 |
@@ -658,7 +658,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-loading-p` | `loading` | `--xh-placeholder-px`<br>`--xh-placeholder-py` | `default` | `--xh-_cascader-row-px`<br>`--xh-space-3` | cascader 的 loading 部件 --xh-placeholder-px、--xh-placeholder-py 覆盖槽。 |
 | `--xh-cascader-loading-ring-fg` | `loading` | `border`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`motion=reduce`<br>`where([data-motion='reduce'])`<br>`xh-loading-ring`<br>`xh-loading-ring=overlay` | `--xh-fg-brand` | cascader 的 loading 部件 border、border-color 覆盖槽。 |
 | `--xh-cascader-placeholder-fg` | `input`<br>`value-text` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | cascader 的 input、value-text 部件 color 覆盖槽。 |
-| `--xh-cascader-search-divider` | `input` | `border-block-end` | `default` | `--xh-material-solid-border` | cascader 的 input 部件 border-block-end 覆盖槽。 |
+| `--xh-cascader-search-divider` | `input` | `border-block-end` | `default` | `--xh-material-solid-separator` | cascader 的 input 部件 border-block-end 覆盖槽。 |
 | `--xh-cascader-search-list-gap` | `search-list` | `gap` | `default` | `--xh-list-option-gap` | cascader 的 search-list 部件 gap 覆盖槽。 |
 | `--xh-cascader-search-p` | `search-list` | `padding` | `default` | `--xh-space-1` | cascader 的 search-list 部件 padding 覆盖槽。 |
 | `--xh-cascader-tag-list-gap` | `tag-list` | `gap` | `xh-tag-list` | `--xh-space-1` | cascader 的 tag-list 部件 gap 覆盖槽。 |

@@ -384,7 +384,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `--xh-command-empty-px` | `empty` | `--xh-placeholder-px` | `default` | `--xh-_command-px` | command 的 empty 部件 --xh-placeholder-px 覆盖槽。 |
 | `--xh-command-empty-py` | `empty` | `--xh-placeholder-py` | `default` | `--xh-space-3` | command 的 empty 部件 --xh-placeholder-py 覆盖槽。 |
 | `--xh-command-fg` | `content` | `color` | `default` | `--xh-material-elevated-fg` | command 的 content 部件 color 覆盖槽。 |
-| `--xh-command-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-elevated-border` | command 的 footer 部件 border-block-start 覆盖槽。 |
+| `--xh-command-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-elevated-separator` | command 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-command-footer-fg` | `footer` | `color` | `default` | `--xh-fg-muted` | command 的 footer 部件 color 覆盖槽。 |
 | `--xh-command-footer-font-size` | `footer` | `font-size` | `default` | `--xh-text-secondary-size` | command 的 footer 部件 font-size 覆盖槽。 |
 | `--xh-command-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | command 的 footer 部件 gap 覆盖槽。 |
@@ -400,7 +400,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `--xh-command-icon-size` | `content`<br>`positioner` | `--xh-icon-size` | `is([data-part='positioner'], [data-part='content'])`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | command 的 content、positioner 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-command-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-surface` | command 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-command-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | command 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
-| `--xh-command-input-border` | `input` | `border-block-end` | `default` | `--xh-material-elevated-border` | command 的 input 部件 border-block-end 覆盖槽。 |
+| `--xh-command-input-border` | `input` | `border-block-end` | `default` | `--xh-material-elevated-separator` | command 的 input 部件 border-block-end 覆盖槽。 |
 | `--xh-command-input-fg` | `input` | `color` | `default` | `--xh-fg-default` | command 的 input 部件 color 覆盖槽。 |
 | `--xh-command-input-font-size` | `input` | `font-size` | `default` | `--xh-_command-font-size` | command 的 input 部件 font-size 覆盖槽。 |
 | `--xh-command-input-h` | `input` | `block-size` | `default` | `--xh-_command-input-h` | command 的 input 部件 block-size 覆盖槽。 |

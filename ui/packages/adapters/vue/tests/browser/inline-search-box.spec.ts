@@ -102,10 +102,10 @@ const RENDER: Record<Scope, (size: Size) => VNode> = {
 /** 各自的搜索框部件名。 */
 const PART: Record<Scope, string> = { 'cascader': 'input', 'command': 'input', 'side-nav': 'input', 'transfer': 'search', 'tree-select': 'input' }
 
-/** 下划线取所在面材质的令牌：级联与命令面板的搜索框走描边档，其余走分隔档。 */
+/** 下划线是面内分隔，取所在面材质的分隔令牌，不取描边档：命令面板是 sheet，级联浮层是 floating（取实体面的那一支）。 */
 const DIVIDER: Record<Scope, string> = {
-  'cascader': '--xh-material-solid-border',
-  'command': '--xh-material-elevated-border',
+  'cascader': '--xh-material-solid-separator',
+  'command': '--xh-material-elevated-separator',
   'side-nav': '--xh-material-solid-separator',
   'transfer': '--xh-material-solid-separator',
   'tree-select': '--xh-material-frosted-separator',
@@ -165,6 +165,11 @@ describe.each(['cascader', 'command', 'side-nav', 'transfer', 'tree-select'] as 
     expect(style.borderTopWidth).toBe('0px')
     expect(style.borderBottomWidth).toBe('1px')
     expect(style.borderBottomColor).toBe(resolved(input, 'border-bottom-color', DIVIDER[scope]))
+  })
+
+  it('分隔档与同一材质的描边档缺省取值不同：上一条判得出取错了哪一支', async () => {
+    const input = await mount(scope, 'md')
+    expect(resolved(input, 'color', DIVIDER[scope])).not.toBe(resolved(input, 'color', DIVIDER[scope].replace('-separator', '-border')))
   })
 
   it('聚焦不画环：插入符就是焦点指示，下划线也不换色', async () => {

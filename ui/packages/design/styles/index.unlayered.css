@@ -10944,7 +10944,7 @@
 .xh-scope-list[data-part='root'][data-split]
   > .xh-scope-list[data-part='item']
   + .xh-scope-list[data-part='item'] {
-  border-block-start: var(--xh-stroke-thin) solid var(--xh-list-divider, var(--xh-border-default));
+  border-block-start: var(--xh-stroke-thin) solid var(--xh-list-divider, var(--xh-border-subtle));
 }
 
 .xh-scope-list[data-part='root'][data-hoverable] > .xh-scope-list[data-part='item'] {
@@ -23123,7 +23123,7 @@
   padding-block: 0;
   padding-inline: var(--xh-cascader-input-px, var(--xh-_cascader-px));
   border: none;
-  border-block-end: var(--xh-stroke-thin) solid var(--xh-cascader-search-divider, var(--xh-material-solid-border));
+  border-block-end: var(--xh-stroke-thin) solid var(--xh-cascader-search-divider, var(--xh-material-solid-separator));
   border-start-start-radius: inherit;
   border-start-end-radius: inherit;
   background: none;
@@ -23368,7 +23368,7 @@
   gap: var(--xh-cascader-footer-gap, var(--xh-space-2));
   padding-block: var(--xh-cascader-footer-py, var(--xh-space-2));
   padding-inline: var(--xh-cascader-footer-px, var(--xh-_cascader-row-px));
-  border-block-start: var(--xh-stroke-thin) solid var(--xh-cascader-footer-border, var(--xh-material-solid-border));
+  border-block-start: var(--xh-stroke-thin) solid var(--xh-cascader-footer-border, var(--xh-material-solid-separator));
   color: var(--xh-cascader-footer-fg, var(--xh-fg-muted));
   /* 底栏是一行次级说明：说明档 13px，不随尺寸档与条目一样大 */
   font-size: var(--xh-cascader-footer-font-size, var(--xh-text-secondary-size));
@@ -27667,7 +27667,7 @@
   padding-block: 0;
   padding-inline: var(--xh-command-input-px, var(--xh-_command-px));
   border: 0;
-  border-block-end: var(--xh-stroke-thin) solid var(--xh-command-input-border, var(--xh-material-elevated-border));
+  border-block-end: var(--xh-stroke-thin) solid var(--xh-command-input-border, var(--xh-material-elevated-separator));
   border-radius: 0;
   background: transparent;
   color: var(--xh-command-input-fg, var(--xh-fg-default));
@@ -27844,7 +27844,7 @@
   gap: var(--xh-command-footer-gap, var(--xh-space-2));
   padding-block: var(--xh-command-footer-py, var(--xh-space-2));
   padding-inline: var(--xh-command-footer-px, var(--xh-_command-px));
-  border-block-start: var(--xh-stroke-thin) solid var(--xh-command-footer-border, var(--xh-material-elevated-border));
+  border-block-start: var(--xh-stroke-thin) solid var(--xh-command-footer-border, var(--xh-material-elevated-separator));
   color: var(--xh-command-footer-fg, var(--xh-fg-muted));
   /* 底栏是一行次级说明：与别家候选面板同取说明档 13px */
   font-size: var(--xh-command-footer-font-size, var(--xh-text-secondary-size));

@@ -722,7 +722,7 @@
     padding-block: 0;
     padding-inline: var(--xh-cascader-input-px, var(--xh-_cascader-px));
     border: none;
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-cascader-search-divider, var(--xh-material-solid-border));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-cascader-search-divider, var(--xh-material-solid-separator));
     border-start-start-radius: inherit;
     border-start-end-radius: inherit;
     background: none;
@@ -967,7 +967,7 @@
     gap: var(--xh-cascader-footer-gap, var(--xh-space-2));
     padding-block: var(--xh-cascader-footer-py, var(--xh-space-2));
     padding-inline: var(--xh-cascader-footer-px, var(--xh-_cascader-row-px));
-    border-block-start: var(--xh-stroke-thin) solid var(--xh-cascader-footer-border, var(--xh-material-solid-border));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-cascader-footer-border, var(--xh-material-solid-separator));
     color: var(--xh-cascader-footer-fg, var(--xh-fg-muted));
     /* 底栏是一行次级说明：说明档 13px，不随尺寸档与条目一样大 */
     font-size: var(--xh-cascader-footer-font-size, var(--xh-text-secondary-size));

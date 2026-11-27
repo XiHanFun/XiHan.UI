@@ -10245,7 +10245,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-solid-border"
+        "--xh-material-solid-separator"
       ],
       "visibility": "public",
       "description": "cascader 的 footer 部件 border-block-start 覆盖槽。"
@@ -11472,7 +11472,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-solid-border"
+        "--xh-material-solid-separator"
       ],
       "visibility": "public",
       "description": "cascader 的 input 部件 border-block-end 覆盖槽。"
@@ -21374,7 +21374,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-elevated-border"
+        "--xh-material-elevated-separator"
       ],
       "visibility": "public",
       "description": "command 的 footer 部件 border-block-start 覆盖槽。"
@@ -21669,7 +21669,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-elevated-border"
+        "--xh-material-elevated-separator"
       ],
       "visibility": "public",
       "description": "command 的 input 部件 border-block-end 覆盖槽。"
@@ -47969,7 +47969,7 @@
         "split"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-border-subtle"
       ],
       "visibility": "public",
       "description": "list 的 item、root 部件 border-block-start 覆盖槽。"
