@@ -50,12 +50,16 @@ export function markOpened(params: { context: { get: (key: 'opened') => boolean,
 /**
  * 浮层 connect 的 isContentMounted：`lazyMount` / `unmountOnExit` 缺省都是 false（内容常驻、收起只隐藏），作者写了才按它挂卸。
  * 返回的函数收适配器的退场闸门：展开中或收起动画还没播完为真。
+ *
+ * 展开中一律算在场，不等闸门：有的框架里闸门晚一轮才跟上 open（React 在提交之后的布局效应里翻真），
+ * 内容晚一轮挂上，机器进展开态时挑锚点、推迟一拍补挑都查不到条目，键盘展开的焦点就落空了。
  */
 export function overlayContentMounted(
   prop: (key: 'lazyMount' | 'unmountOnExit') => boolean | undefined,
   opened: boolean,
+  open: boolean,
 ): (present: boolean) => boolean {
   const lazyMount = prop('lazyMount') ?? false
   const unmountOnExit = prop('unmountOnExit') ?? false
-  return present => disclosureContentMounted({ lazyMount, unmountOnExit, opened, present })
+  return present => disclosureContentMounted({ lazyMount, unmountOnExit, opened, present: open || present })
 }

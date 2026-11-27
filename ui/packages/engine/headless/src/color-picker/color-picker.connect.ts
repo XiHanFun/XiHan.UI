@@ -174,7 +174,7 @@ export function connectColorPicker<T extends PropTypes>(
   return {
     open,
     // 挂卸只管 content 里的面板：positioner 与 content 节点常驻，触发钮的 aria-controls 始终指得到它；常驻形态的面板一向在
-    isContentMounted: inline ? () => true : overlayContentMounted(prop, context.get('opened')),
+    isContentMounted: inline ? () => true : overlayContentMounted(prop, context.get('opened'), open),
     value: values,
     multiple,
     color: value,

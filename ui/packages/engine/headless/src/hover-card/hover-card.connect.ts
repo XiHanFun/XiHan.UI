@@ -66,7 +66,7 @@ export function connectHoverCard<T extends PropTypes>(
     open,
     setOpen,
     // 挂卸只管 content 里的内容：positioner 与 content 节点常驻，定位引擎总有节点可量
-    isContentMounted: overlayContentMounted(prop, context.get('opened')),
+    isContentMounted: overlayContentMounted(prop, context.get('opened'), open),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,

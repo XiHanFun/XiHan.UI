@@ -1,4 +1,4 @@
-// 菜单的 lazyMount / unmountOnExit 要在真浏览器里验：键盘展开那一帧条目才挂上，焦点照样落到首项；退场动画得真播完才卸。
+// 菜单的 lazyMount / unmountOnExit 要在真浏览器里验：键盘展开那一帧条目才挂上（unmountOnExit 下也是），焦点照样落到首项；退场动画得真播完才卸。
 import type { ReactNode } from 'react'
 import type { Root } from 'react-dom/client'
 import type { XhMenuRootProps } from '../../src'
@@ -83,6 +83,22 @@ describe.each([
 
     await userEvent.keyboard('{Escape}')
     await expect.poll(() => getComputedStyle(part('content')!).display).toBe('none')
+    expect(items()).toHaveLength(2)
+  })
+})
+
+describe.each([
+  { name: '按数据铺', handWritten: false },
+  { name: '手写条目', handWritten: true },
+])('菜单 unmountOnExit 的键盘展开（$name）', ({ handWritten }) => {
+  // React 的退场闸门要等提交之后的布局效应才翻真：条目得跟展开态同一轮挂上，挑首项那一拍才查得到
+  it('条目还不在时键盘展开，焦点照样落在首项', async () => {
+    await render({ unmountOnExit: true }, handWritten)
+    expect(items()).toHaveLength(0)
+
+    part('trigger')!.focus()
+    await userEvent.keyboard('{ArrowDown}')
+    await expect.poll(() => document.activeElement?.getAttribute('data-value')).toBe('copy')
     expect(items()).toHaveLength(2)
   })
 })

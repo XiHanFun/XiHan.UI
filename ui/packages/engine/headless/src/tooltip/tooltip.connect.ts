@@ -65,7 +65,7 @@ export function connectTooltip<T extends PropTypes>(
     text: anchor?.text ?? '',
     shortcut,
     // 挂卸只管 content 里的内容：positioner 与 content 节点常驻，定位引擎总有节点可量
-    isContentMounted: overlayContentMounted(prop, context.get('opened')),
+    isContentMounted: overlayContentMounted(prop, context.get('opened'), open),
     getTriggerProps: () => delegate !== undefined
       ? normalize.element({
           ...parts.trigger.attrs,

@@ -83,7 +83,7 @@ export function connectPopconfirm<T extends PropTypes>(
     confirm,
     cancel,
     // 挂卸只管 content 里的内容：positioner 与 content 节点常驻，aria-controls 始终指得到它
-    isContentMounted: overlayContentMounted(prop, context.get('opened')),
+    isContentMounted: overlayContentMounted(prop, context.get('opened'), open),
     // 根只框住触发器，浮层树靠 positioner 的固定定位飞出去；状态落在根上供整组样式取用
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
