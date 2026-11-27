@@ -1,35 +1,8 @@
-<!-- 基础用法 | 值恒为数组，单滑块即长度 1；方向键移动一格 step，PageUp 与 PageDown 按 largeStep，Home 与 End 到达端点 -->
+<!-- 基础用法 | 只写根组件就按标准结构铺出标题、轨道与拇指；值恒为数组，单滑块即长度 1；方向键移动一格 step，PageUp 与 PageDown 按 largeStep，Home 与 End 到达端点 -->
 <script setup lang="ts">
-import {
-  XhSliderControl,
-  XhSliderHiddenInput,
-  XhSliderLabel,
-  XhSliderRange,
-  XhSliderRoot,
-  XhSliderThumb,
-  XhSliderTrack,
-} from "@xihan-ui/vue";
+import { XhSliderRoot } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhSliderRoot
-    v-slot="{ value }"
-    :default-value="[40]"
-    :min="0"
-    :max="100"
-    :step="1"
-    :large-step="10"
-    name="volume"
-    style="inline-size: 320px"
-  >
-    <XhSliderLabel>音量：{{ value[0] }}</XhSliderLabel>
-    <XhSliderControl>
-      <XhSliderTrack>
-        <XhSliderRange />
-      </XhSliderTrack>
-      <XhSliderThumb>
-        <XhSliderHiddenInput />
-      </XhSliderThumb>
-    </XhSliderControl>
-  </XhSliderRoot>
+  <XhSliderRoot label="音量" :default-value="[40]" :large-step="10" name="volume" style="inline-size: 320px" />
 </template>
