@@ -1,19 +1,6 @@
-<!-- 基础用法 | 按层级选择完整地区路径 -->
+<!-- 基础用法 | 只写根组件就按 collection 铺出标题、触发器与逐级展开的各列，按层级选择完整地区路径；Web Components 的数据经 property 交 -->
 <script setup lang="ts">
-import {
-  XhCascaderColumn,
-  XhCascaderContent,
-  XhCascaderControl,
-  XhCascaderIndicator,
-  XhCascaderItem,
-  XhCascaderItemIndicator,
-  XhCascaderItemText,
-  XhCascaderLabel,
-  XhCascaderPositioner,
-  XhCascaderRoot,
-  XhCascaderTrigger,
-  XhCascaderValueText,
-} from "@xihan-ui/vue";
+import { XhCascaderRoot } from "@xihan-ui/vue";
 
 const regions = [
   {
@@ -53,23 +40,5 @@ const regions = [
 </script>
 
 <template>
-  <XhCascaderRoot v-slot="{ levels }" :collection="regions" placeholder="请选择地区">
-    <XhCascaderLabel>收货地区</XhCascaderLabel>
-    <XhCascaderControl>
-      <XhCascaderTrigger>
-        <XhCascaderValueText />
-        <XhCascaderIndicator />
-      </XhCascaderTrigger>
-    </XhCascaderControl>
-    <XhCascaderPositioner>
-      <XhCascaderContent>
-        <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">
-          <XhCascaderItem v-for="node in lv.items" :key="node.value" :value="node.value">
-            <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
-            <XhCascaderItemIndicator />
-          </XhCascaderItem>
-        </XhCascaderColumn>
-      </XhCascaderContent>
-    </XhCascaderPositioner>
-  </XhCascaderRoot>
+  <XhCascaderRoot :collection="regions" label="收货地区" placeholder="请选择地区" />
 </template>

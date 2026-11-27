@@ -1,19 +1,6 @@
-// 基础用法 | 按层级选择完整地区路径
+// 基础用法 | 只写根组件就按 collection 铺出标题、触发器与逐级展开的各列，按层级选择完整地区路径；Web Components 的数据经 property 交
 import type { ReactNode } from "react";
-import {
-  XhCascaderColumn,
-  XhCascaderContent,
-  XhCascaderControl,
-  XhCascaderIndicator,
-  XhCascaderItem,
-  XhCascaderItemIndicator,
-  XhCascaderItemText,
-  XhCascaderLabel,
-  XhCascaderPositioner,
-  XhCascaderRoot,
-  XhCascaderTrigger,
-  XhCascaderValueText,
-} from "@xihan-ui/react";
+import { XhCascaderRoot } from "@xihan-ui/react";
 
 const regions = [
   {
@@ -52,33 +39,5 @@ const regions = [
 ];
 
 export default function Demo(): ReactNode {
-  return (
-    <XhCascaderRoot collection={regions} placeholder="请选择地区">
-      {({ levels }) => (
-        <>
-          <XhCascaderLabel>收货地区</XhCascaderLabel>
-          <XhCascaderControl>
-            <XhCascaderTrigger>
-              <XhCascaderValueText />
-              <XhCascaderIndicator />
-            </XhCascaderTrigger>
-          </XhCascaderControl>
-          <XhCascaderPositioner>
-            <XhCascaderContent>
-              {levels.map(lv => (
-                <XhCascaderColumn key={lv.level} level={lv.level}>
-                  {lv.items.map(node => (
-                    <XhCascaderItem key={node.value} value={node.value}>
-                      <XhCascaderItemText>{node.label}</XhCascaderItemText>
-                      <XhCascaderItemIndicator />
-                    </XhCascaderItem>
-                  ))}
-                </XhCascaderColumn>
-              ))}
-            </XhCascaderContent>
-          </XhCascaderPositioner>
-        </>
-      )}
-    </XhCascaderRoot>
-  );
+  return <XhCascaderRoot collection={regions} label="收货地区" placeholder="请选择地区" />;
 }

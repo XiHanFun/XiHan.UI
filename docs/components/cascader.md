@@ -12,7 +12,7 @@
 
 ## 用法
 
-按层级选择完整地区路径
+只写根组件就按 collection 铺出标题、触发器与逐级展开的各列，按层级选择完整地区路径；Web Components 的数据经 property 交
 
 <XhDemo src="cascader/01-basic" />
 
