@@ -84,29 +84,37 @@ const description: string = "框架无关的设计系统运行时与组件库";
 const keywords: string
   = "曦寒,曦寒懿,视图组件,组件库,设计系统,Vue,Web Components,官方文档,开源,XiHanFun,XiHan.UI";
 
-// 核心概念：按序编号；组件参考另成一册
-const guideChapters: [text: string, name: string][] = [
-  ["解剖与部件契约", "anatomy"],
-  ["状态机运行时", "machine"],
-  ["connect 与属性产出", "connect"],
-  ["行为原语", "behavior"],
-  ["浮层定位", "position"],
-  ["指针原语", "pointer"],
-  ["设计令牌与主题", "theme"],
-  ["皮肤与样式分层", "styling"],
-  ["图标集", "icons"],
-  ["国际化", "i18n"],
-  ["日期与时间", "date"],
-  ["表单参与与重置", "forms"],
-  ["无障碍与键盘规格", "a11y"],
-  ["诊断通道", "diagnostics"],
-  ["框架元数据", "metadata"],
-  ["AI 对话内核", "ai"],
-  ["背景层", "backgrounds"],
-  ["声音层", "sound"],
-  ["动效原语", "motion"],
-  ["动画层", "animations"],
-  ["测试与质量门禁", "testing"],
+// 指南的章节按包的分层分组：引擎原语、外观、跨组件的横切能力、按需安装的能力包；
+// 章节号跨组连续编，组件参考另成一册。给贡献者看的测试与门禁不在这里，放进「参考」
+const guideGroups: [group: string, chapters: [text: string, name: string][]][] = [
+  ["核心概念", [
+    ["解剖与部件契约", "anatomy"],
+    ["状态机运行时", "machine"],
+    ["connect 与属性产出", "connect"],
+    ["行为原语", "behavior"],
+    ["浮层定位", "position"],
+    ["指针原语", "pointer"],
+    ["动效原语", "motion"],
+  ]],
+  ["外观", [
+    ["设计令牌与主题", "theme"],
+    ["皮肤与样式分层", "styling"],
+    ["图标集", "icons"],
+  ]],
+  ["横切能力", [
+    ["国际化", "i18n"],
+    ["日期与时间", "date"],
+    ["表单参与与重置", "forms"],
+    ["无障碍与键盘规格", "a11y"],
+    ["诊断通道", "diagnostics"],
+    ["框架元数据", "metadata"],
+  ]],
+  ["可选能力包", [
+    ["AI 对话内核", "ai"],
+    ["背景层", "backgrounds"],
+    ["声音层", "sound"],
+    ["动画层", "animations"],
+  ]],
 ];
 
 // 设计一册：规则本身与它们的取舍，按"全局样式"分页，与指南（怎么用）互相链接
@@ -223,25 +231,30 @@ const runtimeSidebar: DefaultTheme.SidebarItem[] = [
   },
 ];
 
-// 指南一册：核心概念按序编号，适配器与服务运行时两组接在后面——三条路径前缀共用这一份侧栏，
+// 指南一册：四组章节按序编号，适配器与服务运行时两组接在后面——三条路径前缀共用这一份侧栏，
 // 读者在 /guide/、/adapters/、/runtime/ 之间跳转时左侧不换册
+const guideChapterStarts = guideGroups.map((_, g) =>
+  guideGroups.slice(0, g).reduce((n, [, chapters]) => n + chapters.length, 0));
 const guideSidebar: DefaultTheme.SidebarItem[] = [
-  {
-    text: "核心概念",
+  ...guideGroups.map(([group, chapters], g) => ({
+    text: group,
     collapsed: false,
-    items: guideChapters.map(([text, name], i) => ({
-      text: `${i + 1}. ${text}`,
+    items: chapters.map(([text, name], i) => ({
+      text: `${guideChapterStarts[g] + i + 1}. ${text}`,
       link: `/guide/${name}`,
     })),
-  },
+  })),
   ...adaptersSidebar,
   ...runtimeSidebar,
-  // 这一页的路径落在 /guide/ 前缀下，点进去用的就是这一份侧栏；
-  // 它不属于编号章节，另起一组，读者才在侧栏里找得到自己在哪
+  // 这两页的路径落在 /guide/ 前缀下，点进去用的就是这一份侧栏；
+  // 它们不属于编号章节：版本政策给使用者查，测试与门禁给贡献者看，另起一组
   {
     text: "参考",
     collapsed: false,
-    items: [{ text: "版本与兼容性政策", link: "/guide/versioning" }],
+    items: [
+      { text: "版本与兼容性政策", link: "/guide/versioning" },
+      { text: "测试与质量门禁", link: "/guide/testing" },
+    ],
   },
 ];
 
@@ -319,6 +332,8 @@ const nav: DefaultTheme.NavItem[] = [
           { text: "For Agents", link: "/ai/agents" },
           { text: "MCP Server", link: "/ai/mcp" },
           { text: "CLI", link: "/ai/cli" },
+          { text: "LLMs.txt", link: "/ai/llms" },
+          { text: "design.md", link: "/ai/design-md" },
         ],
       },
     ],
