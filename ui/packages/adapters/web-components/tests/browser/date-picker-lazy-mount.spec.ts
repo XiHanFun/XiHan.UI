@@ -30,7 +30,7 @@ const focusedDay = (): string | null => document.activeElement?.closest<HTMLElem
 async function mount(attrs: Record<string, string>): Promise<PickerElement> {
   box = document.createElement('div')
   const picker = document.createElement('xh-date-picker') as PickerElement
-  for (const [name, v] of Object.entries({ label: '日期', locale: 'zh-CN', 'default-value': '2026-11-15', ...attrs }))
+  for (const [name, v] of Object.entries({ 'label': '日期', 'locale': 'zh-CN', 'default-value': '2026-11-15', ...attrs }))
     picker.setAttribute(name, v)
   box.append(picker)
   document.body.append(box)

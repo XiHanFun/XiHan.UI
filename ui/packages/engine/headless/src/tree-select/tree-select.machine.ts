@@ -13,8 +13,8 @@ import { cascadeToggle, collapseChecked, createTypeahead, isItemDisabled, itemQu
 import { sameArray as sameValues, toArray as toValues, uniqueArray as unique } from '../shared/array'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { attachDisclosureMotion } from '../shared/disclosure-motion'
-import { awaitsExpandAll, expandableBranches, seedExpandedValue } from '../shared/expand-all'
 import { markOpened, openedCell } from '../shared/disclosure-mount'
+import { awaitsExpandAll, expandableBranches, seedExpandedValue } from '../shared/expand-all'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import {
   abortBranchLoads,

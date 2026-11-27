@@ -30,9 +30,9 @@ import {
   segmentMaxDigits,
 } from '../date-field'
 import { DATE_PICKER_EN_US } from '../locale/en-US'
-import { overlayContentMounted } from '../shared/disclosure-mount'
 import { sameArray as sameDates } from '../shared/array'
 import { CALENDAR_LOCALE, calendarPeriodOf, calendarPeriodValue, parseCalendarDate } from '../shared/calendar'
+import { overlayContentMounted } from '../shared/disclosure-mount'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
 import { resolveTimeStep } from '../shared/time-constraint'

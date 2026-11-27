@@ -20,8 +20,9 @@ const COLLECTION = [
   { value: 'sh', label: '上海' },
 ]
 
-const LEAF = (value: string, label: string): string =>
-  `<div data-xh-part="item" value="${value}"><span data-xh-part="item-indicator"></span><span data-xh-part="item-text">${label}</span></div>`
+function LEAF(value: string, label: string): string {
+  return `<div data-xh-part="item" value="${value}"><span data-xh-part="item-indicator"></span><span data-xh-part="item-text">${label}</span></div>`
+}
 
 const HAND_WRITTEN = `
   <div data-xh-part="control">

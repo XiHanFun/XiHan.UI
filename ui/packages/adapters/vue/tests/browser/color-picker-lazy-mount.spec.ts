@@ -30,8 +30,8 @@ function mount(props: Record<string, unknown>): { open: ReturnType<typeof ref<bo
   const open = ref(false)
   app = createApp({
     render: () => h(XhColorPickerRoot, {
-      'label': '主题色',
-      'defaultValue': '#3366ff',
+      label: '主题色',
+      defaultValue: '#3366ff',
       ...props,
       ...(props.inline ? {} : { 'open': open.value, 'onUpdate:open': (v: boolean) => { open.value = v } }),
     }),

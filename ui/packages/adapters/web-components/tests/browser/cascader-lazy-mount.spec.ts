@@ -20,8 +20,9 @@ const COLLECTION = [
   { value: 'js', label: '江苏', children: [{ value: 'nj', label: '南京' }] },
 ]
 
-const ITEM = (value: string, label: string): string =>
-  `<div data-xh-part="item" value="${value}"><span data-xh-part="item-text">${label}</span><span data-xh-part="item-indicator"></span></div>`
+function ITEM(value: string, label: string): string {
+  return `<div data-xh-part="item" value="${value}"><span data-xh-part="item-text">${label}</span><span data-xh-part="item-indicator"></span></div>`
+}
 
 const HAND_WRITTEN = `
   <div data-xh-part="control">
