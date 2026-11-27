@@ -1,41 +1,10 @@
-<!-- 基础用法 | 投放区自身就是一个大按钮，隐藏输入是必备部件，缺少它无法选择文件 -->
+<!-- 基础用法 | 只写根组件就按标准结构铺出标题、投放区与文件列表；投放区本身就是打开文件选择的按钮，拖进来的文件同样收下 -->
 <script setup lang="ts">
-import {
-  XhFileUploadDropzone,
-  XhFileUploadHiddenInput,
-  XhFileUploadItem,
-  XhFileUploadItemDeleteTrigger,
-  XhFileUploadItemName,
-  XhFileUploadItemPreview,
-  XhFileUploadItemSizeText,
-  XhFileUploadLabel,
-  XhFileUploadList,
-  XhFileUploadRoot,
-  XhFileUploadTrigger,
-} from "@xihan-ui/vue";
+import { XhFileUploadRoot } from "@xihan-ui/vue";
 </script>
 
 <template>
   <div style="width: 100%; max-width: 480px">
-    <XhFileUploadRoot v-slot="{ acceptedFiles }">
-      <XhFileUploadLabel>附件</XhFileUploadLabel>
-      <XhFileUploadDropzone>
-        <span>把文件拖到这里</span>
-        <span>或者用下面的按钮挑一个</span>
-      </XhFileUploadDropzone>
-      <div>
-        <XhFileUploadTrigger>选择文件</XhFileUploadTrigger>
-      </div>
-      <XhFileUploadHiddenInput />
-      <XhFileUploadList>
-        <!-- key 取 File 本身：同名同大小是两份不同的文件，拿文件名当 key 会撞 -->
-        <XhFileUploadItem v-for="file in acceptedFiles" :key="file" :file="file">
-          <XhFileUploadItemPreview />
-          <XhFileUploadItemName />
-          <XhFileUploadItemSizeText />
-          <XhFileUploadItemDeleteTrigger />
-        </XhFileUploadItem>
-      </XhFileUploadList>
-    </XhFileUploadRoot>
+    <XhFileUploadRoot label="附件" />
   </div>
 </template>
