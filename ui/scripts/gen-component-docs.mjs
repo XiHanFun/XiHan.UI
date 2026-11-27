@@ -627,11 +627,16 @@ function prose(id) {
     if (!PROSE_SECTIONS.includes(title))
       throw new Error(`${id}.doc.md 里有未知小节「${title}」，可用：${PROSE_SECTIONS.join(' / ')}`)
     const body = (nl === -1 ? '' : chunk.slice(nl + 1)).trim()
+    // 生成页给每个小节一个 ### 标题，正文里再写标题就和「组合」「最佳实践」这些小节平级，页面层级乱掉
+    if (/^#{1,6} /m.test(body))
+      throw new Error(`${id}.doc.md 的「${title}」里写了 Markdown 标题：小节里只写段落与列表，要分组就拆成条目或并进别的小节`)
     if (body)
       out.sections[title] = body
   }
   if (!out.overview)
     throw new Error(`${id}.doc.md 缺少概述（首个 ## 之前的正文）`)
+  if (/^#{1,6} /m.test(out.overview))
+    throw new Error(`${id}.doc.md 的概述里写了 Markdown 标题：概述只写段落`)
   return out
 }
 

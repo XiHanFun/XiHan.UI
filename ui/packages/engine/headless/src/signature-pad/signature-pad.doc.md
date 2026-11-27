@@ -28,6 +28,8 @@
 - 清空按钮走 Action Control text 档 sm：缺省 `outline` 描边，白底承载阶梯悬停 100 → 按下 200，按下换底；空画布时只把静息前景压淡，按钮照常可按。
 - 撤销与重做按钮与清空按钮同一身份；没有可撤销、可重做的一步时投影 `aria-disabled` 与家族置灰面，焦点仍留在钮上。
 - 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是画布（基准线与笔迹）、清空按钮与状态，给了 `name` 再带表单影子；清空按钮的字与状态句取 translations。撤销与重做按钮不在其中，要用时手写结构。Web Components 里标题可以写在宿主的直接子节点 `slot="label"` 上接管。
+- 画布这一族部件必须落在特定标签上，写错不报错，但画不出来：`control` 是 `<svg>`，`guide` 与 `path` 是 `control` 里的 `<line>` 与 `<path>`，`undo-trigger`、`redo-trigger`、`clear-trigger` 是原生 `<button>`，`hidden-input` 是原生 `<input>`。Vue 的 `XhSignaturePadGuide` 与 `XhSignaturePadPath` 同样要写在 `XhSignaturePadControl` 里：SVG 命名空间由这棵子树带下，移出去就成了 HTML 元素。`viewBox` 由组件写入，`control` 上不要再写。
+- `status` 部件里不必自己写字：节点为空时由适配器填入语言包里的文案，写了文字以作者的为准。
 
 ## 无障碍
 
@@ -55,23 +57,6 @@
 - 与[表单字段](./field)搭配：标题、说明与错误提示交给字段，签名板只负责画布。直接放进字段时，字段的标题并进画布的名字，说明与错误文案进描述链；点字段标题，焦点交给签名板里第一颗可聚焦的按钮（画布本身不可聚焦，一笔都没有时按钮都不可用，焦点不动）。
 - 放入[表单](./form)，提供 `name` 后随表单提交与重置。
 - 与[对话框](./dialog)搭配做签名确认：确认按钮的可用状态读取 `empty`。
-
-### 节点形状是硬约束
-
-画布这一族部件必须落在特定标签上，写错不报错，但无法绘制：
-
-- `control` 必须是 `<svg>`；
-- `guide` 必须是 `control` 内的 `<line>`；
-- `path` 必须是 `control` 内的 `<path>`；
-- `undo-trigger`、`redo-trigger`、`clear-trigger` 必须是原生 `<button>`，`hidden-input` 必须是原生 `<input>`。
-
-`viewBox` 由组件写入，作者不要在 `control` 上再写。
-
-### 两个适配器的分工
-
-- Vue：`XhSignaturePadRoot` 的默认插槽给出 `value` / `empty` / `paths` / `drawing` / `canUndo` / `canRedo` / `statusText` 与 `toSvg()` / `clear()` / `undo()` / `redo()`，签名数据走 `v-model:value`；也可以用 `useSignaturePad()` 自行获取。`XhSignaturePadGuide` 与 `XhSignaturePadPath` 必须写在 `XhSignaturePadControl` 内：SVG 命名空间由该子树带下，移出后会成为 HTML 元素，无法绘制。
-- Web Components：结构写在 Light DOM 里（不投影插槽），一个部件都不写时按标准结构生成。`<xh-signature-pad>` 上有 `clear()`、`undo()`、`redo()`、`toSvg()` 与只读的 `empty` / `canUndo` / `canRedo`；`value` / `defaultValue` 是对象，只走 property。提交前取签名用 `toSvg()`，不需要缓存上一次 `draw-end`。
-- 两侧的 `status` 部件内都不需要自行写文字：节点为空时由适配器填入语言包里的文案；写了文字则以作者的为准。
 
 ## 最佳实践
 
