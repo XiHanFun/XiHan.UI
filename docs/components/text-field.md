@@ -12,7 +12,7 @@
 
 ## 用法
 
-root 持有状态，label 与 control 中的 input 各自向它取属性；不传 value 即为非受控，组件自行维护值
+只写根组件就按标准结构铺出标题与输入框，clearable 带上清空按钮；不传 value 即为非受控，组件自行维护值
 
 <XhDemo src="text-field/01-basic" />
 
