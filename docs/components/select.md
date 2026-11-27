@@ -420,8 +420,8 @@ max-selected=2：选满后其余选项不可再选，点掉一个即腾出名额
 | `trigger` | `role` | 'combobox' |
 | `indicator` | `aria-hidden` | 'true' |
 | `clear-trigger` | `aria-label` | translations.clearTrigger |
-| `content` | `aria-hidden` | !open \|\| undefined |
-| `list` | `aria-busy` | 'true' \| undefined |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
+| `list` | `aria-busy` | 'true'（条件成立时才出现） |
 | `list` | `aria-label` | translations.content |
 | `list` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id \| `trigger` 部件的 id `value-text` 部件的 id \| `value-text` 部件的 id |
 | `list` | `aria-multiselectable` | 'true' \| 'false' |
@@ -457,13 +457,13 @@ max-selected=2：选满后其余选项不可再选，点掉一个即腾出名额
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-state` | 'open' \| 'closed' |
-| `control` | `data-variant` | props.variant |
+| `control` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
@@ -493,7 +493,7 @@ max-selected=2：选满后其余选项不可再选，点掉一个即腾出名额
 | `positioner` | `data-size` | props.size |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-tone` | props.tone |
-| `positioner` | `data-variant` | props.variant |
+| `positioner` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
@@ -504,7 +504,7 @@ max-selected=2：选满后其余选项不可再选，点掉一个即腾出名额
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
-| `item` | `data-tone` | metaOf.get(item.value)?.tone |
+| `item` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
@@ -536,7 +536,7 @@ max-selected=2：选满后其余选项不可再选，点掉一个即腾出名额
 | `retry-trigger` | `data-xh-action-profile` | 'text' |
 | `retry-trigger` | `data-xh-action-size` | props.size |
 | `retry-trigger` | `data-xh-action-variant` | 'ghost' |
-| `overflow-tag` | `data-count` | String(overflowCount) |
+| `overflow-tag` | `data-count` | 数值 |
 | `tag` | `data-value` | v |
 
 <!-- xh-component-tokens:start -->

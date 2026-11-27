@@ -187,7 +187,7 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-disabled` | 'true' \| 'false' |
-| `root` | `aria-orientation` | props.orientation |
+| `root` | `aria-orientation` | 'horizontal' \| 'vertical' |
 | `root` | `role` | 'toolbar' |
 | `group` | `role` | 'group' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
@@ -211,11 +211,11 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
-| `root` | `data-orientation` | props.orientation |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `root` | `data-size` | props.size |
 | `root` | `data-variant` | props.variant |
 | `group` | `data-disabled` | ''（条件成立时才出现） |
-| `group` | `data-orientation` | props.orientation |
+| `group` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-icon-only` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |

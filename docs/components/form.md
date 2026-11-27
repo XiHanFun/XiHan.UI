@@ -273,12 +273,12 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-busy` | 'true' \| undefined |
+| `root` | `aria-busy` | 'true'（条件成立时才出现） |
 | `error-summary` | `aria-atomic` | 'true' |
 | `error-summary` | `aria-live` | 'assertive' |
 | `error-summary` | `role` | 'alert' |
-| `submit-trigger` | `aria-busy` | 'true' \| undefined |
-| `submit-trigger` | `aria-disabled` | 'true' \| undefined |
+| `submit-trigger` | `aria-busy` | 'true'（条件成立时才出现） |
+| `submit-trigger` | `aria-disabled` | 'true'（条件成立时才出现） |
 
 ## 样式参考
 
@@ -309,7 +309,7 @@
 | `field-group` | `data-invalid` | ''（条件成立时才出现） |
 | `field-group` | `data-readonly` | ''（条件成立时才出现） |
 | `field-group` | `data-span` | fieldSpan(field.span) |
-| `error-summary` | `data-count` | String(summaryErrorNames.length) |
+| `error-summary` | `data-count` | 数值 |
 | `error-summary` | `data-state` | 'invalid' \| 'idle' |
 | `error-summary-item` | `data-invalid` | ''（条件成立时才出现） |
 | `error-summary-item` | `data-pressed` | ''（条件成立时才出现） |

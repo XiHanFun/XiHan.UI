@@ -217,19 +217,19 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-invalid` | 'true' \| undefined |
+| `root` | `aria-invalid` | 'true'（条件成立时才出现） |
 | `root` | `aria-label` | props.ariaLabel |
-| `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `root` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `root` | `role` | 'group' |
-| `group` | `aria-label` | t.group(group.group.logic) \| undefined |
+| `group` | `aria-label` | t.group(group.group.logic)（条件成立时才出现） |
 | `group` | `role` | 'group' |
 | `group-delete-trigger` | `aria-label` | t.removeGroup |
-| `condition` | `aria-describedby` | `error` 部件的 id \| undefined |
-| `condition` | `aria-invalid` | 'true' \| undefined |
-| `condition` | `aria-label` | t.condition(view.number) \| undefined |
+| `condition` | `aria-describedby` | `error` 部件的 id（条件成立时才出现） |
+| `condition` | `aria-invalid` | 'true'（条件成立时才出现） |
+| `condition` | `aria-label` | t.condition(view.number)（条件成立时才出现） |
 | `condition` | `role` | 'group' |
 | `range-separator` | `aria-hidden` | 'true' |
-| `condition-delete-trigger` | `aria-label` | t.removeCondition(view.number) \| undefined |
+| `condition-delete-trigger` | `aria-label` | t.removeCondition(view.number)（条件成立时才出现） |
 | `live-region` | `aria-live` | 'polite' |
 | `live-region` | `role` | 'status' |
 
@@ -252,15 +252,15 @@
 | `root` | `data-instant` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
-| `root` | `data-size` | props.size |
+| `root` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
 | `root` | `data-variant` | props.variant |
-| `group` | `data-depth` | group?.depth |
-| `group` | `data-logic` | group?.group.logic |
+| `group` | `data-depth` | 数值（条件成立时才出现） |
+| `group` | `data-logic` | 'and' \| 'or'（条件成立时才出现） |
 | `group-delete-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `add-condition-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `add-group-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `condition` | `data-invalid` | ''（条件成立时才出现） |
-| `condition-operand` | `data-operand` | conditionAt(path)?.shape |
+| `condition-operand` | `data-operand` | 'list' \| 'none' \| 'single' \| 'range'（条件成立时才出现） |
 | `condition-delete-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->

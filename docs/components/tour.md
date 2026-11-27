@@ -252,10 +252,10 @@
 | --- | --- | --- |
 | `backdrop` | `aria-hidden` | 'true' |
 | `spotlight` | `aria-hidden` | 'true' |
-| `content` | `aria-describedby` | `description` 部件的 id \| undefined |
-| `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-labelledby` | `title` 部件的 id \| undefined |
-| `content` | `aria-modal` | 'true' \| undefined |
+| `content` | `aria-describedby` | `description` 部件的 id（条件成立时才出现） |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
+| `content` | `aria-labelledby` | `title` 部件的 id（条件成立时才出现） |
+| `content` | `aria-modal` | 'true'（条件成立时才出现） |
 | `content` | `role` | 'dialog' |
 | `progress-text` | `aria-live` | 'polite' |
 | `progress-indicator` | `aria-hidden` | 'true' |
@@ -279,7 +279,7 @@
 | --- | --- | --- |
 | `root` | `data-empty` | ''（条件成立时才出现） |
 | `root` | `data-state` | 'open' \| 'closed' |
-| `root` | `data-step` | String(value) |
+| `root` | `data-step` | 数值 |
 | `backdrop` | `data-instant` | ''（条件成立时才出现） |
 | `backdrop` | `data-position` | 'anchored' \| 'center' |
 | `backdrop` | `data-state` | 'open' \| 'closed' |
@@ -295,13 +295,13 @@
 | `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
-| `content` | `data-step` | String(value) |
-| `progress-text` | `data-step` | String(value) |
-| `progress-indicator` | `data-count` | String(count) |
-| `progress-indicator` | `data-step` | String(value) |
+| `content` | `data-step` | 数值 |
+| `progress-text` | `data-step` | 数值 |
+| `progress-indicator` | `data-count` | 数值 |
+| `progress-indicator` | `data-step` | 数值 |
 | `progress-dot` | `data-complete` | ''（条件成立时才出现） |
 | `progress-dot` | `data-current` | ''（条件成立时才出现） |
-| `progress-dot` | `data-index` | String(index) |
+| `progress-dot` | `data-index` | 数值 |
 | `prev-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `prev-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `prev-trigger` | `data-state` | 'open' \| 'closed' |

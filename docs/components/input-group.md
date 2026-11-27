@@ -126,8 +126,8 @@ outline 画描边输入面，subtle 用淡底嵌入已有表面
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-size` | props.size |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost'（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

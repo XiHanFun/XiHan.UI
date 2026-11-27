@@ -228,17 +228,17 @@ stickyIndices 登记标题的下标：滚过它之后它钉在起点，下一组
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-orientation` | props.orientation |
-| `root` | `data-scroll-container` | undefined \| props.scrollContainer |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical' |
+| `root` | `data-scroll-container` | 'window' \| 'ancestor'（条件成立时才出现） |
 | `root` | `data-scrolling` | ''（条件成立时才出现） |
-| `viewport` | `data-anchor` | 'end' \| undefined |
-| `viewport` | `data-orientation` | props.orientation |
-| `viewport` | `data-scroll-container` | undefined \| props.scrollContainer |
-| `content` | `data-orientation` | props.orientation |
+| `viewport` | `data-anchor` | 'end'（条件成立时才出现） |
+| `viewport` | `data-orientation` | 'horizontal' \| 'vertical' |
+| `viewport` | `data-scroll-container` | 'window' \| 'ancestor'（条件成立时才出现） |
+| `content` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `item` | `data-fixed` | ''（条件成立时才出现） |
-| `item` | `data-index` | props.index |
-| `item` | `data-lane` | item.lane \| undefined |
-| `item` | `data-orientation` | props.orientation |
+| `item` | `data-index` | 数值 |
+| `item` | `data-lane` | 数值（条件成立时才出现） |
+| `item` | `data-orientation` | 'horizontal' \| 'vertical' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

@@ -416,31 +416,31 @@ searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树
 | `trigger` | `role` | 'combobox' |
 | `indicator` | `aria-hidden` | 'true' |
 | `clear-trigger` | `aria-label` | translations.clearTrigger |
-| `content` | `aria-hidden` | !open \|\| undefined |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
 | `input` | `aria-controls` | `tree` 部件的 id |
 | `input` | `aria-label` | translations.searchInput |
-| `tree` | `aria-busy` | 'true' \| undefined |
+| `tree` | `aria-busy` | 'true'（条件成立时才出现） |
 | `tree` | `aria-disabled` | 'true' \| 'false' |
 | `tree` | `aria-label` | translations.tree |
 | `tree` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id \| `trigger` 部件的 id `value-text` 部件的 id \| `value-text` 部件的 id |
 | `tree` | `aria-multiselectable` | 'true' \| 'false' |
 | `tree` | `role` | 'tree' |
-| `item` | `aria-checked` | 'true' \| 'mixed' \| 'false' \| undefined |
+| `item` | `aria-checked` | 'true' \| 'mixed' \| 'false'（条件成立时才出现） |
 | `item` | `aria-disabled` | 'true' \| 'false' |
-| `item` | `aria-level` | meta?.level |
-| `item` | `aria-posinset` | meta?.posInSet |
+| `item` | `aria-level` | 数值（条件成立时才出现） |
+| `item` | `aria-posinset` | 数值（条件成立时才出现） |
 | `item` | `aria-selected` | 'true' \| 'false' |
-| `item` | `aria-setsize` | meta?.setSize |
+| `item` | `aria-setsize` | 数值（条件成立时才出现） |
 | `item` | `role` | 'treeitem' |
 | `item-indicator` | `aria-hidden` | 'true' |
-| `branch` | `aria-busy` | 'true' \| undefined |
-| `branch` | `aria-checked` | 'true' \| 'mixed' \| 'false' \| undefined |
+| `branch` | `aria-busy` | 'true'（条件成立时才出现） |
+| `branch` | `aria-checked` | 'true' \| 'mixed' \| 'false'（条件成立时才出现） |
 | `branch` | `aria-disabled` | 'true' \| 'false' |
 | `branch` | `aria-expanded` | 'true' \| 'false' |
-| `branch` | `aria-level` | meta?.level |
-| `branch` | `aria-posinset` | meta?.posInSet |
+| `branch` | `aria-level` | 数值（条件成立时才出现） |
+| `branch` | `aria-posinset` | 数值（条件成立时才出现） |
 | `branch` | `aria-selected` | 'true' \| 'false' |
-| `branch` | `aria-setsize` | meta?.setSize |
+| `branch` | `aria-setsize` | 数值（条件成立时才出现） |
 | `branch` | `role` | 'treeitem' |
 | `branch-trigger` | `aria-hidden` | 'true' |
 | `branch-indicator` | `aria-hidden` | 'true' |
@@ -475,14 +475,14 @@ searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `label` | `data-required` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-state` | 'open' \| 'closed' |
-| `control` | `data-variant` | props.variant |
+| `control` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
@@ -512,7 +512,7 @@ searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树
 | `positioner` | `data-size` | props.size |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-tone` | props.tone |
-| `positioner` | `data-variant` | props.variant |
+| `positioner` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
@@ -526,7 +526,7 @@ searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树
 | `item` | `data-indeterminate` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-selected` | ''（条件成立时才出现） |
-| `item` | `data-tone` | metaOf(v)?.tone |
+| `item` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
@@ -549,15 +549,15 @@ searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-indicator` | `data-indeterminate` | ''（条件成立时才出现） |
 | `item-indicator` | `data-selected` | ''（条件成立时才出现） |
-| `item-indicator` | `data-xh-check-mark` | 'checked' \| 'indeterminate' \| 'unchecked' \| undefined |
-| `item-indicator` | `data-xh-check-mark-profile` | 'box' \| undefined |
+| `item-indicator` | `data-xh-check-mark` | 'checked' \| 'indeterminate' \| 'unchecked'（条件成立时才出现） |
+| `item-indicator` | `data-xh-check-mark-profile` | 'box'（条件成立时才出现） |
 | `item-indicator` | `data-xh-collection-slot` | 'check' \| 'indicator' |
 | `branch` | `data-disabled` | ''（条件成立时才出现） |
 | `branch` | `data-empty` | ''（条件成立时才出现） |
 | `branch` | `data-error` | ''（条件成立时才出现） |
 | `branch` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch` | `data-load-state` | branchLoadState(v)?.status |
+| `branch` | `data-load-state` | 'loading' \| 'idle' \| 'loaded' \| 'error'（条件成立时才出现） |
 | `branch` | `data-loading` | ''（条件成立时才出现） |
 | `branch` | `data-selected` | ''（条件成立时才出现） |
 | `branch` | `data-state` | 'open' \| 'closed' |
@@ -566,12 +566,12 @@ searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树
 | `branch-control` | `data-error` | ''（条件成立时才出现） |
 | `branch-control` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-control` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch-control` | `data-load-state` | branchLoadState(v)?.status |
+| `branch-control` | `data-load-state` | 'loading' \| 'idle' \| 'loaded' \| 'error'（条件成立时才出现） |
 | `branch-control` | `data-loading` | ''（条件成立时才出现） |
 | `branch-control` | `data-pressed` | ''（条件成立时才出现） |
 | `branch-control` | `data-selected` | ''（条件成立时才出现） |
 | `branch-control` | `data-state` | 'open' \| 'closed' |
-| `branch-control` | `data-tone` | metaOf(v)?.tone |
+| `branch-control` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 | `branch-control` | `data-xh-collection-context` | 'overlay' |
 | `branch-control` | `data-xh-collection-item` | '' |
 | `branch-control` | `data-xh-collection-size` | props.size |
@@ -580,7 +580,7 @@ searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树
 | `branch-trigger` | `data-error` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch-trigger` | `data-load-state` | branchLoadState(v)?.status |
+| `branch-trigger` | `data-load-state` | 'loading' \| 'idle' \| 'loaded' \| 'error'（条件成立时才出现） |
 | `branch-trigger` | `data-loading` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-selected` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-state` | 'open' \| 'closed' |
@@ -590,7 +590,7 @@ searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树
 | `branch-indicator` | `data-error` | ''（条件成立时才出现） |
 | `branch-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-indicator` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch-indicator` | `data-load-state` | branchLoadState(v)?.status |
+| `branch-indicator` | `data-load-state` | 'loading' \| 'idle' \| 'loaded' \| 'error'（条件成立时才出现） |
 | `branch-indicator` | `data-loading` | ''（条件成立时才出现） |
 | `branch-indicator` | `data-selected` | ''（条件成立时才出现） |
 | `branch-indicator` | `data-state` | 'open' \| 'closed' |
@@ -600,7 +600,7 @@ searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树
 | `branch-text` | `data-error` | ''（条件成立时才出现） |
 | `branch-text` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-text` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch-text` | `data-load-state` | branchLoadState(v)?.status |
+| `branch-text` | `data-load-state` | 'loading' \| 'idle' \| 'loaded' \| 'error'（条件成立时才出现） |
 | `branch-text` | `data-loading` | ''（条件成立时才出现） |
 | `branch-text` | `data-selected` | ''（条件成立时才出现） |
 | `branch-text` | `data-state` | 'open' \| 'closed' |
@@ -610,7 +610,7 @@ searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树
 | `branch-content` | `data-error` | ''（条件成立时才出现） |
 | `branch-content` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-content` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch-content` | `data-load-state` | branchLoadState(v)?.status |
+| `branch-content` | `data-load-state` | 'loading' \| 'idle' \| 'loaded' \| 'error'（条件成立时才出现） |
 | `branch-content` | `data-loading` | ''（条件成立时才出现） |
 | `branch-content` | `data-selected` | ''（条件成立时才出现） |
 | `branch-content` | `data-state` | 'open' \| 'closed' |
@@ -619,7 +619,7 @@ searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树
 | `branch-loading` | `data-error` | ''（条件成立时才出现） |
 | `branch-loading` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-loading` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch-loading` | `data-load-state` | branchLoadState(v)?.status |
+| `branch-loading` | `data-load-state` | 'loading' \| 'idle' \| 'loaded' \| 'error'（条件成立时才出现） |
 | `branch-loading` | `data-loading` | ''（条件成立时才出现） |
 | `branch-loading` | `data-selected` | ''（条件成立时才出现） |
 | `branch-loading` | `data-state` | 'open' \| 'closed' |
@@ -629,7 +629,7 @@ searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树
 | `branch-error` | `data-error` | ''（条件成立时才出现） |
 | `branch-error` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-error` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch-error` | `data-load-state` | branchLoadState(v)?.status |
+| `branch-error` | `data-load-state` | 'loading' \| 'idle' \| 'loaded' \| 'error'（条件成立时才出现） |
 | `branch-error` | `data-loading` | ''（条件成立时才出现） |
 | `branch-error` | `data-selected` | ''（条件成立时才出现） |
 | `branch-error` | `data-state` | 'open' \| 'closed' |
@@ -638,7 +638,7 @@ searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树
 | `branch-retry-trigger` | `data-error` | ''（条件成立时才出现） |
 | `branch-retry-trigger` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-retry-trigger` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch-retry-trigger` | `data-load-state` | branchLoadState(v)?.status |
+| `branch-retry-trigger` | `data-load-state` | 'loading' \| 'idle' \| 'loaded' \| 'error'（条件成立时才出现） |
 | `branch-retry-trigger` | `data-loading` | ''（条件成立时才出现） |
 | `branch-retry-trigger` | `data-selected` | ''（条件成立时才出现） |
 | `branch-retry-trigger` | `data-state` | 'open' \| 'closed' |
@@ -647,7 +647,7 @@ searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树
 | `branch-empty` | `data-error` | ''（条件成立时才出现） |
 | `branch-empty` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-empty` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch-empty` | `data-load-state` | branchLoadState(v)?.status |
+| `branch-empty` | `data-load-state` | 'loading' \| 'idle' \| 'loaded' \| 'error'（条件成立时才出现） |
 | `branch-empty` | `data-loading` | ''（条件成立时才出现） |
 | `branch-empty` | `data-selected` | ''（条件成立时才出现） |
 | `branch-empty` | `data-state` | 'open' \| 'closed' |
@@ -658,7 +658,7 @@ searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树
 | `loading` | `data-xh-loading-ring` | '' |
 | `loading` | `data-xh-placeholder` | 'loading' |
 | `footer` | `data-state` | 'open' \| 'closed' |
-| `overflow-tag` | `data-count` | String(overflowCount) |
+| `overflow-tag` | `data-count` | 数值 |
 | `tag` | `data-value` | itemValue(el) |
 
 <!-- xh-component-tokens:start -->

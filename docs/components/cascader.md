@@ -378,31 +378,31 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `trigger` | `role` | 'combobox' |
 | `indicator` | `aria-hidden` | 'true' |
 | `clear-trigger` | `aria-label` | translations.clearTrigger |
-| `content` | `aria-busy` | 'true' \| undefined |
-| `content` | `aria-hidden` | !open \|\| undefined |
-| `input` | `aria-activedescendant` | `search-item` 部件的 id \| undefined |
+| `content` | `aria-busy` | 'true'（条件成立时才出现） |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
+| `input` | `aria-activedescendant` | `search-item` 部件的 id（条件成立时才出现） |
 | `input` | `aria-autocomplete` | 'list' |
 | `input` | `aria-controls` | `search-list` 部件的 id |
 | `input` | `aria-label` | translations.searchInput |
 | `search-list` | `aria-label` | translations.searchList |
 | `search-list` | `aria-multiselectable` | 'true' \| 'false' |
 | `search-list` | `role` | 'listbox' |
-| `search-item` | `aria-checked` | 'true' \| 'mixed' \| 'false' \| undefined |
+| `search-item` | `aria-checked` | 'true' \| 'mixed' \| 'false'（条件成立时才出现） |
 | `search-item` | `aria-disabled` | 'true' \| 'false' |
 | `search-item` | `aria-selected` | 'true' \| 'false' |
 | `search-item` | `role` | 'option' |
-| `column` | `aria-busy` | 'true' \| undefined |
-| `column` | `aria-disabled` | 'true' \| 'false' \| undefined |
-| `column` | `aria-label` | translations.column \| undefined |
-| `column` | `aria-labelledby` | undefined \| `label` 部件的 id `value-text` 部件的 id \| `trigger` 部件的 id `value-text` 部件的 id \| `value-text` 部件的 id \| `item` 部件的 id |
-| `column` | `aria-multiselectable` | 'true' \| 'false' \| undefined |
-| `column` | `aria-orientation` | 'vertical' \| undefined |
-| `column` | `role` | 'listbox' \| undefined |
+| `column` | `aria-busy` | 'true'（条件成立时才出现） |
+| `column` | `aria-disabled` | 'true' \| 'false'（条件成立时才出现） |
+| `column` | `aria-label` | translations.column（条件成立时才出现） |
+| `column` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id \| `trigger` 部件的 id `value-text` 部件的 id \| `value-text` 部件的 id \| `item` 部件的 id（条件成立时才出现） |
+| `column` | `aria-multiselectable` | 'true' \| 'false'（条件成立时才出现） |
+| `column` | `aria-orientation` | 'vertical'（条件成立时才出现） |
+| `column` | `role` | 'listbox'（条件成立时才出现） |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
 | `group` | `role` | 'group' |
-| `item` | `aria-checked` | 'true' \| 'mixed' \| 'false' \| undefined |
+| `item` | `aria-checked` | 'true' \| 'mixed' \| 'false'（条件成立时才出现） |
 | `item` | `aria-disabled` | 'true' \| 'false' |
-| `item` | `aria-haspopup` | 'listbox' \| undefined |
+| `item` | `aria-haspopup` | 'listbox'（条件成立时才出现） |
 | `item` | `aria-selected` | 'true' \| 'false' |
 | `item` | `role` | 'option' |
 | `item-indicator` | `aria-hidden` | 'true' |
@@ -434,14 +434,14 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `label` | `data-required` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-state` | 'open' \| 'closed' |
-| `control` | `data-variant` | props.variant |
+| `control` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
@@ -471,7 +471,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `positioner` | `data-size` | props.size |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-tone` | props.tone |
-| `positioner` | `data-variant` | props.variant |
+| `positioner` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `content` | `data-empty` | ''（条件成立时才出现） |
 | `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
@@ -483,11 +483,11 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `search-item` | `data-highlighted` | ''（条件成立时才出现） |
 | `search-item` | `data-pressed` | ''（条件成立时才出现） |
 | `search-item` | `data-state` | 'checked' \| 'indeterminate' \| 'unchecked' |
-| `search-item` | `data-tone` | undefined \| metaOf(v)?.tone |
+| `search-item` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 | `search-item` | `data-xh-collection-context` | 'overlay' |
 | `search-item` | `data-xh-collection-item` | '' |
 | `search-item` | `data-xh-collection-size` | props.size |
-| `column` | `data-level` | String(column.level) |
+| `column` | `data-level` | 数值 |
 | `column` | `data-state` | 'open' \| 'closed' |
 | `group` | `data-disabled` | ''（条件成立时才出现） |
 | `group-label` | `data-disabled` | ''（条件成立时才出现） |
@@ -497,12 +497,12 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-in-path` | ''（条件成立时才出现） |
 | `item` | `data-instant` | ''（条件成立时才出现） |
-| `item` | `data-level` | String(meta.level) \| undefined |
-| `item` | `data-load-state` | branchLoadState(item.value)?.status |
+| `item` | `data-level` | 数值（条件成立时才出现） |
+| `item` | `data-load-state` | 'loading' \| 'idle' \| 'loaded' \| 'error'（条件成立时才出现） |
 | `item` | `data-loading` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
-| `item` | `data-tone` | undefined \| metaOf(v)?.tone |
+| `item` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
@@ -525,24 +525,24 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-indicator` | `data-in-path` | ''（条件成立时才出现） |
 | `item-indicator` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
-| `item-indicator` | `data-xh-check-mark` | 'indeterminate' \| 'checked' \| 'unchecked' \| undefined |
-| `item-indicator` | `data-xh-check-mark-profile` | 'box' \| undefined |
+| `item-indicator` | `data-xh-check-mark` | 'indeterminate' \| 'checked' \| 'unchecked'（条件成立时才出现） |
+| `item-indicator` | `data-xh-check-mark-profile` | 'box'（条件成立时才出现） |
 | `item-indicator` | `data-xh-collection-slot` | 'check-lead' \| 'indicator' |
 | `empty` | `data-xh-placeholder` | 'empty' |
 | `loading` | `data-loading` | ''（条件成立时才出现） |
 | `loading` | `data-xh-loading-ring` | '' |
 | `loading` | `data-xh-placeholder` | 'loading' |
-| `branch-loading` | `data-level` | String(column.level) |
-| `branch-error` | `data-level` | String(column.level) |
+| `branch-loading` | `data-level` | 数值 |
+| `branch-error` | `data-level` | 数值 |
 | `branch-retry-trigger` | `data-disabled` | ''（条件成立时才出现） |
-| `branch-retry-trigger` | `data-level` | String(column.level) |
+| `branch-retry-trigger` | `data-level` | 数值 |
 | `branch-retry-trigger` | `data-xh-action-control` | '' |
 | `branch-retry-trigger` | `data-xh-action-display` | 'always' |
 | `branch-retry-trigger` | `data-xh-action-profile` | 'text' |
 | `branch-retry-trigger` | `data-xh-action-size` | props.size |
 | `branch-retry-trigger` | `data-xh-action-variant` | 'ghost' |
 | `footer` | `data-state` | 'open' \| 'closed' |
-| `overflow-tag` | `data-count` | String(overflowCount) |
+| `overflow-tag` | `data-count` | 数值 |
 | `tag` | `data-value` | cascaderPathKey(path) |
 
 <!-- xh-component-tokens:start -->

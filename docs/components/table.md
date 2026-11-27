@@ -464,11 +464,11 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 
 | 部件 | 取值 |
 | --- | --- |
-| `row` | 'open' \| 'closed' \| undefined |
+| `row` | 'open' \| 'closed'（条件成立时才出现） |
 | `column-visibility-trigger` | 'unchecked' \| 'checked' |
-| `select-all-trigger` | tableSelectionState([...cascaded.checked], tableCasca… \| tableSelectionState(selection, selectableIds) |
-| `row-select-trigger` | 'open' \| 'closed' \| undefined |
-| `expand-trigger` | 'open' \| 'closed' \| undefined |
+| `select-all-trigger` | 'checked' \| 'unchecked' \| 'indeterminate' |
+| `row-select-trigger` | 'open' \| 'closed'（条件成立时才出现） |
+| `expand-trigger` | 'open' \| 'closed'（条件成立时才出现） |
 | `expanded-row` | 'open' \| 'closed' |
 
 以下名称仅用于内部状态机。
@@ -618,34 +618,34 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-busy` | 'true' \| undefined |
-| `root` | `aria-colcount` | columns.length \|\| undefined |
-| `root` | `aria-labelledby` | `caption` 部件的 id \| undefined |
+| `root` | `aria-busy` | 'true'（条件成立时才出现） |
+| `root` | `aria-colcount` | 数值（条件成立时才出现） |
+| `root` | `aria-labelledby` | `caption` 部件的 id（条件成立时才出现） |
 | `root` | `aria-multiselectable` | 'true' \| 'false' |
-| `root` | `aria-rowcount` | headerRowCount + visibleRows.length + footerRowCount |
+| `root` | `aria-rowcount` | 数值 |
 | `root` | `role` | 'treegrid' \| 'grid' |
 | `header` | `role` | 'rowgroup' |
 | `body` | `role` | 'rowgroup' |
 | `footer` | `role` | 'rowgroup' |
-| `row` | `aria-controls` | `detail` 部件的 id \| undefined |
+| `row` | `aria-controls` | `detail` 部件的 id（条件成立时才出现） |
 | `row` | `aria-disabled` | 'true' \| 'false' |
-| `row` | `aria-expanded` | 'true' \| 'false' \| undefined |
-| `row` | `aria-level` | metaIndex.get(row.value)?.level \| undefined |
-| `row` | `aria-posinset` | metaIndex.get(row.value)?.posInSet \| undefined |
-| `row` | `aria-rowindex` | dataRowIndex.get(row.value) |
-| `row` | `aria-selected` | 'true' \| 'false' \| undefined |
-| `row` | `aria-setsize` | metaIndex.get(row.value)?.setSize \| undefined |
+| `row` | `aria-expanded` | 'true' \| 'false'（条件成立时才出现） |
+| `row` | `aria-level` | 数值（条件成立时才出现） |
+| `row` | `aria-posinset` | 数值（条件成立时才出现） |
+| `row` | `aria-rowindex` | 数值（条件成立时才出现） |
+| `row` | `aria-selected` | 'true' \| 'false'（条件成立时才出现） |
+| `row` | `aria-setsize` | 数值（条件成立时才出现） |
 | `row` | `role` | 'row' |
-| `column-header` | `aria-colindex` | cell.colIndex |
-| `column-header` | `aria-colspan` | cell.colSpan \| undefined |
+| `column-header` | `aria-colindex` | 数值 |
+| `column-header` | `aria-colspan` | 数值（条件成立时才出现） |
 | `column-header` | `aria-hidden` | 'true' |
-| `column-header` | `aria-rowspan` | cell.rowSpan \| undefined |
-| `column-header` | `aria-sort` | 'ascending' \| 'descending' \| 'none' \| undefined |
+| `column-header` | `aria-rowspan` | 数值（条件成立时才出现） |
+| `column-header` | `aria-sort` | 'ascending' \| 'descending' \| 'none'（条件成立时才出现） |
 | `column-header` | `role` | 'columnheader' |
-| `cell` | `aria-colindex` | columnIndex.get(cell.value) |
-| `cell` | `aria-colspan` | Math.max(cell.colSpan ?? 1, origin?.colSpan ?? 1) \| undefined |
+| `cell` | `aria-colindex` | 数值（条件成立时才出现） |
+| `cell` | `aria-colspan` | 数值（条件成立时才出现） |
 | `cell` | `aria-hidden` | 'true' |
-| `cell` | `aria-rowspan` | origin.rowSpan \| undefined |
+| `cell` | `aria-rowspan` | 数值（条件成立时才出现） |
 | `cell` | `role` | 'rowheader' \| 'gridcell' |
 | `toolbar` | `aria-label` | label.toolbar |
 | `column-list` | `aria-label` | label.columnList |
@@ -665,9 +665,9 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `column-resize-trigger` | `aria-disabled` | 'false' \| 'true' |
 | `column-resize-trigger` | `aria-label` | label.columnResize(def?.label ?? column.value) |
 | `column-resize-trigger` | `aria-orientation` | 'vertical' |
-| `column-resize-trigger` | `aria-valuemax` | def?.maxWidth \| undefined |
-| `column-resize-trigger` | `aria-valuemin` | def?.minWidth \| undefined |
-| `column-resize-trigger` | `aria-valuenow` | columnNumericWidth(context.get('columnPreference').wi… |
+| `column-resize-trigger` | `aria-valuemax` | 数值（条件成立时才出现） |
+| `column-resize-trigger` | `aria-valuemin` | 数值（条件成立时才出现） |
+| `column-resize-trigger` | `aria-valuenow` | 数值（条件成立时才出现） |
 | `column-resize-trigger` | `role` | 'separator' |
 | `column-drag-trigger` | `aria-disabled` | 'false' \| 'true' |
 | `column-drag-trigger` | `aria-label` | label.columnDrag(def?.label ?? column.value) |
@@ -675,16 +675,16 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `column-drag-trigger` | `role` | 'button' |
 | `row-drag-trigger` | `aria-hidden` | 'true' |
 | `expand-trigger` | `aria-hidden` | 'true' |
-| `expanded-row` | `aria-level` | (metaIndex.get(row.value)?.level ?? 1) + 1 \| undefined |
-| `expanded-row` | `aria-posinset` | 1 \| undefined |
-| `expanded-row` | `aria-rowindex` | detailRowIndex.get(row.value) |
-| `expanded-row` | `aria-setsize` | 1 \| undefined |
+| `expanded-row` | `aria-level` | 数值（条件成立时才出现） |
+| `expanded-row` | `aria-posinset` | 1（条件成立时才出现） |
+| `expanded-row` | `aria-rowindex` | 数值（条件成立时才出现） |
+| `expanded-row` | `aria-setsize` | 1（条件成立时才出现） |
 | `expanded-row` | `role` | 'row' |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | 'polite' |
 | `live-region` | `role` | 'status' |
-| `header-row` | `aria-rowindex` | Math.max(1, Math.min(Math.trunc(header?.level ?? 1) \|… |
-| `footer-row` | `aria-rowindex` | headerRowCount + visibleRows.length + level \| undefined |
+| `header-row` | `aria-rowindex` | 数值 |
+| `footer-row` | `aria-rowindex` | 数值（条件成立时才出现） |
 | `header-row` | `role` | 'row' |
 | `footer-row` | `role` | 'row' |
 
@@ -733,11 +733,11 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `row` | `data-pressed` | ''（条件成立时才出现） |
 | `row` | `data-section` | 'body' |
 | `row` | `data-selected` | ''（条件成立时才出现） |
-| `row` | `data-state` | 'open' \| 'closed' \| undefined |
+| `row` | `data-state` | 'open' \| 'closed'（条件成立时才出现） |
 | `row` | `data-xh-collection-context` | 'page' |
 | `row` | `data-xh-collection-item` | '' |
 | `row` | `data-xh-collection-size` | props.size |
-| `column-header` | `data-align` | def?.align |
+| `column-header` | `data-align` | 'start' \| 'end' \| 'center'（条件成立时才出现） |
 | `column-header` | `data-covered` | ''（条件成立时才出现） |
 | `column-header` | `data-dragging` | ''（条件成立时才出现） |
 | `column-header` | `data-drop` | 'before' \| 'after' |
@@ -747,17 +747,17 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `column-header` | `data-group` | ''（条件成立时才出现） |
 | `column-header` | `data-row-span` | ''（条件成立时才出现） |
 | `column-header` | `data-sort` | 'asc' \| 'desc' |
-| `column-header` | `data-sort-index` | tableSortIndexOf(sort, value) \| undefined |
+| `column-header` | `data-sort-index` | 数值（条件成立时才出现） |
 | `column-header` | `data-sortable` | ''（条件成立时才出现） |
-| `cell` | `data-align` | def?.align |
+| `cell` | `data-align` | 'start' \| 'end' \| 'center'（条件成立时才出现） |
 | `cell` | `data-covered` | ''（条件成立时才出现） |
-| `cell` | `data-disabled` | ''（条件成立时才出现） \| undefined |
+| `cell` | `data-disabled` | ''（条件成立时才出现）（条件成立时才出现） |
 | `cell` | `data-dragging` | ''（条件成立时才出现） |
 | `cell` | `data-drop` | 'before' \| 'after' |
 | `cell` | `data-frozen` | undefined |
 | `cell` | `data-frozen-edge` | ''（条件成立时才出现） |
 | `cell` | `data-row-span` | ''（条件成立时才出现） |
-| `cell` | `data-selected` | ''（条件成立时才出现） \| undefined |
+| `cell` | `data-selected` | ''（条件成立时才出现）（条件成立时才出现） |
 | `cell` | `data-truncate` | ''（条件成立时才出现） |
 | `toolbar` | `data-size` | props.size |
 | `column-list` | `data-size` | props.size |
@@ -773,20 +773,20 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `column-visibility-trigger` | `data-xh-check-mark-profile` | 'box' |
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-pressed` | ''（条件成立时才出现） |
-| `select-all-trigger` | `data-state` | tableSelectionState([...cascaded.checked], tableCasca… \| tableSelectionState(selection, selectableIds) |
+| `select-all-trigger` | `data-state` | 'checked' \| 'unchecked' \| 'indeterminate' |
 | `select-all-trigger` | `data-xh-action-control` | '' |
 | `select-all-trigger` | `data-xh-action-display` | 'always' |
 | `select-all-trigger` | `data-xh-action-profile` | 'icon' |
 | `select-all-trigger` | `data-xh-action-size` | props.size |
 | `select-all-trigger` | `data-xh-action-variant` | 'outline' |
-| `select-all-trigger` | `data-xh-check-mark` | tableSelectionState([...cascaded.checked], tableCasca… \| tableSelectionState(selection, selectableIds) |
+| `select-all-trigger` | `data-xh-check-mark` | 'checked' \| 'unchecked' \| 'indeterminate' |
 | `select-all-trigger` | `data-xh-check-mark-profile` | 'box' |
 | `row-select-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `row-select-trigger` | `data-highlighted` | ''（条件成立时才出现） |
 | `row-select-trigger` | `data-indeterminate` | ''（条件成立时才出现） |
 | `row-select-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `row-select-trigger` | `data-selected` | ''（条件成立时才出现） |
-| `row-select-trigger` | `data-state` | 'open' \| 'closed' \| undefined |
+| `row-select-trigger` | `data-state` | 'open' \| 'closed'（条件成立时才出现） |
 | `row-select-trigger` | `data-xh-action-control` | '' |
 | `row-select-trigger` | `data-xh-action-display` | 'always' |
 | `row-select-trigger` | `data-xh-action-profile` | 'icon' |
@@ -797,7 +797,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `sort-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `sort-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `sort-trigger` | `data-sort` | 'asc' \| 'desc' |
-| `sort-trigger` | `data-sort-index` | tableSortIndexOf(sort, value) \| undefined |
+| `sort-trigger` | `data-sort-index` | 数值（条件成立时才出现） |
 | `sort-trigger` | `data-xh-action-control` | '' |
 | `sort-trigger` | `data-xh-action-display` | 'always' |
 | `sort-trigger` | `data-xh-action-profile` | 'icon' |
@@ -813,7 +813,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `expand-trigger` | `data-highlighted` | ''（条件成立时才出现） |
 | `expand-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `expand-trigger` | `data-selected` | ''（条件成立时才出现） |
-| `expand-trigger` | `data-state` | 'open' \| 'closed' \| undefined |
+| `expand-trigger` | `data-state` | 'open' \| 'closed'（条件成立时才出现） |
 | `expand-trigger` | `data-xh-action-control` | '' |
 | `expand-trigger` | `data-xh-action-display` | 'always' |
 | `expand-trigger` | `data-xh-action-profile` | 'icon' |

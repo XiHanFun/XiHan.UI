@@ -225,7 +225,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `trigger` | 'open' \| 'closed' |
 | `positioner` | 'open' \| 'closed' |
 | `content` | 'open' \| 'closed' |
-| `item-indicator` | 'checked' \| 'unchecked' \| 'checked' \| 'unchecked' \| undefined |
+| `item-indicator` | 'checked' \| 'unchecked'（条件成立时才出现） |
 
 以下名称仅用于内部状态机。
 
@@ -308,14 +308,14 @@ checkbox 与 radio 的值独立于当前展开菜单
 | --- | --- | --- |
 | `root` | `aria-disabled` | 'true' \| 'false' |
 | `root` | `aria-label` | translations.root |
-| `root` | `aria-orientation` | props.orientation |
+| `root` | `aria-orientation` | 'horizontal' \| 'vertical' |
 | `root` | `role` | 'menubar' |
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-disabled` | 'true' \| 'false' |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'menu' |
 | `trigger` | `role` | 'menuitem' |
-| `content` | `aria-hidden` | !isOpen \|\| undefined |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
 | `content` | `aria-labelledby` | `trigger` 部件的 id |
 | `content` | `role` | 'menu' |
 | `item-icon` | `aria-hidden` | 'true' |
@@ -344,7 +344,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
-| `root` | `data-orientation` | props.orientation |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
@@ -356,13 +356,13 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `trigger` | `data-xh-collection-item` | '' |
 | `trigger` | `data-xh-collection-size` | props.size |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
-| `positioner` | `data-placement` | 定位引擎算出的实际落位 \| undefined |
+| `positioner` | `data-placement` | 定位引擎算出的实际落位（条件成立时才出现） |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
 | `positioner` | `data-size` | props.size |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-tone` | props.tone |
 | `content` | `data-instant` | ''（条件成立时才出现） |
-| `content` | `data-placement` | 定位引擎算出的实际落位 \| undefined |
+| `content` | `data-placement` | 定位引擎算出的实际落位（条件成立时才出现） |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-xh-material` | 'frosted' |
 | `item` | `data-xh-collection-context` | 'overlay' |
@@ -384,9 +384,9 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
-| `item-indicator` | `data-state` | 'checked' \| 'unchecked' \| 'checked' \| 'unchecked' \| undefined |
+| `item-indicator` | `data-state` | 'checked' \| 'unchecked'（条件成立时才出现） |
 | `item-indicator` | `data-xh-collection-slot` | 'indicator' |
-| `item-indicator` | `data-xh-menu-choice-indicator` | item.kind \| undefined |
+| `item-indicator` | `data-xh-menu-choice-indicator` | 'checkbox' \| 'radio'（条件成立时才出现） |
 | `separator` | `data-xh-collection-separator` | '' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 | `radio-group` | `data-value` | group.value |

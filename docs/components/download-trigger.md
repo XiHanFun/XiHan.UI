@@ -177,8 +177,8 @@ variant 设置触发器外观，size 取小、中、大三档，disabled 禁止�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-busy` | 'true' \| undefined |
-| `root` | `aria-disabled` | 'true' \| undefined |
+| `root` | `aria-busy` | 'true'（条件成立时才出现） |
+| `root` | `aria-disabled` | 'true'（条件成立时才出现） |
 | `root` | `aria-label` | props.translations.trigger |
 
 - 触发器使用原生 `<button type="button">`。
@@ -205,12 +205,12 @@ variant 设置触发器外观，size 取小、中、大三档，disabled 禁止�
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'idle' \| 'preparing' |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' \| 'solid' |
 | `root` | `data-xh-action-control` | '' |
 | `root` | `data-xh-action-display` | 'always' |
 | `root` | `data-xh-action-profile` | 'text' |
 | `root` | `data-xh-action-size` | props.size |
-| `root` | `data-xh-action-variant` | props.variant |
+| `root` | `data-xh-action-variant` | 'outline' \| 'subtle' \| 'ghost' \| 'solid' |
 | `root` | `data-xh-ink-surface` | ''（条件成立时才出现） |
 | `root` | `data-xh-loading-ring` | 'overlay' |
 

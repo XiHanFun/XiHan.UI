@@ -196,7 +196,7 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-label` | translations.root |
-| `link` | `aria-current` | 'page' \| undefined |
+| `link` | `aria-current` | 'page'（条件成立时才出现） |
 | `link` | `aria-disabled` | 'true' \| 'false' |
 | `link-icon` | `aria-hidden` | 'true' |
 | `separator` | `aria-hidden` | 'true' |

@@ -195,10 +195,10 @@ scrollTo 滚动视口，reach-end 在滚到底那一下通知一次，常用来�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-dragging` | ''（条件成立时才出现） |
-| `root` | `data-orientation` | props.orientation |
-| `root` | `data-reveal-mode` | props.revealMode |
-| `root` | `data-size` | props.size |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical' \| 'both'（条件成立时才出现） |
+| `root` | `data-reveal-mode` | 'auto' \| 'always' \| 'scroll' \| 'hover' \| 'scroll-hover'（条件成立时才出现） |
+| `root` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
+| `root` | `data-variant` | 'plain' \| 'fade'（条件成立时才出现） |
 | `viewport` | `data-at-max-horizontal` | ''（条件成立时才出现） |
 | `viewport` | `data-at-max-vertical` | ''（条件成立时才出现） |
 | `viewport` | `data-at-min-horizontal` | ''（条件成立时才出现） |
@@ -206,17 +206,17 @@ scrollTo 滚动视口，reach-end 在滚到底那一下通知一次，常用来�
 | `viewport` | `data-lane-horizontal` | ''（条件成立时才出现） |
 | `viewport` | `data-lane-vertical` | ''（条件成立时才出现） |
 | `viewport` | `data-native` | ''（条件成立时才出现） |
-| `viewport` | `data-orientation` | props.orientation |
-| `viewport` | `data-size` | props.size |
-| `viewport` | `data-variant` | props.variant |
-| `content` | `data-orientation` | props.orientation |
+| `viewport` | `data-orientation` | 'horizontal' \| 'vertical' \| 'both'（条件成立时才出现） |
+| `viewport` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
+| `viewport` | `data-variant` | 'plain' \| 'fade'（条件成立时才出现） |
+| `content` | `data-orientation` | 'horizontal' \| 'vertical' \| 'both'（条件成立时才出现） |
 | `scrollbar` | `data-dragging` | ''（条件成立时才出现） |
 | `scrollbar` | `data-gutter` | ''（条件成立时才出现） |
 | `scrollbar` | `data-native` | ''（条件成立时才出现） |
-| `scrollbar` | `data-orientation` | axis |
-| `scrollbar` | `data-reveal-mode` | props.revealMode |
+| `scrollbar` | `data-orientation` | 'horizontal' \| 'vertical' |
+| `scrollbar` | `data-reveal-mode` | 'auto' \| 'always' \| 'scroll' \| 'hover' \| 'scroll-hover'（条件成立时才出现） |
 | `scrollbar` | `data-scrolling` | ''（条件成立时才出现） |
-| `scrollbar` | `data-size` | props.size |
+| `scrollbar` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
 | `scrollbar` | `data-state` | 'visible' \| 'hidden' |
 | `corner` | `data-state` | 'visible' \| 'hidden' |
 

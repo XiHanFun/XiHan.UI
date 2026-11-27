@@ -185,12 +185,12 @@ variant 在默认与幽灵两种外观之间切换；size 提供三种尺寸，�
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'on' \| 'off' |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' \| 'solid' |
 | `root` | `data-xh-action-control` | '' |
 | `root` | `data-xh-action-display` | 'always' |
 | `root` | `data-xh-action-profile` | 'icon' \| 'text' |
 | `root` | `data-xh-action-size` | props.size |
-| `root` | `data-xh-action-variant` | 'solid' \| 'ghost' \| props.variant |
+| `root` | `data-xh-action-variant` | 'solid' \| 'ghost' \| 'outline' \| 'subtle' |
 | `root` | `data-xh-ink-surface` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->

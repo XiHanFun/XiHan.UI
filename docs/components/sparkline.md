@@ -150,7 +150,7 @@ reference 画一条横贯的虚线：写目标值看每天达没达标，写 mea
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | 'error' \| 'empty' \| undefined |
+| `root` | 'error' \| 'empty'（条件成立时才出现） |
 
 以下名称仅用于内部状态机。
 
@@ -209,7 +209,7 @@ reference 画一条横贯的虚线：写目标值看每天达没达标，写 mea
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-state` | 'error' \| 'empty' \| undefined |
+| `root` | `data-state` | 'error' \| 'empty'（条件成立时才出现） |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 

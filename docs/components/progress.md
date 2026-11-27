@@ -243,9 +243,9 @@ buffer 在填充之后画第二段浅色填充，表示已经就绪、还没用�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-valuemax` | String(max) |
+| `root` | `aria-valuemax` | 数值 |
 | `root` | `aria-valuemin` | '0' |
-| `root` | `aria-valuenow` | undefined \| String(value) |
+| `root` | `aria-valuenow` | 数值（条件成立时才出现） |
 | `root` | `aria-valuetext` | props.valueText |
 | `root` | `role` | 'meter' \| 'progressbar' |
 | `canvas` | `aria-hidden` | 'true' |
@@ -271,28 +271,28 @@ buffer 在填充之后画第二段浅色填充，表示已经就绪、还没用�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-banded` | ''（条件成立时才出现） |
-| `root` | `data-indicator` | 'needle' \| undefined |
-| `root` | `data-size` | props.size |
+| `root` | `data-indicator` | 'needle'（条件成立时才出现） |
+| `root` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
 | `root` | `data-state` | 'indeterminate' \| 'complete' \| 'loading' |
-| `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
-| `canvas` | `data-variant` | props.variant |
+| `root` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
+| `root` | `data-variant` | 'line' \| 'circle' \| 'dashboard'（条件成立时才出现） |
+| `canvas` | `data-variant` | 'line' \| 'circle' \| 'dashboard'（条件成立时才出现） |
 | `track` | `data-stepped` | ''（条件成立时才出现） |
 | `range` | `data-empty` | ''（条件成立时才出现） |
-| `range` | `data-indicator` | 'needle' \| undefined |
+| `range` | `data-indicator` | 'needle'（条件成立时才出现） |
 | `range` | `data-striped` | ''（条件成立时才出现） |
-| `range` | `data-tone` | active?.tone |
-| `buffer` | `data-tone` | props.tone |
-| `buffer` | `data-variant` | props.variant |
-| `label` | `data-indicator` | 'needle' \| undefined |
+| `range` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
+| `buffer` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
+| `buffer` | `data-variant` | 'line' \| 'circle' \| 'dashboard'（条件成立时才出现） |
+| `label` | `data-indicator` | 'needle'（条件成立时才出现） |
 | `label` | `data-state` | 'complete' \| 'loading' |
-| `label` | `data-variant` | props.variant |
-| `threshold` | `data-tone` | band.tone |
-| `threshold` | `data-variant` | props.variant |
-| `target` | `data-variant` | props.variant |
-| `scale` | `data-variant` | props.variant |
-| `scale-tick` | `data-variant` | props.variant |
-| `scale-label` | `data-variant` | props.variant |
+| `label` | `data-variant` | 'line' \| 'circle' \| 'dashboard'（条件成立时才出现） |
+| `threshold` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info' |
+| `threshold` | `data-variant` | 'line' \| 'circle' \| 'dashboard'（条件成立时才出现） |
+| `target` | `data-variant` | 'line' \| 'circle' \| 'dashboard'（条件成立时才出现） |
+| `scale` | `data-variant` | 'line' \| 'circle' \| 'dashboard'（条件成立时才出现） |
+| `scale-tick` | `data-variant` | 'line' \| 'circle' \| 'dashboard'（条件成立时才出现） |
+| `scale-label` | `data-variant` | 'line' \| 'circle' \| 'dashboard'（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

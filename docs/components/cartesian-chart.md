@@ -488,9 +488,9 @@ data 写成 createColumnStore 建的列式数据：一百万个采样点按像�
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | 'error' \| undefined |
+| `root` | 'error'（条件成立时才出现） |
 | `tooltip` | 'visible' \| 'hidden' |
-| `empty` | 'loading' \| undefined |
+| `empty` | 'loading'（条件成立时才出现） |
 
 以下名称仅用于内部状态机。
 
@@ -598,7 +598,7 @@ data 写成 createColumnStore 建的列式数据：一百万个采样点按像�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-busy` | 'true' \| undefined |
+| `root` | `aria-busy` | 'true'（条件成立时才出现） |
 | `legend` | `aria-label` | translations.legendLabel |
 | `legend` | `role` | 'toolbar' |
 | `legend-item` | `aria-pressed` | 'false' \| 'true' |
@@ -616,14 +616,14 @@ data 写成 createColumnStore 建的列式数据：一百万个采样点按像�
 | `zoom-handle` | `aria-orientation` | 'horizontal' |
 | `zoom-handle` | `aria-valuemax` | 100 |
 | `zoom-handle` | `aria-valuemin` | 0 |
-| `zoom-handle` | `aria-valuenow` | Math.round(shown.x[edge] * 100) |
+| `zoom-handle` | `aria-valuenow` | 数值 |
 | `zoom-handle` | `aria-valuetext` | edgeText(shown.x[edge], edge) |
 | `zoom-handle` | `role` | 'slider' |
 | `zoom-preview` | `aria-hidden` | 'true' |
-| `mark` | `aria-hidden` | mark.exiting \|\| undefined |
-| `mark` | `aria-label` | undefined \| spec?.name |
-| `mark` | `aria-roledescription` | undefined \| translations.seriesRoleDescription |
-| `mark` | `role` | undefined \| 'graphics-object' |
+| `mark` | `aria-hidden` | 'true'（条件成立时才出现） |
+| `mark` | `aria-label` | spec?.name（条件成立时才出现） |
+| `mark` | `aria-roledescription` | translations.seriesRoleDescription（条件成立时才出现） |
+| `mark` | `role` | 'graphics-object'（条件成立时才出现） |
 
 - 根是 `<figure>`，可访问名称来自 `caption`（`<figcaption>`）；不放标题时在根上写 `aria-label` 或 `aria-labelledby`。绘图区念同一个名字：有 caption 时引用它，没有时沿用根上的那一条。只有两者都没有时开发期报 `chart.missing-name`。
 - 绘图区是 `role="graphics-document"`，`aria-roledescription` 取 `translations.chartRoleDescription`（缺省 chart），`aria-describedby` 指向组件生成的摘要。
@@ -657,14 +657,14 @@ data 写成 createColumnStore 建的列式数据：一百万个采样点按像�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-loading` | ''（条件成立时才出现） |
-| `root` | `data-orientation` | model.spec.orientation |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `root` | `data-palette` | props.palette |
-| `root` | `data-state` | 'error' \| undefined |
+| `root` | `data-state` | 'error'（条件成立时才出现） |
 | `root` | `data-xh-chart-part` | 'root' |
 | `caption` | `data-xh-chart-part` | 'caption' |
 | `legend` | `data-xh-chart-part` | 'legend' |
 | `legend-item` | `data-pressed` | ''（条件成立时才出现） |
-| `legend-item` | `data-tone` | item.tone |
+| `legend-item` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 | `legend-item` | `data-value` | item.id |
 | `legend-item` | `data-xh-action-control` | '' |
 | `legend-item` | `data-xh-action-profile` | 'text' |
@@ -672,59 +672,59 @@ data 写成 createColumnStore 建的列式数据：一百万个采样点按像�
 | `legend-item` | `data-xh-action-variant` | 'ghost' |
 | `legend-item` | `data-xh-chart-part` | 'legend-item' |
 | `legend-item` | `data-xh-chart-pattern` | patternOf(item.id) |
-| `legend-item` | `data-xh-chart-scale` | 'sequential' \| undefined |
-| `legend-item` | `data-xh-chart-slot` | undefined \| String(item.slot) |
-| `legend-swatch` | `data-mark` | swatchMark(item) |
-| `legend-swatch` | `data-symbol` | item.symbol |
+| `legend-item` | `data-xh-chart-scale` | 'sequential'（条件成立时才出现） |
+| `legend-item` | `data-xh-chart-slot` | 数值（条件成立时才出现） |
+| `legend-swatch` | `data-mark` | 'line' \| 'bar' \| 'point' |
+| `legend-swatch` | `data-symbol` | 'circle' \| 'square' \| 'diamond' \| 'triangle' \| 'triangleDown' \| 'cross' \| 'star' \| 'wye'（条件成立时才出现） |
 | `legend-swatch` | `data-xh-chart-part` | 'legend-swatch' |
-| `legend-scale-value` | `data-edge` | edge |
+| `legend-scale-value` | `data-edge` | 'min' \| 'max' |
 | `viewport` | `data-xh-chart-part` | 'viewport' |
 | `canvas` | `data-empty` | ''（条件成立时才出现） |
 | `plot` | `data-dragging` | ''（条件成立时才出现） |
 | `plot` | `data-selectable` | ''（条件成立时才出现） |
-| `plot` | `data-touch-axis` | 'both' \| 'horizontal' \| 'vertical' \| undefined |
+| `plot` | `data-touch-axis` | 'both' \| 'horizontal' \| 'vertical'（条件成立时才出现） |
 | `plot` | `data-xh-chart-part` | 'plot' |
 | `plot` | `data-zoomed` | ''（条件成立时才出现） |
 | `defs` | `data-xh-chart-part` | 'defs' |
-| `pattern` | `data-tone` | pattern.tone |
+| `pattern` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 | `pattern` | `data-xh-chart-part` | 'pattern' |
-| `pattern` | `data-xh-chart-slot` | undefined \| String(pattern.slot) |
+| `pattern` | `data-xh-chart-slot` | 数值（条件成立时才出现） |
 | `pattern-line` | `data-xh-chart-part` | 'pattern-line' |
-| `tooltip` | `data-placement` | 'top' \| 'bottom'-'right' \| 'left' \| undefined |
+| `tooltip` | `data-placement` | 'top' \| 'bottom'-'right' \| 'left'（条件成立时才出现） |
 | `tooltip` | `data-state` | 'visible' \| 'hidden' |
 | `tooltip` | `data-xh-chart-part` | 'tooltip' |
 | `tooltip-header` | `data-xh-chart-part` | 'tooltip-header' |
 | `tooltip-row` | `data-current` | ''（条件成立时才出现） |
 | `tooltip-row` | `data-series-id` | row.seriesId |
-| `tooltip-row` | `data-tone` | row.tone |
+| `tooltip-row` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 | `tooltip-row` | `data-xh-chart-part` | 'tooltip-row' |
 | `tooltip-row` | `data-xh-chart-pattern` | patternOf(row.seriesId) |
-| `tooltip-row` | `data-xh-chart-scale` | 'sequential' \| undefined |
-| `tooltip-row` | `data-xh-chart-slot` | undefined \| String(row.slot) |
-| `tooltip-swatch` | `data-mark` | swatchMark(row) |
-| `tooltip-swatch` | `data-stop` | undefined \| chartSequentialStop(row.t).seg |
-| `tooltip-swatch` | `data-symbol` | row.symbol |
+| `tooltip-row` | `data-xh-chart-scale` | 'sequential'（条件成立时才出现） |
+| `tooltip-row` | `data-xh-chart-slot` | 数值（条件成立时才出现） |
+| `tooltip-swatch` | `data-mark` | 'line' \| 'bar' \| 'point' |
+| `tooltip-swatch` | `data-stop` | 'low' \| 'high'（条件成立时才出现） |
+| `tooltip-swatch` | `data-symbol` | 'circle' \| 'square' \| 'diamond' \| 'triangle' \| 'triangleDown' \| 'cross' \| 'star' \| 'wye'（条件成立时才出现） |
 | `tooltip-swatch` | `data-xh-chart-part` | 'tooltip-swatch' |
 | `tooltip-value` | `data-xh-chart-part` | 'tooltip-value' |
 | `tooltip-name` | `data-xh-chart-part` | 'tooltip-name' |
 | `empty` | `data-loading` | ''（条件成立时才出现） |
-| `empty` | `data-state` | 'loading' \| undefined |
+| `empty` | `data-state` | 'loading'（条件成立时才出现） |
 | `empty` | `data-xh-chart-part` | 'empty' |
 | `empty` | `data-xh-loading-ring` | '' |
 | `zoom-slider` | `data-dragging` | ''（条件成立时才出现） |
-| `zoom-handle` | `data-placement` | edge |
-| `mark` | `data-axis` | mark.key.slice('axis:'.length) \| undefined |
+| `zoom-handle` | `data-placement` | 'start' \| 'end' |
+| `mark` | `data-axis` | mark.key.slice('axis:'.length)（条件成立时才出现） |
 | `mark` | `data-dimmed` | ''（条件成立时才出现） |
 | `mark` | `data-drawing` | ''（条件成立时才出现） |
-| `mark` | `data-kind` | note?.kind |
-| `mark` | `data-mark` | spec?.mark |
-| `mark` | `data-placement` | model.scene?.placements.get(mark.key) \| undefined \| undefined |
+| `mark` | `data-kind` | 'line' \| 'point' \| 'band' \| 'average' \| 'trend'（条件成立时才出现） |
+| `mark` | `data-mark` | 'line' \| 'bar' \| 'scatter' \| 'candlestick' \| 'boxplot'（条件成立时才出现） |
+| `mark` | `data-placement` | 'end' \| 'inside'（条件成立时才出现） |
 | `mark` | `data-series-id` | mark.key.slice('series:'.length) |
-| `mark` | `data-tone` | spec?.tone |
-| `mark` | `data-xh-chart-part` | mark.part \| undefined |
+| `mark` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
+| `mark` | `data-xh-chart-part` | 'focus-ring' \| 'leader-line'（条件成立时才出现） |
 | `mark` | `data-xh-chart-pattern` | patternOf(id) |
-| `mark` | `data-xh-chart-scale` | 'sequential' \| undefined |
-| `mark` | `data-xh-chart-slot` | undefined \| String(spec.slot) |
+| `mark` | `data-xh-chart-scale` | 'sequential'（条件成立时才出现） |
+| `mark` | `data-xh-chart-slot` | 数值（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

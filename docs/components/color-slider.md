@@ -202,11 +202,11 @@ orientation 竖排时渐变自下而上；禁用时标签换禁用前景、颜�
 | --- | --- | --- |
 | `thumb` | `aria-disabled` | 'true' \| 'false' |
 | `thumb` | `aria-label` | props.ariaLabel |
-| `thumb` | `aria-labelledby` | `label` 部件的 id \| undefined |
-| `thumb` | `aria-orientation` | props.orientation |
-| `thumb` | `aria-valuemax` | String(range.max) |
-| `thumb` | `aria-valuemin` | String(range.min) |
-| `thumb` | `aria-valuenow` | String(channelValue) |
+| `thumb` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
+| `thumb` | `aria-orientation` | 'horizontal' \| 'vertical' |
+| `thumb` | `aria-valuemax` | 数值 |
+| `thumb` | `aria-valuemin` | 数值 |
+| `thumb` | `aria-valuenow` | 数值 |
 | `thumb` | `aria-valuetext` | label.valueText(channel, channelValue) |
 | `thumb` | `role` | 'slider' |
 | `value-text` | `aria-hidden` | 'true' |
@@ -225,43 +225,43 @@ orientation 竖排时渐变自下而上；禁用时标签换禁用前景、颜�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-channel` | colorToChannel(prop('channel')) |
+| `root` | `data-channel` | 'alpha' \| 'hue' \| 'saturation' \| 'brightness' \| 'red' \| 'green' \| 'blue' |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-dragging` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
-| `root` | `data-orientation` | props.orientation |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-value` | context.get('value') |
-| `label` | `data-channel` | colorToChannel(prop('channel')) |
+| `label` | `data-channel` | 'alpha' \| 'hue' \| 'saturation' \| 'brightness' \| 'red' \| 'green' \| 'blue' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `label` | `data-dragging` | ''（条件成立时才出现） |
 | `label` | `data-invalid` | ''（条件成立时才出现） |
-| `label` | `data-orientation` | props.orientation |
+| `label` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `label` | `data-readonly` | ''（条件成立时才出现） |
-| `control` | `data-channel` | colorToChannel(prop('channel')) |
+| `control` | `data-channel` | 'alpha' \| 'hue' \| 'saturation' \| 'brightness' \| 'red' \| 'green' \| 'blue' |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-dragging` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
-| `control` | `data-orientation` | props.orientation |
+| `control` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
-| `track` | `data-channel` | colorToChannel(prop('channel')) |
+| `track` | `data-channel` | 'alpha' \| 'hue' \| 'saturation' \| 'brightness' \| 'red' \| 'green' \| 'blue' |
 | `track` | `data-disabled` | ''（条件成立时才出现） |
 | `track` | `data-dragging` | ''（条件成立时才出现） |
 | `track` | `data-invalid` | ''（条件成立时才出现） |
-| `track` | `data-orientation` | props.orientation |
+| `track` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `track` | `data-readonly` | ''（条件成立时才出现） |
-| `thumb` | `data-channel` | colorToChannel(prop('channel')) |
+| `thumb` | `data-channel` | 'alpha' \| 'hue' \| 'saturation' \| 'brightness' \| 'red' \| 'green' \| 'blue' |
 | `thumb` | `data-disabled` | ''（条件成立时才出现） |
 | `thumb` | `data-dragging` | ''（条件成立时才出现） |
 | `thumb` | `data-invalid` | ''（条件成立时才出现） |
-| `thumb` | `data-orientation` | props.orientation |
+| `thumb` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `thumb` | `data-readonly` | ''（条件成立时才出现） |
-| `value-text` | `data-channel` | colorToChannel(prop('channel')) |
+| `value-text` | `data-channel` | 'alpha' \| 'hue' \| 'saturation' \| 'brightness' \| 'red' \| 'green' \| 'blue' |
 | `value-text` | `data-disabled` | ''（条件成立时才出现） |
 | `value-text` | `data-dragging` | ''（条件成立时才出现） |
 | `value-text` | `data-invalid` | ''（条件成立时才出现） |
-| `value-text` | `data-orientation` | props.orientation |
+| `value-text` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `value-text` | `data-readonly` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->

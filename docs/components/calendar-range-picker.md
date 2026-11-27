@@ -238,9 +238,9 @@ activeIndex=1 时起点当锚：点在起点之后只改终点，点在起点之
 | `week-number` | `role` | 'rowheader' |
 | `cell` | `aria-selected` | 'true' \| 'false' |
 | `cell` | `role` | 'gridcell' |
-| `cell-trigger` | `aria-description` | translations.finishRangeSelectionPrompt \| translations.startRangeSelectionPrompt \| undefined |
+| `cell-trigger` | `aria-description` | translations.finishRangeSelectionPrompt \| translations.startRangeSelectionPrompt（条件成立时才出现） |
 | `cell-trigger` | `aria-disabled` | 'true' \| 'false' |
-| `cell-trigger` | `aria-invalid` | 'true' \| undefined |
+| `cell-trigger` | `aria-invalid` | 'true'（条件成立时才出现） |
 | `cell-trigger` | `aria-label` | frame.dateLabel(state.date, period) |
 | `cell-trigger` | `role` | 'button' |
 
@@ -289,21 +289,21 @@ activeIndex=1 时起点当锚：点在起点之后只改终点，点在起点之
 | `next-year-trigger` | `data-xh-action-profile` | 'icon' |
 | `next-year-trigger` | `data-xh-action-size` | 'xs' |
 | `next-year-trigger` | `data-xh-action-variant` | 'ghost' |
-| `heading` | `data-index` | frame.panelOf(panel).index |
-| `heading` | `data-view` | view |
+| `heading` | `data-index` | 数值 |
+| `heading` | `data-view` | 'year' \| 'quarter' \| 'month' \| 'week' \| 'day' |
 | `heading-year-trigger` | `data-disabled` | ''（条件成立时才出现） |
-| `heading-year-trigger` | `data-index` | frame.panelOf(panel).index |
+| `heading-year-trigger` | `data-index` | 数值 |
 | `heading-year-trigger` | `data-pressed` | ''（条件成立时才出现） |
-| `heading-year-trigger` | `data-view` | view |
+| `heading-year-trigger` | `data-view` | 'year' \| 'quarter' \| 'month' \| 'week' \| 'day' |
 | `heading-year-trigger` | `data-xh-action-control` | '' |
 | `heading-year-trigger` | `data-xh-action-display` | 'always' |
 | `heading-year-trigger` | `data-xh-action-profile` | 'text' |
 | `heading-year-trigger` | `data-xh-action-size` | 'xs' |
 | `heading-year-trigger` | `data-xh-action-variant` | 'ghost' |
 | `heading-month-trigger` | `data-disabled` | ''（条件成立时才出现） |
-| `heading-month-trigger` | `data-index` | frame.panelOf(panel).index |
+| `heading-month-trigger` | `data-index` | 数值 |
 | `heading-month-trigger` | `data-pressed` | ''（条件成立时才出现） |
-| `heading-month-trigger` | `data-view` | view |
+| `heading-month-trigger` | `data-view` | 'year' \| 'quarter' \| 'month' \| 'week' \| 'day' |
 | `heading-month-trigger` | `data-xh-action-control` | '' |
 | `heading-month-trigger` | `data-xh-action-display` | 'always' |
 | `heading-month-trigger` | `data-xh-action-profile` | 'text' |
@@ -311,10 +311,10 @@ activeIndex=1 时起点当锚：点在起点之后只改终点，点在起点之
 | `heading-month-trigger` | `data-xh-action-variant` | 'ghost' |
 | `grid` | `data-disabled` | ''（条件成立时才出现） |
 | `grid` | `data-dragging` | ''（条件成立时才出现） |
-| `grid` | `data-index` | frame.panelOf(panel).index |
+| `grid` | `data-index` | 数值 |
 | `grid` | `data-readonly` | ''（条件成立时才出现） |
-| `grid` | `data-view` | view |
-| `week-row` | `data-view` | view |
+| `grid` | `data-view` | 'year' \| 'quarter' \| 'month' \| 'week' \| 'day' |
+| `week-row` | `data-view` | 'year' \| 'quarter' \| 'month' \| 'week' \| 'day' |
 | `cell` | `data-disabled` | ''（条件成立时才出现） |
 | `cell` | `data-focus` | ''（条件成立时才出现） |
 | `cell` | `data-in-range` | ''（条件成立时才出现） |
@@ -325,7 +325,7 @@ activeIndex=1 时起点当锚：点在起点之后只改终点，点在起点之
 | `cell` | `data-range-start` | ''（条件成立时才出现） |
 | `cell` | `data-selected` | ''（条件成立时才出现） |
 | `cell` | `data-today` | ''（条件成立时才出现） |
-| `cell` | `data-view` | view |
+| `cell` | `data-view` | 'year' \| 'quarter' \| 'month' \| 'week' \| 'day' |
 | `cell-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `cell-trigger` | `data-focus` | ''（条件成立时才出现） |
 | `cell-trigger` | `data-in-range` | ''（条件成立时才出现） |
@@ -337,7 +337,7 @@ activeIndex=1 时起点当锚：点在起点之后只改终点，点在起点之
 | `cell-trigger` | `data-range-start` | ''（条件成立时才出现） |
 | `cell-trigger` | `data-selected` | ''（条件成立时才出现） |
 | `cell-trigger` | `data-today` | ''（条件成立时才出现） |
-| `cell-trigger` | `data-view` | view |
+| `cell-trigger` | `data-view` | 'year' \| 'quarter' \| 'month' \| 'week' \| 'day' |
 | `cell-trigger` | `data-xh-action-control` | '' |
 | `cell-trigger` | `data-xh-action-display` | 'always' |
 | `cell-trigger` | `data-xh-action-profile` | 'text' |

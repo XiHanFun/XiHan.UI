@@ -141,7 +141,7 @@ position="middle" 把单行文字的省略号收在中间，文件名的开头�
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | 'open' \| 'closed' \| undefined |
+| `root` | 'open' \| 'closed'（条件成立时才出现） |
 | `trigger` | 'open' \| 'closed' |
 
 以下名称仅用于内部状态机。
@@ -201,12 +201,12 @@ position="middle" 把单行文字的省略号收在中间，文件名的开头�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-expandable` | ''（条件成立时才出现） |
-| `root` | `data-lines` | String(lines) |
-| `root` | `data-middle-text` | context.get('text') \| undefined |
+| `root` | `data-lines` | 数值 |
+| `root` | `data-middle-text` | context.get('text')（条件成立时才出现） |
 | `root` | `data-multiline` | ''（条件成立时才出现） |
 | `root` | `data-overflowing` | ''（条件成立时才出现） |
-| `root` | `data-position` | 'middle' \| undefined |
-| `root` | `data-state` | 'open' \| 'closed' \| undefined |
+| `root` | `data-position` | 'middle'（条件成立时才出现） |
+| `root` | `data-state` | 'open' \| 'closed'（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-xh-action-control` | '' |
 | `trigger` | `data-xh-action-display` | 'always' |

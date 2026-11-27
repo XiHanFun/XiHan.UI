@@ -174,9 +174,9 @@ direction="up" 画成金字塔：第一阶段在最下面，往上逐级收窄�
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | 'error' \| undefined |
+| `root` | 'error'（条件成立时才出现） |
 | `tooltip` | 'visible' \| 'hidden' |
-| `empty` | 'loading' \| undefined |
+| `empty` | 'loading'（条件成立时才出现） |
 
 以下名称仅用于内部状态机。
 
@@ -243,7 +243,7 @@ direction="up" 画成金字塔：第一阶段在最下面，往上逐级收窄�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-busy` | 'true' \| undefined |
+| `root` | `aria-busy` | 'true'（条件成立时才出现） |
 | `plot` | `aria-describedby` | `summary` 部件的 id |
 | `plot` | `aria-roledescription` | translations.chartRoleDescription |
 | `plot` | `role` | 'graphics-document' |
@@ -273,27 +273,27 @@ direction="up" 画成金字塔：第一阶段在最下面，往上逐级收窄�
 | --- | --- | --- |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-palette` | props.palette |
-| `root` | `data-state` | 'error' \| undefined |
+| `root` | `data-state` | 'error'（条件成立时才出现） |
 | `root` | `data-xh-chart-part` | 'root' |
 | `caption` | `data-xh-chart-part` | 'caption' |
 | `viewport` | `data-xh-chart-part` | 'viewport' |
 | `plot` | `data-xh-chart-part` | 'plot' |
-| `tooltip` | `data-placement` | 'top' \| 'bottom'-'right' \| 'left' \| undefined |
+| `tooltip` | `data-placement` | 'top' \| 'bottom'-'right' \| 'left'（条件成立时才出现） |
 | `tooltip` | `data-state` | 'visible' \| 'hidden' |
 | `tooltip` | `data-xh-chart-part` | 'tooltip' |
 | `tooltip-header` | `data-xh-chart-part` | 'tooltip-header' |
 | `tooltip-row` | `data-xh-chart-part` | 'tooltip-row' |
-| `tooltip-swatch` | `data-stop` | stop?.seg |
+| `tooltip-swatch` | `data-stop` | 'low' \| 'high'（条件成立时才出现） |
 | `tooltip-swatch` | `data-xh-chart-part` | 'tooltip-swatch' |
 | `tooltip-value` | `data-xh-chart-part` | 'tooltip-value' |
 | `tooltip-name` | `data-xh-chart-part` | 'tooltip-name' |
 | `empty` | `data-loading` | ''（条件成立时才出现） |
-| `empty` | `data-state` | 'loading' \| undefined |
+| `empty` | `data-state` | 'loading'（条件成立时才出现） |
 | `empty` | `data-xh-chart-part` | 'empty' |
 | `empty` | `data-xh-loading-ring` | '' |
 | `mark` | `data-dimmed` | ''（条件成立时才出现） |
-| `mark` | `data-placement` | 'inside' \| 'outside' \| undefined |
-| `mark` | `data-xh-chart-part` | mark.part \| undefined |
+| `mark` | `data-placement` | 'inside' \| 'outside'（条件成立时才出现） |
+| `mark` | `data-xh-chart-part` | 'focus-ring'（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

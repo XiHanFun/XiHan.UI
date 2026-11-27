@@ -206,7 +206,7 @@
 | `swatch` | `aria-hidden` | 'true' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-label` | props.ariaLabel |
-| `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `input` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `input` | `aria-readonly` | 'true' \| 'false' |
 | `input` | `aria-required` | 'true' \| 'false' |
 | `clear-trigger` | `aria-label` | label.clearTrigger |
@@ -232,14 +232,14 @@
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-editing` | ''（条件成立时才出现） |
 | `control` | `data-empty` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
-| `control` | `data-variant` | props.variant |
+| `control` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |

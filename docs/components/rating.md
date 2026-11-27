@@ -221,7 +221,7 @@ clearable 默认开启：点击当前档位清回未评分，键盘在最低档�
 | `control` | `aria-disabled` | 'true' \| 'false' |
 | `control` | `aria-invalid` | 'true' \| 'false' |
 | `control` | `aria-label` | props.ariaLabel |
-| `control` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `control` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `control` | `aria-orientation` | 'horizontal' |
 | `control` | `aria-readonly` | 'true' \| 'false' |
 | `control` | `aria-required` | 'true' \| 'false' |
@@ -229,9 +229,9 @@ clearable 默认开启：点击当前档位清回未评分，键盘在最低档�
 | `value-text` | `aria-hidden` | 'true' |
 | `item` | `aria-checked` | 'true' \| 'false' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
-| `item` | `aria-label` | undefined \| itemLabel(item.value, count) |
-| `item` | `aria-posinset` | item.value |
-| `item` | `aria-setsize` | ratingMax(prop('count')) |
+| `item` | `aria-label` | itemLabel(item.value, count)（条件成立时才出现） |
+| `item` | `aria-posinset` | 数值 |
+| `item` | `aria-setsize` | 数值 |
 | `item` | `role` | 'radio' |
 | `hidden-input` | `aria-hidden` | 'true' |
 

@@ -194,17 +194,17 @@
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'visible' \| 'hidden' |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' \| 'solid' |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'visible' \| 'hidden' |
 | `trigger` | `data-xh-action-control` | '' |
 | `trigger` | `data-xh-action-display` | 'always' |
 | `trigger` | `data-xh-action-profile` | 'floating' |
 | `trigger` | `data-xh-action-size` | props.size |
-| `trigger` | `data-xh-action-variant` | props.variant |
+| `trigger` | `data-xh-action-variant` | 'outline' \| 'subtle' \| 'ghost' \| 'solid' |
 | `trigger` | `data-xh-ink-surface` | ''（条件成立时才出现） |
 | `trigger` | `data-xh-liquid` | '' |
-| `trigger` | `data-xh-material` | 'frosted' \| undefined |
+| `trigger` | `data-xh-material` | 'frosted'（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

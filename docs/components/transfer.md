@@ -229,7 +229,7 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `item-description` | 'checked' \| 'unchecked' |
 | `item-suffix` | 'checked' \| 'unchecked' |
 | `item-checkbox` | 'checked' \| 'unchecked' |
-| `select-all-trigger` | itemState(item) |
+| `select-all-trigger` | 'checked' \| 'unchecked' \| 'indeterminate' |
 
 以下名称仅用于内部状态机。
 
@@ -322,17 +322,17 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-label` | props.ariaLabel |
-| `root` | `role` | 'group' \| undefined |
+| `root` | `role` | 'group'（条件成立时才出现） |
 | `hidden-input` | `aria-hidden` | 'true' |
 | `search` | `aria-controls` | listId[panel.side] |
 | `search` | `aria-labelledby` | titleId[panel.side] |
-| `list` | `aria-busy` | 'true' \| undefined |
+| `list` | `aria-busy` | 'true'（条件成立时才出现） |
 | `list` | `aria-disabled` | 'true' \| 'false' |
 | `list` | `aria-invalid` | 'true' \| 'false' |
 | `list` | `aria-labelledby` | titleId[panel.side] |
 | `list` | `aria-multiselectable` | 'true' \| 'false' |
 | `list` | `aria-readonly` | 'true' \| 'false' |
-| `list` | `aria-required` | 'true' \| 'false' \| undefined |
+| `list` | `aria-required` | 'true' \| 'false'（条件成立时才出现） |
 | `list` | `role` | 'listbox' |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
 | `group` | `role` | 'group' |
@@ -371,60 +371,60 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `panel-header` | `data-disabled` | ''（条件成立时才出现） |
-| `panel-header` | `data-side` | panel.side |
-| `panel-title` | `data-side` | panel.side |
-| `panel-count` | `data-checked-count` | String(checked[panel.side].length) |
-| `panel-count` | `data-count` | String(filtered[panel.side].length) |
-| `panel-count` | `data-side` | panel.side |
-| `search` | `data-side` | panel.side |
+| `panel-header` | `data-side` | 'source' \| 'target' |
+| `panel-title` | `data-side` | 'source' \| 'target' |
+| `panel-count` | `data-checked-count` | 数值 |
+| `panel-count` | `data-count` | 数值 |
+| `panel-count` | `data-side` | 'source' \| 'target' |
+| `search` | `data-side` | 'source' \| 'target' |
 | `search` | `data-xh-field-input` | '' |
 | `list` | `data-disabled` | ''（条件成立时才出现） |
 | `list` | `data-instant` | ''（条件成立时才出现） |
 | `list` | `data-invalid` | ''（条件成立时才出现） |
 | `list` | `data-readonly` | ''（条件成立时才出现） |
-| `list` | `data-side` | panel.side |
+| `list` | `data-side` | 'source' \| 'target' |
 | `list` | `data-xh-virtualized` | ''（条件成立时才出现） |
 | `group` | `data-disabled` | ''（条件成立时才出现） |
-| `group` | `data-side` | group.side |
+| `group` | `data-side` | 'source' \| 'target' |
 | `group-label` | `data-disabled` | ''（条件成立时才出现） |
-| `group-label` | `data-side` | group.side |
+| `group-label` | `data-side` | 'source' \| 'target' |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
-| `item` | `data-side` | item.side |
+| `item` | `data-side` | 'source' \| 'target' |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
-| `item` | `data-tone` | index.get(v)?.tone |
+| `item` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 | `item` | `data-xh-collection-context` | 'page' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
 | `item-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-text` | `data-highlighted` | ''（条件成立时才出现） |
-| `item-text` | `data-side` | item.side |
+| `item-text` | `data-side` | 'source' \| 'target' |
 | `item-text` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-xh-collection-slot` | 'text' |
 | `item-description` | `data-disabled` | ''（条件成立时才出现） |
 | `item-description` | `data-highlighted` | ''（条件成立时才出现） |
-| `item-description` | `data-side` | item.side |
+| `item-description` | `data-side` | 'source' \| 'target' |
 | `item-description` | `data-state` | 'checked' \| 'unchecked' |
 | `item-description` | `data-xh-collection-slot` | 'description' |
 | `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
 | `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
-| `item-suffix` | `data-side` | item.side |
+| `item-suffix` | `data-side` | 'source' \| 'target' |
 | `item-suffix` | `data-state` | 'checked' \| 'unchecked' |
 | `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `item-checkbox` | `data-disabled` | ''（条件成立时才出现） |
 | `item-checkbox` | `data-highlighted` | ''（条件成立时才出现） |
-| `item-checkbox` | `data-side` | item.side |
+| `item-checkbox` | `data-side` | 'source' \| 'target' |
 | `item-checkbox` | `data-state` | 'checked' \| 'unchecked' |
 | `item-checkbox` | `data-xh-check-mark` | state['data-state'] |
 | `item-checkbox` | `data-xh-check-mark-profile` | 'box' |
 | `item-checkbox` | `data-xh-collection-slot` | 'prefix' |
 | `empty` | `data-disabled` | ''（条件成立时才出现） |
-| `empty` | `data-side` | panel.side |
+| `empty` | `data-side` | 'source' \| 'target' |
 | `empty` | `data-xh-placeholder` | 'empty' |
 | `loading` | `data-disabled` | ''（条件成立时才出现） |
 | `loading` | `data-loading` | ''（条件成立时才出现） |
-| `loading` | `data-side` | panel.side |
+| `loading` | `data-side` | 'source' \| 'target' |
 | `loading` | `data-xh-loading-ring` | '' |
 | `loading` | `data-xh-placeholder` | 'loading' |
 | `to-target-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -443,17 +443,17 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `to-source-trigger` | `data-xh-action-variant` | 'subtle' |
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-pressed` | ''（条件成立时才出现） |
-| `select-all-trigger` | `data-side` | panel.side |
-| `select-all-trigger` | `data-state` | itemState(item) |
+| `select-all-trigger` | `data-side` | 'source' \| 'target' |
+| `select-all-trigger` | `data-state` | 'checked' \| 'unchecked' \| 'indeterminate' |
 | `select-all-trigger` | `data-xh-action-control` | '' |
 | `select-all-trigger` | `data-xh-action-display` | 'always' |
 | `select-all-trigger` | `data-xh-action-profile` | 'text' |
 | `select-all-trigger` | `data-xh-action-size` | 'xs' |
 | `select-all-trigger` | `data-xh-action-variant` | 'ghost' |
-| `select-all-trigger` | `data-xh-check-mark` | itemState(item) |
+| `select-all-trigger` | `data-xh-check-mark` | 'checked' \| 'unchecked' \| 'indeterminate' |
 | `select-all-trigger` | `data-xh-check-mark-profile` | 'row' |
 | `panel` | `data-disabled` | ''（条件成立时才出现） |
-| `panel` | `data-side` | panel.side |
+| `panel` | `data-side` | 'source' \| 'target' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

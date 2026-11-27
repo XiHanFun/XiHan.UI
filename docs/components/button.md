@@ -177,8 +177,8 @@ variant 设置按钮外观，size 分小、中、大三档，disabled 标出暂�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-busy` | 'true' \| undefined |
-| `root` | `aria-disabled` | 'true' \| undefined |
+| `root` | `aria-busy` | 'true'（条件成立时才出现） |
+| `root` | `aria-disabled` | 'true'（条件成立时才出现） |
 | `indicator` | `aria-hidden` | 'true' |
 | `prefix` | `aria-hidden` | 'true' |
 | `suffix` | `aria-hidden` | 'true' |
@@ -200,14 +200,14 @@ variant 设置按钮外观，size 分小、中、大三档，disabled 标出暂�
 | `root` | `data-icon-only` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-pressed` | ''（条件成立时才出现） |
-| `root` | `data-size` | props.size |
+| `root` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' \| 'solid' \| 'dashed' \| 'link' |
 | `root` | `data-xh-action-control` | '' |
 | `root` | `data-xh-action-display` | 'always' |
 | `root` | `data-xh-action-profile` | 'icon' \| 'text' |
-| `root` | `data-xh-action-size` | props.size |
-| `root` | `data-xh-action-variant` | props.variant |
+| `root` | `data-xh-action-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
+| `root` | `data-xh-action-variant` | 'outline' \| 'subtle' \| 'ghost' \| 'solid' \| 'dashed' \| 'link' |
 | `root` | `data-xh-ink-surface` | ''（条件成立时才出现） |
 | `indicator` | `data-loading` | ''（条件成立时才出现） |
 | `indicator` | `data-xh-loading-ring` | 'overlay' |

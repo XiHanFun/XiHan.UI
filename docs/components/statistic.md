@@ -175,9 +175,9 @@ formatOptions 原样交给 Intl.NumberFormat：货币、百分比与紧凑记数
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-size` | props.size |
-| `root` | `data-tone` | props.tone |
-| `trend` | `data-trend` | props.trend |
+| `root` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
+| `root` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
+| `trend` | `data-trend` | 'flat' \| 'up' \| 'down'（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

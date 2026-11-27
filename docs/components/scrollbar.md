@@ -210,15 +210,15 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-hidden` | undefined \| 'true' |
-| `thumb` | `aria-controls` | props.controls \| undefined |
-| `thumb` | `aria-disabled` | 'true' \| undefined |
-| `thumb` | `aria-label` | translations.thumb \| undefined |
-| `thumb` | `aria-orientation` | props.orientation \| undefined |
-| `thumb` | `aria-valuemax` | Math.round(max) \| undefined |
-| `thumb` | `aria-valuemin` | 0 \| undefined |
-| `thumb` | `aria-valuenow` | Math.round(metrics.scroll) \| undefined |
-| `thumb` | `role` | 'scrollbar' \| undefined |
+| `root` | `aria-hidden` | 'true'（条件成立时才出现） |
+| `thumb` | `aria-controls` | props.controls（条件成立时才出现） |
+| `thumb` | `aria-disabled` | 'true'（条件成立时才出现） |
+| `thumb` | `aria-label` | translations.thumb（条件成立时才出现） |
+| `thumb` | `aria-orientation` | 'horizontal' \| 'vertical'（条件成立时才出现） |
+| `thumb` | `aria-valuemax` | 数值（条件成立时才出现） |
+| `thumb` | `aria-valuemin` | 0（条件成立时才出现） |
+| `thumb` | `aria-valuenow` | 数值（条件成立时才出现） |
+| `thumb` | `role` | 'scrollbar'（条件成立时才出现） |
 
 ## 样式参考
 
@@ -232,22 +232,22 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-anchor` | 'layer' \| undefined |
+| `root` | `data-anchor` | 'layer'（条件成立时才出现） |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-dragging` | ''（条件成立时才出现） |
 | `root` | `data-gutter` | ''（条件成立时才出现） |
 | `root` | `data-native` | ''（条件成立时才出现） |
-| `root` | `data-orientation` | props.orientation |
-| `root` | `data-reveal-mode` | props.revealMode |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical' |
+| `root` | `data-reveal-mode` | 'auto' \| 'always' \| 'scroll' \| 'hover' \| 'scroll-hover' |
 | `root` | `data-scrolling` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'visible' \| 'hidden' |
 | `track` | `data-disabled` | ''（条件成立时才出现） |
-| `track` | `data-orientation` | props.orientation |
+| `track` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `thumb` | `data-disabled` | ''（条件成立时才出现） |
 | `thumb` | `data-dragging` | ''（条件成立时才出现） |
-| `thumb` | `data-orientation` | props.orientation |
-| `corner` | `data-orientation` | props.orientation |
+| `thumb` | `data-orientation` | 'horizontal' \| 'vertical' |
+| `corner` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `corner` | `data-size` | props.size |
 | `corner` | `data-state` | 'visible' \| 'hidden' |
 

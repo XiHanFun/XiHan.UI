@@ -210,9 +210,9 @@ gs1 开启后最前面放置 FNC1，读码器把内容视为 GS1 元素串：变
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-hidden` | 'true' \| undefined |
-| `root` | `aria-label` | undefined \| props.label |
-| `root` | `role` | undefined \| 'img' |
+| `root` | `aria-hidden` | 'true'（条件成立时才出现） |
+| `root` | `aria-label` | props.label（条件成立时才出现） |
+| `root` | `role` | 'img'（条件成立时才出现） |
 
 ## 样式参考
 
@@ -226,13 +226,13 @@ gs1 开启后最前面放置 FNC1，读码器把内容视为 GS1 元素串：变
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-columns` | undefined \| String(columns) |
-| `root` | `data-format` | props.format |
-| `root` | `data-level` | 'M' \| String(pdfLevel) \| undefined |
+| `root` | `data-columns` | 数值（条件成立时才出现） |
+| `root` | `data-format` | 'qr' \| 'data-matrix' \| 'pdf417' \| 'aztec'（条件成立时才出现） |
+| `root` | `data-level` | 'M' \| 0 \| 1 \| 2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8（条件成立时才出现） |
 | `root` | `data-logo` | ''（条件成立时才出现） |
-| `root` | `data-rows` | undefined \| String(rows) |
+| `root` | `data-rows` | 数值（条件成立时才出现） |
 | `root` | `data-state` | 'empty' |
-| `root` | `data-version` | undefined \| String(version) |
+| `root` | `data-version` | 数值（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

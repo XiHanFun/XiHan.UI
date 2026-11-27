@@ -195,12 +195,12 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | 'answering' \| 'submitted' |
+| `root` | 'submitted' \| 'answering' |
 | `item` | 'checked' \| 'unchecked' |
 | `item-indicator` | 'checked' \| 'unchecked' |
 | `item-text` | 'checked' \| 'unchecked' |
 | `item-description` | 'checked' \| 'unchecked' |
-| `result` | 'answering' \| 'submitted' |
+| `result` | 'submitted' \| 'answering' |
 
 以下名称仅用于内部状态机。
 
@@ -287,13 +287,13 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `question` | `aria-hidden` | undefined \| 'true' |
-| `question` | `aria-label` | undefined \| translations.prompt |
-| `question` | `aria-labelledby` | `prompt` 部件的 id \| undefined |
+| `question` | `aria-hidden` | 'true'（条件成立时才出现） |
+| `question` | `aria-label` | translations.prompt（条件成立时才出现） |
+| `question` | `aria-labelledby` | `prompt` 部件的 id（条件成立时才出现） |
 | `question` | `role` | 'group' |
-| `group` | `aria-describedby` | undefined \| `description` 部件的 id |
-| `group` | `aria-label` | undefined \| translations.options |
-| `group` | `aria-labelledby` | `prompt` 部件的 id \| undefined |
+| `group` | `aria-describedby` | `description` 部件的 id（条件成立时才出现） |
+| `group` | `aria-label` | translations.options（条件成立时才出现） |
+| `group` | `aria-labelledby` | `prompt` 部件的 id（条件成立时才出现） |
 | `group` | `role` | 'radiogroup' \| 'group' |
 | `item` | `aria-checked` | 'true' \| 'false' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
@@ -331,7 +331,7 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
-| `root` | `data-state` | 'answering' \| 'submitted' |
+| `root` | `data-state` | 'submitted' \| 'answering' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `question` | `data-current` | ''（条件成立时才出现） |
@@ -344,12 +344,12 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `item` | `data-xh-action-control` | '' |
 | `item` | `data-xh-action-display` | 'always' |
 | `item` | `data-xh-action-profile` | 'row' |
-| `item` | `data-xh-action-size` | props.size |
+| `item` | `data-xh-action-size` | 'sm' \| 'md' \| 'lg' |
 | `item` | `data-xh-action-variant` | 'ghost' |
 | `item-indicator` | `data-select-mode` | 'single' \| 'multiple' |
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
-| `item-indicator` | `data-xh-check-mark` | undefined \| 'checked' \| 'unchecked' |
-| `item-indicator` | `data-xh-check-mark-profile` | undefined \| 'box' |
+| `item-indicator` | `data-xh-check-mark` | 'checked' \| 'unchecked'（条件成立时才出现） |
+| `item-indicator` | `data-xh-check-mark-profile` | 'box'（条件成立时才出现） |
 | `item-text` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-value` | item.value |
 | `item-description` | `data-state` | 'checked' \| 'unchecked' |
@@ -373,7 +373,7 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `skip-trigger` | `data-xh-action-control` | '' |
 | `skip-trigger` | `data-xh-action-display` | 'always' |
 | `skip-trigger` | `data-xh-action-profile` | 'text' |
-| `skip-trigger` | `data-xh-action-size` | props.size |
+| `skip-trigger` | `data-xh-action-size` | 'sm' \| 'md' \| 'lg' |
 | `skip-trigger` | `data-xh-action-variant` | 'ghost' |
 | `submit-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `submit-trigger` | `data-mode` | 'send' \| 'continue' |
@@ -382,11 +382,11 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `submit-trigger` | `data-xh-action-control` | '' |
 | `submit-trigger` | `data-xh-action-display` | 'always' |
 | `submit-trigger` | `data-xh-action-profile` | 'text' |
-| `submit-trigger` | `data-xh-action-size` | props.size |
+| `submit-trigger` | `data-xh-action-size` | 'sm' \| 'md' \| 'lg' |
 | `submit-trigger` | `data-xh-action-variant` | 'solid' |
 | `submit-trigger` | `data-xh-ink-surface` | '' |
-| `result` | `data-state` | 'answering' \| 'submitted' |
-| `result` | `data-tone` | 'success' \| undefined |
+| `result` | `data-state` | 'submitted' \| 'answering' |
+| `result` | `data-tone` | 'success'（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

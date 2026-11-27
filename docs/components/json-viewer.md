@@ -323,14 +323,14 @@ tools 打开内建工具条：树档有展开全部 / 收起全部，原文档�
 | --- | --- | --- |
 | `tree` | `aria-label` | label.tree |
 | `tree` | `role` | 'tree' |
-| `item` | `aria-level` | node?.level |
-| `item` | `aria-posinset` | node?.posInSet |
-| `item` | `aria-setsize` | node?.setSize |
+| `item` | `aria-level` | 数值（条件成立时才出现） |
+| `item` | `aria-posinset` | 数值（条件成立时才出现） |
+| `item` | `aria-setsize` | 数值（条件成立时才出现） |
 | `item` | `role` | 'treeitem' |
 | `branch` | `aria-expanded` | 'true' \| 'false' |
-| `branch` | `aria-level` | node?.level |
-| `branch` | `aria-posinset` | node?.posInSet |
-| `branch` | `aria-setsize` | node?.setSize |
+| `branch` | `aria-level` | 数值（条件成立时才出现） |
+| `branch` | `aria-posinset` | 数值（条件成立时才出现） |
+| `branch` | `aria-setsize` | 数值（条件成立时才出现） |
 | `branch` | `role` | 'treeitem' |
 | `branch-trigger` | `aria-hidden` | 'true' |
 | `branch-indicator` | `aria-hidden` | 'true' |
@@ -369,33 +369,33 @@ tools 打开内建工具条：树档有展开全部 / 收起全部，原文档�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
-| `root` | `data-variant` | props.variant |
-| `root` | `data-view` | context.get('view') |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
+| `root` | `data-view` | 'tree' \| 'text' |
 | `item` | `data-circular` | ''（条件成立时才出现） |
 | `item` | `data-current` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-match` | ''（条件成立时才出现） |
 | `item` | `data-truncated` | ''（条件成立时才出现） |
-| `item` | `data-value-type` | node?.type |
+| `item` | `data-value-type` | 'string' \| 'number' \| 'boolean' \| 'object' \| 'null' \| 'array'（条件成立时才出现） |
 | `item-key` | `data-circular` | ''（条件成立时才出现） |
 | `item-key` | `data-current` | ''（条件成立时才出现） |
 | `item-key` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-key` | `data-match` | ''（条件成立时才出现） |
 | `item-key` | `data-truncated` | ''（条件成立时才出现） |
-| `item-key` | `data-value-type` | node?.type |
+| `item-key` | `data-value-type` | 'string' \| 'number' \| 'boolean' \| 'object' \| 'null' \| 'array'（条件成立时才出现） |
 | `item-value` | `data-circular` | ''（条件成立时才出现） |
 | `item-value` | `data-current` | ''（条件成立时才出现） |
 | `item-value` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-value` | `data-match` | ''（条件成立时才出现） |
 | `item-value` | `data-truncated` | ''（条件成立时才出现） |
-| `item-value` | `data-value-type` | node?.type |
+| `item-value` | `data-value-type` | 'string' \| 'number' \| 'boolean' \| 'object' \| 'null' \| 'array'（条件成立时才出现） |
 | `branch` | `data-circular` | ''（条件成立时才出现） |
 | `branch` | `data-current` | ''（条件成立时才出现） |
 | `branch` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch` | `data-match` | ''（条件成立时才出现） |
 | `branch` | `data-state` | 'open' \| 'closed' |
 | `branch` | `data-truncated` | ''（条件成立时才出现） |
-| `branch` | `data-value-type` | node?.type |
+| `branch` | `data-value-type` | 'string' \| 'number' \| 'boolean' \| 'object' \| 'null' \| 'array'（条件成立时才出现） |
 | `branch-control` | `data-circular` | ''（条件成立时才出现） |
 | `branch-control` | `data-current` | ''（条件成立时才出现） |
 | `branch-control` | `data-highlighted` | ''（条件成立时才出现） |
@@ -403,52 +403,52 @@ tools 打开内建工具条：树档有展开全部 / 收起全部，原文档�
 | `branch-control` | `data-pressed` | ''（条件成立时才出现） |
 | `branch-control` | `data-state` | 'open' \| 'closed' |
 | `branch-control` | `data-truncated` | ''（条件成立时才出现） |
-| `branch-control` | `data-value-type` | node?.type |
+| `branch-control` | `data-value-type` | 'string' \| 'number' \| 'boolean' \| 'object' \| 'null' \| 'array'（条件成立时才出现） |
 | `branch-trigger` | `data-circular` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-current` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-match` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-state` | 'open' \| 'closed' |
 | `branch-trigger` | `data-truncated` | ''（条件成立时才出现） |
-| `branch-trigger` | `data-value-type` | node?.type |
+| `branch-trigger` | `data-value-type` | 'string' \| 'number' \| 'boolean' \| 'object' \| 'null' \| 'array'（条件成立时才出现） |
 | `branch-indicator` | `data-circular` | ''（条件成立时才出现） |
 | `branch-indicator` | `data-current` | ''（条件成立时才出现） |
 | `branch-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-indicator` | `data-match` | ''（条件成立时才出现） |
 | `branch-indicator` | `data-state` | 'open' \| 'closed' |
 | `branch-indicator` | `data-truncated` | ''（条件成立时才出现） |
-| `branch-indicator` | `data-value-type` | node?.type |
+| `branch-indicator` | `data-value-type` | 'string' \| 'number' \| 'boolean' \| 'object' \| 'null' \| 'array'（条件成立时才出现） |
 | `branch-text` | `data-circular` | ''（条件成立时才出现） |
 | `branch-text` | `data-current` | ''（条件成立时才出现） |
 | `branch-text` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-text` | `data-match` | ''（条件成立时才出现） |
 | `branch-text` | `data-state` | 'open' \| 'closed' |
 | `branch-text` | `data-truncated` | ''（条件成立时才出现） |
-| `branch-text` | `data-value-type` | node?.type |
+| `branch-text` | `data-value-type` | 'string' \| 'number' \| 'boolean' \| 'object' \| 'null' \| 'array'（条件成立时才出现） |
 | `branch-summary` | `data-circular` | ''（条件成立时才出现） |
 | `branch-summary` | `data-current` | ''（条件成立时才出现） |
 | `branch-summary` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-summary` | `data-match` | ''（条件成立时才出现） |
 | `branch-summary` | `data-state` | 'open' \| 'closed' |
 | `branch-summary` | `data-truncated` | ''（条件成立时才出现） |
-| `branch-summary` | `data-value-type` | node?.type |
+| `branch-summary` | `data-value-type` | 'string' \| 'number' \| 'boolean' \| 'object' \| 'null' \| 'array'（条件成立时才出现） |
 | `branch-content` | `data-circular` | ''（条件成立时才出现） |
 | `branch-content` | `data-current` | ''（条件成立时才出现） |
 | `branch-content` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-content` | `data-match` | ''（条件成立时才出现） |
 | `branch-content` | `data-state` | 'open' \| 'closed' |
 | `branch-content` | `data-truncated` | ''（条件成立时才出现） |
-| `branch-content` | `data-value-type` | node?.type |
+| `branch-content` | `data-value-type` | 'string' \| 'number' \| 'boolean' \| 'object' \| 'null' \| 'array'（条件成立时才出现） |
 | `preview` | `data-circular` | ''（条件成立时才出现） |
 | `preview` | `data-current` | ''（条件成立时才出现） |
 | `preview` | `data-highlighted` | ''（条件成立时才出现） |
 | `preview` | `data-match` | ''（条件成立时才出现） |
 | `preview` | `data-state` | 'open' \| 'closed' |
 | `preview` | `data-truncated` | ''（条件成立时才出现） |
-| `preview` | `data-value-type` | node?.type |
+| `preview` | `data-value-type` | 'string' \| 'number' \| 'boolean' \| 'object' \| 'null' \| 'array'（条件成立时才出现） |
 | `text` | `data-wrap` | ''（条件成立时才出现） |
-| `token` | `data-kind` | props.kind |
-| `toolbar` | `data-view` | context.get('view') |
+| `token` | `data-kind` | 'string' \| 'number' \| 'boolean' \| 'key' \| 'null' \| 'punctuation' |
+| `toolbar` | `data-view` | 'tree' \| 'text' |
 | `expand-trigger` | `data-state` | 'open' \| 'closed' |
 | `expand-trigger` | `data-xh-action-control` | '' |
 | `expand-trigger` | `data-xh-action-display` | 'always' |
@@ -468,7 +468,7 @@ tools 打开内建工具条：树档有展开全部 / 收起全部，原文档�
 | `copy-trigger` | `data-xh-action-profile` | 'icon' |
 | `copy-trigger` | `data-xh-action-size` | 'md' \| 'sm' |
 | `copy-trigger` | `data-xh-action-variant` | 'ghost' |
-| `view-trigger` | `data-view` | context.get('view') |
+| `view-trigger` | `data-view` | 'tree' \| 'text' |
 | `view-trigger` | `data-xh-action-control` | '' |
 | `view-trigger` | `data-xh-action-display` | 'always' |
 | `view-trigger` | `data-xh-action-profile` | 'icon' |

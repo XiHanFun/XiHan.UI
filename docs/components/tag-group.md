@@ -250,7 +250,7 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | `list` | `aria-disabled` | 'true' \| 'false' |
 | `list` | `aria-invalid` | 'true' \| 'false' |
 | `list` | `aria-label` | props.ariaLabel |
-| `list` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `list` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `list` | `aria-multiselectable` | 'true' \| 'false' |
 | `list` | `aria-readonly` | 'true' \| 'false' |
 | `list` | `role` | 'grid' |
@@ -258,7 +258,7 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | `item-indicator` | `aria-hidden` | 'true' |
 | `hidden-input` | `aria-hidden` | 'true' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
-| `item` | `aria-selected` | 'true' \| 'false' \| undefined |
+| `item` | `aria-selected` | 'true' \| 'false'（条件成立时才出现） |
 | `item` | `role` | 'row' |
 
 一排可移除的标签是“集合 + 每条自带动作”，在 ARIA 中只有表格语义能容纳：可聚焦的移除按钮不允许位于 `option` 等控件角色内，`gridcell` 允许。因此 `list` 是 `grid`、每个标签（[标签](./tag)的 `root`）承担 `row`、标签内的格是 `gridcell`；手写部件时 `cell` 这一层不能省略，使用 `collection` 时由组件铺开。
@@ -279,14 +279,14 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
-| `root` | `data-orientation` | props.orientation |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-required` | ''（条件成立时才出现） |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `list` | `data-disabled` | ''（条件成立时才出现） |
 | `list` | `data-instant` | ''（条件成立时才出现） |
 | `list` | `data-invalid` | ''（条件成立时才出现） |
-| `list` | `data-orientation` | props.orientation |
+| `list` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `list` | `data-required` | ''（条件成立时才出现） |
 | `cell` | `data-disabled` | ''（条件成立时才出现） |
 | `cell` | `data-highlighted` | ''（条件成立时才出现） |

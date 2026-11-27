@@ -149,9 +149,9 @@ tone 使用语义颜色；size 设置图标大小，weight 设置描边粗细
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-hidden` | 'true' \| undefined |
-| `root` | `aria-label` | props.label \| undefined |
-| `root` | `role` | undefined \| 'img' |
+| `root` | `aria-hidden` | 'true'（条件成立时才出现） |
+| `root` | `aria-label` | props.label（条件成立时才出现） |
+| `root` | `role` | 'img'（条件成立时才出现） |
 
 ## 样式参考
 
@@ -165,13 +165,13 @@ tone 使用语义颜色；size 设置图标大小，weight 设置描边粗细
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-flip` | props.flip |
-| `root` | `data-frame` | props.frame |
+| `root` | `data-flip` | 'horizontal' \| 'vertical' \| 'both'（条件成立时才出现） |
+| `root` | `data-frame` | 'outline' \| 'subtle' \| 'ghost' \| 'solid'（条件成立时才出现） |
 | `root` | `data-icon` | icon?.name |
 | `root` | `data-rotate` | rotateAttr(props.rotate) |
-| `root` | `data-size` | props.size |
-| `root` | `data-tone` | props.tone |
-| `root` | `data-weight` | props.weight |
+| `root` | `data-size` | 'sm' \| 'md' \| 'lg' \| 'text' \| 'xl' \| '2xl' \| '3xl' \| '4xl'（条件成立时才出现） |
+| `root` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
+| `root` | `data-weight` | 'light' \| 'regular' \| 'bold'（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

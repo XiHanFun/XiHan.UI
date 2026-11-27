@@ -206,7 +206,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照常触发�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-busy` | 'true' \| undefined |
+| `root` | `aria-busy` | 'true'（条件成立时才出现） |
 | `root` | `aria-checked` | 'true' \| 'false' |
 | `root` | `aria-invalid` | 'true' \| 'false' |
 | `root` | `aria-label` | props.ariaLabel |

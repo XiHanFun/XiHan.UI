@@ -280,16 +280,16 @@ fullscreen 让面板铺满视口：头尾定在原处，正文吃掉剩下的高
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
-| `content` | `aria-describedby` | `description` 部件的 id \| undefined |
-| `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-labelledby` | `title` 部件的 id \| undefined |
+| `content` | `aria-describedby` | `description` 部件的 id（条件成立时才出现） |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
+| `content` | `aria-labelledby` | `title` 部件的 id（条件成立时才出现） |
 | `content` | `aria-modal` | 'true' \| 'false' |
-| `content` | `role` | props.role |
+| `content` | `role` | 'dialog' \| 'alertdialog' |
 | `drag-trigger` | `aria-disabled` | 'false' \| 'true' |
 | `drag-trigger` | `aria-label` | translations.dragTrigger |
 | `indicator` | `aria-hidden` | 'true' |
-| `confirm-trigger` | `aria-busy` | 'true' \| undefined |
-| `confirm-trigger` | `aria-disabled` | 'true' \| undefined |
+| `confirm-trigger` | `aria-busy` | 'true'（条件成立时才出现） |
+| `confirm-trigger` | `aria-disabled` | 'true'（条件成立时才出现） |
 | `close-trigger` | `aria-label` | translations.close |
 
 ## 样式参考

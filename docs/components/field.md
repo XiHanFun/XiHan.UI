@@ -171,7 +171,7 @@
 | --- | --- | --- |
 | `control` | `aria-describedby` | [ rendered?.description === false ? null : ids.descri… |
 | `control` | `aria-invalid` | 'true' \| 'false' |
-| `control` | `aria-labelledby` | undefined \| `label` 部件的 id |
+| `control` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `control` | `aria-readonly` | 'true' \| 'false' |
 | `control` | `aria-required` | 'true' \| 'false' |
 | `error-text` | `aria-atomic` | 'true' |

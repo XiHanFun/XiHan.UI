@@ -388,28 +388,28 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `tree` | `aria-busy` | 'true' \| undefined |
+| `tree` | `aria-busy` | 'true'（条件成立时才出现） |
 | `tree` | `aria-disabled` | 'true' \| 'false' |
-| `tree` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `tree` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `tree` | `aria-multiselectable` | 'true' \| 'false' |
 | `tree` | `aria-orientation` | 'vertical' |
 | `tree` | `role` | 'tree' |
-| `item` | `aria-checked` | 'true' \| 'mixed' \| 'false' \| undefined |
+| `item` | `aria-checked` | 'true' \| 'mixed' \| 'false'（条件成立时才出现） |
 | `item` | `aria-disabled` | 'true' \| 'false' |
-| `item` | `aria-level` | meta?.level |
-| `item` | `aria-posinset` | meta?.posInSet |
+| `item` | `aria-level` | 数值（条件成立时才出现） |
+| `item` | `aria-posinset` | 数值（条件成立时才出现） |
 | `item` | `aria-selected` | 'true' \| 'false' |
-| `item` | `aria-setsize` | meta?.setSize |
+| `item` | `aria-setsize` | 数值（条件成立时才出现） |
 | `item` | `role` | 'treeitem' |
 | `item-indicator` | `aria-hidden` | 'true' |
-| `branch` | `aria-busy` | 'true' \| undefined |
-| `branch` | `aria-checked` | 'true' \| 'mixed' \| 'false' \| undefined |
+| `branch` | `aria-busy` | 'true'（条件成立时才出现） |
+| `branch` | `aria-checked` | 'true' \| 'mixed' \| 'false'（条件成立时才出现） |
 | `branch` | `aria-disabled` | 'true' \| 'false' |
 | `branch` | `aria-expanded` | 'true' \| 'false' |
-| `branch` | `aria-level` | meta?.level |
-| `branch` | `aria-posinset` | meta?.posInSet |
+| `branch` | `aria-level` | 数值（条件成立时才出现） |
+| `branch` | `aria-posinset` | 数值（条件成立时才出现） |
 | `branch` | `aria-selected` | 'true' \| 'false' |
-| `branch` | `aria-setsize` | meta?.setSize |
+| `branch` | `aria-setsize` | 数值（条件成立时才出现） |
 | `branch` | `role` | 'treeitem' |
 | `branch-trigger` | `aria-hidden` | 'true' |
 | `branch-indicator` | `aria-hidden` | 'true' |
@@ -440,8 +440,8 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | 'vertical' |
-| `root` | `data-size` | props.size |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-size` | 'sm' \| 'md' \| 'lg' |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `tree` | `data-disabled` | ''（条件成立时才出现） |
 | `tree` | `data-lines` | ''（条件成立时才出现） |
@@ -455,16 +455,16 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `item` | `data-indeterminate` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-selected` | ''（条件成立时才出现） |
-| `item` | `data-tone` | metaOf(value)?.tone |
+| `item` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 | `item` | `data-xh-collection-context` | 'page' \| 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
-| `item` | `data-xh-collection-size` | props.size |
+| `item` | `data-xh-collection-size` | 'sm' \| 'md' \| 'lg' |
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-indicator` | `data-indeterminate` | ''（条件成立时才出现） |
 | `item-indicator` | `data-selected` | ''（条件成立时才出现） |
-| `item-indicator` | `data-xh-check-mark` | 'checked' \| 'indeterminate' \| 'unchecked' \| undefined |
-| `item-indicator` | `data-xh-check-mark-profile` | 'box' \| undefined |
+| `item-indicator` | `data-xh-check-mark` | 'checked' \| 'indeterminate' \| 'unchecked'（条件成立时才出现） |
+| `item-indicator` | `data-xh-check-mark-profile` | 'box'（条件成立时才出现） |
 | `item-indicator` | `data-xh-collection-slot` | 'check' \| 'indicator' |
 | `item-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-text` | `data-highlighted` | ''（条件成立时才出现） |
@@ -486,7 +486,7 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `branch` | `data-error` | ''（条件成立时才出现） |
 | `branch` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch` | `data-load-state` | branchLoadState(value)?.status |
+| `branch` | `data-load-state` | 'loading' \| 'idle' \| 'loaded' \| 'error'（条件成立时才出现） |
 | `branch` | `data-loading` | ''（条件成立时才出现） |
 | `branch` | `data-selected` | ''（条件成立时才出现） |
 | `branch` | `data-state` | 'open' \| 'closed' |
@@ -499,10 +499,10 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `branch-control` | `data-pressed` | ''（条件成立时才出现） |
 | `branch-control` | `data-selected` | ''（条件成立时才出现） |
 | `branch-control` | `data-state` | 'open' \| 'closed' |
-| `branch-control` | `data-tone` | metaOf(value)?.tone |
+| `branch-control` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 | `branch-control` | `data-xh-collection-context` | 'page' \| 'overlay' |
 | `branch-control` | `data-xh-collection-item` | '' |
-| `branch-control` | `data-xh-collection-size` | props.size |
+| `branch-control` | `data-xh-collection-size` | 'sm' \| 'md' \| 'lg' |
 | `branch-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-indeterminate` | ''（条件成立时才出现） |
@@ -538,7 +538,7 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `branch-loading` | `data-error` | ''（条件成立时才出现） |
 | `branch-loading` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-loading` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch-loading` | `data-load-state` | branchLoadState(value)?.status |
+| `branch-loading` | `data-load-state` | 'loading' \| 'idle' \| 'loaded' \| 'error'（条件成立时才出现） |
 | `branch-loading` | `data-loading` | ''（条件成立时才出现） |
 | `branch-loading` | `data-selected` | ''（条件成立时才出现） |
 | `branch-loading` | `data-state` | 'open' \| 'closed' |
@@ -548,7 +548,7 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `branch-error` | `data-error` | ''（条件成立时才出现） |
 | `branch-error` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-error` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch-error` | `data-load-state` | branchLoadState(value)?.status |
+| `branch-error` | `data-load-state` | 'loading' \| 'idle' \| 'loaded' \| 'error'（条件成立时才出现） |
 | `branch-error` | `data-selected` | ''（条件成立时才出现） |
 | `branch-error` | `data-state` | 'open' \| 'closed' |
 | `branch-retry-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -556,7 +556,7 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `branch-retry-trigger` | `data-error` | ''（条件成立时才出现） |
 | `branch-retry-trigger` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-retry-trigger` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch-retry-trigger` | `data-load-state` | branchLoadState(value)?.status |
+| `branch-retry-trigger` | `data-load-state` | 'loading' \| 'idle' \| 'loaded' \| 'error'（条件成立时才出现） |
 | `branch-retry-trigger` | `data-selected` | ''（条件成立时才出现） |
 | `branch-retry-trigger` | `data-state` | 'open' \| 'closed' |
 | `branch-empty` | `data-disabled` | ''（条件成立时才出现） |
@@ -564,7 +564,7 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `branch-empty` | `data-error` | ''（条件成立时才出现） |
 | `branch-empty` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-empty` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch-empty` | `data-load-state` | branchLoadState(value)?.status |
+| `branch-empty` | `data-load-state` | 'loading' \| 'idle' \| 'loaded' \| 'error'（条件成立时才出现） |
 | `branch-empty` | `data-selected` | ''（条件成立时才出现） |
 | `branch-empty` | `data-state` | 'open' \| 'closed' |
 | `node-drag-trigger` | `data-disabled` | ''（条件成立时才出现） |

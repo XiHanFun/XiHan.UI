@@ -235,8 +235,8 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 
 | 部件 | 取值 |
 | --- | --- |
-| `item` | uploadOf(file)?.status |
-| `item-progress` | upload?.status |
+| `item` | 'idle' \| 'canceled' \| 'error' \| 'done' \| 'queued' \| 'uploading'（条件成立时才出现） |
+| `item-progress` | 'idle' \| 'canceled' \| 'error' \| 'done' \| 'queued' \| 'uploading'（条件成立时才出现） |
 
 以下名称仅用于内部状态机。
 
@@ -313,19 +313,19 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | --- | --- | --- |
 | `dropzone` | `aria-disabled` | 'false' \| 'true' |
 | `dropzone` | `aria-invalid` | 'true' \| 'false' |
-| `dropzone` | `aria-label` | undefined \| props.ariaLabel |
+| `dropzone` | `aria-label` | props.ariaLabel（条件成立时才出现） |
 | `dropzone` | `aria-labelledby` | `label` 部件的 id `dropzone` 部件的 id \| `dropzone` 部件的 id |
 | `dropzone` | `role` | 'button' |
-| `trigger` | `aria-disabled` | 'true' \| undefined |
+| `trigger` | `aria-disabled` | 'true'（条件成立时才出现） |
 | `hidden-input` | `aria-labelledby` | `label` 部件的 id `dropzone` 部件的 id \| `dropzone` 部件的 id |
 | `list` | `role` | 'list' |
 | `item` | `role` | 'listitem' |
-| `item-link` | `aria-disabled` | 'true' \| undefined |
+| `item-link` | `aria-disabled` | 'true'（条件成立时才出现） |
 | `item-preview` | `aria-hidden` | 'true' |
 | `item-progress` | `aria-hidden` | 'true' |
-| `item-delete-trigger` | `aria-disabled` | 'true' \| undefined |
+| `item-delete-trigger` | `aria-disabled` | 'true'（条件成立时才出现） |
 | `item-delete-trigger` | `aria-label` | label.deleteItem(file) |
-| `clear-trigger` | `aria-disabled` | 'true' \| undefined |
+| `clear-trigger` | `aria-disabled` | 'true'（条件成立时才出现） |
 | `clear-trigger` | `aria-label` | label.clearTrigger |
 
 ## 样式参考
@@ -367,17 +367,17 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `list` | `data-instant` | ''（条件成立时才出现） |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-file-name` | file.name |
-| `item` | `data-file-size` | undefined \| String(file.size) \| String(file.size) |
+| `item` | `data-file-size` | 数值（条件成立时才出现） |
 | `item` | `data-remote` | ''（条件成立时才出现） |
-| `item` | `data-state` | uploadOf(file)?.status |
+| `item` | `data-state` | 'idle' \| 'canceled' \| 'error' \| 'done' \| 'queued' \| 'uploading'（条件成立时才出现） |
 | `item-name` | `data-disabled` | ''（条件成立时才出现） |
 | `item-link` | `data-disabled` | ''（条件成立时才出现） |
 | `item-size-text` | `data-disabled` | ''（条件成立时才出现） |
-| `item-size-text` | `data-file-size` | undefined \| String(file.size) \| String(file.size) |
+| `item-size-text` | `data-file-size` | 数值（条件成立时才出现） |
 | `item-preview` | `data-disabled` | ''（条件成立时才出现） |
 | `item-preview` | `data-file-type` | (isRemote(file) ? file.type ?? '' : file.type) \|\| 'un… |
 | `item-progress` | `data-disabled` | ''（条件成立时才出现） |
-| `item-progress` | `data-state` | upload?.status |
+| `item-progress` | `data-state` | 'idle' \| 'canceled' \| 'error' \| 'done' \| 'queued' \| 'uploading'（条件成立时才出现） |
 | `item-delete-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `item-delete-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `item-delete-trigger` | `data-readonly` | ''（条件成立时才出现） |

@@ -276,11 +276,11 @@ validate 逐个判定新标签，返回拒绝码即拒收：这一次提交整�
 | --- | --- | --- |
 | `control` | `aria-disabled` | 'true' \| 'false' |
 | `control` | `aria-label` | props.ariaLabel |
-| `control` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `control` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `control` | `role` | 'group' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-label` | props.ariaLabel |
-| `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `input` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `input` | `aria-required` | 'true' \| 'false' |
 | `item-input` | `aria-label` | label.editTagInput(item.value) |
 | `clear-trigger` | `aria-label` | label.clearTrigger |
@@ -309,7 +309,7 @@ validate 逐个判定新标签，返回拒绝码即拒收：这一次提交整�
 | `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-at-max` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
@@ -318,7 +318,7 @@ validate 逐个判定新标签，返回拒绝码即拒收：这一次提交整�
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-overflowing` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
-| `control` | `data-variant` | props.variant |
+| `control` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-layout` | 'multi-tag' |

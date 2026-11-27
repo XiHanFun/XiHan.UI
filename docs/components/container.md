@@ -129,7 +129,7 @@ sm / md / lg / xl 四档与同名断点同宽，full 不限宽；轨道比舞台
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-max-width` | props.maxWidth |
+| `root` | `data-max-width` | 'sm' \| 'md' \| 'lg' \| 'xl' \| 'full'（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

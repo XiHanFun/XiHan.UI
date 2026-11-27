@@ -219,10 +219,10 @@ variant 决定底色与描边的绘制方式（密码框没有实心档），ton
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `input` | `aria-describedby` | `capsLock` 部件的 id \| undefined |
+| `input` | `aria-describedby` | `capsLock` 部件的 id（条件成立时才出现） |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-label` | props.ariaLabel |
-| `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `input` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `visibility-trigger` | `aria-controls` | `password-input-input` 部件的 id |
 | `visibility-trigger` | `aria-label` | label.visibilityTriggerHide \| label.visibilityTriggerShow |
 | `caps-lock-indicator` | `aria-atomic` | 'true' |
@@ -231,7 +231,7 @@ variant 决定底色与描边的绘制方式（密码框没有实心档），ton
 | `strength-meter` | `aria-label` | label.strengthMeter |
 | `strength-meter` | `aria-valuemax` | 4 |
 | `strength-meter` | `aria-valuemin` | 0 |
-| `strength-meter` | `aria-valuenow` | undefined \| Math.min(Math.max(Math.trunc(rawStrength), 0), STRENG… |
+| `strength-meter` | `aria-valuenow` | 数值（条件成立时才出现） |
 | `strength-meter` | `role` | 'meter' |
 
 - 切换按钮的名称随状态变化：隐藏时为“显示密码”，显示时为“隐藏密码”，两句都来自 `translations`。名称已经说明当前状态，因此不再叠加 `aria-pressed`，避免读出“隐藏密码 已按下”这类混淆信息。
@@ -261,12 +261,12 @@ variant 决定底色与描边的绘制方式（密码框没有实心档），ton
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
-| `control` | `data-variant` | props.variant |
+| `control` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
 | `input` | `data-disabled` | ''（条件成立时才出现） |
@@ -284,7 +284,7 @@ variant 决定底色与描边的绘制方式（密码框没有实心档），ton
 | `visibility-trigger` | `data-xh-action-variant` | 'ghost' |
 | `caps-lock-indicator` | `data-state` | 'visible' \| 'hidden' |
 | `strength-meter` | `data-disabled` | ''（条件成立时才出现） |
-| `strength-meter` | `data-level` | undefined \| String(strength) |
+| `strength-meter` | `data-level` | 数值（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

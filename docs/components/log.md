@@ -234,7 +234,7 @@ levels 只显示所选级别的行，用切换按钮组选；没写级别的行�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `viewport` | `aria-busy` | 'true' \| undefined |
+| `viewport` | `aria-busy` | 'true'（条件成立时才出现） |
 | `viewport` | `aria-label` | label.log |
 | `viewport` | `aria-live` | 'off' |
 | `viewport` | `role` | 'log' |
@@ -263,14 +263,14 @@ levels 只显示所选级别的行，用切换按钮组选；没写级别的行�
 | --- | --- | --- |
 | `root` | `data-at-bottom` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
-| `root` | `data-size` | props.size |
+| `root` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
 | `root` | `data-sticking` | ''（条件成立时才出现） |
 | `viewport` | `data-xh-virtualized` | ''（条件成立时才出现） |
-| `line` | `data-level` | line?.level |
+| `line` | `data-level` | 'info' \| 'error' \| 'debug' \| 'warn'（条件成立时才出现） |
 | `segment` | `data-bold` | ''（条件成立时才出现） |
 | `segment` | `data-bright` | ''（条件成立时才出现） |
 | `segment` | `data-faint` | ''（条件成立时才出现） |
-| `segment` | `data-fg` | segment.fg |
+| `segment` | `data-fg` | 'red' \| 'green' \| 'blue' \| 'yellow' \| 'cyan' \| 'black' \| 'magenta' \| 'white'（条件成立时才出现） |
 | `segment` | `data-italic` | ''（条件成立时才出现） |
 | `segment` | `data-underline` | ''（条件成立时才出现） |
 | `scroll-to-end-trigger` | `data-pressed` | ''（条件成立时才出现） |
@@ -278,7 +278,7 @@ levels 只显示所选级别的行，用切换按钮组选；没写级别的行�
 | `scroll-to-end-trigger` | `data-xh-action-control` | '' |
 | `scroll-to-end-trigger` | `data-xh-action-display` | 'always' |
 | `scroll-to-end-trigger` | `data-xh-action-profile` | 'floating' |
-| `scroll-to-end-trigger` | `data-xh-action-size` | floatingSizeBelow(props.size) |
+| `scroll-to-end-trigger` | `data-xh-action-size` | 'sm' \| 'md' \| 'lg' |
 | `scroll-to-end-trigger` | `data-xh-action-variant` | 'ghost' |
 | `scroll-to-end-trigger` | `data-xh-liquid` | '' |
 | `scroll-to-end-trigger` | `data-xh-material` | 'frosted' |

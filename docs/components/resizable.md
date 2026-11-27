@@ -190,7 +190,7 @@
 | `handle` | `aria-disabled` | 'false' \| 'true' |
 | `handle` | `aria-label` | translations.handle(edge) |
 | `handle` | `aria-orientation` | 'horizontal' \| 'vertical' |
-| `handle` | `aria-valuenow` | Math.round(edge === 'n' \|\| edge === 's' ? dimensions.… |
+| `handle` | `aria-valuenow` | 数值 |
 | `handle` | `role` | 'separator' |
 
 ## 样式参考
@@ -208,10 +208,10 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
-| `root` | `data-edge` | context.get('activeEdge') |
+| `root` | `data-edge` | 'n' \| 's' \| 'e' \| 'w' \| 'ne' \| 'nw' \| 'se' \| 'sw'（条件成立时才出现） |
 | `root` | `data-resizing` | ''（条件成立时才出现） |
 | `handle` | `data-disabled` | ''（条件成立时才出现） |
-| `handle` | `data-edge` | edge |
+| `handle` | `data-edge` | 'n' \| 's' \| 'e' \| 'w' \| 'ne' \| 'nw' \| 'se' \| 'sw' |
 | `handle` | `data-resizing` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->

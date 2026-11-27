@@ -174,7 +174,7 @@ tone 为图标区上语气色，与全库同一根轴，绘制什么图标仍由
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `role` | undefined \| 'status' |
+| `root` | `role` | 'status'（条件成立时才出现） |
 | `media` | `aria-hidden` | 'true' |
 | `indicator` | `aria-hidden` | 'true' |
 
@@ -191,7 +191,7 @@ tone 为图标区上语气色，与全库同一根轴，绘制什么图标仍由
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
-| `root` | `data-status` | props.status |
+| `root` | `data-status` | '404' \| '403' \| '500'（条件成立时才出现） |
 | `root` | `data-tone` | props.tone |
 | `media` | `data-instant` | ''（条件成立时才出现） |
 | `indicator` | `data-instant` | ''（条件成立时才出现） |

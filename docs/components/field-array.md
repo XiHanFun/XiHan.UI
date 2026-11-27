@@ -246,17 +246,17 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `table` | `aria-label` | props.ariaLabel \| undefined |
-| `table` | `aria-rowcount` | count + 1 \| undefined |
-| `table` | `role` | 'table' \| undefined |
-| `header` | `aria-rowindex` | 1 \| undefined |
-| `header` | `role` | 'row' \| undefined |
-| `column-header` | `role` | 'columnheader' \| undefined |
-| `item` | `aria-rowindex` | item.index + 2 \| undefined |
-| `item` | `role` | 'row' \| undefined |
-| `item-label` | `role` | 'rowheader' \| undefined |
-| `item-cell` | `role` | 'cell' \| undefined |
-| `item-action` | `role` | 'cell' \| undefined |
+| `table` | `aria-label` | props.ariaLabel（条件成立时才出现） |
+| `table` | `aria-rowcount` | 数值（条件成立时才出现） |
+| `table` | `role` | 'table'（条件成立时才出现） |
+| `header` | `aria-rowindex` | 1（条件成立时才出现） |
+| `header` | `role` | 'row'（条件成立时才出现） |
+| `column-header` | `role` | 'columnheader'（条件成立时才出现） |
+| `item` | `aria-rowindex` | 数值（条件成立时才出现） |
+| `item` | `role` | 'row'（条件成立时才出现） |
+| `item-label` | `role` | 'rowheader'（条件成立时才出现） |
+| `item-cell` | `role` | 'cell'（条件成立时才出现） |
+| `item-action` | `role` | 'cell'（条件成立时才出现） |
 | `add-trigger` | `aria-disabled` | 'false' \| 'true' |
 | `item-delete-trigger` | `aria-disabled` | 'false' \| 'true' |
 | `item-delete-trigger` | `aria-label` | label.deleteItem(item.index + 1, count) |
@@ -299,7 +299,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-dragging` | dragged['data-dragging'] |
 | `item` | `data-first` | ''（条件成立时才出现） |
-| `item` | `data-index` | String(item.index) |
+| `item` | `data-index` | 数值 |
 | `item` | `data-invalid` | ''（条件成立时才出现） |
 | `item` | `data-last` | ''（条件成立时才出现） |
 | `item` | `data-layout` | 'table' \| 'list' |
@@ -307,21 +307,21 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `item-label` | `data-at-max` | ''（条件成立时才出现） |
 | `item-label` | `data-at-min` | ''（条件成立时才出现） |
 | `item-label` | `data-disabled` | ''（条件成立时才出现） |
-| `item-label` | `data-index` | String(item.index) |
+| `item-label` | `data-index` | 数值 |
 | `item-label` | `data-invalid` | ''（条件成立时才出现） |
 | `item-label` | `data-layout` | 'table' \| 'list' |
 | `item-label` | `data-readonly` | ''（条件成立时才出现） |
 | `item-content` | `data-at-max` | ''（条件成立时才出现） |
 | `item-content` | `data-at-min` | ''（条件成立时才出现） |
 | `item-content` | `data-disabled` | ''（条件成立时才出现） |
-| `item-content` | `data-index` | String(item.index) |
+| `item-content` | `data-index` | 数值 |
 | `item-content` | `data-invalid` | ''（条件成立时才出现） |
 | `item-content` | `data-layout` | 'table' \| 'list' |
 | `item-content` | `data-readonly` | ''（条件成立时才出现） |
 | `item-cell` | `data-at-max` | ''（条件成立时才出现） |
 | `item-cell` | `data-at-min` | ''（条件成立时才出现） |
 | `item-cell` | `data-disabled` | ''（条件成立时才出现） |
-| `item-cell` | `data-index` | String(item.index) |
+| `item-cell` | `data-index` | 数值 |
 | `item-cell` | `data-invalid` | ''（条件成立时才出现） |
 | `item-cell` | `data-layout` | 'table' \| 'list' |
 | `item-cell` | `data-readonly` | ''（条件成立时才出现） |
@@ -329,8 +329,8 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `item-action` | `data-at-max` | ''（条件成立时才出现） |
 | `item-action` | `data-at-min` | ''（条件成立时才出现） |
 | `item-action` | `data-disabled` | ''（条件成立时才出现） |
-| `item-action` | `data-frozen` | 'end' \| undefined |
-| `item-action` | `data-index` | String(item.index) |
+| `item-action` | `data-frozen` | 'end'（条件成立时才出现） |
+| `item-action` | `data-index` | 数值 |
 | `item-action` | `data-invalid` | ''（条件成立时才出现） |
 | `item-action` | `data-layout` | 'table' \| 'list' |
 | `item-action` | `data-readonly` | ''（条件成立时才出现） |
@@ -344,7 +344,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `item-delete-trigger` | `data-at-max` | ''（条件成立时才出现） |
 | `item-delete-trigger` | `data-at-min` | ''（条件成立时才出现） |
 | `item-delete-trigger` | `data-disabled` | ''（条件成立时才出现） |
-| `item-delete-trigger` | `data-index` | String(item.index) |
+| `item-delete-trigger` | `data-index` | 数值 |
 | `item-delete-trigger` | `data-invalid` | ''（条件成立时才出现） |
 | `item-delete-trigger` | `data-layout` | 'table' \| 'list' |
 | `item-delete-trigger` | `data-pressed` | ''（条件成立时才出现） |
@@ -358,7 +358,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `item-drag-trigger` | `data-at-min` | ''（条件成立时才出现） |
 | `item-drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `item-drag-trigger` | `data-dragging` | grip['data-dragging'] |
-| `item-drag-trigger` | `data-index` | String(item.index) |
+| `item-drag-trigger` | `data-index` | 数值 |
 | `item-drag-trigger` | `data-invalid` | ''（条件成立时才出现） |
 | `item-drag-trigger` | `data-layout` | 'table' \| 'list' |
 | `item-drag-trigger` | `data-pressed` | grip['data-pressed'] |

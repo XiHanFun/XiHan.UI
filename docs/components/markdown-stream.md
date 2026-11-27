@@ -227,10 +227,10 @@ size 改变正文字号与块间距，三档共用同一份块列表
 | --- | --- | --- |
 | `root` | `data-caret` | ''（条件成立时才出现） |
 | `root` | `data-empty` | ''（条件成立时才出现） |
-| `root` | `data-size` | props.size |
+| `root` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
 | `root` | `data-state` | 'streaming' \| 'complete' |
 | `block` | `data-complete` | ''（条件成立时才出现） |
-| `block` | `data-kind` | block.kind |
+| `block` | `data-kind` | 'code' \| 'html' \| 'math' \| 'markdown' |
 | `block` | `data-lang` | block.lang |
 | `block` | `data-live` | ''（条件成立时才出现） |
 

@@ -206,10 +206,10 @@ banner 把提示贴在页面顶部铺满整行：不取圆角，只在朝向页�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-atomic` | 'true' |
-| `root` | `aria-describedby` | `description` 部件的 id \| undefined |
-| `root` | `aria-labelledby` | `title` 部件的 id \| undefined |
-| `root` | `aria-live` | live |
-| `root` | `role` | role |
+| `root` | `aria-describedby` | `description` 部件的 id（条件成立时才出现） |
+| `root` | `aria-labelledby` | `title` 部件的 id（条件成立时才出现） |
+| `root` | `aria-live` | 'polite' \| 'assertive' |
+| `root` | `role` | 'alert' \| 'status' |
 | `indicator` | `aria-hidden` | 'true' |
 | `close-trigger` | `aria-label` | translations.close |
 
@@ -229,7 +229,7 @@ banner 把提示贴在页面顶部铺满整行：不取圆角，只在朝向页�
 | --- | --- | --- |
 | `root` | `data-banner` | ''（条件成立时才出现） |
 | `root` | `data-state` | 'open' \| 'closed' |
-| `root` | `data-tone` | props.tone |
+| `root` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info' |
 | `close-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `close-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `close-trigger` | `data-xh-action-control` | '' |

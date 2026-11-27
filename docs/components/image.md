@@ -162,10 +162,10 @@ src 是响应式的：进入视口前不提供地址，观察器命中后再换�
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
-| `image` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
-| `placeholder` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
-| `fallback` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
+| `root` | 'loading' \| 'idle' \| 'loaded' \| 'error' |
+| `image` | 'loading' \| 'idle' \| 'loaded' \| 'error' |
+| `placeholder` | 'loading' \| 'idle' \| 'loaded' \| 'error' |
+| `fallback` | 'loading' \| 'idle' \| 'loaded' \| 'error' |
 
 以下名称仅用于内部状态机。
 
@@ -211,8 +211,8 @@ src 是响应式的：进入视口前不提供地址，观察器命中后再换�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-haspopup` | 'dialog' \| undefined |
-| `root` | `role` | 'button' \| undefined |
+| `root` | `aria-haspopup` | 'dialog'（条件成立时才出现） |
+| `root` | `role` | 'button'（条件成立时才出现） |
 | `placeholder` | `aria-hidden` | 'true' |
 
 ## 样式参考
@@ -228,11 +228,11 @@ src 是响应式的：进入视口前不提供地址，观察器命中后再换�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-interactive` | ''（条件成立时才出现） |
-| `root` | `data-state` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
+| `root` | `data-state` | 'loading' \| 'idle' \| 'loaded' \| 'error' |
 | `image` | `data-fit` | props.fit |
-| `image` | `data-state` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
-| `placeholder` | `data-state` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
-| `fallback` | `data-state` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
+| `image` | `data-state` | 'loading' \| 'idle' \| 'loaded' \| 'error' |
+| `placeholder` | `data-state` | 'loading' \| 'idle' \| 'loaded' \| 'error' |
+| `fallback` | `data-state` | 'loading' \| 'idle' \| 'loaded' \| 'error' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

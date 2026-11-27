@@ -130,11 +130,11 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-gap` | props.gap |
+| `root` | `data-gap` | 'sm' \| 'md' \| 'lg' \| 'xl' \| 'xs'（条件成立时才出现） |
 | `root` | `data-sequential` | ''（条件成立时才出现） |
-| `column` | `data-index` | String(column.index) |
-| `item` | `data-column` | String(item.column) |
-| `item` | `data-index` | String(item.index) |
+| `column` | `data-index` | 数值 |
+| `item` | `data-column` | 数值 |
+| `item` | `data-index` | 数值 |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

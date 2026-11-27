@@ -287,18 +287,18 @@ variant 更换正文框的描边与底色，候选面板不受影响
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `input` | `aria-activedescendant` | `item` 部件的 id \| undefined |
+| `input` | `aria-activedescendant` | `item` 部件的 id（条件成立时才出现） |
 | `input` | `aria-autocomplete` | 'list' |
 | `input` | `aria-controls` | `content` 部件的 id |
-| `input` | `aria-expanded` | undefined \| 'true' \| 'false' |
+| `input` | `aria-expanded` | 'true' \| 'false'（条件成立时才出现） |
 | `input` | `aria-haspopup` | 'listbox' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-label` | props.ariaLabel |
-| `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `input` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `input` | `aria-required` | 'true' \| 'false' |
-| `input` | `role` | undefined \| 'combobox' |
-| `content` | `aria-busy` | 'true' \| undefined |
-| `content` | `aria-hidden` | !open \|\| undefined |
+| `input` | `role` | 'combobox'（条件成立时才出现） |
+| `content` | `aria-busy` | 'true'（条件成立时才出现） |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
 | `content` | `aria-label` | translations.content |
 | `content` | `role` | 'listbox' |
 | `empty` | `role` | 'status' |
@@ -327,13 +327,13 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `input` | `data-disabled` | ''（条件成立时才出现） |
 | `input` | `data-invalid` | ''（条件成立时才出现） |
 | `input` | `data-readonly` | ''（条件成立时才出现） |
 | `input` | `data-state` | 'open' \| 'closed' |
-| `input` | `data-variant` | props.variant |
+| `input` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `input` | `data-xh-field-chrome` | '' |
 | `input` | `data-xh-field-layout` | 'textarea' \| 'single-line' |
 | `input` | `data-xh-field-size` | props.size |
@@ -344,7 +344,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `positioner` | `data-size` | props.size |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-tone` | props.tone |
-| `positioner` | `data-variant` | props.variant |
+| `positioner` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-xh-material` | 'frosted' |
@@ -357,7 +357,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
-| `item` | `data-tone` | metaOf.get(item.value)?.tone |
+| `item` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |

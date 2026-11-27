@@ -250,9 +250,9 @@ anchor 交一个只给得出矩形的虚拟锚点，浮层就固定在刚点击�
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
-| `content` | `aria-describedby` | `description` 部件的 id \| undefined |
-| `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-labelledby` | `title` 部件的 id \| undefined |
+| `content` | `aria-describedby` | `description` 部件的 id（条件成立时才出现） |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
+| `content` | `aria-labelledby` | `title` 部件的 id（条件成立时才出现） |
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | 'dialog' |
 | `close-trigger` | `aria-label` | translations.close |

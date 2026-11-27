@@ -267,13 +267,13 @@ collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `content` | `aria-busy` | 'true' \| undefined |
+| `content` | `aria-busy` | 'true'（条件成立时才出现） |
 | `content` | `aria-disabled` | 'true' \| 'false' |
 | `content` | `aria-invalid` | 'true' \| 'false' |
 | `content` | `aria-label` | props.ariaLabel |
-| `content` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `content` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `content` | `aria-multiselectable` | 'true' \| 'false' |
-| `content` | `aria-orientation` | props.orientation |
+| `content` | `aria-orientation` | 'horizontal' \| 'vertical' |
 | `content` | `aria-readonly` | 'true' \| 'false' |
 | `content` | `role` | 'listbox' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
@@ -301,21 +301,21 @@ collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
-| `root` | `data-orientation` | props.orientation |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `content` | `data-disabled` | ''（条件成立时才出现） |
 | `content` | `data-invalid` | ''（条件成立时才出现） |
-| `content` | `data-orientation` | props.orientation |
+| `content` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `content` | `data-readonly` | ''（条件成立时才出现） |
 | `content` | `data-xh-virtualized` | ''（条件成立时才出现） |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
-| `item` | `data-tone` | metaOf.get(item.value)?.tone |
+| `item` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
@@ -338,8 +338,8 @@ collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
-| `item-indicator` | `data-xh-check-mark` | 'checked' \| 'unchecked' \| undefined |
-| `item-indicator` | `data-xh-check-mark-profile` | 'box' \| undefined |
+| `item-indicator` | `data-xh-check-mark` | 'checked' \| 'unchecked'（条件成立时才出现） |
+| `item-indicator` | `data-xh-check-mark-profile` | 'box'（条件成立时才出现） |
 | `item-indicator` | `data-xh-collection-slot` | 'check-lead' \| 'indicator' |
 | `group` | `data-disabled` | ''（条件成立时才出现） |
 | `group-label` | `data-disabled` | ''（条件成立时才出现） |

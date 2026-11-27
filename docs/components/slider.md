@@ -265,11 +265,11 @@ draggableRange 让两端拇指之间的轨道可以整段拖动，时间窗宽�
 | --- | --- | --- |
 | `thumb` | `aria-disabled` | 'true' \| 'false' |
 | `thumb` | `aria-label` | props.ariaLabel |
-| `thumb` | `aria-labelledby` | `label` 部件的 id \| undefined |
-| `thumb` | `aria-orientation` | props.orientation |
-| `thumb` | `aria-valuemax` | String(thumb.max) |
-| `thumb` | `aria-valuemin` | String(thumb.min) |
-| `thumb` | `aria-valuenow` | String(thumb.value) |
+| `thumb` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
+| `thumb` | `aria-orientation` | 'horizontal' \| 'vertical' |
+| `thumb` | `aria-valuemax` | 数值 |
+| `thumb` | `aria-valuemin` | 数值 |
+| `thumb` | `aria-valuenow` | 数值 |
 | `thumb` | `aria-valuetext` | prop('getValueText')?.({ value: thumb.value, index: t… |
 | `thumb` | `role` | 'slider' |
 | `value-text` | `aria-hidden` | 'true' |
@@ -291,7 +291,7 @@ draggableRange 让两端拇指之间的轨道可以整段拖动，时间窗宽�
 | `root` | `data-dragging` | ''（条件成立时才出现） |
 | `root` | `data-following` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
-| `root` | `data-orientation` | props.orientation |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
@@ -300,51 +300,51 @@ draggableRange 让两端拇指之间的轨道可以整段拖动，时间窗宽�
 | `label` | `data-dragging` | ''（条件成立时才出现） |
 | `label` | `data-following` | ''（条件成立时才出现） |
 | `label` | `data-invalid` | ''（条件成立时才出现） |
-| `label` | `data-orientation` | props.orientation |
+| `label` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `label` | `data-readonly` | ''（条件成立时才出现） |
 | `label` | `data-required` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-dragging` | ''（条件成立时才出现） |
 | `control` | `data-following` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
-| `control` | `data-orientation` | props.orientation |
+| `control` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `track` | `data-disabled` | ''（条件成立时才出现） |
 | `track` | `data-dragging` | ''（条件成立时才出现） |
 | `track` | `data-following` | ''（条件成立时才出现） |
 | `track` | `data-invalid` | ''（条件成立时才出现） |
-| `track` | `data-orientation` | props.orientation |
+| `track` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `track` | `data-readonly` | ''（条件成立时才出现） |
 | `range` | `data-disabled` | ''（条件成立时才出现） |
 | `range` | `data-draggable` | ''（条件成立时才出现） |
 | `range` | `data-dragging` | ''（条件成立时才出现） |
 | `range` | `data-following` | ''（条件成立时才出现） |
 | `range` | `data-invalid` | ''（条件成立时才出现） |
-| `range` | `data-orientation` | props.orientation |
+| `range` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `range` | `data-readonly` | ''（条件成立时才出现） |
 | `thumb` | `data-disabled` | ''（条件成立时才出现） |
 | `thumb` | `data-dragging` | ''（条件成立时才出现） |
 | `thumb` | `data-following` | ''（条件成立时才出现） |
-| `thumb` | `data-index` | String(thumb.index) |
+| `thumb` | `data-index` | 数值 |
 | `thumb` | `data-invalid` | ''（条件成立时才出现） |
-| `thumb` | `data-orientation` | props.orientation |
+| `thumb` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `thumb` | `data-readonly` | ''（条件成立时才出现） |
 | `value-text` | `data-disabled` | ''（条件成立时才出现） |
 | `value-text` | `data-dragging` | ''（条件成立时才出现） |
 | `value-text` | `data-following` | ''（条件成立时才出现） |
-| `value-text` | `data-index` | String(thumb.index) |
+| `value-text` | `data-index` | 数值 |
 | `value-text` | `data-invalid` | ''（条件成立时才出现） |
-| `value-text` | `data-orientation` | props.orientation |
+| `value-text` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `value-text` | `data-readonly` | ''（条件成立时才出现） |
 | `tick-group` | `data-disabled` | ''（条件成立时才出现） |
 | `tick-group` | `data-dragging` | ''（条件成立时才出现） |
 | `tick-group` | `data-following` | ''（条件成立时才出现） |
 | `tick-group` | `data-invalid` | ''（条件成立时才出现） |
-| `tick-group` | `data-orientation` | props.orientation |
+| `tick-group` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `tick-group` | `data-readonly` | ''（条件成立时才出现） |
 | `tick` | `data-passed` | ''（条件成立时才出现） |
 | `tick-label` | `data-passed` | ''（条件成立时才出现） |
-| `hidden-input` | `data-index` | String(thumb.index) |
+| `hidden-input` | `data-index` | 数值 |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

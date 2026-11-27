@@ -342,16 +342,16 @@ multiple 时浮层里调出的颜色是草稿，按「添加」收进值、浮�
 | `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id \| `trigger` 部件的 id `value-text` 部件的 id \| `value-text` 部件的 id |
 | `clear-trigger` | `aria-label` | label.clearTrigger |
 | `swatch` | `aria-hidden` | 'true' |
-| `content` | `aria-hidden` | !open \|\| undefined |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
 | `content` | `aria-label` | props.ariaLabel |
-| `content` | `aria-labelledby` | `label` 部件的 id \| undefined |
-| `content` | `aria-modal` | undefined \| 'false' |
+| `content` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
+| `content` | `aria-modal` | 'false'（条件成立时才出现） |
 | `content` | `role` | 'group' \| 'dialog' |
 | `area-thumb` | `aria-disabled` | 'true' \| 'false' |
 | `area-thumb` | `aria-label` | label.area |
 | `area-thumb` | `aria-valuemax` | '100' |
 | `area-thumb` | `aria-valuemin` | '0' |
-| `area-thumb` | `aria-valuenow` | String(Math.round(hsva.s)) |
+| `area-thumb` | `aria-valuenow` | 数值 |
 | `area-thumb` | `aria-valuetext` | label.areaValueText(Math.round(hsva.s), Math.round(hs… |
 | `area-thumb` | `role` | 'slider' |
 | `channel-input` | `aria-invalid` | 'true' \| 'false' |
@@ -402,7 +402,7 @@ multiple 时浮层里调出的颜色是草稿，按「添加」收进值、浮�
 | `control` | `data-variant` | props.variant |
 | `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
-| `control` | `data-xh-field-layout` | 'multi-tag' \| undefined |
+| `control` | `data-xh-field-layout` | 'multi-tag'（条件成立时才出现） |
 | `control` | `data-xh-field-size` | props.size |
 | `tag-list` | `data-disabled` | ''（条件成立时才出现） |
 | `tag-list` | `data-instant` | ''（条件成立时才出现） |
@@ -430,7 +430,7 @@ multiple 时浮层里调出的颜色是草稿，按「添加」收进值、浮�
 | `swatch` | `data-readonly` | ''（条件成立时才出现） |
 | `swatch` | `data-required` | ''（条件成立时才出现） |
 | `swatch` | `data-state` | 'open' \| 'closed' |
-| `swatch` | `data-value` | undefined \| context.get('value') |
+| `swatch` | `data-value` | context.get('value')（条件成立时才出现） |
 | `swatch` | `data-xh-swatch` | '' |
 | `swatch` | `data-xh-swatch-size` | props.size |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
@@ -442,7 +442,7 @@ multiple 时浮层里调出的颜色是草稿，按「添加」收进值、浮�
 | `content` | `data-inline` | ''（条件成立时才出现） |
 | `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-invalid` | ''（条件成立时才出现） |
-| `content` | `data-placement` | undefined \| 定位引擎算出的实际落位 |
+| `content` | `data-placement` | 定位引擎算出的实际落位（条件成立时才出现） |
 | `content` | `data-readonly` | ''（条件成立时才出现） |
 | `content` | `data-required` | ''（条件成立时才出现） |
 | `content` | `data-state` | 'open' \| 'closed' |
@@ -461,7 +461,7 @@ multiple 时浮层里调出的颜色是草稿，按「添加」收进值、浮�
 | `hue-slider` | `data-channel` | 'hue' |
 | `alpha-slider` | `data-channel` | 'alpha' |
 | `alpha-slider` | `data-disabled` | ''（条件成立时才出现） |
-| `channel-input` | `data-channel` | channel |
+| `channel-input` | `data-channel` | 'hex' \| 'r' \| 'g' \| 'b' \| 'a' |
 | `channel-input` | `data-disabled` | ''（条件成立时才出现） |
 | `channel-input` | `data-invalid` | ''（条件成立时才出现） |
 | `channel-input` | `data-readonly` | ''（条件成立时才出现） |
@@ -480,7 +480,7 @@ multiple 时浮层里调出的颜色是草稿，按「添加」收进值、浮�
 | `confirm-trigger` | `data-xh-action-size` | 'sm' |
 | `confirm-trigger` | `data-xh-action-variant` | 'solid' |
 | `confirm-trigger` | `data-xh-ink-surface` | '' |
-| `overflow-tag` | `data-count` | String(overflowCount) |
+| `overflow-tag` | `data-count` | 数值 |
 | `tag` | `data-value` | v |
 
 <!-- xh-component-tokens:start -->

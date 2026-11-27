@@ -159,17 +159,17 @@ split 画外框与格与格之间的横竖线，跨行跨列的格子里不出�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-align` | props.align |
-| `root` | `data-column-gap` | props.columnGap |
+| `root` | `data-align` | 'start' \| 'end' \| 'center' \| 'stretch' \| 'baseline'（条件成立时才出现） |
+| `root` | `data-column-gap` | 'sm' \| 'md' \| 'lg' \| 'xl' \| 'xs'（条件成立时才出现） |
 | `root` | `data-columns` | columns.base |
 | `root` | `data-columns-lg` | columns.lg |
 | `root` | `data-columns-md` | columns.md |
 | `root` | `data-columns-sm` | columns.sm |
 | `root` | `data-columns-xl` | columns.xl |
-| `root` | `data-gap` | props.gap |
-| `root` | `data-justify-items` | props.justifyItems |
-| `root` | `data-min-col` | props.minColWidth |
-| `root` | `data-row-gap` | props.rowGap |
+| `root` | `data-gap` | 'sm' \| 'md' \| 'lg' \| 'xl' \| 'xs'（条件成立时才出现） |
+| `root` | `data-justify-items` | 'start' \| 'end' \| 'center' \| 'stretch'（条件成立时才出现） |
+| `root` | `data-min-col` | 'sm' \| 'md' \| 'lg' \| 'xs'（条件成立时才出现） |
+| `root` | `data-row-gap` | 'sm' \| 'md' \| 'lg' \| 'xl' \| 'xs'（条件成立时才出现） |
 | `root` | `data-rows` | tier(props.rows, MAX_COLUMN_COUNT) |
 | `root` | `data-split` | ''（条件成立时才出现） |
 | `item` | `data-offset` | offset.base |

@@ -187,9 +187,9 @@ pulse 让圆点呼吸，表达正在进行、给不出进度的状态；状态�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `indicator` | `aria-label` | props.label |
-| `indicator` | `role` | 'status' \| undefined |
-| `glyph` | `aria-hidden` | glyph.change === 'leave' \|\| undefined |
-| `suffix` | `aria-hidden` | glyph.change === 'leave' \|\| undefined |
+| `indicator` | `role` | 'status'（条件成立时才出现） |
+| `glyph` | `aria-hidden` | 'true'（条件成立时才出现） |
+| `suffix` | `aria-hidden` | 'true'（条件成立时才出现） |
 
 ## 样式参考
 
@@ -203,21 +203,21 @@ pulse 让圆点呼吸，表达正在进行、给不出进度的状态；状态�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-placement` | props.placement |
+| `root` | `data-placement` | 'top-start' \| 'top-end' \| 'bottom-start' \| 'bottom-end' |
 | `indicator` | `data-animating` | ''（条件成立时才出现） |
 | `indicator` | `data-dot` | ''（条件成立时才出现） |
 | `indicator` | `data-instant` | ''（条件成立时才出现） |
-| `indicator` | `data-placement` | props.placement |
+| `indicator` | `data-placement` | 'top-start' \| 'top-end' \| 'bottom-start' \| 'bottom-end' |
 | `indicator` | `data-pulse` | ''（条件成立时才出现） |
 | `indicator` | `data-size` | props.size |
 | `indicator` | `data-state` | 'visible' \| 'hidden' |
-| `indicator` | `data-tone` | props.tone |
+| `indicator` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info' |
 | `glyph` | `data-from` | glyph.from |
-| `glyph` | `data-presence` | undefined \| glyph.change |
-| `glyph` | `data-roll` | 'up' \| 'down' \| undefined |
+| `glyph` | `data-presence` | 'enter' \| 'leave'（条件成立时才出现） |
+| `glyph` | `data-roll` | 'up' \| 'down'（条件成立时才出现） |
 | `suffix` | `data-from` | glyph.from |
-| `suffix` | `data-presence` | undefined \| glyph.change |
-| `suffix` | `data-roll` | 'up' \| 'down' \| undefined |
+| `suffix` | `data-presence` | 'enter' \| 'leave'（条件成立时才出现） |
+| `suffix` | `data-roll` | 'up' \| 'down'（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

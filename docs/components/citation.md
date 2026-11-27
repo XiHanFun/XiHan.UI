@@ -235,8 +235,8 @@ preview-mode="hover" 把预览放进 positioner，锚定在引用编号旁：指
 | `trigger` | `aria-controls` | `preview` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-label` | labels.citations(ids.map(sourceId =&gt; indexOf(sourceId… \| labels.citation(indexOf(ids[0]!) + 1, citationSourceT… |
-| `preview` | `aria-label` | labels.preview \| undefined |
-| `preview` | `aria-labelledby` | context.get('activeTriggerId') \| undefined |
+| `preview` | `aria-label` | labels.preview（条件成立时才出现） |
+| `preview` | `aria-labelledby` | context.get('activeTriggerId')（条件成立时才出现） |
 | `preview` | `role` | 'region' |
 | `preview-link` | `aria-labelledby` | `preview-link` 部件的 id `preview-title` 部件的 id |
 | `close-trigger` | `aria-label` | labels.closePreview |
@@ -245,7 +245,7 @@ preview-mode="hover" 把预览放进 positioner，锚定在引用编号旁：指
 | `list` | `role` | 'list' |
 | `source` | `role` | 'listitem' |
 | `source-link` | `aria-controls` | `preview` 部件的 id |
-| `source-link` | `aria-current` | 'true' \| undefined |
+| `source-link` | `aria-current` | 'true'（条件成立时才出现） |
 | `source-link` | `aria-expanded` | 'true' \| 'false' |
 | `source-index` | `aria-hidden` | 'true' |
 
@@ -264,7 +264,7 @@ preview-mode="hover" 把预览放进 positioner，锚定在引用编号旁：指
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
-| `root` | `data-preview-mode` | props.previewMode |
+| `root` | `data-preview-mode` | 'hover' \| 'inline' |
 | `root` | `data-size` | props.size |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
@@ -274,20 +274,20 @@ preview-mode="hover" 把预览放进 positioner，锚定在引用编号旁：指
 | `trigger` | `data-xh-action-size` | 'xs' |
 | `trigger` | `data-xh-action-variant` | 'subtle' |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
-| `positioner` | `data-placement` | 定位引擎算出的实际落位 \| undefined |
+| `positioner` | `data-placement` | 定位引擎算出的实际落位（条件成立时才出现） |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
-| `positioner` | `data-preview-mode` | props.previewMode |
+| `positioner` | `data-preview-mode` | 'hover' \| 'inline' |
 | `positioner` | `data-size` | props.size |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `preview` | `data-instant` | ''（条件成立时才出现） |
-| `preview` | `data-preview-mode` | props.previewMode |
+| `preview` | `data-preview-mode` | 'hover' \| 'inline' |
 | `preview` | `data-state` | 'open' \| 'closed' |
-| `preview` | `data-xh-material` | 'frosted' \| undefined |
+| `preview` | `data-xh-material` | 'frosted'（条件成立时才出现） |
 | `preview-link` | `data-xh-action-control` | '' |
-| `preview-link` | `data-xh-action-display` | 'always' \| undefined |
-| `preview-link` | `data-xh-action-profile` | 'text' \| undefined |
-| `preview-link` | `data-xh-action-size` | 'sm' \| undefined |
-| `preview-link` | `data-xh-action-variant` | 'ghost' \| undefined |
+| `preview-link` | `data-xh-action-display` | 'always'（条件成立时才出现） |
+| `preview-link` | `data-xh-action-profile` | 'text'（条件成立时才出现） |
+| `preview-link` | `data-xh-action-size` | 'sm'（条件成立时才出现） |
+| `preview-link` | `data-xh-action-variant` | 'ghost'（条件成立时才出现） |
 | `close-trigger` | `data-xh-action-control` | '' |
 | `close-trigger` | `data-xh-action-display` | 'always' |
 | `close-trigger` | `data-xh-action-profile` | 'icon' |

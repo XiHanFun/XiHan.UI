@@ -256,9 +256,9 @@ toCanvas 按所见出图：裁切矩形、旋转、翻转与圆形外形一并�
 | `crop-area` | `role` | 'application' |
 | `crop-handle` | `aria-disabled` | 'true' \| 'false' |
 | `crop-handle` | `aria-label` | label.handle(position) |
-| `crop-handle` | `aria-valuemax` | String(HANDLE_AXIS[position] === 'width' ? natural.wi… |
-| `crop-handle` | `aria-valuemin` | String(HANDLE_AXIS[position] === 'width' ? minWidth :… |
-| `crop-handle` | `aria-valuenow` | String(HANDLE_AXIS[position] === 'width' ? value.widt… |
+| `crop-handle` | `aria-valuemax` | 数值 |
+| `crop-handle` | `aria-valuemin` | 数值 |
+| `crop-handle` | `aria-valuenow` | 数值 |
 | `crop-handle` | `aria-valuetext` | label.valueText({ ...value }) |
 | `crop-handle` | `role` | 'slider' |
 | `grid` | `aria-hidden` | 'true' |
@@ -283,7 +283,7 @@ toCanvas 按所见出图：裁切矩形、旋转、翻转与圆形外形一并�
 | `root` | `data-dragging` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-resizing` | ''（条件成立时才出现） |
-| `root` | `data-shape` | props.shape |
+| `root` | `data-shape` | 'rect' \| 'round' |
 | `viewport` | `data-disabled` | ''（条件成立时才出现） |
 | `viewport` | `data-dragging` | ''（条件成立时才出现） |
 | `viewport` | `data-readonly` | ''（条件成立时才出现） |
@@ -292,15 +292,15 @@ toCanvas 按所见出图：裁切矩形、旋转、翻转与圆形外形一并�
 | `crop-area` | `data-dragging` | ''（条件成立时才出现） |
 | `crop-area` | `data-readonly` | ''（条件成立时才出现） |
 | `crop-area` | `data-resizing` | ''（条件成立时才出现） |
-| `crop-area` | `data-shape` | props.shape |
+| `crop-area` | `data-shape` | 'rect' \| 'round' |
 | `crop-handle` | `data-disabled` | ''（条件成立时才出现） |
-| `crop-handle` | `data-position` | position |
+| `crop-handle` | `data-position` | 'n' \| 's' \| 'e' \| 'w' \| 'ne' \| 'nw' \| 'se' \| 'sw' |
 | `crop-handle` | `data-readonly` | ''（条件成立时才出现） |
 | `crop-handle` | `data-resizing` | ''（条件成立时才出现） |
-| `grid` | `data-shape` | props.shape |
+| `grid` | `data-shape` | 'rect' \| 'round' |
 | `zoom-slider` | `data-disabled` | ''（条件成立时才出现） |
 | `rotate-slider` | `data-disabled` | ''（条件成立时才出现） |
-| `flip-trigger` | `data-axis` | axis |
+| `flip-trigger` | `data-axis` | 'horizontal' \| 'vertical' |
 | `flip-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `flip-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `flip-trigger` | `data-state` | 'on' \| 'off' |

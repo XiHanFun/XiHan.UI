@@ -178,7 +178,7 @@ edge 设为 start：哨兵摆在列表开头，更早的消息插在前面，取
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-busy` | 'true' \| undefined |
+| `root` | `aria-busy` | 'true'（条件成立时才出现） |
 | `sentinel` | `aria-hidden` | 'true' |
 
 ## 样式参考

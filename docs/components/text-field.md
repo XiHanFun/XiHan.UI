@@ -274,10 +274,10 @@ onValueCommit 在回车时带出当前值，输入法选字的回车不算；loa
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `prefix` | `aria-hidden` | 'true' |
-| `input` | `aria-busy` | 'true' \| undefined |
+| `input` | `aria-busy` | 'true'（条件成立时才出现） |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-label` | props.ariaLabel |
-| `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `input` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `input` | `aria-readonly` | 'true' \| 'false' |
 | `input` | `aria-required` | 'true' \| 'false' |
 | `suffix` | `aria-hidden` | 'true' |
@@ -307,7 +307,7 @@ onValueCommit 在回车时带出当前值，输入法选字的回车不算；loa
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-at-max` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
@@ -315,7 +315,7 @@ onValueCommit 在回车时带出当前值，输入法选字的回车不算；loa
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-loading` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
-| `control` | `data-variant` | props.variant |
+| `control` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |

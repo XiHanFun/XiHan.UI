@@ -223,16 +223,16 @@ split 设为 false，段与段之间不画分隔线
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-invalid` | undefined \| 'true' \| 'false' |
+| `root` | `aria-invalid` | 'true' \| 'false'（条件成立时才出现） |
 | `root` | `aria-label` | props.ariaLabel |
-| `root` | `aria-orientation` | undefined \| props.orientation |
-| `root` | `aria-readonly` | undefined \| 'true' \| 'false' |
-| `root` | `aria-required` | undefined \| 'true' \| 'false' |
+| `root` | `aria-orientation` | 'horizontal' \| 'vertical'（条件成立时才出现） |
+| `root` | `aria-readonly` | 'true' \| 'false'（条件成立时才出现） |
+| `root` | `aria-required` | 'true' \| 'false'（条件成立时才出现） |
 | `root` | `role` | 'group' \| 'radiogroup' |
-| `item` | `aria-checked` | undefined \| 'true' \| 'false' |
+| `item` | `aria-checked` | 'true' \| 'false'（条件成立时才出现） |
 | `item` | `aria-disabled` | 'true' \| 'false' |
-| `item` | `aria-pressed` | 'true' \| 'false' \| undefined |
-| `item` | `role` | undefined \| 'radio' |
+| `item` | `aria-pressed` | 'true' \| 'false'（条件成立时才出现） |
+| `item` | `role` | 'radio'（条件成立时才出现） |
 | `hidden-input` | `aria-hidden` | 'true' |
 
 ## 样式参考
@@ -252,7 +252,7 @@ split 设为 false，段与段之间不画分隔线
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-full-width` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
-| `root` | `data-orientation` | props.orientation |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |

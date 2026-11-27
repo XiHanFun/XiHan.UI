@@ -267,11 +267,11 @@ precision 决定保留几位小数：步进、取端点与失焦写回的值四�
 | `prefix` | `aria-hidden` | 'true' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-label` | props.ariaLabel |
-| `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
-| `input` | `aria-valuemax` | props.max |
-| `input` | `aria-valuemin` | props.min |
-| `input` | `aria-valuenow` | undefined \| decodeNumber(value, { parse: prop('parse'), format: p… |
-| `input` | `aria-valuetext` | formatNumberFieldValue(valueAsNumber, resolveLocale(p… \| undefined |
+| `input` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
+| `input` | `aria-valuemax` | 数值（条件成立时才出现） |
+| `input` | `aria-valuemin` | 数值（条件成立时才出现） |
+| `input` | `aria-valuenow` | 数值（条件成立时才出现） |
+| `input` | `aria-valuetext` | formatNumberFieldValue(valueAsNumber, resolveLocale(p…（条件成立时才出现） |
 | `input` | `role` | 'spinbutton' |
 | `suffix` | `aria-hidden` | 'true' |
 | `increment-trigger` | `aria-hidden` | 'true' |
@@ -298,12 +298,12 @@ precision 决定保留几位小数：步进、取端点与失焦写回的值四�
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
-| `control` | `data-variant` | props.variant |
+| `control` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |

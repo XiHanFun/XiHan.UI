@@ -204,8 +204,8 @@ disabled 只关闭卡片本身，触发器照常可点击、可聚焦，也照�
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
-| `content` | `aria-describedby` | `description` 部件的 id \| undefined |
-| `content` | `aria-hidden` | !open \|\| undefined |
+| `content` | `aria-describedby` | `description` 部件的 id（条件成立时才出现） |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
 | `content` | `aria-labelledby` | `title` 部件的 id \| `trigger` 部件的 id |
 | `content` | `aria-modal` | 'false' |
 | `content` | `role` | 'dialog' |

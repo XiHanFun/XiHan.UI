@@ -121,8 +121,8 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-hidden` | 'true' \| undefined |
-| `root` | `aria-orientation` | 'vertical' \| undefined |
+| `root` | `aria-hidden` | 'true'（条件成立时才出现） |
+| `root` | `aria-orientation` | 'vertical'（条件成立时才出现） |
 | `root` | `role` | 'none' \| 'separator' |
 | `line` | `role` | 'none' |
 
@@ -140,11 +140,11 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-align` | props.align |
+| `root` | `data-align` | 'start' \| 'end' \| 'center'（条件成立时才出现） |
 | `root` | `data-dashed` | ''（条件成立时才出现） |
-| `root` | `data-orientation` | props.orientation |
-| `root` | `data-variant` | props.variant |
-| `line` | `data-orientation` | props.orientation |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical'（条件成立时才出现） |
+| `root` | `data-variant` | 'subtle' \| 'default' \| 'strong'（条件成立时才出现） |
+| `line` | `data-orientation` | 'horizontal' \| 'vertical'（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

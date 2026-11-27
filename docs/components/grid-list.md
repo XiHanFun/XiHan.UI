@@ -229,16 +229,16 @@ actionOnClick 让点行触发行主操作（看详情），勾选只由行首方
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-busy` | 'true' \| undefined |
+| `root` | `aria-busy` | 'true'（条件成立时才出现） |
 | `root` | `aria-disabled` | 'true' \| 'false' |
 | `root` | `aria-invalid` | 'true' \| 'false' |
 | `root` | `aria-label` | translations.root |
-| `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
-| `root` | `aria-multiselectable` | 'true' \| undefined |
+| `root` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
+| `root` | `aria-multiselectable` | 'true'（条件成立时才出现） |
 | `root` | `aria-readonly` | 'true' \| 'false' |
 | `root` | `role` | 'grid' |
 | `row` | `aria-disabled` | 'true' \| 'false' |
-| `row` | `aria-selected` | 'true' \| 'false' \| undefined |
+| `row` | `aria-selected` | 'true' \| 'false'（条件成立时才出现） |
 | `row` | `role` | 'row' |
 | `row-selection-indicator` | `aria-hidden` | 'true' |
 | `row-content` | `role` | 'gridcell' |
@@ -271,7 +271,7 @@ actionOnClick 让点行触发行主操作（看详情），勾选只由行首方
 | `row` | `data-highlighted` | ''（条件成立时才出现） |
 | `row` | `data-pressed` | ''（条件成立时才出现） |
 | `row` | `data-selected` | ''（条件成立时才出现） |
-| `row` | `data-tone` | metaOf.get(row.value)?.tone |
+| `row` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 | `row` | `data-xh-collection-context` | 'page' |
 | `row` | `data-xh-collection-item` | '' |
 | `row` | `data-xh-collection-size` | props.size |

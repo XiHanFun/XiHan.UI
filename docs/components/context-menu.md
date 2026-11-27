@@ -226,7 +226,7 @@
 | `trigger` | 'open' \| 'closed' |
 | `positioner` | 'open' \| 'closed' |
 | `content` | 'open' \| 'closed' |
-| `item-indicator` | 'checked' \| 'unchecked' \| 'checked' \| 'unchecked' \| undefined |
+| `item-indicator` | 'checked' \| 'unchecked'（条件成立时才出现） |
 
 以下名称仅用于内部状态机。
 
@@ -301,10 +301,10 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `trigger` | `aria-controls` | undefined \| `content` 部件的 id |
-| `trigger` | `aria-haspopup` | undefined \| 'menu' |
-| `trigger` | `aria-keyshortcuts` | undefined \| 'Shift+F10' |
-| `content` | `aria-hidden` | !open \|\| undefined |
+| `trigger` | `aria-controls` | `content` 部件的 id（条件成立时才出现） |
+| `trigger` | `aria-haspopup` | 'menu'（条件成立时才出现） |
+| `trigger` | `aria-keyshortcuts` | 'Shift+F10'（条件成立时才出现） |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
 | `content` | `aria-label` | translations.content |
 | `content` | `role` | 'menu' |
 | `item-icon` | `aria-hidden` | 'true' |
@@ -367,9 +367,9 @@
 | `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
-| `item-indicator` | `data-state` | 'checked' \| 'unchecked' \| 'checked' \| 'unchecked' \| undefined |
+| `item-indicator` | `data-state` | 'checked' \| 'unchecked'（条件成立时才出现） |
 | `item-indicator` | `data-xh-collection-slot` | 'indicator' |
-| `item-indicator` | `data-xh-menu-choice-indicator` | item.kind \| undefined |
+| `item-indicator` | `data-xh-menu-choice-indicator` | 'checkbox' \| 'radio'（条件成立时才出现） |
 | `separator` | `data-xh-collection-separator` | '' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 | `radio-group` | `data-value` | group.value |

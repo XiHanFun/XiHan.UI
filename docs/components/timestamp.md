@@ -162,7 +162,7 @@ time-zone 给了 IANA 时区名就按那个时区的墙钟显示，datetime 带�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-display` | props.display |
+| `root` | `data-display` | 'date' \| 'datetime' \| 'relative' |
 | `root` | `data-relative` | ''（条件成立时才出现） |
 | `root` | `data-state` | 'empty' |
 

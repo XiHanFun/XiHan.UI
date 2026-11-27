@@ -181,8 +181,8 @@
 | `root` | `data-header-fixed` | ''（条件成立时才出现） |
 | `root` | `data-sider-breakpoint` | props.siderBreakpoint |
 | `root` | `data-sider-fixed` | ''（条件成立时才出现） |
-| `root` | `data-sider-placement` | props.siderPlacement |
-| `root` | `data-sider-presentation` | resolveSiderPresentation( prop('siderPresentation'), … |
+| `root` | `data-sider-placement` | 'start' \| 'end' |
+| `root` | `data-sider-presentation` | 'inline' \| 'sheet' |
 | `root` | `data-split` | ''（条件成立时才出现） |
 | `header` | `data-fixed` | ''（条件成立时才出现） |
 | `header` | `data-xh-liquid` | ''（条件成立时才出现） |
@@ -191,8 +191,8 @@
 | `sider` | `data-collapsed` | ''（条件成立时才出现） |
 | `sider` | `data-fixed` | ''（条件成立时才出现） |
 | `sider` | `data-instant` | ''（条件成立时才出现） |
-| `sider` | `data-placement` | props.siderPlacement |
-| `sider` | `data-presentation` | resolveSiderPresentation( prop('siderPresentation'), … |
+| `sider` | `data-placement` | 'start' \| 'end' |
+| `sider` | `data-presentation` | 'inline' \| 'sheet' |
 | `sider-trigger` | `data-collapsed` | ''（条件成立时才出现） |
 | `sider-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `sider-trigger` | `data-xh-action-control` | '' |

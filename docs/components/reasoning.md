@@ -208,11 +208,11 @@ open 交给宿主：外部一个按钮统一开合几段思考，自动开合让
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
-| `root` | `data-size` | props.size |
+| `root` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-streaming` | ''（条件成立时才出现） |
-| `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost'（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
@@ -220,7 +220,7 @@ open 交给宿主：外部一个按钮统一开合几段思考，自动开合让
 | `trigger` | `data-xh-action-control` | '' |
 | `trigger` | `data-xh-action-display` | 'always' |
 | `trigger` | `data-xh-action-profile` | 'disclosure-trigger' |
-| `trigger` | `data-xh-action-size` | props.size |
+| `trigger` | `data-xh-action-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
 | `trigger` | `data-xh-action-variant` | 'ghost' |
 | `icon` | `data-streaming` | ''（条件成立时才出现） |
 | `indicator` | `data-instant` | ''（条件成立时才出现） |

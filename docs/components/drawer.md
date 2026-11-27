@@ -277,20 +277,20 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
-| `content` | `aria-describedby` | `description` 部件的 id \| undefined |
-| `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-labelledby` | `title` 部件的 id \| undefined |
+| `content` | `aria-describedby` | `description` 部件的 id（条件成立时才出现） |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
+| `content` | `aria-labelledby` | `title` 部件的 id（条件成立时才出现） |
 | `content` | `aria-modal` | 'true' \| 'false' |
-| `content` | `role` | props.role |
-| `confirm-trigger` | `aria-busy` | 'true' \| undefined |
-| `confirm-trigger` | `aria-disabled` | 'true' \| undefined |
+| `content` | `role` | 'dialog' \| 'alertdialog' |
+| `confirm-trigger` | `aria-busy` | 'true'（条件成立时才出现） |
+| `confirm-trigger` | `aria-disabled` | 'true'（条件成立时才出现） |
 | `close-trigger` | `aria-label` | translations.close |
 | `resize-trigger` | `aria-controls` | `content` 部件的 id |
 | `resize-trigger` | `aria-label` | translations.resizeTrigger |
 | `resize-trigger` | `aria-orientation` | 'vertical' \| 'horizontal' |
-| `resize-trigger` | `aria-valuemax` | String(max) \| undefined |
-| `resize-trigger` | `aria-valuemin` | String(min) |
-| `resize-trigger` | `aria-valuenow` | String(now) \| undefined |
+| `resize-trigger` | `aria-valuemax` | 数值（条件成立时才出现） |
+| `resize-trigger` | `aria-valuemin` | 数值 |
+| `resize-trigger` | `aria-valuenow` | 数值（条件成立时才出现） |
 | `resize-trigger` | `role` | 'separator' |
 
 ## 样式参考
@@ -308,7 +308,7 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-contained` | ''（条件成立时才出现） |
-| `root` | `data-placement` | props.placement |
+| `root` | `data-placement` | 'top' \| 'right' \| 'bottom' \| 'left' |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
@@ -327,7 +327,7 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-contained` | ''（条件成立时才出现） |
 | `content` | `data-instant` | ''（条件成立时才出现） |
-| `content` | `data-placement` | props.placement |
+| `content` | `data-placement` | 'top' \| 'right' \| 'bottom' \| 'left' |
 | `content` | `data-resizing` | ''（条件成立时才出现） |
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
@@ -352,7 +352,7 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | `close-trigger` | `data-xh-action-profile` | 'icon' |
 | `close-trigger` | `data-xh-action-size` | 'sm' |
 | `close-trigger` | `data-xh-action-variant` | 'ghost' |
-| `resize-trigger` | `data-placement` | props.placement |
+| `resize-trigger` | `data-placement` | 'top' \| 'right' \| 'bottom' \| 'left' |
 | `resize-trigger` | `data-resizing` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->

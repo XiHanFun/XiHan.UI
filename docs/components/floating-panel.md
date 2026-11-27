@@ -252,7 +252,7 @@ open 与 position 都由外部持有：面板只报告意图，值写回后才�
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
-| `content` | `aria-labelledby` | `title` 部件的 id \| undefined |
+| `content` | `aria-labelledby` | `title` 部件的 id（条件成立时才出现） |
 | `content` | `aria-modal` | 'false' |
 | `content` | `role` | 'dialog' |
 | `drag-trigger` | `aria-disabled` | 'false' \| 'true' |
@@ -261,9 +261,9 @@ open 与 position 都由外部持有：面板只报告意图，值写回后才�
 | `resize-trigger` | `aria-disabled` | 'false' \| 'true' |
 | `resize-trigger` | `aria-label` | label.resizeTrigger(item.edge) |
 | `resize-trigger` | `aria-orientation` | 'vertical' \| 'horizontal' |
-| `resize-trigger` | `aria-valuemax` | String(Math.round(valueMax)) \| undefined |
-| `resize-trigger` | `aria-valuemin` | String(Math.round(horizontal ? minSize.width : minSiz… |
-| `resize-trigger` | `aria-valuenow` | String(Math.round(horizontal ? dimensions.width : dim… |
+| `resize-trigger` | `aria-valuemax` | 数值（条件成立时才出现） |
+| `resize-trigger` | `aria-valuemin` | 数值 |
+| `resize-trigger` | `aria-valuenow` | 数值 |
 | `resize-trigger` | `aria-valuetext` | label.resizeValueText(dimensions) |
 | `resize-trigger` | `role` | 'separator' |
 | `window-state-trigger` | `aria-disabled` | 'true' \| 'false' |
@@ -297,7 +297,7 @@ open 与 position 都由外部持有：面板只报告意图，值写回后才�
 | `root` | `data-dragging` | ''（条件成立时才出现） |
 | `root` | `data-resizing` | ''（条件成立时才出现） |
 | `root` | `data-state` | 'open' \| 'closed' |
-| `root` | `data-window-state` | context.get('windowState') |
+| `root` | `data-window-state` | 'default' \| 'maximized' \| 'minimized' |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-xh-action-control` | '' |
@@ -309,24 +309,24 @@ open 与 position 都由外部持有：面板只报告意图，值写回后才�
 | `positioner` | `data-instant` | ''（条件成立时才出现） |
 | `positioner` | `data-positioned` | '' |
 | `positioner` | `data-state` | 'open' \| 'closed' |
-| `positioner` | `data-window-state` | context.get('windowState') |
+| `positioner` | `data-window-state` | 'default' \| 'maximized' \| 'minimized' |
 | `content` | `data-disabled` | ''（条件成立时才出现） |
 | `content` | `data-dragging` | ''（条件成立时才出现） |
 | `content` | `data-resizing` | ''（条件成立时才出现） |
 | `content` | `data-state` | 'open' \| 'closed' |
-| `content` | `data-window-state` | context.get('windowState') |
+| `content` | `data-window-state` | 'default' \| 'maximized' \| 'minimized' |
 | `content` | `data-xh-material` | 'frosted' |
 | `header` | `data-dragging` | ''（条件成立时才出现） |
-| `header` | `data-window-state` | context.get('windowState') |
+| `header` | `data-window-state` | 'default' \| 'maximized' \| 'minimized' |
 | `drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
 | `resize-trigger` | `data-disabled` | ''（条件成立时才出现） |
-| `resize-trigger` | `data-edge` | item.edge |
+| `resize-trigger` | `data-edge` | 'n' \| 's' \| 'e' \| 'w' \| 'ne' \| 'nw' \| 'se' \| 'sw' |
 | `resize-trigger` | `data-resizing` | ''（条件成立时才出现） |
 | `window-state-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `window-state-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `window-state-trigger` | `data-state` | 'on' \| 'off' |
-| `window-state-trigger` | `data-target-window-state` | item.windowState |
+| `window-state-trigger` | `data-target-window-state` | 'default' \| 'maximized' \| 'minimized' |
 | `window-state-trigger` | `data-xh-action-control` | '' |
 | `window-state-trigger` | `data-xh-action-display` | 'always' |
 | `window-state-trigger` | `data-xh-action-profile` | 'icon' |
@@ -338,7 +338,7 @@ open 与 position 都由外部持有：面板只报告意图，值写回后才�
 | `close-trigger` | `data-xh-action-profile` | 'icon' |
 | `close-trigger` | `data-xh-action-size` | 'sm' |
 | `close-trigger` | `data-xh-action-variant` | 'ghost' |
-| `body` | `data-window-state` | context.get('windowState') |
+| `body` | `data-window-state` | 'default' \| 'maximized' \| 'minimized' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

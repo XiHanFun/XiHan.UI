@@ -191,15 +191,15 @@ label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-orientation` | props.orientation |
-| `root` | `data-placement` | props.placement |
-| `root` | `data-size` | props.size |
-| `item` | `data-orientation` | props.orientation |
-| `item` | `data-placement` | props.placement |
-| `label` | `data-orientation` | props.orientation |
-| `label` | `data-placement` | props.placement |
-| `indicator` | `data-tone` | item.tone |
-| `connector` | `data-orientation` | props.orientation |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical'（条件成立时才出现） |
+| `root` | `data-placement` | 'start' \| 'end' \| 'alternate'（条件成立时才出现） |
+| `root` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
+| `item` | `data-orientation` | 'horizontal' \| 'vertical'（条件成立时才出现） |
+| `item` | `data-placement` | 'start' \| 'end' \| 'alternate'（条件成立时才出现） |
+| `label` | `data-orientation` | 'horizontal' \| 'vertical'（条件成立时才出现） |
+| `label` | `data-placement` | 'start' \| 'end' \| 'alternate'（条件成立时才出现） |
+| `indicator` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
+| `connector` | `data-orientation` | 'horizontal' \| 'vertical'（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

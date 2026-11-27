@@ -191,9 +191,9 @@ ring-labels 在 12 点方向那根轴上写出每一圈的数值，rings 定圈�
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | 'error' \| undefined |
+| `root` | 'error'（条件成立时才出现） |
 | `tooltip` | 'visible' \| 'hidden' |
-| `empty` | 'loading' \| undefined |
+| `empty` | 'loading'（条件成立时才出现） |
 
 以下名称仅用于内部状态机。
 
@@ -272,7 +272,7 @@ ring-labels 在 12 点方向那根轴上写出每一圈的数值，rings 定圈�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-busy` | 'true' \| undefined |
+| `root` | `aria-busy` | 'true'（条件成立时才出现） |
 | `legend` | `aria-label` | translations.legendLabel |
 | `legend` | `role` | 'toolbar' |
 | `legend-item` | `aria-pressed` | 'false' \| 'true' |
@@ -282,9 +282,9 @@ ring-labels 在 12 点方向那根轴上写出每一圈的数值，rings 定圈�
 | `plot` | `role` | 'graphics-document' |
 | `tooltip` | `aria-hidden` | 'true' |
 | `mark` | `aria-hidden` | 'true' |
-| `mark` | `aria-label` | undefined \| s?.name |
-| `mark` | `aria-roledescription` | undefined \| translations.seriesRoleDescription |
-| `mark` | `role` | undefined \| 'graphics-object' |
+| `mark` | `aria-label` | s?.name（条件成立时才出现） |
+| `mark` | `aria-roledescription` | translations.seriesRoleDescription（条件成立时才出现） |
+| `mark` | `role` | 'graphics-object'（条件成立时才出现） |
 
 - 根是 `<figure>`，可访问名称来自 `caption`；不放标题时在根上写 `aria-label` 或 `aria-labelledby`。绘图区念同一个名字：有 caption 时引用它，没有时沿用根上的那一条。
 - 绘图区是 `role="graphics-document"`，`aria-describedby` 指向组件生成的摘要；每个实体是一个 `role="graphics-object"` 的分组，名称是实体名；每个顶点是 `role="graphics-symbol"`，名称取 `translations.datumLabel`（缺省「指标, 实体 值」），务必按本地语言改写。
@@ -310,7 +310,7 @@ ring-labels 在 12 点方向那根轴上写出每一圈的数值，rings 定圈�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-loading` | ''（条件成立时才出现） |
-| `root` | `data-state` | 'error' \| undefined |
+| `root` | `data-state` | 'error'（条件成立时才出现） |
 | `root` | `data-xh-chart-part` | 'root' |
 | `caption` | `data-xh-chart-part` | 'caption' |
 | `legend` | `data-xh-chart-part` | 'legend' |
@@ -321,35 +321,35 @@ ring-labels 在 12 点方向那根轴上写出每一圈的数值，rings 定圈�
 | `legend-item` | `data-xh-action-size` | 'xs' |
 | `legend-item` | `data-xh-action-variant` | 'ghost' |
 | `legend-item` | `data-xh-chart-part` | 'legend-item' |
-| `legend-item` | `data-xh-chart-pattern` | String(item.slot) |
-| `legend-item` | `data-xh-chart-slot` | String(item.slot) |
+| `legend-item` | `data-xh-chart-pattern` | 数值 |
+| `legend-item` | `data-xh-chart-slot` | 数值 |
 | `legend-swatch` | `data-xh-chart-part` | 'legend-swatch' |
 | `viewport` | `data-xh-chart-part` | 'viewport' |
 | `plot` | `data-xh-chart-part` | 'plot' |
 | `defs` | `data-xh-chart-part` | 'defs' |
 | `pattern` | `data-xh-chart-part` | 'pattern' |
-| `pattern` | `data-xh-chart-slot` | undefined \| String(pattern.slot) |
+| `pattern` | `data-xh-chart-slot` | 数值（条件成立时才出现） |
 | `pattern-line` | `data-xh-chart-part` | 'pattern-line' |
-| `tooltip` | `data-placement` | 'top' \| 'bottom'-'right' \| 'left' \| undefined |
+| `tooltip` | `data-placement` | 'top' \| 'bottom'-'right' \| 'left'（条件成立时才出现） |
 | `tooltip` | `data-state` | 'visible' \| 'hidden' |
 | `tooltip` | `data-xh-chart-part` | 'tooltip' |
 | `tooltip-header` | `data-xh-chart-part` | 'tooltip-header' |
 | `tooltip-row` | `data-current` | ''（条件成立时才出现） |
 | `tooltip-row` | `data-series-id` | row.seriesId |
 | `tooltip-row` | `data-xh-chart-part` | 'tooltip-row' |
-| `tooltip-row` | `data-xh-chart-pattern` | String(row.slot) |
-| `tooltip-row` | `data-xh-chart-slot` | String(row.slot) |
+| `tooltip-row` | `data-xh-chart-pattern` | 数值 |
+| `tooltip-row` | `data-xh-chart-slot` | 数值 |
 | `tooltip-swatch` | `data-xh-chart-part` | 'tooltip-swatch' |
 | `tooltip-value` | `data-xh-chart-part` | 'tooltip-value' |
 | `tooltip-name` | `data-xh-chart-part` | 'tooltip-name' |
 | `empty` | `data-loading` | ''（条件成立时才出现） |
-| `empty` | `data-state` | 'loading' \| undefined |
+| `empty` | `data-state` | 'loading'（条件成立时才出现） |
 | `empty` | `data-xh-chart-part` | 'empty' |
 | `empty` | `data-xh-loading-ring` | '' |
 | `mark` | `data-dimmed` | ''（条件成立时才出现） |
 | `mark` | `data-series-id` | mark.key.slice('series:'.length) |
-| `mark` | `data-xh-chart-part` | mark.part \| undefined |
-| `mark` | `data-xh-chart-slot` | String(s.slot) \| undefined \| String(mark.paint.slot) |
+| `mark` | `data-xh-chart-part` | 'focus-ring'（条件成立时才出现） |
+| `mark` | `data-xh-chart-slot` | 数值（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

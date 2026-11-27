@@ -220,27 +220,27 @@ variant 设置浮动按钮的表面，size 取小、中、大三档
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-draggable` | ''（条件成立时才出现） |
 | `root` | `data-dragging` | ''（条件成立时才出现） |
-| `root` | `data-edge` | edge?.edge |
+| `root` | `data-edge` | 'inline-start' \| 'inline-end' \| 'block-start' \| 'block-end'（条件成立时才出现） |
 | `root` | `data-moving` | ''（条件成立时才出现） |
-| `root` | `data-placement` | floatButtonPlacementOf(position, context.get('viewpor… \| props.placement |
+| `root` | `data-placement` | 'top-start' \| 'top-end' \| 'bottom-start' \| 'bottom-end'（条件成立时才出现） |
 | `root` | `data-point` | ''（条件成立时才出现） |
-| `root` | `data-size` | props.size |
+| `root` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
 | `root` | `data-state` | 'open' \| 'closed' |
-| `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' \| 'solid'（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-xh-action-control` | '' |
 | `trigger` | `data-xh-action-display` | 'always' |
 | `trigger` | `data-xh-action-profile` | 'floating' |
-| `trigger` | `data-xh-action-size` | props.size |
-| `trigger` | `data-xh-action-variant` | props.variant |
+| `trigger` | `data-xh-action-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
+| `trigger` | `data-xh-action-variant` | 'outline' \| 'subtle' \| 'ghost' \| 'solid'（条件成立时才出现） |
 | `trigger` | `data-xh-ink-surface` | ''（条件成立时才出现） |
 | `trigger` | `data-xh-liquid` | '' |
-| `trigger` | `data-xh-material` | 'frosted' \| undefined |
+| `trigger` | `data-xh-material` | 'frosted'（条件成立时才出现） |
 | `list` | `data-instant` | ''（条件成立时才出现） |
-| `list` | `data-placement` | floatButtonPlacementOf(position, context.get('viewpor… \| props.placement |
+| `list` | `data-placement` | 'top-start' \| 'top-end' \| 'bottom-start' \| 'bottom-end'（条件成立时才出现） |
 | `list` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->

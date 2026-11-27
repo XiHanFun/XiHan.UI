@@ -226,9 +226,9 @@ layout="preset" 按节点上写的 x / y 摆放，整体等比缩放进绘图区
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | 'error' \| undefined |
+| `root` | 'error'（条件成立时才出现） |
 | `tooltip` | 'visible' \| 'hidden' |
-| `empty` | 'loading' \| undefined |
+| `empty` | 'loading'（条件成立时才出现） |
 
 以下名称仅用于内部状态机。
 
@@ -305,7 +305,7 @@ layout="preset" 按节点上写的 x / y 摆放，整体等比缩放进绘图区
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-busy` | 'true' \| undefined |
+| `root` | `aria-busy` | 'true'（条件成立时才出现） |
 | `legend` | `aria-label` | translations.legendLabel |
 | `legend` | `role` | 'toolbar' |
 | `legend-item` | `aria-pressed` | 'false' \| 'true' |
@@ -341,7 +341,7 @@ layout="preset" 按节点上写的 x / y 摆放，整体等比缩放进绘图区
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-loading` | ''（条件成立时才出现） |
-| `root` | `data-state` | 'error' \| undefined |
+| `root` | `data-state` | 'error'（条件成立时才出现） |
 | `root` | `data-xh-chart-part` | 'root' |
 | `caption` | `data-xh-chart-part` | 'caption' |
 | `legend` | `data-xh-chart-part` | 'legend' |
@@ -352,15 +352,15 @@ layout="preset" 按节点上写的 x / y 摆放，整体等比缩放进绘图区
 | `legend-item` | `data-xh-action-size` | 'xs' |
 | `legend-item` | `data-xh-action-variant` | 'ghost' |
 | `legend-item` | `data-xh-chart-part` | 'legend-item' |
-| `legend-item` | `data-xh-chart-pattern` | String(item.slot) |
-| `legend-item` | `data-xh-chart-slot` | String(item.slot) |
+| `legend-item` | `data-xh-chart-pattern` | 数值 |
+| `legend-item` | `data-xh-chart-slot` | 数值 |
 | `legend-swatch` | `data-xh-chart-part` | 'legend-swatch' |
 | `viewport` | `data-xh-chart-part` | 'viewport' |
 | `plot` | `data-draggable` | ''（条件成立时才出现） |
 | `plot` | `data-dragging` | ''（条件成立时才出现） |
 | `plot` | `data-xh-chart-part` | 'plot' |
 | `plot` | `data-zoomed` | ''（条件成立时才出现） |
-| `tooltip` | `data-placement` | 'top' \| 'bottom'-'right' \| 'left' \| undefined |
+| `tooltip` | `data-placement` | 'top' \| 'bottom'-'right' \| 'left'（条件成立时才出现） |
 | `tooltip` | `data-state` | 'visible' \| 'hidden' |
 | `tooltip` | `data-xh-chart-part` | 'tooltip' |
 | `tooltip-header` | `data-xh-chart-part` | 'tooltip-header' |
@@ -368,11 +368,11 @@ layout="preset" 按节点上写的 x / y 摆放，整体等比缩放进绘图区
 | `tooltip-value` | `data-xh-chart-part` | 'tooltip-value' |
 | `tooltip-name` | `data-xh-chart-part` | 'tooltip-name' |
 | `empty` | `data-loading` | ''（条件成立时才出现） |
-| `empty` | `data-state` | 'loading' \| undefined |
+| `empty` | `data-state` | 'loading'（条件成立时才出现） |
 | `empty` | `data-xh-chart-part` | 'empty' |
 | `empty` | `data-xh-loading-ring` | '' |
 | `mark` | `data-dimmed` | ''（条件成立时才出现） |
-| `mark` | `data-xh-chart-part` | mark.part \| undefined |
+| `mark` | `data-xh-chart-part` | 'focus-ring'（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

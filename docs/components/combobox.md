@@ -350,23 +350,23 @@ variant 设置输入框外观，invalid 标记无效输入
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `input` | `aria-activedescendant` | `item` 部件的 id \| undefined |
+| `input` | `aria-activedescendant` | `item` 部件的 id（条件成立时才出现） |
 | `input` | `aria-autocomplete` | 'both' \| 'list' |
 | `input` | `aria-controls` | `content` 部件的 id |
-| `input` | `aria-expanded` | undefined \| 'true' \| 'false' |
+| `input` | `aria-expanded` | 'true' \| 'false'（条件成立时才出现） |
 | `input` | `aria-haspopup` | 'listbox' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-label` | props.ariaLabel |
-| `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `input` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `input` | `aria-required` | 'true' \| 'false' |
-| `input` | `role` | undefined \| 'combobox' |
+| `input` | `role` | 'combobox'（条件成立时才出现） |
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-label` | translations.trigger |
 | `clear-trigger` | `aria-label` | translations.clearTrigger |
-| `content` | `aria-busy` | 'true' \| undefined |
-| `content` | `aria-hidden` | !open \|\| undefined |
+| `content` | `aria-busy` | 'true'（条件成立时才出现） |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
 | `content` | `aria-label` | props.ariaLabel |
-| `content` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `content` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `content` | `aria-multiselectable` | 'true' \| 'false' |
 | `content` | `role` | 'listbox' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
@@ -402,14 +402,14 @@ variant 设置输入框外观，invalid 标记无效输入
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `label` | `data-required` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-state` | 'open' \| 'closed' |
-| `control` | `data-variant` | props.variant |
+| `control` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
@@ -443,7 +443,7 @@ variant 设置输入框外观，invalid 标记无效输入
 | `positioner` | `data-size` | props.size |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-tone` | props.tone |
-| `positioner` | `data-variant` | props.variant |
+| `positioner` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
@@ -452,7 +452,7 @@ variant 设置输入框外观，invalid 标记无效输入
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
-| `item` | `data-tone` | metaOf.get(item.value)?.tone |
+| `item` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
@@ -482,7 +482,7 @@ variant 设置输入框外观，invalid 标记无效输入
 | `loading` | `data-state` | 'open' \| 'closed' |
 | `loading` | `data-xh-loading-ring` | '' |
 | `loading` | `data-xh-placeholder` | 'loading' |
-| `overflow-tag` | `data-count` | String(overflowCount) |
+| `overflow-tag` | `data-count` | 数值 |
 | `tag` | `data-value` | v |
 
 <!-- xh-component-tokens:start -->

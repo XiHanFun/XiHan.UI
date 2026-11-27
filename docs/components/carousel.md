@@ -285,34 +285,34 @@ effect="fade" 把各张叠放在同一格：翻页时新一张淡入、旧一张
 | --- | --- | --- |
 | `root` | `data-autoplay` | ''（条件成立时才出现） |
 | `root` | `data-dragging` | ''（条件成立时才出现） |
-| `root` | `data-orientation` | props.orientation |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `root` | `data-paused` | ''（条件成立时才出现） |
 | `viewport` | `data-dragging` | ''（条件成立时才出现） |
-| `viewport` | `data-orientation` | props.orientation |
+| `viewport` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `list` | `data-animating` | ''（条件成立时才出现） |
 | `list` | `data-dragging` | ''（条件成立时才出现） |
-| `list` | `data-effect` | props.effect |
-| `list` | `data-orientation` | props.orientation |
+| `list` | `data-effect` | 'fade' \| 'slide' |
+| `list` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `list` | `data-snapped` | ''（条件成立时才出现） |
-| `item` | `data-index` | String(index) |
+| `item` | `data-index` | 数值 |
 | `item` | `data-inview` | ''（条件成立时才出现） |
-| `item` | `data-orientation` | props.orientation |
+| `item` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `prev-trigger` | `data-disabled` | ''（条件成立时才出现） |
-| `prev-trigger` | `data-orientation` | props.orientation |
+| `prev-trigger` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `prev-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `prev-trigger` | `data-xh-action-control` | '' |
 | `prev-trigger` | `data-xh-action-display` | 'always' |
 | `prev-trigger` | `data-xh-action-profile` | 'floating' |
-| `prev-trigger` | `data-xh-action-size` | props.size |
+| `prev-trigger` | `data-xh-action-size` | 'sm' \| 'md' \| 'lg' |
 | `prev-trigger` | `data-xh-liquid` | '' |
 | `prev-trigger` | `data-xh-material` | 'frosted' |
 | `next-trigger` | `data-disabled` | ''（条件成立时才出现） |
-| `next-trigger` | `data-orientation` | props.orientation |
+| `next-trigger` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `next-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `next-trigger` | `data-xh-action-control` | '' |
 | `next-trigger` | `data-xh-action-display` | 'always' |
 | `next-trigger` | `data-xh-action-profile` | 'floating' |
-| `next-trigger` | `data-xh-action-size` | props.size |
+| `next-trigger` | `data-xh-action-size` | 'sm' \| 'md' \| 'lg' |
 | `next-trigger` | `data-xh-liquid` | '' |
 | `next-trigger` | `data-xh-material` | 'frosted' |
 | `autoplay-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -321,13 +321,13 @@ effect="fade" 把各张叠放在同一格：翻页时新一张淡入、旧一张
 | `autoplay-trigger` | `data-xh-action-control` | '' |
 | `autoplay-trigger` | `data-xh-action-display` | 'always' |
 | `autoplay-trigger` | `data-xh-action-profile` | 'floating' |
-| `autoplay-trigger` | `data-xh-action-size` | props.size |
+| `autoplay-trigger` | `data-xh-action-size` | 'sm' \| 'md' \| 'lg' |
 | `autoplay-trigger` | `data-xh-liquid` | '' |
 | `autoplay-trigger` | `data-xh-material` | 'frosted' |
-| `indicator-group` | `data-orientation` | props.orientation |
+| `indicator-group` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `indicator-group` | `data-xh-liquid` | '' |
 | `indicator` | `data-current` | ''（条件成立时才出现） |
-| `indicator` | `data-index` | String(index) |
+| `indicator` | `data-index` | 数值 |
 | `indicator` | `data-pressed` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->

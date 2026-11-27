@@ -182,7 +182,7 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-label` | resolveTranslations(ANCHOR_EN_US, prop('translations'… |
-| `link` | `aria-current` | 'location' \| undefined |
+| `link` | `aria-current` | 'location'（条件成立时才出现） |
 | `indicator` | `aria-hidden` | 'true' |
 
 ## 样式参考
@@ -199,10 +199,10 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-orientation` | props.orientation |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
-| `list` | `data-orientation` | props.orientation |
+| `list` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `link` | `data-current` | ''（条件成立时才出现） |
 | `link` | `data-pressed` | ''（条件成立时才出现） |
 | `link` | `data-xh-collection-context` | 'nav' |
@@ -210,7 +210,7 @@
 | `link` | `data-xh-collection-size` | props.size |
 | `link-text` | `data-xh-collection-slot` | 'text' |
 | `indicator` | `data-instant` | ''（条件成立时才出现） |
-| `indicator` | `data-orientation` | props.orientation |
+| `indicator` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `indicator` | `data-value` | context.get('value') |
 
 <!-- xh-component-tokens:start -->

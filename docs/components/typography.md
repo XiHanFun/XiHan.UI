@@ -165,16 +165,16 @@ variant 设置正文、辅助、强调与代码样式，链接另用 link 部件
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-align` | props.align |
-| `root` | `data-size` | props.size |
-| `root` | `data-weight` | props.weight |
+| `root` | `data-align` | 'start' \| 'end' \| 'center' \| 'justify'（条件成立时才出现） |
+| `root` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
+| `root` | `data-weight` | 'regular' \| 'bold' \| 'medium' \| 'semibold'（条件成立时才出现） |
 | `heading` | `data-level` | levelAttr(heading.level) |
 | `text` | `data-marked` | ''（条件成立时才出现） |
 | `text` | `data-strikethrough` | ''（条件成立时才出现） |
-| `text` | `data-tone` | text.tone |
+| `text` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 | `text` | `data-underline` | ''（条件成立时才出现） |
-| `text` | `data-variant` | text.variant |
-| `text` | `data-weight` | text.weight |
+| `text` | `data-variant` | 'code' \| 'gradient' \| 'muted' \| 'strong'（条件成立时才出现） |
+| `text` | `data-weight` | 'regular' \| 'bold' \| 'medium' \| 'semibold'（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

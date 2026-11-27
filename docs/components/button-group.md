@@ -167,10 +167,10 @@ variant 与 tone 设置整组外观，size 设置整组尺寸，disabled 禁用�
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-full-width` | ''（条件成立时才出现） |
-| `root` | `data-orientation` | props.orientation |
-| `root` | `data-size` | props.size |
-| `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical'（条件成立时才出现） |
+| `root` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
+| `root` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' \| 'solid'（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

@@ -252,21 +252,21 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `input` | `aria-activedescendant` | `item` 部件的 id \| undefined |
+| `input` | `aria-activedescendant` | `item` 部件的 id（条件成立时才出现） |
 | `input` | `aria-autocomplete` | 'list' |
 | `input` | `aria-controls` | `content` 部件的 id |
-| `input` | `aria-describedby` | `issues` 部件的 id \| undefined |
-| `input` | `aria-expanded` | undefined \| 'true' \| 'false' |
+| `input` | `aria-describedby` | `issues` 部件的 id（条件成立时才出现） |
+| `input` | `aria-expanded` | 'true' \| 'false'（条件成立时才出现） |
 | `input` | `aria-haspopup` | 'listbox' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-label` | props.ariaLabel |
-| `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `input` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `input` | `aria-readonly` | 'true' \| 'false' |
 | `input` | `aria-required` | 'true' \| 'false' |
-| `input` | `role` | undefined \| 'combobox' |
+| `input` | `role` | 'combobox'（条件成立时才出现） |
 | `highlight` | `aria-hidden` | 'true' |
 | `issues` | `role` | 'status' |
-| `content` | `aria-hidden` | !open \|\| undefined |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
 | `content` | `aria-label` | t.content |
 | `content` | `role` | 'listbox' |
 | `item` | `aria-selected` | 'true' \| 'false' |
@@ -293,12 +293,12 @@
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
-| `control` | `data-variant` | props.variant |
+| `control` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
 | `input` | `data-disabled` | ''（条件成立时才出现） |
@@ -308,18 +308,18 @@
 | `input` | `data-xh-field-input` | '' |
 | `input` | `data-xh-field-layout` | 'textarea' \| 'single-line' |
 | `highlight` | `data-multiline` | ''（条件成立时才出现） |
-| `highlight-segment` | `data-issue` | undefined \| String(segment.issue) |
-| `highlight-segment` | `data-severity` | segment.severity |
+| `highlight-segment` | `data-issue` | 数值（条件成立时才出现） |
+| `highlight-segment` | `data-severity` | 'warning' \| 'error'（条件成立时才出现） |
 | `issues` | `data-invalid` | ''（条件成立时才出现） |
-| `issue` | `data-issue` | String(issue.index) |
-| `issue` | `data-severity` | issue.issue.severity |
+| `issue` | `data-issue` | 数值 |
+| `issue` | `data-severity` | 'warning' \| 'error'（条件成立时才出现） |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
 | `positioner` | `data-size` | props.size |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-tone` | props.tone |
-| `positioner` | `data-variant` | props.variant |
+| `positioner` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-xh-material` | 'frosted' |

@@ -240,12 +240,12 @@ drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，sim
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `control` | `aria-label` | props.ariaLabel |
-| `control` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `control` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `control` | `role` | 'img' |
 | `guide` | `aria-hidden` | 'true' |
-| `undo-trigger` | `aria-disabled` | 'true' \| undefined |
+| `undo-trigger` | `aria-disabled` | 'true'（条件成立时才出现） |
 | `undo-trigger` | `aria-label` | translations.undoTrigger |
-| `redo-trigger` | `aria-disabled` | 'true' \| undefined |
+| `redo-trigger` | `aria-disabled` | 'true'（条件成立时才出现） |
 | `redo-trigger` | `aria-label` | translations.redoTrigger |
 | `clear-trigger` | `aria-label` | translations.clearTrigger |
 | `status` | `aria-atomic` | 'true' |

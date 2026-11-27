@@ -213,8 +213,8 @@ item-action-trigger 按下时先发 action 事件，再使该条进入退场；�
 
 | 部件 | 取值 |
 | --- | --- |
-| `item` | toStatus(state.get()) |
-| `item-progress` | toStatus(state.get()) |
+| `item` | 'visible' \| 'dismissing' \| 'unmounted' |
+| `item-progress` | 'visible' \| 'dismissing' \| 'unmounted' |
 
 以下名称仅用于内部状态机。
 
@@ -263,8 +263,8 @@ item-action-trigger 按下时先发 action 事件，再使该条进入退场；�
 | `group` | `aria-label` | translations.region |
 | `group` | `role` | 'region' |
 | `item` | `aria-atomic` | 'true' |
-| `item` | `aria-describedby` | `description` 部件的 id \| undefined |
-| `item` | `aria-labelledby` | `title` 部件的 id \| undefined |
+| `item` | `aria-describedby` | `description` 部件的 id（条件成立时才出现） |
+| `item` | `aria-labelledby` | `title` 部件的 id（条件成立时才出现） |
 | `item` | `aria-live` | 'assertive' \| 'polite' |
 | `item` | `role` | 'alert' \| 'status' |
 | `item-indicator` | `aria-hidden` | 'true' |
@@ -285,19 +285,19 @@ item-action-trigger 按下时先发 action 事件，再使该条进入退场；�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-count` | list.length |
+| `root` | `data-count` | 数值 |
 | `root` | `data-empty` | ''（条件成立时才出现） |
-| `group` | `data-count` | group.length |
+| `group` | `data-count` | 数值 |
 | `group` | `data-empty` | ''（条件成立时才出现） |
 | `group` | `data-expanded` | ''（条件成立时才出现） |
-| `group` | `data-placement` | props.placement |
-| `group` | `data-preset` | props.preset |
+| `group` | `data-placement` | 'top-start' \| 'top-end' \| 'bottom-start' \| 'bottom-end' \| 'middle' \| 'top' \| 'bottom' \| 'middle-start' \| 'middle-end'（条件成立时才出现） |
+| `group` | `data-preset` | 'card' \| 'toast' |
 | `group` | `data-stacked` | ''（条件成立时才出现） |
 | `item` | `data-loading` | ''（条件成立时才出现） |
 | `item` | `data-paused` | ''（条件成立时才出现） |
-| `item` | `data-preset` | props.preset |
-| `item` | `data-state` | toStatus(state.get()) |
-| `item` | `data-tone` | props.tone |
+| `item` | `data-preset` | 'card' \| 'toast' |
+| `item` | `data-state` | 'visible' \| 'dismissing' \| 'unmounted' |
+| `item` | `data-tone` | 'success' \| 'warning' \| 'danger' \| 'info' |
 | `item` | `data-xh-loading-ring` | '' |
 | `item-indicator` | `data-loading` | ''（条件成立时才出现） |
 | `item-indicator` | `data-xh-loading-ring` | '' |
@@ -307,7 +307,7 @@ item-action-trigger 按下时先发 action 事件，再使该条进入退场；�
 | `item-action-trigger` | `data-xh-action-profile` | 'text' |
 | `item-action-trigger` | `data-xh-action-size` | 'sm' |
 | `item-action-trigger` | `data-xh-action-variant` | 'outline' |
-| `item-progress` | `data-state` | toStatus(state.get()) |
+| `item-progress` | `data-state` | 'visible' \| 'dismissing' \| 'unmounted' |
 | `item-close-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `item-close-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `item-close-trigger` | `data-xh-action-control` | '' |

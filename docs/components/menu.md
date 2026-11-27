@@ -241,7 +241,7 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 | `trigger` | 'open' \| 'closed' |
 | `positioner` | 'open' \| 'closed' |
 | `content` | 'open' \| 'closed' |
-| `item-indicator` | 'checked' \| 'unchecked' \| 'checked' \| 'unchecked' \| undefined |
+| `item-indicator` | 'checked' \| 'unchecked'（条件成立时才出现） |
 | `submenu-trigger` | 'open' \| 'closed' |
 
 以下名称仅用于内部状态机。
@@ -318,9 +318,9 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'menu' |
 | `trigger` | `aria-label` | props.translations.trigger |
-| `content` | `aria-hidden` | !open \|\| undefined |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
 | `content` | `aria-label` | props.translations.content |
-| `content` | `aria-labelledby` | `trigger` 部件的 id \| undefined |
+| `content` | `aria-labelledby` | `trigger` 部件的 id（条件成立时才出现） |
 | `content` | `role` | 'menu' |
 | `item-icon` | `aria-hidden` | 'true' |
 | `item-shortcut` | `aria-hidden` | 'true' |
@@ -384,9 +384,9 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 | `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
-| `item-indicator` | `data-state` | 'checked' \| 'unchecked' \| 'checked' \| 'unchecked' \| undefined |
+| `item-indicator` | `data-state` | 'checked' \| 'unchecked'（条件成立时才出现） |
 | `item-indicator` | `data-xh-collection-slot` | 'indicator' |
-| `item-indicator` | `data-xh-menu-choice-indicator` | item.kind \| undefined |
+| `item-indicator` | `data-xh-menu-choice-indicator` | 'checkbox' \| 'radio'（条件成立时才出现） |
 | `separator` | `data-xh-collection-separator` | '' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 | `submenu-trigger` | `data-disabled` | ''（条件成立时才出现） |

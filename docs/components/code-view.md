@@ -263,7 +263,7 @@ block-folding 按缩进找出语法块，块头行首给一颗折叠钮；折叠
 | `fold-trigger` | `aria-expanded` | 'false' \| 'true' |
 | `fold-trigger` | `aria-label` | translations.expand \| translations.collapse |
 | `line-fold-trigger` | `aria-expanded` | 'true' \| 'false' |
-| `line-fold-trigger` | `aria-label` | undefined \| foldLabel(lineNumberAt(region.start + 1), lineNumberA… |
+| `line-fold-trigger` | `aria-label` | foldLabel(lineNumberAt(region.start + 1), lineNumberA…（条件成立时才出现） |
 
 - `pre` 可聚焦并带可访问名称：渲染了文件名时指向它，否则使用 `translations.code`。
 - 折叠按钮带 `aria-expanded` 与 `aria-controls`，指向 `pre`。
@@ -287,38 +287,38 @@ block-folding 按缩进找出语法块，块头行首给一颗折叠钮；折叠
 | `root` | `data-block-folding` | ''（条件成立时才出现） |
 | `root` | `data-clamped` | ''（条件成立时才出现） |
 | `root` | `data-complete` | ''（条件成立时才出现） |
-| `root` | `data-digits` | String(Math.min( String(lineNumberAt(lineCount - 1)).… |
+| `root` | `data-digits` | 数值 |
 | `root` | `data-foldable` | ''（条件成立时才出现） |
 | `root` | `data-lang` | prop('lang')?.trim() \|\| CODE_VIEW_FALLBACK_LANG |
 | `root` | `data-line-numbers` | ''（条件成立时才出现） |
-| `root` | `data-size` | props.size |
+| `root` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
 | `pre` | `data-complete` | ''（条件成立时才出现） |
 | `pre` | `data-wrap` | ''（条件成立时才出现） |
 | `code` | `data-lang` | prop('lang')?.trim() \|\| CODE_VIEW_FALLBACK_LANG |
 | `code` | `data-wrap` | ''（条件成立时才出现） |
 | `line` | `data-folded` | ''（条件成立时才出现） |
 | `line` | `data-highlighted` | ''（条件成立时才出现） |
-| `line` | `data-line-number` | String(lineNumberAt(index)) |
+| `line` | `data-line-number` | 数值 |
 | `line` | `data-revealed` | ''（条件成立时才出现） |
 | `line-number` | `data-folded` | ''（条件成立时才出现） |
 | `line-number` | `data-highlighted` | ''（条件成立时才出现） |
-| `line-number` | `data-line-number` | String(lineNumberAt(index)) |
+| `line-number` | `data-line-number` | 数值 |
 | `line-content` | `data-folded` | ''（条件成立时才出现） |
 | `line-content` | `data-highlighted` | ''（条件成立时才出现） |
-| `line-content` | `data-line-number` | String(lineNumberAt(index)) |
-| `token` | `data-kind` | token.kind |
+| `line-content` | `data-line-number` | 数值 |
+| `token` | `data-kind` | 'string' \| 'number' \| 'plain' \| 'punctuation' \| 'comment' \| 'keyword' |
 | `fold-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `fold-trigger` | `data-state` | 'closed' \| 'open' |
 | `fold-trigger` | `data-xh-action-control` | '' |
 | `fold-trigger` | `data-xh-action-display` | 'always' |
 | `fold-trigger` | `data-xh-action-profile` | 'disclosure-trigger' |
-| `fold-trigger` | `data-xh-action-size` | props.size |
+| `fold-trigger` | `data-xh-action-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
 | `fold-trigger` | `data-xh-action-variant` | 'ghost' |
 | `line-fold-trigger` | `data-state` | 'open' \| 'closed' |
 | `line-fold-trigger` | `data-xh-action-control` | '' |
 | `line-fold-trigger` | `data-xh-action-display` | 'always' |
 | `line-fold-trigger` | `data-xh-action-profile` | 'icon' |
-| `line-fold-trigger` | `data-xh-action-size` | props.size |
+| `line-fold-trigger` | `data-xh-action-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
 | `line-fold-trigger` | `data-xh-action-variant` | 'ghost' |
 
 <!-- xh-component-tokens:start -->

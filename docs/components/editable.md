@@ -216,12 +216,12 @@ variant 设置编辑框外观；禁用、只读与空值占位各是一种状态
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-label` | props.ariaLabel |
-| `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `root` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `root` | `role` | 'group' |
 | `preview` | `aria-disabled` | 'true' \| 'false' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-label` | props.ariaLabel |
-| `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `input` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `input` | `aria-required` | 'true' \| 'false' |
 | `edit-trigger` | `aria-controls` | `input` 部件的 id |
 
@@ -247,17 +247,17 @@ variant 设置编辑框外观；禁用、只读与空值占位各是一种状态
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'edit' \| 'preview' |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `label` | `data-state` | 'edit' \| 'preview' |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-state` | 'edit' \| 'preview' |
-| `control` | `data-variant` | props.variant |
+| `control` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
-| `preview` | `data-activation-mode` | props.activationMode |
+| `preview` | `data-activation-mode` | 'none' \| 'click' \| 'dblclick' \| 'focus' |
 | `preview` | `data-disabled` | ''（条件成立时才出现） |
 | `preview` | `data-invalid` | ''（条件成立时才出现） |
 | `preview` | `data-placeholder` | ''（条件成立时才出现） |

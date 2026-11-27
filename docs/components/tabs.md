@@ -293,7 +293,7 @@ fullWidth 让标签按标签带的宽度平分，适合两三个并列入口撑�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `list` | `aria-orientation` | props.orientation |
+| `list` | `aria-orientation` | 'horizontal' \| 'vertical' |
 | `list` | `role` | 'tablist' |
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-disabled` | 'true' \| 'false' |
@@ -328,11 +328,11 @@ fullWidth 让标签按标签带的宽度平分，适合两三个并列入口撑�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-full-width` | ''（条件成立时才出现） |
-| `root` | `data-orientation` | props.orientation |
-| `root` | `data-placement` | props.placement |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical' |
+| `root` | `data-placement` | 'start' \| 'end' |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'card' \| 'line' \| 'segmented' |
 | `list` | `data-instant` | ''（条件成立时才出现） |
 | `trigger` | `data-closable` | ''（条件成立时才出现） |
 | `trigger` | `data-current` | ''（条件成立时才出现） |
@@ -342,9 +342,9 @@ fullWidth 让标签按标签带的宽度平分，适合两三个并列入口撑�
 | `trigger` | `data-drop` | 'before' \| 'after' |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'active' \| 'inactive' |
-| `trigger` | `data-xh-collection-context` | 'nav' \| undefined |
+| `trigger` | `data-xh-collection-context` | 'nav'（条件成立时才出现） |
 | `trigger` | `data-xh-collection-item` | ''（条件成立时才出现） |
-| `trigger` | `data-xh-collection-size` | props.size \| undefined |
+| `trigger` | `data-xh-collection-size` | props.size（条件成立时才出现） |
 | `close-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `close-trigger` | `data-xh-action-control` | '' |
 | `close-trigger` | `data-xh-action-display` | 'always' |
@@ -352,32 +352,32 @@ fullWidth 让标签按标签带的宽度平分，适合两三个并列入口撑�
 | `close-trigger` | `data-xh-action-size` | 'xs' |
 | `close-trigger` | `data-xh-action-variant` | 'ghost' |
 | `indicator` | `data-instant` | ''（条件成立时才出现） |
-| `indicator` | `data-orientation` | props.orientation |
-| `indicator` | `data-placement` | props.placement |
-| `indicator` | `data-value` | item.value |
-| `indicator` | `data-variant` | props.variant |
-| `separator` | `data-orientation` | props.orientation |
+| `indicator` | `data-orientation` | 'horizontal' \| 'vertical' |
+| `indicator` | `data-placement` | 'start' \| 'end' |
+| `indicator` | `data-value` | context.get('value') |
+| `indicator` | `data-variant` | 'card' \| 'line' \| 'segmented' |
+| `separator` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `prev-trigger` | `data-disabled` | ''（条件成立时才出现） |
-| `prev-trigger` | `data-orientation` | props.orientation |
+| `prev-trigger` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `prev-trigger` | `data-xh-action-control` | '' |
 | `prev-trigger` | `data-xh-action-display` | 'always' |
 | `prev-trigger` | `data-xh-action-profile` | 'icon' |
 | `prev-trigger` | `data-xh-action-size` | props.size |
 | `prev-trigger` | `data-xh-action-variant` | 'ghost' |
 | `next-trigger` | `data-disabled` | ''（条件成立时才出现） |
-| `next-trigger` | `data-orientation` | props.orientation |
+| `next-trigger` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `next-trigger` | `data-xh-action-control` | '' |
 | `next-trigger` | `data-xh-action-display` | 'always' |
 | `next-trigger` | `data-xh-action-profile` | 'icon' |
 | `next-trigger` | `data-xh-action-size` | props.size |
 | `next-trigger` | `data-xh-action-variant` | 'ghost' |
-| `overflow-trigger` | `data-orientation` | props.orientation |
+| `overflow-trigger` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `overflow-trigger` | `data-xh-action-control` | '' |
 | `overflow-trigger` | `data-xh-action-display` | 'always' |
 | `overflow-trigger` | `data-xh-action-profile` | 'icon' |
 | `overflow-trigger` | `data-xh-action-size` | props.size |
 | `overflow-trigger` | `data-xh-action-variant` | 'ghost' |
-| `add-trigger` | `data-orientation` | props.orientation |
+| `add-trigger` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `add-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `add-trigger` | `data-xh-action-control` | '' |
 | `add-trigger` | `data-xh-action-display` | 'always' |

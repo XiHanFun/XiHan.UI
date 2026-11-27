@@ -287,18 +287,18 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
-| `content` | `aria-hidden` | !open \|\| undefined |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
 | `content` | `aria-label` | translations.title |
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | 'dialog' |
-| `input` | `aria-activedescendant` | `item` 部件的 id \| undefined |
+| `input` | `aria-activedescendant` | `item` 部件的 id（条件成立时才出现） |
 | `input` | `aria-autocomplete` | 'list' |
 | `input` | `aria-controls` | `list` 部件的 id |
 | `input` | `aria-expanded` | 'true' |
 | `input` | `aria-haspopup` | 'listbox' |
 | `input` | `aria-label` | translations.input |
 | `input` | `role` | 'combobox' |
-| `list` | `aria-busy` | 'true' \| undefined |
+| `list` | `aria-busy` | 'true'（条件成立时才出现） |
 | `list` | `aria-label` | translations.list |
 | `list` | `role` | 'listbox' |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
@@ -340,7 +340,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
-| `item` | `data-tone` | metaOf.get(item.value)?.tone |
+| `item` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |

@@ -212,7 +212,7 @@ tone 决定选中描边与选中徽标用哪族颜色，格子边长随控件行
 | --- | --- | --- |
 | `root` | `aria-invalid` | 'true' \| 'false' |
 | `root` | `aria-label` | props.ariaLabel |
-| `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `root` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `root` | `aria-readonly` | 'true' \| 'false' |
 | `root` | `aria-required` | 'true' \| 'false' |
 | `root` | `role` | 'radiogroup' |

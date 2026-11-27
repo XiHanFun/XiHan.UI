@@ -373,27 +373,27 @@ multiple 时各列拼出的是草稿，按「添加」收进值、浮层不收�
 | `control` | `aria-disabled` | 'true' \| 'false' |
 | `control` | `aria-invalid` | 'true' \| 'false' |
 | `control` | `aria-label` | props.ariaLabel |
-| `control` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `control` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `control` | `role` | 'group' |
 | `segment` | `aria-disabled` | 'true' \| 'false' |
 | `segment` | `aria-invalid` | 'true' \| 'false' |
 | `segment` | `aria-label` | translations[segment] |
 | `segment` | `aria-readonly` | 'true' \| 'false' |
 | `segment` | `aria-required` | 'true' \| 'false' |
-| `segment` | `aria-valuemax` | range.max |
-| `segment` | `aria-valuemin` | range.min |
-| `segment` | `aria-valuenow` | segmentNumber(draft, segment, hourCycle) |
+| `segment` | `aria-valuemax` | 数值 |
+| `segment` | `aria-valuemin` | 数值 |
+| `segment` | `aria-valuenow` | 数值（条件成立时才出现） |
 | `segment` | `aria-valuetext` | timeSegmentText(draft, segment, { hourCycle, locale }) |
 | `segment` | `role` | 'spinbutton' |
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
 | `trigger` | `aria-label` | props.ariaLabel |
-| `trigger` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `trigger` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `clear-trigger` | `aria-label` | translations.clearTrigger |
-| `content` | `aria-hidden` | !open \|\| undefined |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
 | `content` | `aria-label` | props.ariaLabel |
-| `content` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `content` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `content` | `aria-modal` | 'false' |
 | `content` | `role` | 'dialog' |
 | `preset-group` | `aria-disabled` | 'true' \| 'false' |
@@ -435,27 +435,27 @@ multiple 时各列拼出的是草稿，按「添加」收进值、浮层不收�
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-empty` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-state` | 'open' \| 'closed' |
-| `control` | `data-variant` | props.variant |
+| `control` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
-| `control` | `data-xh-field-layout` | 'multi-tag' \| undefined |
+| `control` | `data-xh-field-layout` | 'multi-tag'（条件成立时才出现） |
 | `control` | `data-xh-field-size` | props.size |
 | `tag-list` | `data-disabled` | ''（条件成立时才出现） |
 | `tag-list` | `data-instant` | ''（条件成立时才出现） |
 | `tag-list` | `data-placeholder-shown` | ''（条件成立时才出现） |
-| `tag-list` | `data-placeholder-text` | props.placeholder \| undefined \| undefined |
+| `tag-list` | `data-placeholder-text` | props.placeholder（条件成立时才出现） |
 | `tag-list` | `data-xh-tag-list` | '' |
 | `segment-group` | `data-disabled` | ''（条件成立时才出现） |
 | `segment-group` | `data-invalid` | ''（条件成立时才出现） |
 | `segment-group` | `data-placeholder-shown` | ''（条件成立时才出现） |
-| `segment-group` | `data-placeholder-text` | props.placeholder \| undefined |
+| `segment-group` | `data-placeholder-text` | props.placeholder（条件成立时才出现） |
 | `segment-group` | `data-readonly` | ''（条件成立时才出现） |
 | `segment` | `data-disabled` | ''（条件成立时才出现） |
 | `segment` | `data-focus` | ''（条件成立时才出现） |
@@ -483,7 +483,7 @@ multiple 时各列拼出的是草稿，按「添加」收进值、浮层不收�
 | `positioner` | `data-size` | props.size |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-tone` | props.tone |
-| `positioner` | `data-variant` | props.variant |
+| `positioner` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
@@ -510,7 +510,7 @@ multiple 时各列拼出的是草稿，按「添加」收进值、浮层不收�
 | `confirm-trigger` | `data-xh-action-size` | 'xs' |
 | `confirm-trigger` | `data-xh-action-variant` | 'solid' |
 | `confirm-trigger` | `data-xh-ink-surface` | '' |
-| `overflow-tag` | `data-count` | String(overflowCount) |
+| `overflow-tag` | `data-count` | 数值 |
 | `tag` | `data-value` | v |
 
 <!-- xh-component-tokens:start -->

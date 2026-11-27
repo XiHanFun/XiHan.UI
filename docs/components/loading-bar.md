@@ -143,10 +143,10 @@ tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | 'idle' \| 'loading' \| 'complete' \| 'finishing' |
-| `track` | 'idle' \| 'loading' \| 'complete' \| 'finishing' |
-| `range` | 'idle' \| 'loading' \| 'complete' \| 'finishing' |
-| `peg` | 'idle' \| 'loading' \| 'complete' \| 'finishing' |
+| `root` | 'loading' \| 'idle' \| 'complete' \| 'finishing' |
+| `track` | 'loading' \| 'idle' \| 'complete' \| 'finishing' |
+| `range` | 'loading' \| 'idle' \| 'complete' \| 'finishing' |
+| `peg` | 'loading' \| 'idle' \| 'complete' \| 'finishing' |
 
 以下名称仅用于内部状态机。
 
@@ -184,9 +184,9 @@ tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-label` | translations.root |
-| `root` | `aria-valuemax` | String(LOADING_BAR_MAX) |
+| `root` | `aria-valuemax` | 100 |
 | `root` | `aria-valuemin` | '0' |
-| `root` | `aria-valuenow` | String(value) \| undefined |
+| `root` | `aria-valuenow` | 数值（条件成立时才出现） |
 | `root` | `role` | 'progressbar' |
 | `peg` | `aria-hidden` | 'true' |
 
@@ -203,11 +203,11 @@ tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-indeterminate` | ''（条件成立时才出现） |
-| `root` | `data-state` | 'idle' \| 'loading' \| 'complete' \| 'finishing' |
+| `root` | `data-state` | 'loading' \| 'idle' \| 'complete' \| 'finishing' |
 | `root` | `data-tone` | props.tone |
-| `track` | `data-state` | 'idle' \| 'loading' \| 'complete' \| 'finishing' |
-| `range` | `data-state` | 'idle' \| 'loading' \| 'complete' \| 'finishing' |
-| `peg` | `data-state` | 'idle' \| 'loading' \| 'complete' \| 'finishing' |
+| `track` | `data-state` | 'loading' \| 'idle' \| 'complete' \| 'finishing' |
+| `range` | `data-state` | 'loading' \| 'idle' \| 'complete' \| 'finishing' |
+| `peg` | `data-state` | 'loading' \| 'idle' \| 'complete' \| 'finishing' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

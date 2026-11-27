@@ -255,8 +255,8 @@ delegate 让一个提示管一整排按钮：文字取按钮的 data-xh-tooltip 
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `trigger` | `aria-describedby` | `content` 部件的 id \| undefined |
-| `content` | `aria-hidden` | !open \|\| undefined |
+| `trigger` | `aria-describedby` | `content` 部件的 id（条件成立时才出现） |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
 | `content` | `role` | 'tooltip' |
 | `shortcut` | `aria-hidden` | 'true' |
 | `arrow` | `aria-hidden` | 'true' |

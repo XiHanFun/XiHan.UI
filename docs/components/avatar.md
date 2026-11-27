@@ -129,9 +129,9 @@ status-change 在状态落位时通知，过渡态 idle 不通知；未提供地
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
-| `image` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
-| `fallback` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
+| `root` | 'loading' \| 'idle' \| 'loaded' \| 'error' |
+| `image` | 'loading' \| 'idle' \| 'loaded' \| 'error' |
+| `fallback` | 'loading' \| 'idle' \| 'loaded' \| 'error' |
 
 以下名称仅用于内部状态机。
 
@@ -174,10 +174,10 @@ status-change 在状态落位时通知，过渡态 idle 不通知；未提供地
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
-| `root` | `data-state` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
+| `root` | `data-state` | 'loading' \| 'idle' \| 'loaded' \| 'error' |
 | `root` | `data-tone` | props.tone |
-| `image` | `data-state` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
-| `fallback` | `data-state` | 'idle' \| 'loading' \| 'loaded' \| 'error' |
+| `image` | `data-state` | 'loading' \| 'idle' \| 'loaded' \| 'error' |
+| `fallback` | `data-state` | 'loading' \| 'idle' \| 'loaded' \| 'error' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

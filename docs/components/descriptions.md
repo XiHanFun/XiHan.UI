@@ -196,7 +196,7 @@ ghost 不画壳，subtle 铺一层淡底，outline 绘制一圈描边并在格�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `header` | `data-size` | props.size |
+| `header` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

@@ -222,12 +222,12 @@ placement 是首选位，空间不足时引擎自行避让，实际落点写在 
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
-| `content` | `aria-describedby` | `description` 部件的 id \| undefined |
-| `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-labelledby` | `title` 部件的 id \| undefined |
+| `content` | `aria-describedby` | `description` 部件的 id（条件成立时才出现） |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
+| `content` | `aria-labelledby` | `title` 部件的 id（条件成立时才出现） |
 | `content` | `role` | 'dialog' |
-| `confirm-trigger` | `aria-busy` | 'true' \| undefined |
-| `confirm-trigger` | `aria-disabled` | 'true' \| undefined |
+| `confirm-trigger` | `aria-busy` | 'true'（条件成立时才出现） |
+| `confirm-trigger` | `aria-disabled` | 'true'（条件成立时才出现） |
 | `arrow` | `aria-hidden` | 'true' |
 
 ## 样式参考

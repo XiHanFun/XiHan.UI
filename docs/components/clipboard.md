@@ -184,11 +184,11 @@ variant 设置复制按钮的外观，size 分小、中、大三档
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
-| `copy-trigger` | `aria-busy` | 'true' \| undefined |
-| `copy-trigger` | `aria-disabled` | 'true' \| undefined |
+| `input` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
+| `copy-trigger` | `aria-busy` | 'true'（条件成立时才出现） |
+| `copy-trigger` | `aria-disabled` | 'true'（条件成立时才出现） |
 | `copy-trigger` | `aria-label` | translations.copy |
-| `indicator` | `aria-hidden` | indicator.copied !== copied \|\| undefined |
+| `indicator` | `aria-hidden` | 'true'（条件成立时才出现） |
 | `status` | `aria-atomic` | 'true' |
 | `status` | `aria-live` | 'polite' |
 | `status` | `role` | 'status' |
@@ -212,7 +212,7 @@ variant 设置复制按钮的外观，size 分小、中、大三档
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'idle' \| 'copying' \| 'copied' |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' \| 'solid' |
 | `label` | `data-state` | 'idle' \| 'copying' \| 'copied' |
 | `control` | `data-state` | 'idle' \| 'copying' \| 'copied' |
 | `input` | `data-state` | 'idle' \| 'copying' \| 'copied' |
@@ -225,7 +225,7 @@ variant 设置复制按钮的外观，size 分小、中、大三档
 | `copy-trigger` | `data-xh-action-display` | 'always' |
 | `copy-trigger` | `data-xh-action-profile` | 'text' |
 | `copy-trigger` | `data-xh-action-size` | props.size |
-| `copy-trigger` | `data-xh-action-variant` | props.variant |
+| `copy-trigger` | `data-xh-action-variant` | 'outline' \| 'subtle' \| 'ghost' \| 'solid' |
 | `copy-trigger` | `data-xh-ink-surface` | ''（条件成立时才出现） |
 | `copy-trigger` | `data-xh-loading-ring` | 'overlay' |
 | `indicator` | `data-copied` | ''（条件成立时才出现） |

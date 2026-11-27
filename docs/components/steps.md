@@ -189,13 +189,13 @@
 
 | 部件 | 取值 |
 | --- | --- |
-| `item` | s.status |
-| `trigger` | s.status |
-| `indicator` | s.status |
-| `title` | getItemState(item).status |
-| `description` | getItemState(item).status |
-| `separator` | getItemState(item).status |
-| `content` | getItemState(item).status |
+| `item` | 'completed' \| 'current' \| 'incomplete' |
+| `trigger` | 'completed' \| 'current' \| 'incomplete' |
+| `indicator` | 'completed' \| 'current' \| 'incomplete' |
+| `title` | 'completed' \| 'current' \| 'incomplete' |
+| `description` | 'completed' \| 'current' \| 'incomplete' |
+| `separator` | 'completed' \| 'current' \| 'incomplete' |
+| `content` | 'completed' \| 'current' \| 'incomplete' |
 
 以下名称仅用于内部状态机。
 
@@ -256,28 +256,28 @@
 | --- | --- | --- |
 | `list` | `aria-disabled` | 'true' \| 'false' |
 | `list` | `aria-label` | translations.list |
-| `list` | `aria-orientation` | props.orientation |
+| `list` | `aria-orientation` | 'horizontal' \| 'vertical' |
 | `list` | `role` | 'list' |
-| `item` | `aria-current` | 'step' \| undefined |
-| `item` | `role` | 'listitem' \| undefined |
-| `trigger` | `aria-controls` | undefined \| `content` 部件的 id |
-| `trigger` | `aria-current` | 'step' \| undefined |
-| `trigger` | `aria-describedby` | `indicator` 部件的 id \| undefined |
+| `item` | `aria-current` | 'step'（条件成立时才出现） |
+| `item` | `role` | 'listitem'（条件成立时才出现） |
+| `trigger` | `aria-controls` | `content` 部件的 id（条件成立时才出现） |
+| `trigger` | `aria-current` | 'step'（条件成立时才出现） |
+| `trigger` | `aria-describedby` | `indicator` 部件的 id（条件成立时才出现） |
 | `trigger` | `aria-disabled` | 'true' \| 'false' |
-| `trigger` | `aria-posinset` | item.index + 1 \| undefined |
+| `trigger` | `aria-posinset` | 数值（条件成立时才出现） |
 | `trigger` | `aria-selected` | 'true' \| 'false' |
-| `trigger` | `aria-setsize` | normalizeStepCount(prop('count') ?? (collection.lengt… \| undefined |
+| `trigger` | `aria-setsize` | 数值（条件成立时才出现） |
 | `trigger` | `role` | 'tab' |
 | `indicator` | `aria-hidden` | 'true' |
 | `indicator` | `aria-label` | translations.progressLabel |
 | `indicator` | `aria-valuemax` | '100' |
 | `indicator` | `aria-valuemin` | '0' |
-| `indicator` | `aria-valuenow` | String(percent) |
+| `indicator` | `aria-valuenow` | 数值 |
 | `indicator` | `aria-valuetext` | progressValueText(Math.round(percent)) |
 | `indicator` | `role` | 'progressbar' |
 | `separator` | `aria-hidden` | 'true' |
-| `content` | `aria-labelledby` | undefined \| `trigger` 部件的 id |
-| `content` | `role` | undefined \| 'tabpanel' |
+| `content` | `aria-labelledby` | `trigger` 部件的 id（条件成立时才出现） |
+| `content` | `role` | 'tabpanel'（条件成立时才出现） |
 
 ## 样式参考
 
@@ -296,19 +296,19 @@
 | `root` | `data-complete` | ''（条件成立时才出现） |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-empty` | ''（条件成立时才出现） |
-| `root` | `data-orientation` | props.orientation |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
-| `list` | `data-orientation` | props.orientation |
+| `root` | `data-variant` | 'number' \| 'dot' |
+| `list` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
-| `item` | `data-orientation` | props.orientation |
-| `item` | `data-state` | s.status |
-| `item` | `data-tone` | s.tone |
+| `item` | `data-orientation` | 'horizontal' \| 'vertical' |
+| `item` | `data-state` | 'completed' \| 'current' \| 'incomplete' |
+| `item` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-readonly` | '' |
-| `trigger` | `data-state` | s.status |
+| `trigger` | `data-state` | 'completed' \| 'current' \| 'incomplete' |
 | `trigger` | `data-xh-action-control` | '' |
 | `trigger` | `data-xh-action-display` | 'always' |
 | `trigger` | `data-xh-action-profile` | 'row' |
@@ -316,13 +316,13 @@
 | `trigger` | `data-xh-action-variant` | 'ghost' |
 | `indicator` | `data-instant` | ''（条件成立时才出现） |
 | `indicator` | `data-progress` | ''（条件成立时才出现） |
-| `indicator` | `data-state` | s.status |
-| `indicator` | `data-variant` | props.variant |
-| `title` | `data-state` | getItemState(item).status |
-| `description` | `data-state` | getItemState(item).status |
-| `separator` | `data-orientation` | props.orientation |
-| `separator` | `data-state` | getItemState(item).status |
-| `content` | `data-state` | getItemState(item).status |
+| `indicator` | `data-state` | 'completed' \| 'current' \| 'incomplete' |
+| `indicator` | `data-variant` | 'number' \| 'dot' |
+| `title` | `data-state` | 'completed' \| 'current' \| 'incomplete' |
+| `description` | `data-state` | 'completed' \| 'current' \| 'incomplete' |
+| `separator` | `data-orientation` | 'horizontal' \| 'vertical' |
+| `separator` | `data-state` | 'completed' \| 'current' \| 'incomplete' |
+| `content` | `data-state` | 'completed' \| 'current' \| 'incomplete' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

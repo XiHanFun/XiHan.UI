@@ -189,7 +189,7 @@ tone 切换聚焦描边与发送按钮使用哪族颜色，输入与提交链路
 
 | 部件 | 取值 |
 | --- | --- |
-| `input` | 'empty' \| 'editing' \| 'disabled' |
+| `input` | 'disabled' \| 'empty' \| 'editing' |
 
 以下名称仅用于内部状态机。
 
@@ -267,10 +267,10 @@ tone 切换聚焦描边与发送按钮使用哪族颜色，输入与提交链路
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `root` | `data-xh-field-chrome` | '' |
 | `root` | `data-xh-field-size` | props.size |
-| `input` | `data-state` | 'empty' \| 'editing' \| 'disabled' |
+| `input` | `data-state` | 'disabled' \| 'empty' \| 'editing' |
 | `input` | `data-xh-field-input` | '' |
 | `submit-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `submit-trigger` | `data-instant` | ''（条件成立时才出现） |

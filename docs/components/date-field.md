@@ -237,18 +237,18 @@ hourCycle=12 时小时段收 1-12，分钟段之后多出上下午段（按 a / 
 | --- | --- | --- |
 | `control` | `aria-disabled` | 'true' \| 'false' |
 | `control` | `aria-label` | props.ariaLabel |
-| `control` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `control` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `control` | `role` | 'group' |
-| `segment` | `aria-disabled` | undefined \| 'true' \| 'false' |
-| `segment` | `aria-invalid` | undefined \| 'true' \| 'false' |
+| `segment` | `aria-disabled` | 'true' \| 'false'（条件成立时才出现） |
+| `segment` | `aria-invalid` | 'true' \| 'false'（条件成立时才出现） |
 | `segment` | `aria-label` | item?.label |
-| `segment` | `aria-readonly` | undefined \| 'true' \| 'false' |
-| `segment` | `aria-required` | undefined \| 'true' \| 'false' |
-| `segment` | `aria-valuemax` | undefined \| String(item.max) |
-| `segment` | `aria-valuemin` | undefined \| String(item.min) |
-| `segment` | `aria-valuenow` | undefined \| String(item.value) |
+| `segment` | `aria-readonly` | 'true' \| 'false'（条件成立时才出现） |
+| `segment` | `aria-required` | 'true' \| 'false'（条件成立时才出现） |
+| `segment` | `aria-valuemax` | 数值（条件成立时才出现） |
+| `segment` | `aria-valuemin` | 数值（条件成立时才出现） |
+| `segment` | `aria-valuenow` | 数值（条件成立时才出现） |
 | `segment` | `aria-valuetext` | item?.text |
-| `segment` | `role` | undefined \| 'spinbutton' |
+| `segment` | `role` | 'spinbutton'（条件成立时才出现） |
 | `clear-trigger` | `aria-label` | translations.clearTrigger |
 
 ## 样式参考
@@ -273,27 +273,27 @@ hourCycle=12 时小时段收 1-12，分钟段之后多出上下午段（按 a / 
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
-| `control` | `data-variant` | props.variant |
+| `control` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
 | `segment-group` | `data-disabled` | ''（条件成立时才出现） |
 | `segment-group` | `data-invalid` | ''（条件成立时才出现） |
 | `segment-group` | `data-placeholder-shown` | ''（条件成立时才出现） |
-| `segment-group` | `data-placeholder-text` | props.placeholder \| undefined |
+| `segment-group` | `data-placeholder-text` | props.placeholder（条件成立时才出现） |
 | `segment-group` | `data-readonly` | ''（条件成立时才出现） |
 | `segment` | `data-disabled` | ''（条件成立时才出现） |
 | `segment` | `data-focus` | ''（条件成立时才出现） |
-| `segment` | `data-index` | String(index) \| undefined |
+| `segment` | `data-index` | 数值（条件成立时才出现） |
 | `segment` | `data-invalid` | ''（条件成立时才出现） |
 | `segment` | `data-placeholder` | ''（条件成立时才出现） |
 | `segment` | `data-readonly` | ''（条件成立时才出现） |
-| `segment` | `data-segment` | item?.type |
+| `segment` | `data-segment` | 'year' \| 'quarter' \| 'month' \| 'week' \| 'day' \| 'hour' \| 'minute' \| 'second' \| 'dayPeriod'（条件成立时才出现） |
 | `clear-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-xh-action-control` | '' |
 | `clear-trigger` | `data-xh-action-display` | 'has-value' |

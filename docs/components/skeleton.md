@@ -140,8 +140,8 @@ loading 期间容器报告 aria-busy；切换为 false 后骨架让出位置，�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-busy` | 'true' \| undefined |
-| `item` | `aria-hidden` | 'true' \| undefined |
+| `root` | `aria-busy` | 'true'（条件成立时才出现） |
+| `item` | `aria-hidden` | 'true'（条件成立时才出现） |
 
 ## 样式参考
 
@@ -160,7 +160,7 @@ loading 期间容器报告 aria-busy；切换为 false 后骨架让出位置，�
 | `root` | `data-animation` | props.animation |
 | `root` | `data-instant` | ''（条件成立时才出现） |
 | `root` | `data-state` | 'loading' \| 'loaded' |
-| `item` | `data-shape` | item.shape |
+| `item` | `data-shape` | 'text' \| 'circle' \| 'rect'（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

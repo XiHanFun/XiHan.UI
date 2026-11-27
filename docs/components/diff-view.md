@@ -252,11 +252,11 @@ parseUnifiedPatch 把一份多文件补丁拆成每个文件一份模型；逐�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `body` | `aria-colcount` | 2 \| 1 |
-| `body` | `aria-label` | undefined \| model.newPath |
-| `body` | `aria-labelledby` | `header` 部件的 id \| undefined |
-| `body` | `aria-rowcount` | rows.length |
+| `body` | `aria-label` | model.newPath（条件成立时才出现） |
+| `body` | `aria-labelledby` | `header` 部件的 id（条件成立时才出现） |
+| `body` | `aria-rowcount` | 数值 |
 | `body` | `role` | 'table' |
-| `row` | `aria-rowindex` | rowIndex |
+| `row` | `aria-rowindex` | 数值 |
 | `row` | `role` | 'row' |
 | `line-number` | `aria-hidden` | 'true' |
 | `line-content` | `aria-colindex` | 2 \| 1 |
@@ -266,7 +266,7 @@ parseUnifiedPatch 把一份多文件补丁拆成每个文件一份模型；逐�
 | `gap-cell` | `role` | 'cell' |
 | `gap-trigger` | `aria-expanded` | 'true' \| 'false' |
 | `gap-trigger` | `aria-label` | expandGapLabel(hiddenCountOf(gapId)) |
-| `comment-trigger` | `aria-label` | undefined \| commentLabel(ref.line, ref.side) |
+| `comment-trigger` | `aria-label` | commentLabel(ref.line, ref.side)（条件成立时才出现） |
 
 - 表格语义：`role=table` 配 `role=row` 与 `role=cell`，带 `aria-rowcount` / `aria-rowindex` / `aria-colcount` / `aria-colindex`。列数只计算实际暴露的内容列，行号不算列。
 - 表格的名字：渲染了头部且模型带路径时指向头部；没渲染头部时直接用路径，没有路径时用 `translations.diff`。
@@ -293,36 +293,36 @@ parseUnifiedPatch 把一份多文件补丁拆成每个文件一份模型；逐�
 | `root` | `data-commentable` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-truncated` | ''（条件成立时才出现） |
-| `root` | `data-view` | props.view |
+| `root` | `data-view` | 'split' \| 'unified' |
 | `root` | `data-wrap` | ''（条件成立时才出现） |
-| `summary` | `data-change` | change |
-| `row` | `data-change` | lineAt(rowIndex)?.change |
+| `summary` | `data-change` | 'added' \| 'removed' \| 'context' |
+| `row` | `data-change` | 'added' \| 'removed' \| 'context'（条件成立时才出现） |
 | `row` | `data-revealed` | ''（条件成立时才出现） |
-| `line-number` | `data-change` | lineAt(rowIndex)?.change |
+| `line-number` | `data-change` | 'added' \| 'removed' \| 'context'（条件成立时才出现） |
 | `line-number` | `data-line-number` | cellNumber({ rowIndex, side })?.toString() |
-| `line-number` | `data-side` | side |
-| `line-content` | `data-change` | lineAt(rowIndex)?.change |
+| `line-number` | `data-side` | 'old' \| 'new' |
+| `line-content` | `data-change` | 'added' \| 'removed' \| 'context'（条件成立时才出现） |
 | `line-content` | `data-empty` | ''（条件成立时才出现） |
-| `line-content` | `data-side` | side |
-| `change-label` | `data-change` | change |
-| `inline-change` | `data-change` | lineAt(rowIndex)?.change \| undefined |
-| `token` | `data-kind` | token.kind |
+| `line-content` | `data-side` | 'old' \| 'new' |
+| `change-label` | `data-change` | 'added' \| 'removed' \| 'context' |
+| `inline-change` | `data-change` | 'added' \| 'removed' \| 'context'（条件成立时才出现） |
+| `token` | `data-kind` | 'string' \| 'number' \| 'plain' \| 'punctuation' \| 'comment' \| 'keyword' |
 | `gap` | `data-expanded` | ''（条件成立时才出现） |
-| `gap` | `data-value` | hunkIndex:0 |
+| `gap` | `data-value` | 数值:0 |
 | `gap-trigger` | `data-pressed` | ''（条件成立时才出现） |
-| `gap-trigger` | `data-value` | hunkIndex:0 |
+| `gap-trigger` | `data-value` | 数值:0 |
 | `gap-trigger` | `data-xh-action-control` | '' |
 | `gap-trigger` | `data-xh-action-display` | 'always' |
 | `gap-trigger` | `data-xh-action-profile` | 'disclosure-trigger' |
 | `gap-trigger` | `data-xh-action-size` | props.size |
 | `gap-trigger` | `data-xh-action-variant` | 'ghost' |
-| `comment-trigger` | `data-side` | ref?.side |
+| `comment-trigger` | `data-side` | 'old' \| 'new'（条件成立时才出现） |
 | `comment-trigger` | `data-xh-action-control` | '' |
 | `comment-trigger` | `data-xh-action-display` | 'always' |
 | `comment-trigger` | `data-xh-action-profile` | 'icon' |
 | `comment-trigger` | `data-xh-action-size` | props.size |
 | `comment-trigger` | `data-xh-action-variant` | 'ghost' |
-| `comment-thread` | `data-side` | ref?.side |
+| `comment-thread` | `data-side` | 'old' \| 'new'（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

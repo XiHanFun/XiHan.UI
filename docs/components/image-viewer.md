@@ -256,11 +256,11 @@ open 与 index 双受控；translations 更换工具条的可及名与计数文�
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
 | `backdrop` | `aria-hidden` | 'true' |
-| `content` | `aria-hidden` | !open \|\| undefined |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
 | `content` | `aria-label` | currentItem?.alt |
 | `content` | `aria-modal` | 'true' |
 | `content` | `role` | 'dialog' |
-| `viewport` | `aria-busy` | imageStatus === 'loading' \|\| undefined |
+| `viewport` | `aria-busy` | 'true'（条件成立时才出现） |
 | `toolbar` | `aria-label` | label.toolbar |
 | `toolbar` | `role` | 'group' |
 | `counter` | `aria-live` | 'polite' |
@@ -285,7 +285,7 @@ open 与 index 双受控；translations 更换工具条的可及名与计数文�
 | `backdrop` | `data-variant` | props.variant |
 | `positioner` | `data-positioned` | '' |
 | `positioner` | `data-state` | 'open' \| 'closed' |
-| `positioner` | `data-xh-backdrop` | undefined \| 'dark' |
+| `positioner` | `data-xh-backdrop` | 'dark'（条件成立时才出现） |
 | `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-xh-ink` | 'light' |
@@ -341,23 +341,23 @@ open 与 index 双受控；translations 更换工具条的可及名与计数文�
 | `prev-trigger` | `data-xh-action-control` | '' |
 | `prev-trigger` | `data-xh-action-display` | 'always' |
 | `prev-trigger` | `data-xh-action-profile` | 'floating' |
-| `prev-trigger` | `data-xh-action-size` | props.size |
+| `prev-trigger` | `data-xh-action-size` | 'sm' \| 'md' \| 'lg' |
 | `prev-trigger` | `data-xh-liquid` | '' |
 | `next-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `next-trigger` | `data-xh-action-control` | '' |
 | `next-trigger` | `data-xh-action-display` | 'always' |
 | `next-trigger` | `data-xh-action-profile` | 'floating' |
-| `next-trigger` | `data-xh-action-size` | props.size |
+| `next-trigger` | `data-xh-action-size` | 'sm' \| 'md' \| 'lg' |
 | `next-trigger` | `data-xh-liquid` | '' |
-| `counter` | `data-count` | String(count) |
-| `counter` | `data-index` | String(index + 1) |
+| `counter` | `data-count` | 数值 |
+| `counter` | `data-index` | 数值 |
 | `counter` | `data-state` | 'open' \| 'closed' |
 | `counter` | `data-xh-liquid` | '' |
 | `close-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `close-trigger` | `data-xh-action-control` | '' |
 | `close-trigger` | `data-xh-action-display` | 'always' |
 | `close-trigger` | `data-xh-action-profile` | 'floating' |
-| `close-trigger` | `data-xh-action-size` | props.size |
+| `close-trigger` | `data-xh-action-size` | 'sm' \| 'md' \| 'lg' |
 | `close-trigger` | `data-xh-liquid` | '' |
 
 <!-- xh-component-tokens:start -->

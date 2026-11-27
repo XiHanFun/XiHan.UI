@@ -271,7 +271,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | 部件 | 取值 |
 | --- | --- |
 | `tooltip` | 'hidden' \| 'visible' |
-| `empty` | 'loading' \| undefined |
+| `empty` | 'loading'（条件成立时才出现） |
 
 以下名称仅用于内部状态机。
 
@@ -346,16 +346,16 @@ levels 决定分几档，图例与格子共用同一条色阶
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-busy` | 'true' \| undefined |
-| `grid` | `aria-colcount` | counts.columns \| undefined |
+| `root` | `aria-busy` | 'true'（条件成立时才出现） |
+| `grid` | `aria-colcount` | 数值（条件成立时才出现） |
 | `grid` | `aria-label` | gridLabel |
 | `grid` | `aria-readonly` | 'true' |
-| `grid` | `aria-rowcount` | counts.rows \| undefined |
+| `grid` | `aria-rowcount` | 数值（条件成立时才出现） |
 | `grid` | `role` | 'grid' |
 | `month-block` | `aria-label` | monthBlockOf.get(block.value)?.long |
 | `month-block` | `role` | 'rowgroup' |
 | `row` | `aria-hidden` | 'true' |
-| `row` | `aria-label` | undefined \| grid.weekDays[row.weekDay]?.long |
+| `row` | `aria-label` | grid.weekDays[row.weekDay]?.long（条件成立时才出现） |
 | `row` | `aria-rowindex` | 1 |
 | `row` | `role` | 'row' |
 | `week-day` | `aria-hidden` | 'true' |
@@ -363,9 +363,9 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `row-label` | `aria-colindex` | 1 |
 | `row-label` | `aria-hidden` | 'true' |
 | `row-label` | `role` | 'rowheader' |
-| `column-label` | `aria-colindex` | meta.index + 2 \| undefined |
+| `column-label` | `aria-colindex` | 数值（条件成立时才出现） |
 | `column-label` | `role` | 'columnheader' |
-| `cell` | `aria-colindex` | meta.columnIndex + 2 \| undefined |
+| `cell` | `aria-colindex` | 数值（条件成立时才出现） |
 | `cell` | `aria-label` | matrixCellLabel(heatmapDatumDetails({ row, column }, … |
 | `cell` | `role` | 'gridcell' |
 | `tooltip` | `aria-hidden` | 'true' |
@@ -405,27 +405,27 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `root` | `data-animating` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-palette` | props.palette |
-| `root` | `data-scale` | 'diverging' \| undefined |
+| `root` | `data-scale` | 'diverging'（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
-| `row` | `data-week` | String(row.week) |
-| `row` | `data-week-day` | undefined \| String(row.weekDay) |
-| `week-day` | `data-week-day` | undefined \| String(label.weekDay) |
+| `row` | `data-week` | 数值 |
+| `row` | `data-week-day` | 数值（条件成立时才出现） |
+| `week-day` | `data-week-day` | 数值（条件成立时才出现） |
 | `cell` | `data-drawing` | ''（条件成立时才出现） |
 | `cell` | `data-highlighted` | ''（条件成立时才出现） |
-| `cell` | `data-level` | String(place.level) |
+| `cell` | `data-level` | 数值 |
 | `cell` | `data-polarity` | place.polarity |
-| `tooltip` | `data-inline-anchor` | shownTooltip.tip?.box.inlineAnchor |
-| `tooltip` | `data-placement` | shownTooltip.tip?.placement |
+| `tooltip` | `data-inline-anchor` | 'start' \| 'end'（条件成立时才出现） |
+| `tooltip` | `data-placement` | 'block-start' \| 'block-end'（条件成立时才出现） |
 | `tooltip` | `data-state` | 'hidden' \| 'visible' |
 | `tooltip` | `data-xh-chart-part` | 'tooltip' |
 | `legend` | `data-xh-chart-part` | 'legend' |
-| `legend-label` | `data-bound` | label.bound |
-| `legend-item` | `data-level` | String(item.level) |
-| `legend-item` | `data-polarity` | item.polarity |
+| `legend-label` | `data-bound` | 'low' \| 'high' |
+| `legend-item` | `data-level` | 数值 |
+| `legend-item` | `data-polarity` | 'negative' \| 'positive'（条件成立时才出现） |
 | `empty` | `data-loading` | ''（条件成立时才出现） |
-| `empty` | `data-state` | 'loading' \| undefined |
+| `empty` | `data-state` | 'loading'（条件成立时才出现） |
 | `empty` | `data-xh-chart-part` | 'empty' |
 | `empty` | `data-xh-loading-ring` | '' |
 

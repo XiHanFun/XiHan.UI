@@ -253,7 +253,7 @@
 | `trigger` | `aria-disabled` | 'true' \| 'false' |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger-indicator` | `aria-hidden` | 'true' |
-| `content` | `aria-hidden` | !isOpen \|\| undefined |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
 | `content` | `aria-labelledby` | `trigger` 部件的 id |
 | `content` | `role` | 'group' |
 | `branch-trigger` | `aria-controls` | `branch-content` 部件的 id |
@@ -262,9 +262,9 @@
 | `branch-indicator` | `aria-hidden` | 'true' |
 | `branch-content` | `aria-labelledby` | `branch-trigger` 部件的 id |
 | `branch-content` | `role` | 'group' |
-| `link` | `aria-current` | 'page' \| undefined |
+| `link` | `aria-current` | 'page'（条件成立时才出现） |
 | `indicator` | `aria-hidden` | 'true' |
-| `viewport` | `aria-hidden` | !open \|\| undefined |
+| `viewport` | `aria-hidden` | 'true'（条件成立时才出现） |
 
 - 子级开关是原生按钮，`aria-expanded` / `aria-controls` 指向子级；子级收着时带 `hidden`、被 Tab 整段跳过，展开后 Tab 顺着文档序走进去。
 - 焦点在子级里按 Escape 只收起这一枝、焦点回到它的开关，再按一次才收起面板。
@@ -283,24 +283,24 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-orientation` | props.orientation |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
-| `list` | `data-orientation` | props.orientation |
+| `list` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-in-path` | ''（条件成立时才出现） |
-| `trigger` | `data-orientation` | props.orientation |
+| `trigger` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-xh-collection-context` | 'nav' |
 | `trigger` | `data-xh-collection-item` | '' |
 | `trigger` | `data-xh-collection-size` | props.size |
 | `trigger-indicator` | `data-disabled` | ''（条件成立时才出现） |
-| `trigger-indicator` | `data-orientation` | props.orientation |
+| `trigger-indicator` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `trigger-indicator` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-instant` | ''（条件成立时才出现） |
-| `content` | `data-orientation` | props.orientation |
+| `content` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-switching` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -317,11 +317,11 @@
 | `link` | `data-xh-collection-item` | '' |
 | `link` | `data-xh-collection-size` | props.size |
 | `indicator` | `data-instant` | ''（条件成立时才出现） |
-| `indicator` | `data-orientation` | props.orientation |
+| `indicator` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `indicator` | `data-state` | 'open' \| 'closed' |
 | `indicator` | `data-value` | context.get('value') |
 | `viewport` | `data-instant` | ''（条件成立时才出现） |
-| `viewport` | `data-orientation` | props.orientation |
+| `viewport` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `viewport` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->

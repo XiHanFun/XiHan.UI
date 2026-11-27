@@ -222,16 +222,16 @@ variant 只改变分段框的底色与描边用法，tone 与 variant 正交，s
 | `control` | `aria-disabled` | 'true' \| 'false' |
 | `control` | `aria-invalid` | 'true' \| 'false' |
 | `control` | `aria-label` | props.ariaLabel |
-| `control` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `control` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `control` | `role` | 'group' |
 | `segment` | `aria-disabled` | 'true' \| 'false' |
 | `segment` | `aria-invalid` | 'true' \| 'false' |
 | `segment` | `aria-label` | translations[segment] |
 | `segment` | `aria-readonly` | 'true' \| 'false' |
 | `segment` | `aria-required` | 'true' \| 'false' |
-| `segment` | `aria-valuemax` | range.max |
-| `segment` | `aria-valuemin` | range.min |
-| `segment` | `aria-valuenow` | segmentNumber(draft, segment, hourCycle) |
+| `segment` | `aria-valuemax` | 数值 |
+| `segment` | `aria-valuemin` | 数值 |
+| `segment` | `aria-valuenow` | 数值（条件成立时才出现） |
 | `segment` | `aria-valuetext` | timeSegmentText(draft, segment, { hourCycle, locale, … |
 | `segment` | `role` | 'spinbutton' |
 | `clear-trigger` | `aria-label` | translations.clearTrigger |
@@ -257,13 +257,13 @@ variant 只改变分段框的底色与描边用法，tone 与 variant 正交，s
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-empty` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
-| `control` | `data-variant` | props.variant |
+| `control` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |

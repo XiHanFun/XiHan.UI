@@ -201,9 +201,9 @@
 | `resize-trigger` | `aria-disabled` | 'true' \| 'false' |
 | `resize-trigger` | `aria-label` | translations.resizeTrigger(boundary, Math.max(0, last… |
 | `resize-trigger` | `aria-orientation` | 'horizontal' \| 'vertical' |
-| `resize-trigger` | `aria-valuemax` | String(panel.max) |
-| `resize-trigger` | `aria-valuemin` | String(panel.min) |
-| `resize-trigger` | `aria-valuenow` | String(panel.size) |
+| `resize-trigger` | `aria-valuemax` | 数值 |
+| `resize-trigger` | `aria-valuemin` | 数值 |
+| `resize-trigger` | `aria-valuenow` | 数值 |
 | `resize-trigger` | `role` | 'separator' |
 
 ## 样式参考
@@ -223,16 +223,16 @@
 | `root` | `data-animating` | ''（条件成立时才出现） |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-dragging` | ''（条件成立时才出现） |
-| `root` | `data-orientation` | props.orientation |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `panel` | `data-collapsed` | ''（条件成立时才出现） |
 | `panel` | `data-disabled` | ''（条件成立时才出现） |
 | `panel` | `data-dragging` | ''（条件成立时才出现） |
-| `panel` | `data-index` | String(panel.index) |
-| `panel` | `data-orientation` | props.orientation |
+| `panel` | `data-index` | 数值 |
+| `panel` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `resize-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `resize-trigger` | `data-dragging` | ''（条件成立时才出现） |
-| `resize-trigger` | `data-index` | String(boundary) |
-| `resize-trigger` | `data-orientation` | props.orientation |
+| `resize-trigger` | `data-index` | 数值 |
+| `resize-trigger` | `data-orientation` | 'horizontal' \| 'vertical' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

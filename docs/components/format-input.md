@@ -197,10 +197,10 @@ kinds 只留数字与百分比；连同「不设格式」不超过三项时，�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-describedby` | undefined \| `error-text` 部件的 id |
-| `root` | `aria-invalid` | 'true' \| undefined |
+| `root` | `aria-describedby` | `error-text` 部件的 id（条件成立时才出现） |
+| `root` | `aria-invalid` | 'true'（条件成立时才出现） |
 | `root` | `aria-label` | props.ariaLabel |
-| `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `root` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `root` | `role` | 'group' |
 | `preview` | `aria-live` | 'polite' |
 | `preview` | `role` | 'status' |
@@ -219,12 +219,12 @@ kinds 只留数字与百分比；连同「不设格式」不超过三项时，�
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
-| `root` | `data-kind` | undefined \| draft.kind |
+| `root` | `data-kind` | 'number' \| 'percent' \| 'date' \| 'rmb-upper' \| 'numeral'（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
-| `root` | `data-size` | props.size |
-| `root` | `data-variant` | props.variant |
-| `item` | `data-value` | option |
-| `item-label` | `data-value` | option |
+| `root` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost'（条件成立时才出现） |
+| `item` | `data-value` | 'pattern' \| 'decimals' \| 'grouping' \| 'rounding' \| 'decimals-mode' \| 'min-decimals' \| 'max-decimals' \| 'numeral-style' |
+| `item-label` | `data-value` | 'pattern' \| 'kind' \| 'decimals' \| 'grouping' \| 'rounding' \| 'decimals-mode' \| 'min-decimals' \| 'max-decimals' \| 'numeral-style' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

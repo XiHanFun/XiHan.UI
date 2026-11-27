@@ -321,7 +321,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `control` | `aria-disabled` | 'true' \| 'false' |
 | `control` | `aria-invalid` | 'true' \| 'false' |
 | `control` | `aria-label` | props.ariaLabel |
-| `control` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `control` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `control` | `role` | 'group' |
 | `segment-group` | `aria-disabled` | 'true' \| 'false' |
 | `segment-group` | `aria-label` | endLabel(index, translations) |
@@ -331,9 +331,9 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `segment` | `aria-label` | translations[segment] |
 | `segment` | `aria-readonly` | 'true' \| 'false' |
 | `segment` | `aria-required` | 'true' \| 'false' |
-| `segment` | `aria-valuemax` | range.max |
-| `segment` | `aria-valuemin` | range.min |
-| `segment` | `aria-valuenow` | segmentNumber(drafts[index], segment, hourCycle) |
+| `segment` | `aria-valuemax` | 数值 |
+| `segment` | `aria-valuemin` | 数值 |
+| `segment` | `aria-valuenow` | 数值（条件成立时才出现） |
 | `segment` | `aria-valuetext` | timeSegmentText(drafts[index], segment, { hourCycle, … |
 | `segment` | `role` | 'spinbutton' |
 | `range-separator` | `aria-hidden` | 'true' |
@@ -341,11 +341,11 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
 | `trigger` | `aria-label` | props.ariaLabel |
-| `trigger` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `trigger` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `clear-trigger` | `aria-label` | translations.clearTrigger |
-| `content` | `aria-hidden` | !open \|\| undefined |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
 | `content` | `aria-label` | props.ariaLabel |
-| `content` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `content` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `content` | `aria-modal` | 'false' |
 | `content` | `role` | 'dialog' |
 | `preset-group` | `aria-disabled` | 'true' \| 'false' |
@@ -390,25 +390,25 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-empty` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-state` | 'open' \| 'closed' |
-| `control` | `data-variant` | props.variant |
+| `control` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
 | `segment-group` | `data-complete` | ''（条件成立时才出现） |
 | `segment-group` | `data-disabled` | ''（条件成立时才出现） |
 | `segment-group` | `data-empty` | ''（条件成立时才出现） |
-| `segment-group` | `data-index` | String(index) |
+| `segment-group` | `data-index` | 0 \| 1 |
 | `segment-group` | `data-invalid` | ''（条件成立时才出现） |
 | `segment-group` | `data-out-of-range` | ''（条件成立时才出现） |
 | `segment-group` | `data-placeholder-shown` | ''（条件成立时才出现） |
-| `segment-group` | `data-placeholder-text` | props.endPlaceholder \| props.startPlaceholder \| undefined |
+| `segment-group` | `data-placeholder-text` | props.endPlaceholder \| props.startPlaceholder（条件成立时才出现） |
 | `segment-group` | `data-readonly` | ''（条件成立时才出现） |
 | `segment` | `data-disabled` | ''（条件成立时才出现） |
 | `segment` | `data-focus` | ''（条件成立时才出现） |
@@ -437,7 +437,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `positioner` | `data-size` | props.size |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-tone` | props.tone |
-| `positioner` | `data-variant` | props.variant |
+| `positioner` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
@@ -449,10 +449,10 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `preset` | `data-xh-collection-size` | props.size |
 | `column-group` | `data-disabled` | ''（条件成立时才出现） |
 | `column-group` | `data-focus` | ''（条件成立时才出现） |
-| `column-group` | `data-index` | String(index) |
+| `column-group` | `data-index` | 0 \| 1 |
 | `column-group` | `data-state` | 'open' \| 'closed' |
 | `column-group-label` | `data-disabled` | ''（条件成立时才出现） |
-| `column-group-label` | `data-index` | String(index) |
+| `column-group-label` | `data-index` | 0 \| 1 |
 | `column` | `data-disabled` | ''（条件成立时才出现） |
 | `column` | `data-state` | 'open' \| 'closed' |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
@@ -462,7 +462,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
-| `hidden-input` | `data-index` | String(index) |
+| `hidden-input` | `data-index` | 0 \| 1 |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

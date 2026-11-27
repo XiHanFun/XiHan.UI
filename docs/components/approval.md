@@ -263,8 +263,8 @@ requireReason 让用户拒绝时必须写明理由：备注空着就按拒绝或
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-describedby` | `description` 部件的 id \| undefined |
-| `root` | `aria-labelledby` | `title` 部件的 id \| undefined |
+| `root` | `aria-describedby` | `description` 部件的 id（条件成立时才出现） |
+| `root` | `aria-labelledby` | `title` 部件的 id（条件成立时才出现） |
 | `root` | `role` | 'group' |
 | `pending-indicator` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |
@@ -276,15 +276,15 @@ requireReason 让用户拒绝时必须写明理由：备注空着就按拒绝或
 | `item` | `aria-required` | 'true' \| 'false' |
 | `item` | `role` | 'checkbox' |
 | `item-indicator` | `aria-hidden` | 'true' |
-| `note` | `aria-invalid` | 'true' \| undefined |
+| `note` | `aria-invalid` | 'true'（条件成立时才出现） |
 | `note` | `aria-label` | translations.reason \| translations.note |
-| `note` | `aria-required` | 'true' \| undefined |
+| `note` | `aria-required` | 'true'（条件成立时才出现） |
 | `timer` | `aria-hidden` | 'true' |
 | `result` | `aria-hidden` | 'true' |
-| `approve-trigger` | `aria-busy` | 'true' \| undefined |
+| `approve-trigger` | `aria-busy` | 'true'（条件成立时才出现） |
 | `approve-trigger` | `aria-disabled` | 'true' \| 'false' |
 | `approve-trigger` | `aria-label` | translations.approve |
-| `deny-trigger` | `aria-busy` | 'true' \| undefined |
+| `deny-trigger` | `aria-busy` | 'true'（条件成立时才出现） |
 | `deny-trigger` | `aria-disabled` | 'true' \| 'false' |
 | `deny-trigger` | `aria-label` | translations.deny |
 
@@ -321,7 +321,7 @@ requireReason 让用户拒绝时必须写明理由：备注空着就按拒绝或
 | `item` | `data-xh-action-control` | '' |
 | `item` | `data-xh-action-display` | 'always' |
 | `item` | `data-xh-action-profile` | 'row' |
-| `item` | `data-xh-action-size` | props.size |
+| `item` | `data-xh-action-size` | 'sm' \| 'md' \| 'lg' |
 | `item` | `data-xh-action-variant` | 'ghost' |
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-value` | item.value |
@@ -329,7 +329,7 @@ requireReason 让用户拒绝时必须写明理由：备注空着就按拒绝或
 | `note` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `timer` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `result` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
-| `result` | `data-tone` | 'success' \| 'danger' \| undefined |
+| `result` | `data-tone` | 'success' \| 'danger'（条件成立时才出现） |
 | `footer` | `data-loading` | ''（条件成立时才出现） |
 | `footer` | `data-xh-loading-ring` | '' |
 | `approve-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -340,7 +340,7 @@ requireReason 让用户拒绝时必须写明理由：备注空着就按拒绝或
 | `approve-trigger` | `data-xh-action-control` | '' |
 | `approve-trigger` | `data-xh-action-display` | 'always' |
 | `approve-trigger` | `data-xh-action-profile` | 'text' |
-| `approve-trigger` | `data-xh-action-size` | props.size |
+| `approve-trigger` | `data-xh-action-size` | 'sm' \| 'md' \| 'lg' |
 | `approve-trigger` | `data-xh-action-variant` | 'solid' |
 | `approve-trigger` | `data-xh-ink-surface` | '' |
 | `deny-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -350,7 +350,7 @@ requireReason 让用户拒绝时必须写明理由：备注空着就按拒绝或
 | `deny-trigger` | `data-xh-action-control` | '' |
 | `deny-trigger` | `data-xh-action-display` | 'always' |
 | `deny-trigger` | `data-xh-action-profile` | 'text' |
-| `deny-trigger` | `data-xh-action-size` | props.size |
+| `deny-trigger` | `data-xh-action-size` | 'sm' \| 'md' \| 'lg' |
 | `deny-trigger` | `data-xh-action-variant` | 'outline' |
 
 <!-- xh-component-tokens:start -->

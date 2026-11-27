@@ -237,14 +237,14 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
-| `root` | `data-drag-mode` | context.get('mode') \| undefined |
+| `root` | `data-drag-mode` | 'pointer' \| 'keyboard'（条件成立时才出现） |
 | `root` | `data-dragging` | ''（条件成立时才出现） |
-| `root` | `data-drop` | 'inside' \| undefined |
-| `root` | `data-orientation` | props.orientation |
+| `root` | `data-drop` | 'inside'（条件成立时才出现） |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical' \| 'both' |
 | `item` | `data-animating` | ''（条件成立时才出现） |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-dragging` | ''（条件成立时才出现） |
-| `item` | `data-index` | String(item?.index ?? -1) |
+| `item` | `data-index` | 数值 |
 | `item-drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `item-drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
 | `item-drag-trigger` | `data-pressed` | ''（条件成立时才出现） |
@@ -253,7 +253,7 @@
 | `item-drag-trigger` | `data-xh-action-profile` | 'icon' |
 | `item-drag-trigger` | `data-xh-action-size` | 'xs' |
 | `item-drag-trigger` | `data-xh-action-variant` | 'ghost' |
-| `drop-indicator` | `data-orientation` | props.orientation |
+| `drop-indicator` | `data-orientation` | 'horizontal' \| 'vertical' \| 'both' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

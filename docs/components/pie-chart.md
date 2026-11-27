@@ -217,9 +217,9 @@ labelContent 决定标签写什么：取 name-value 等内建写法，或给函�
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | 'error' \| undefined |
+| `root` | 'error'（条件成立时才出现） |
 | `tooltip` | 'visible' \| 'hidden' |
-| `empty` | 'loading' \| undefined |
+| `empty` | 'loading'（条件成立时才出现） |
 
 以下名称仅用于内部状态机。
 
@@ -300,7 +300,7 @@ labelContent 决定标签写什么：取 name-value 等内建写法，或给函�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-busy` | 'true' \| undefined |
+| `root` | `aria-busy` | 'true'（条件成立时才出现） |
 | `legend` | `aria-label` | translations.legendLabel |
 | `legend` | `role` | 'toolbar' |
 | `legend-item` | `aria-pressed` | 'false' \| 'true' |
@@ -335,7 +335,7 @@ labelContent 决定标签写什么：取 name-value 等内建写法，或给函�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-loading` | ''（条件成立时才出现） |
-| `root` | `data-state` | 'error' \| undefined |
+| `root` | `data-state` | 'error'（条件成立时才出现） |
 | `root` | `data-xh-chart-part` | 'root' |
 | `caption` | `data-xh-chart-part` | 'caption' |
 | `legend` | `data-xh-chart-part` | 'legend' |
@@ -353,11 +353,11 @@ labelContent 决定标签写什么：取 name-value 等内建写法，或给函�
 | `plot` | `data-xh-chart-part` | 'plot' |
 | `defs` | `data-xh-chart-part` | 'defs' |
 | `pattern` | `data-xh-chart-part` | 'pattern' |
-| `pattern` | `data-xh-chart-slot` | undefined \| String(pattern.slot) |
+| `pattern` | `data-xh-chart-slot` | 数值（条件成立时才出现） |
 | `pattern-line` | `data-xh-chart-part` | 'pattern-line' |
 | `center` | `data-drawing` | ''（条件成立时才出现） |
-| `center` | `data-placement` | 'top' \| undefined |
-| `tooltip` | `data-placement` | 'top' \| 'bottom'-'right' \| 'left' \| undefined |
+| `center` | `data-placement` | 'top'（条件成立时才出现） |
+| `tooltip` | `data-placement` | 'top' \| 'bottom'-'right' \| 'left'（条件成立时才出现） |
 | `tooltip` | `data-state` | 'visible' \| 'hidden' |
 | `tooltip` | `data-xh-chart-part` | 'tooltip' |
 | `tooltip-header` | `data-xh-chart-part` | 'tooltip-header' |
@@ -369,13 +369,13 @@ labelContent 决定标签写什么：取 name-value 等内建写法，或给函�
 | `tooltip-value` | `data-xh-chart-part` | 'tooltip-value' |
 | `tooltip-name` | `data-xh-chart-part` | 'tooltip-name' |
 | `empty` | `data-loading` | ''（条件成立时才出现） |
-| `empty` | `data-state` | 'loading' \| undefined |
+| `empty` | `data-state` | 'loading'（条件成立时才出现） |
 | `empty` | `data-xh-chart-part` | 'empty' |
 | `empty` | `data-xh-loading-ring` | '' |
 | `mark` | `data-dimmed` | ''（条件成立时才出现） |
 | `mark` | `data-drawing` | '' |
-| `mark` | `data-xh-chart-part` | mark.part \| undefined |
-| `mark` | `data-xh-chart-slot` | slotAttr(slice.slot, slice.other) \| undefined |
+| `mark` | `data-xh-chart-part` | 'focus-ring' \| 'leader-line'（条件成立时才出现） |
+| `mark` | `data-xh-chart-slot` | slotAttr(slice.slot, slice.other)（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

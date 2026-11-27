@@ -176,27 +176,27 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-align` | align.base |
-| `root` | `data-align-lg` | align.lg |
-| `root` | `data-align-md` | align.md |
-| `root` | `data-align-sm` | align.sm |
-| `root` | `data-align-xl` | align.xl |
-| `root` | `data-gap` | gap.base |
-| `root` | `data-gap-lg` | gap.lg |
-| `root` | `data-gap-md` | gap.md |
-| `root` | `data-gap-sm` | gap.sm |
-| `root` | `data-gap-xl` | gap.xl |
+| `root` | `data-align` | 'start' \| 'end' \| 'center' \| 'stretch' \| 'baseline'（条件成立时才出现） |
+| `root` | `data-align-lg` | 'start' \| 'end' \| 'center' \| 'stretch' \| 'baseline'（条件成立时才出现） |
+| `root` | `data-align-md` | 'start' \| 'end' \| 'center' \| 'stretch' \| 'baseline'（条件成立时才出现） |
+| `root` | `data-align-sm` | 'start' \| 'end' \| 'center' \| 'stretch' \| 'baseline'（条件成立时才出现） |
+| `root` | `data-align-xl` | 'start' \| 'end' \| 'center' \| 'stretch' \| 'baseline'（条件成立时才出现） |
+| `root` | `data-gap` | 'sm' \| 'md' \| 'lg' \| 'xl' \| 'xs'（条件成立时才出现） |
+| `root` | `data-gap-lg` | 'sm' \| 'md' \| 'lg' \| 'xl' \| 'xs'（条件成立时才出现） |
+| `root` | `data-gap-md` | 'sm' \| 'md' \| 'lg' \| 'xl' \| 'xs'（条件成立时才出现） |
+| `root` | `data-gap-sm` | 'sm' \| 'md' \| 'lg' \| 'xl' \| 'xs'（条件成立时才出现） |
+| `root` | `data-gap-xl` | 'sm' \| 'md' \| 'lg' \| 'xl' \| 'xs'（条件成立时才出现） |
 | `root` | `data-inline` | ''（条件成立时才出现） |
-| `root` | `data-justify` | justify.base |
-| `root` | `data-justify-lg` | justify.lg |
-| `root` | `data-justify-md` | justify.md |
-| `root` | `data-justify-sm` | justify.sm |
-| `root` | `data-justify-xl` | justify.xl |
-| `root` | `data-orientation` | orientation.base |
-| `root` | `data-orientation-lg` | orientation.lg |
-| `root` | `data-orientation-md` | orientation.md |
-| `root` | `data-orientation-sm` | orientation.sm |
-| `root` | `data-orientation-xl` | orientation.xl |
+| `root` | `data-justify` | 'start' \| 'end' \| 'center' \| 'between' \| 'around' \| 'evenly'（条件成立时才出现） |
+| `root` | `data-justify-lg` | 'start' \| 'end' \| 'center' \| 'between' \| 'around' \| 'evenly'（条件成立时才出现） |
+| `root` | `data-justify-md` | 'start' \| 'end' \| 'center' \| 'between' \| 'around' \| 'evenly'（条件成立时才出现） |
+| `root` | `data-justify-sm` | 'start' \| 'end' \| 'center' \| 'between' \| 'around' \| 'evenly'（条件成立时才出现） |
+| `root` | `data-justify-xl` | 'start' \| 'end' \| 'center' \| 'between' \| 'around' \| 'evenly'（条件成立时才出现） |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical'（条件成立时才出现） |
+| `root` | `data-orientation-lg` | 'horizontal' \| 'vertical'（条件成立时才出现） |
+| `root` | `data-orientation-md` | 'horizontal' \| 'vertical'（条件成立时才出现） |
+| `root` | `data-orientation-sm` | 'horizontal' \| 'vertical'（条件成立时才出现） |
+| `root` | `data-orientation-xl` | 'horizontal' \| 'vertical'（条件成立时才出现） |
 | `root` | `data-wrap` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->

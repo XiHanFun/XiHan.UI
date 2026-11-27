@@ -168,7 +168,7 @@ orientation="vertical" 时转圈在上、配文在下居中，适合整块区域
 | `root` | `aria-label` | resolveLabel(props) |
 | `root` | `aria-live` | 'polite' |
 | `root` | `role` | 'status' |
-| `content` | `aria-busy` | 'true' \| undefined |
+| `content` | `aria-busy` | 'true'（条件成立时才出现） |
 
 ## 样式参考
 
@@ -184,11 +184,11 @@ orientation="vertical" 时转圈在上、配文在下居中，适合整块区域
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-orientation` | props.orientation |
-| `root` | `data-size` | props.size |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical'（条件成立时才出现） |
+| `root` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
 | `root` | `data-state` | 'visible' \| 'hidden' |
-| `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
+| `root` | `data-variant` | 'arc' \| 'ring' \| 'dots'（条件成立时才出现） |
 | `container` | `data-fullscreen` | ''（条件成立时才出现） |
 | `container` | `data-state` | 'visible' \| 'hidden' |
 | `content` | `data-state` | 'visible' \| 'hidden' |

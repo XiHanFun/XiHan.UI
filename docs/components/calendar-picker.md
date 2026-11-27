@@ -295,44 +295,44 @@ max-selected=3：选满后其余日子不可再加选，点掉一个即腾出名
 | `next-year-trigger` | `data-xh-action-profile` | 'icon' |
 | `next-year-trigger` | `data-xh-action-size` | 'xs' |
 | `next-year-trigger` | `data-xh-action-variant` | 'ghost' |
-| `heading` | `data-index` | frame.panelOf(panel).index |
-| `heading` | `data-view` | view |
+| `heading` | `data-index` | 数值 |
+| `heading` | `data-view` | 'year' \| 'quarter' \| 'month' \| 'week' \| 'day' |
 | `heading-year-trigger` | `data-disabled` | ''（条件成立时才出现） |
-| `heading-year-trigger` | `data-index` | frame.panelOf(panel).index |
+| `heading-year-trigger` | `data-index` | 数值 |
 | `heading-year-trigger` | `data-pressed` | ''（条件成立时才出现） |
-| `heading-year-trigger` | `data-view` | view |
+| `heading-year-trigger` | `data-view` | 'year' \| 'quarter' \| 'month' \| 'week' \| 'day' |
 | `heading-year-trigger` | `data-xh-action-control` | '' |
 | `heading-year-trigger` | `data-xh-action-display` | 'always' |
 | `heading-year-trigger` | `data-xh-action-profile` | 'text' |
 | `heading-year-trigger` | `data-xh-action-size` | 'xs' |
 | `heading-year-trigger` | `data-xh-action-variant` | 'ghost' |
 | `heading-month-trigger` | `data-disabled` | ''（条件成立时才出现） |
-| `heading-month-trigger` | `data-index` | frame.panelOf(panel).index |
+| `heading-month-trigger` | `data-index` | 数值 |
 | `heading-month-trigger` | `data-pressed` | ''（条件成立时才出现） |
-| `heading-month-trigger` | `data-view` | view |
+| `heading-month-trigger` | `data-view` | 'year' \| 'quarter' \| 'month' \| 'week' \| 'day' |
 | `heading-month-trigger` | `data-xh-action-control` | '' |
 | `heading-month-trigger` | `data-xh-action-display` | 'always' |
 | `heading-month-trigger` | `data-xh-action-profile` | 'text' |
 | `heading-month-trigger` | `data-xh-action-size` | 'xs' |
 | `heading-month-trigger` | `data-xh-action-variant` | 'ghost' |
 | `grid` | `data-disabled` | ''（条件成立时才出现） |
-| `grid` | `data-index` | frame.panelOf(panel).index |
+| `grid` | `data-index` | 数值 |
 | `grid` | `data-readonly` | ''（条件成立时才出现） |
-| `grid` | `data-view` | view |
-| `week-row` | `data-view` | view |
+| `grid` | `data-view` | 'year' \| 'quarter' \| 'month' \| 'week' \| 'day' |
+| `week-row` | `data-view` | 'year' \| 'quarter' \| 'month' \| 'week' \| 'day' |
 | `cell` | `data-disabled` | ''（条件成立时才出现） |
 | `cell` | `data-focus` | ''（条件成立时才出现） |
 | `cell` | `data-outside-month` | ''（条件成立时才出现） |
 | `cell` | `data-selected` | ''（条件成立时才出现） |
 | `cell` | `data-today` | ''（条件成立时才出现） |
-| `cell` | `data-view` | view |
+| `cell` | `data-view` | 'year' \| 'quarter' \| 'month' \| 'week' \| 'day' |
 | `cell-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `cell-trigger` | `data-focus` | ''（条件成立时才出现） |
 | `cell-trigger` | `data-outside-month` | ''（条件成立时才出现） |
 | `cell-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `cell-trigger` | `data-selected` | ''（条件成立时才出现） |
 | `cell-trigger` | `data-today` | ''（条件成立时才出现） |
-| `cell-trigger` | `data-view` | view |
+| `cell-trigger` | `data-view` | 'year' \| 'quarter' \| 'month' \| 'week' \| 'day' |
 | `cell-trigger` | `data-xh-action-control` | '' |
 | `cell-trigger` | `data-xh-action-display` | 'always' |
 | `cell-trigger` | `data-xh-action-profile` | 'text' |

@@ -169,9 +169,9 @@ default 使用中性底，light 保持透明
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
-| `root` | `data-platform` | resolveKbdPlatform(props.platform) |
+| `root` | `data-platform` | 'mac' \| 'other' |
 | `root` | `data-register` | ''（条件成立时才出现） |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'light' \| 'default'（条件成立时才出现） |
 | `key` | `data-key` | segmentOf(value)?.key |
 
 <!-- xh-component-tokens:start -->

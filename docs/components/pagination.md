@@ -255,13 +255,13 @@ size 适配不同的界面密度；disabled 让数据加载期间整组不可操
 | `prev-trigger` | `aria-label` | label.prevTrigger |
 | `next-trigger` | `aria-label` | label.nextTrigger |
 | `last-trigger` | `aria-label` | label.lastTrigger |
-| `item` | `aria-current` | 'page' \| undefined |
+| `item` | `aria-current` | 'page'（条件成立时才出现） |
 | `item` | `aria-label` | label.item(item.page) |
-| `ellipsis-trigger` | `aria-controls` | `content` 部件的 id \| undefined |
+| `ellipsis-trigger` | `aria-controls` | `content` 部件的 id（条件成立时才出现） |
 | `ellipsis-trigger` | `aria-expanded` | 'true' \| 'false' |
 | `ellipsis-trigger` | `aria-haspopup` | 'true' |
 | `ellipsis-trigger` | `aria-label` | label.ellipsis( (items.find(item =&gt; item.type === 'el… |
-| `content` | `aria-hidden` | !open \|\| undefined |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
 | `content` | `aria-label` | label.ellipsis(folded.length) |
 | `content` | `role` | 'group' |
 
@@ -327,7 +327,7 @@ size 适配不同的界面密度；disabled 让数据加载期间整组不可操
 | `item` | `data-xh-action-variant` | 'ghost' |
 | `ellipsis-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `ellipsis-trigger` | `data-pressed` | ''（条件成立时才出现） |
-| `ellipsis-trigger` | `data-side` | props.side |
+| `ellipsis-trigger` | `data-side` | 'start' \| 'end' |
 | `ellipsis-trigger` | `data-state` | 'open' \| 'closed' |
 | `ellipsis-trigger` | `data-xh-action-control` | '' |
 | `ellipsis-trigger` | `data-xh-action-display` | 'always' |

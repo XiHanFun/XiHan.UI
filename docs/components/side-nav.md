@@ -350,11 +350,11 @@ size 适配不同密度的应用侧栏；禁用的入口保留位置与说明，
 | `branch-trigger` | `aria-disabled` | 'true' \| 'false' |
 | `branch-trigger` | `aria-expanded` | 'true' \| 'false' |
 | `branch-indicator` | `aria-hidden` | 'true' |
-| `branch-content` | `aria-hidden` | !open \|\| undefined |
-| `link` | `aria-current` | 'page' \| undefined |
-| `link` | `aria-disabled` | 'true' \| undefined |
+| `branch-content` | `aria-hidden` | 'true'（条件成立时才出现） |
+| `link` | `aria-current` | 'page'（条件成立时才出现） |
+| `link` | `aria-disabled` | 'true'（条件成立时才出现） |
 | `empty` | `role` | 'status' |
-| `popout-positioner` | `aria-hidden` | !open \|\| undefined |
+| `popout-positioner` | `aria-hidden` | 'true'（条件成立时才出现） |
 | `tooltip-content` | `aria-hidden` | 'true' |
 | `tooltip-content` | `role` | undefined |
 
@@ -397,7 +397,7 @@ size 适配不同密度的应用侧栏；禁用的入口保留位置与说明，
 | `branch-trigger` | `data-in-path` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-state` | 'open' \| 'closed' |
-| `branch-trigger` | `data-tone` | metaOf(v)?.tone |
+| `branch-trigger` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 | `branch-trigger` | `data-value` | itemValue(el) |
 | `branch-trigger` | `data-xh-collection-context` | 'page' |
 | `branch-trigger` | `data-xh-collection-item` | '' |
@@ -411,7 +411,7 @@ size 适配不同密度的应用侧栏；禁用的入口保留位置与说明，
 | `link` | `data-disabled` | ''（条件成立时才出现） |
 | `link` | `data-highlighted` | ''（条件成立时才出现） |
 | `link` | `data-pressed` | ''（条件成立时才出现） |
-| `link` | `data-tone` | metaOf(v)?.tone |
+| `link` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 | `link` | `data-value` | itemValue(el) |
 | `link` | `data-xh-collection-context` | 'page' |
 | `link` | `data-xh-collection-item` | '' |
@@ -419,7 +419,7 @@ size 适配不同密度的应用侧栏；禁用的入口保留位置与说明，
 | `link-text` | `data-xh-collection-slot` | 'text' |
 | `empty` | `data-xh-placeholder` | 'empty' |
 | `popout-positioner` | `data-hidden` | ''（条件成立时才出现） |
-| `popout-positioner` | `data-placement` | placed?.placement |
+| `popout-positioner` | `data-placement` | 'top-start' \| 'top-end' \| 'bottom-start' \| 'bottom-end' \| 'top' \| 'right' \| 'bottom' \| 'left' \| 'top-center' \| 'right-start' \| 'right-end' \| 'right-center' \| 'bottom-center' \| 'left-start' \| 'left-end' \| 'left-center' |
 | `popout-positioner` | `data-positioned` | ''（条件成立时才出现） |
 | `popout-positioner` | `data-size` | props.size |
 | `popout-positioner` | `data-state` | 'open' \| 'closed' |

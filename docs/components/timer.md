@@ -178,8 +178,8 @@ tick 每过一个 interval 触发一次，complete 只在到达终点时触发�
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | 'idle' \| 'running' \| 'paused' \| 'completed' |
-| `display` | 'idle' \| 'running' \| 'paused' \| 'completed' |
+| `root` | 'idle' \| 'completed' \| 'paused' \| 'running' |
+| `display` | 'idle' \| 'completed' \| 'paused' \| 'running' |
 
 以下名称仅用于内部状态机。
 
@@ -262,9 +262,9 @@ tick 每过一个 interval 触发一次，complete 只在到达终点时触发�
 | `root` | `data-controlled` | ''（条件成立时才出现） |
 | `root` | `data-countdown` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
-| `root` | `data-state` | 'idle' \| 'running' \| 'paused' \| 'completed' |
-| `display` | `data-state` | 'idle' \| 'running' \| 'paused' \| 'completed' |
-| `item` | `data-unit` | item.unit |
+| `root` | `data-state` | 'idle' \| 'completed' \| 'paused' \| 'running' |
+| `display` | `data-state` | 'idle' \| 'completed' \| 'paused' \| 'running' |
+| `item` | `data-unit` | 'days' \| 'hours' \| 'minutes' \| 'seconds' \| 'milliseconds' |
 | `control` | `data-action` | 'pause' \| 'resume' \| 'reset' \| 'start' |
 | `control` | `data-pressed` | ''（条件成立时才出现） |
 | `control` | `data-xh-action-control` | '' |

@@ -139,9 +139,9 @@ ghost 贴在页面底色上，outline 为带描边的独立面，subtle 淡底
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-size` | props.size |
+| `root` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
 | `root` | `data-split` | ''（条件成立时才出现） |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost'（条件成立时才出现） |
 | `back-trigger` | `data-xh-action-control` | '' |
 | `back-trigger` | `data-xh-action-display` | 'always' |
 | `back-trigger` | `data-xh-action-profile` | 'icon' |

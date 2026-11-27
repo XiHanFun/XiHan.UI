@@ -218,7 +218,7 @@ pattern 是一段正则源码，逐个字符整格匹配；写法无效时退回
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-label` | props.ariaLabel |
-| `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `root` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `root` | `role` | 'group' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-label` | label.input(index + 1, length) |
@@ -242,17 +242,17 @@ pattern 是一段正则源码，逐个字符整格匹配；写法无效时退回
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `group` | `data-disabled` | ''（条件成立时才出现） |
 | `group` | `data-invalid` | ''（条件成立时才出现） |
 | `input` | `data-disabled` | ''（条件成立时才出现） |
 | `input` | `data-empty` | ''（条件成立时才出现） |
 | `input` | `data-focus` | ''（条件成立时才出现） |
-| `input` | `data-index` | String(index) |
+| `input` | `data-index` | 数值 |
 | `input` | `data-invalid` | ''（条件成立时才出现） |
 | `input` | `data-readonly` | ''（条件成立时才出现） |
-| `input` | `data-variant` | props.variant |
+| `input` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `input` | `data-xh-field-chrome` | '' |
 | `input` | `data-xh-field-size` | props.size |
 | `separator` | `data-disabled` | ''（条件成立时才出现） |

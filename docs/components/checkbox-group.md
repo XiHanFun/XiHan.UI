@@ -185,7 +185,7 @@ minSelected / maxSelected 约束选中数：选满时没选的项置灰，降到
 | `item-text` | 'checked' \| 'unchecked' |
 | `item-description` | 'checked' \| 'unchecked' |
 | `hidden-input` | 'checked' \| 'unchecked' |
-| `select-all-trigger` | resolveCheckedState(value, prop('itemValues') ?? []) |
+| `select-all-trigger` | 'checked' \| 'unchecked' \| 'indeterminate' |
 
 以下名称仅用于内部状态机。
 
@@ -242,7 +242,7 @@ minSelected / maxSelected 约束选中数：选满时没选的项置灰，降到
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-label` | props.ariaLabel |
-| `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `root` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `root` | `role` | 'group' |
 | `item` | `aria-checked` | 'true' \| 'false' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
@@ -273,12 +273,12 @@ minSelected / maxSelected 约束选中数：选满时没选的项置灰，降到
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
-| `root` | `data-orientation` | props.orientation |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'card' \| 'list' |
 | `label` | `data-required` | ''（条件成立时才出现） |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
@@ -303,13 +303,13 @@ minSelected / maxSelected 约束选中数：选满时没选的项置灰，降到
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-readonly` | ''（条件成立时才出现） |
-| `select-all-trigger` | `data-state` | resolveCheckedState(value, prop('itemValues') ?? []) |
+| `select-all-trigger` | `data-state` | 'checked' \| 'unchecked' \| 'indeterminate' |
 | `select-all-trigger` | `data-xh-action-control` | '' |
 | `select-all-trigger` | `data-xh-action-display` | 'always' |
 | `select-all-trigger` | `data-xh-action-profile` | 'row' |
 | `select-all-trigger` | `data-xh-action-size` | 'xs' |
 | `select-all-trigger` | `data-xh-action-variant` | 'ghost' |
-| `select-all-trigger` | `data-xh-check-mark` | resolveCheckedState(value, prop('itemValues') ?? []) |
+| `select-all-trigger` | `data-xh-check-mark` | 'checked' \| 'unchecked' \| 'indeterminate' |
 | `select-all-trigger` | `data-xh-check-mark-profile` | 'row' |
 
 <!-- xh-component-tokens:start -->

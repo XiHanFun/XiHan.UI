@@ -146,6 +146,85 @@ function literalUnionText(typeNode, sf) {
   return members ? members.map(m => `'${m}'`).join(' | ') : null
 }
 
+// connect 的取值常落在导入的函数、本地小函数或成员访问上（`toStatus(state.get())`、`s.status`），
+// 语法树读不出取值集合，原先只好把源码原文抄进表里。这时问类型检查器：表达式的类型是字符串字面量联合，
+// 就落成联合。开 strict：可能缺席的取值（undefined）要留在联合里，表里才写得出「条件成立时才出现」。
+const connectFiles = fs
+  .readdirSync(headlessSrc, { withFileTypes: true })
+  .filter(d => d.isDirectory())
+  .map(d => path.join(headlessSrc, d.name, `${d.name}.connect.ts`))
+  .filter(file => fs.existsSync(file))
+const connectProgram = ts.createProgram(connectFiles, {
+  target: ts.ScriptTarget.ESNext,
+  module: ts.ModuleKind.ESNext,
+  moduleResolution: ts.ModuleResolutionKind.Bundler,
+  skipLibCheck: true,
+  strict: true,
+  noEmit: true,
+})
+const connectChecker = connectProgram.getTypeChecker()
+
+/**
+ * 按表达式的类型写取值：字符串与布尔字面量落成 `'a' | 'b'`，数值写「数值」（数字字面量照写），
+ * 可能缺席的（undefined / null）再补一个 undefined；别的类型（任意字符串、对象）返回 null。
+ * `String(index)` 这类把数值转成串的，按参数的类型算。
+ */
+function literalUnionOfType(node, sf) {
+  if (connectProgram.getSourceFile(sf.fileName) !== sf)
+    return null
+  const target = ts.isCallExpression(node) && node.expression.getText(sf) === 'String' && node.arguments.length === 1
+    ? node.arguments[0]
+    : node
+  const type = connectChecker.getTypeAtLocation(target)
+  const values = []
+  let absent = false
+  for (const member of type.isUnion() ? type.types : [type]) {
+    if (member.isStringLiteral())
+      values.push(`'${member.value}'`)
+    else if (member.isNumberLiteral())
+      values.push(String(member.value))
+    else if (member.flags & ts.TypeFlags.BooleanLiteral)
+      values.push(`'${connectChecker.typeToString(member)}'`)
+    else if (member.flags & ts.TypeFlags.Number)
+      values.push('数值')
+    else if (member.flags & (ts.TypeFlags.Undefined | ts.TypeFlags.Null | ts.TypeFlags.Void))
+      absent = true
+    else
+      return null
+  }
+  if (values.length === 0)
+    return null
+  return absent ? [...values, 'undefined'].join(' | ') : values.join(' | ')
+}
+
+/** 标识符在这份 connect 里绑到的变量声明（按作用域，不按名字）；不是变量或不在本文件返回 null。 */
+function declarationOf(node, sf) {
+  if (connectProgram.getSourceFile(sf.fileName) !== sf)
+    return null
+  const decl = connectChecker.getSymbolAtLocation(node)?.valueDeclaration
+  return decl && ts.isVariableDeclaration(decl) && decl.getSourceFile() === sf ? decl : null
+}
+
+/** 读出来的取值还像源码：去掉字面量与联合的分隔之后仍带 `props.` 或运算、调用、成员访问的符号。 */
+function readsAsSource(text) {
+  const rest = text.replace(/'[^']*'/g, '').replace(/ \| /g, ' ')
+  return /\bprops\.|[()?!&|.=<>+…]/.test(rest)
+}
+
+/**
+ * 联合整理成读者看的样子：去掉重复的取值（两条分支各给一份同样的联合），undefined 不当取值写——
+ * 它的意思是这一项不满足时属性不落到 DOM 上。
+ */
+function tidyAttrUnion(text) {
+  const parts = [...new Set(text.split(' | ').map(part => part.trim()))]
+  if (parts.length < 2)
+    return text
+  const kept = parts.filter(part => part !== 'undefined')
+  if (kept.length === 0 || kept.length === parts.length)
+    return kept.join(' | ')
+  return `${kept.join(' | ')}（条件成立时才出现）`
+}
+
 /** 把属性值表达式压成一句人读得懂的话；认不出就原样截断。 */
 function readAttrValue(node, sf, locals, seen = new Set()) {
   if (!node)
@@ -222,20 +301,23 @@ function readAttrValue(node, sf, locals, seen = new Set()) {
   if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.QuestionQuestionToken)
     return readAttrValue(node.left, sf, locals, seen) || readAttrValue(node.right, sf, locals, seen)
 
-  // 中间量顺着查一层：const stateAttr = open ? 'open' : 'closed'
+  // 中间量顺着查一层：const stateAttr = open ? 'open' : 'closed'。绑定由类型检查器按作用域找，
+  // 同一份 connect 里别处的同名局部量不会认错；读成一句说明（部件 id、定位落位）或字面量联合就照用，
+  // 读出来仍是源码（`props.variant`、只写了类型别名的 `status`）再按类型写取值集合
   if (ts.isIdentifier(node) && !seen.has(node.text)) {
-    const decl = locals.get(node.text)
+    const decl = declarationOf(node, sf) ?? locals.get(node.text)
     if (decl) {
       const next = new Set(seen).add(node.text)
-      const byType = literalUnionText(decl.type, sf)
-      if (byType)
-        return byType
-      const resolved = readAttrValue(decl.initializer, sf, locals, next)
-      if (resolved)
+      const resolved = literalUnionText(decl.type, sf) || readAttrValue(decl.initializer, sf, locals, next)
+      if (resolved && !readsAsSource(resolved))
         return resolved
+      return literalUnionOfType(node, sf) ?? resolved
     }
   }
 
+  const typed = literalUnionOfType(node, sf)
+  if (typed)
+    return typed
   const text = typeText(node, sf)
   return text.length > 56 ? `${text.slice(0, 53)}…` : text
 }
@@ -336,7 +418,9 @@ function attrSurface(id, parts, states) {
   const file = path.join(headlessSrc, id, `${id}.connect.ts`)
   if (!fs.existsSync(file))
     return { data: [], aria: [] }
-  const sf = ts.createSourceFile(file, fs.readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true)
+  // 取类型程序里的那一份语法树：兜底要问类型检查器，节点得出自同一个程序
+  const sf = connectProgram.getSourceFile(file)
+    ?? ts.createSourceFile(file, fs.readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true)
   const locals = localBindings(sf)
   const buckets = { data: [], aria: [] }
   const seen = new Set()
@@ -367,7 +451,7 @@ function attrSurface(id, parts, states) {
     (order.get(a.part) ?? 99) - (order.get(b.part) ?? 99) || a.attr.localeCompare(b.attr)
   // state.get() 就是状态机的当前状态：直接落成状态全集，读者不必再翻状态机那一节
   const stateUnion = states?.map(x => `'${x}'`).join(' | ')
-  const resolve = r => (stateUnion && r.value === 'state.get()' ? { ...r, value: stateUnion } : r)
+  const resolve = r => (stateUnion && r.value === 'state.get()' ? { ...r, value: stateUnion } : { ...r, value: tidyAttrUnion(r.value) })
   return { data: data.map(resolve).sort(sorter), aria: aria.map(resolve).sort(sorter) }
 }
 

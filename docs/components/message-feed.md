@@ -186,8 +186,8 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | props.status |
-| `pending-indicator` | props.status |
+| `root` | 'idle' \| 'submitted' \| 'error' \| 'streaming' |
+| `pending-indicator` | 'idle' \| 'submitted' \| 'error' \| 'streaming' |
 | `scroll-to-end-trigger` | 'hidden' \| 'visible' |
 
 以下名称仅用于内部状态机。
@@ -249,10 +249,10 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | --- | --- | --- |
 | `list` | `aria-label` | translations.feed |
 | `list` | `role` | 'feed' |
-| `item` | `aria-label` | undefined \| itemLabel(item.index + 1, count ?? -1, item.role) |
-| `item` | `aria-labelledby` | scope.partId('message-feed', `item-label:${item.id}`) \| undefined |
-| `item` | `aria-posinset` | item.index + 1 |
-| `item` | `aria-setsize` | props.count |
+| `item` | `aria-label` | itemLabel(item.index + 1, count ?? -1, item.role)（条件成立时才出现） |
+| `item` | `aria-labelledby` | scope.partId('message-feed', `item-label:${item.id}`)（条件成立时才出现） |
+| `item` | `aria-posinset` | 数值 |
+| `item` | `aria-setsize` | 数值（条件成立时才出现） |
 | `item` | `role` | 'article' |
 | `separator` | `aria-hidden` | 'true' |
 | `pending-indicator` | `aria-hidden` | 'true' |
@@ -282,17 +282,17 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
-| `root` | `data-state` | props.status |
+| `root` | `data-state` | 'idle' \| 'submitted' \| 'error' \| 'streaming' |
 | `list` | `data-instant` | ''（条件成立时才出现） |
-| `item` | `data-role` | item.role |
+| `item` | `data-role` | 'user' \| 'assistant' \| 'system'（条件成立时才出现） |
 | `item` | `data-streaming` | ''（条件成立时才出现） |
-| `pending-indicator` | `data-state` | props.status |
+| `pending-indicator` | `data-state` | 'idle' \| 'submitted' \| 'error' \| 'streaming' |
 | `scroll-to-end-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `scroll-to-end-trigger` | `data-state` | 'hidden' \| 'visible' |
 | `scroll-to-end-trigger` | `data-xh-action-control` | '' |
 | `scroll-to-end-trigger` | `data-xh-action-display` | 'always' |
 | `scroll-to-end-trigger` | `data-xh-action-profile` | 'floating' |
-| `scroll-to-end-trigger` | `data-xh-action-size` | floatingSizeBelow(prop('size')) |
+| `scroll-to-end-trigger` | `data-xh-action-size` | 'sm' \| 'md' \| 'lg' |
 | `scroll-to-end-trigger` | `data-xh-action-variant` | 'ghost' |
 | `scroll-to-end-trigger` | `data-xh-liquid` | '' |
 | `scroll-to-end-trigger` | `data-xh-material` | 'frosted' |

@@ -247,7 +247,7 @@ variant="segmented" 把一排短选项画成一条轨道，选中段由滑块标
 | --- | --- | --- |
 | `root` | `aria-invalid` | 'true' \| 'false' |
 | `root` | `aria-label` | props.ariaLabel |
-| `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `root` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `root` | `aria-orientation` | 'horizontal' \| 'vertical' |
 | `root` | `aria-readonly` | 'true' \| 'false' |
 | `root` | `aria-required` | 'true' \| 'false' |
@@ -290,7 +290,7 @@ variant="segmented" 把一排短选项画成一条轨道，选中段由滑块标
 | `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'card' \| 'list' \| 'segmented' |
 | `thumb` | `data-instant` | ''（条件成立时才出现） |
 | `thumb` | `data-value` | context.get('value') |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
@@ -298,11 +298,11 @@ variant="segmented" 把一排短选项画成一条轨道，选中段由滑块标
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-readonly` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
-| `item` | `data-xh-action-control` | undefined \| '' |
-| `item` | `data-xh-action-display` | undefined \| 'always' |
-| `item` | `data-xh-action-profile` | undefined \| 'row' |
-| `item` | `data-xh-action-size` | undefined \| 'xs' |
-| `item` | `data-xh-action-variant` | undefined \| 'outline' \| 'ghost' |
+| `item` | `data-xh-action-control` | ''（条件成立时才出现） |
+| `item` | `data-xh-action-display` | 'always'（条件成立时才出现） |
+| `item` | `data-xh-action-profile` | 'row'（条件成立时才出现） |
+| `item` | `data-xh-action-size` | 'xs'（条件成立时才出现） |
+| `item` | `data-xh-action-variant` | 'outline' \| 'ghost'（条件成立时才出现） |
 | `item` | `data-xh-choice-card` | ''（条件成立时才出现） |
 | `item-icon` | `data-disabled` | ''（条件成立时才出现） |
 | `item-icon` | `data-invalid` | ''（条件成立时才出现） |

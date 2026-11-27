@@ -168,9 +168,9 @@ text 关闭后只剩条；EAN 的守卫条按规范比数据条长 5X，不随�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-hidden` | 'true' \| undefined |
-| `root` | `aria-label` | undefined \| props.label |
-| `root` | `role` | undefined \| 'img' |
+| `root` | `aria-hidden` | 'true'（条件成立时才出现） |
+| `root` | `aria-label` | props.label（条件成立时才出现） |
+| `root` | `role` | 'img'（条件成立时才出现） |
 
 ## 样式参考
 
@@ -184,8 +184,8 @@ text 关闭后只剩条；EAN 的守卫条按规范比数据条长 5X，不随�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-format` | props.format |
-| `root` | `data-modules` | undefined \| String(modules) |
+| `root` | `data-format` | 'code128' \| 'ean13' \| 'ean8' \| 'upca' \| 'upce' \| 'itf14' \| 'code39'（条件成立时才出现） |
+| `root` | `data-modules` | 数值（条件成立时才出现） |
 | `root` | `data-state` | 'empty' |
 
 <!-- xh-component-tokens:start -->

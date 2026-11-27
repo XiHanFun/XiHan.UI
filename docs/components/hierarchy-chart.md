@@ -184,9 +184,9 @@ colorBy="value" 让颜色深浅对应数值，palette 换色相；图例每层�
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | 'error' \| undefined |
+| `root` | 'error'（条件成立时才出现） |
 | `tooltip` | 'visible' \| 'hidden' |
-| `empty` | 'loading' \| undefined |
+| `empty` | 'loading'（条件成立时才出现） |
 
 以下名称仅用于内部状态机。
 
@@ -268,10 +268,10 @@ colorBy="value" 让颜色深浅对应数值，palette 换色相；图例每层�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-busy` | 'true' \| undefined |
+| `root` | `aria-busy` | 'true'（条件成立时才出现） |
 | `path` | `aria-label` | translations.pathLabel |
-| `path-item` | `aria-current` | 'location' \| undefined |
-| `path-item` | `aria-disabled` | 'true' \| undefined |
+| `path-item` | `aria-current` | 'location'（条件成立时才出现） |
+| `path-item` | `aria-disabled` | 'true'（条件成立时才出现） |
 | `legend` | `aria-hidden` | 'true' |
 | `plot` | `aria-describedby` | `summary` 部件的 id |
 | `plot` | `aria-roledescription` | translations.chartRoleDescription |
@@ -303,8 +303,8 @@ colorBy="value" 让颜色深浅对应数值，palette 换色相；图例每层�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-loading` | ''（条件成立时才出现） |
-| `root` | `data-palette` | props.palette \| undefined |
-| `root` | `data-state` | 'error' \| undefined |
+| `root` | `data-palette` | props.palette（条件成立时才出现） |
+| `root` | `data-state` | 'error'（条件成立时才出现） |
 | `root` | `data-xh-chart-part` | 'root' |
 | `caption` | `data-xh-chart-part` | 'caption' |
 | `path-item` | `data-current` | ''（条件成立时才出现） |
@@ -314,11 +314,11 @@ colorBy="value" 让颜色深浅对应数值，palette 换色相；图例每层�
 | `path-item` | `data-xh-collection-size` | 'sm' |
 | `path-item` | `data-xh-collection-terminal` | ''（条件成立时才出现） |
 | `legend` | `data-xh-chart-part` | 'legend' |
-| `legend-scale` | `data-level` | scale.level |
-| `legend-scale-value` | `data-edge` | edge |
+| `legend-scale` | `data-level` | 数值 |
+| `legend-scale-value` | `data-edge` | 'min' \| 'max' |
 | `viewport` | `data-xh-chart-part` | 'viewport' |
 | `plot` | `data-xh-chart-part` | 'plot' |
-| `tooltip` | `data-placement` | 'top' \| 'bottom'-'right' \| 'left' \| undefined |
+| `tooltip` | `data-placement` | 'top' \| 'bottom'-'right' \| 'left'（条件成立时才出现） |
 | `tooltip` | `data-state` | 'visible' \| 'hidden' |
 | `tooltip` | `data-xh-chart-part` | 'tooltip' |
 | `tooltip-header` | `data-xh-chart-part` | 'tooltip-header' |
@@ -327,12 +327,12 @@ colorBy="value" 让颜色深浅对应数值，palette 换色相；图例每层�
 | `tooltip-value` | `data-xh-chart-part` | 'tooltip-value' |
 | `tooltip-name` | `data-xh-chart-part` | 'tooltip-name' |
 | `empty` | `data-loading` | ''（条件成立时才出现） |
-| `empty` | `data-state` | 'loading' \| undefined |
+| `empty` | `data-state` | 'loading'（条件成立时才出现） |
 | `empty` | `data-xh-chart-part` | 'empty' |
 | `empty` | `data-xh-loading-ring` | '' |
 | `mark` | `data-dimmed` | ''（条件成立时才出现） |
-| `mark` | `data-level` | String(Math.min(geometry.level, 4)) \| undefined |
-| `mark` | `data-xh-chart-part` | mark.part \| undefined |
+| `mark` | `data-level` | 数值（条件成立时才出现） |
+| `mark` | `data-xh-chart-part` | 'focus-ring'（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

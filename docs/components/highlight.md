@@ -131,7 +131,7 @@ tone 决定命中片段使用哪族颜色，未命中的文本不受影响
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-case-sensitive` | ''（条件成立时才出现） |
-| `root` | `data-tone` | props.tone |
+| `root` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

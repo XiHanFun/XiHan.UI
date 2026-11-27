@@ -123,9 +123,9 @@ label 为读屏提供有含义的名字；无法解析的串只剩棋盘格并�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-hidden` | undefined \| 'true' |
+| `root` | `aria-hidden` | 'true'（条件成立时才出现） |
 | `root` | `aria-label` | props.label |
-| `root` | `role` | 'img' \| undefined |
+| `root` | `role` | 'img'（条件成立时才出现） |
 
 ## 样式参考
 
@@ -140,10 +140,10 @@ label 为读屏提供有含义的名字；无法解析的串只剩棋盘格并�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
-| `root` | `data-size` | props.size |
+| `root` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
 | `root` | `data-value` | value \|\| undefined |
 | `root` | `data-xh-swatch` | '' |
-| `root` | `data-xh-swatch-size` | props.size |
+| `root` | `data-xh-swatch-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

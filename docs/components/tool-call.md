@@ -154,15 +154,15 @@
 | `root` | 'open' \| 'closed' |
 | `trigger` | 'open' \| 'closed' |
 | `indicator` | 'open' \| 'closed' |
-| `label` | props.phase |
-| `summary` | props.phase |
-| `status` | props.phase |
-| `duration` | props.phase |
-| `approval` | props.phase |
+| `label` | 'input-streaming' \| 'input-available' \| 'awaiting-approval' \| 'output-available' \| 'output-error'（条件成立时才出现） |
+| `summary` | 'input-streaming' \| 'input-available' \| 'awaiting-approval' \| 'output-available' \| 'output-error'（条件成立时才出现） |
+| `status` | 'input-streaming' \| 'input-available' \| 'awaiting-approval' \| 'output-available' \| 'output-error'（条件成立时才出现） |
+| `duration` | 'input-streaming' \| 'input-available' \| 'awaiting-approval' \| 'output-available' \| 'output-error'（条件成立时才出现） |
+| `approval` | 'input-streaming' \| 'input-available' \| 'awaiting-approval' \| 'output-available' \| 'output-error'（条件成立时才出现） |
 | `content` | 'open' \| 'closed' |
-| `input` | props.phase |
-| `output` | props.phase |
-| `error` | props.phase |
+| `input` | 'input-streaming' \| 'input-available' \| 'awaiting-approval' \| 'output-available' \| 'output-error'（条件成立时才出现） |
+| `output` | 'input-streaming' \| 'input-available' \| 'awaiting-approval' \| 'output-available' \| 'output-error'（条件成立时才出现） |
+| `error` | 'input-streaming' \| 'input-available' \| 'awaiting-approval' \| 'output-available' \| 'output-error'（条件成立时才出现） |
 
 以下名称仅用于内部状态机。
 
@@ -218,7 +218,7 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `trigger` | `aria-controls` | `content` 部件的 id |
-| `trigger` | `aria-describedby` | `error` 部件的 id \| undefined |
+| `trigger` | `aria-describedby` | `error` 部件的 id（条件成立时才出现） |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `indicator` | `aria-hidden` | 'true' |
 | `content` | `aria-labelledby` | `trigger` 部件的 id |
@@ -246,32 +246,32 @@
 | `root` | `data-error` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-settled` | ''（条件成立时才出现） |
-| `root` | `data-size` | props.size |
+| `root` | `data-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
 | `root` | `data-state` | 'open' \| 'closed' |
-| `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost'（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-xh-action-control` | '' |
 | `trigger` | `data-xh-action-display` | 'always' |
 | `trigger` | `data-xh-action-profile` | 'disclosure-trigger' |
-| `trigger` | `data-xh-action-size` | props.size |
+| `trigger` | `data-xh-action-size` | 'sm' \| 'md' \| 'lg'（条件成立时才出现） |
 | `trigger` | `data-xh-action-variant` | 'ghost' |
 | `indicator` | `data-instant` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | 'open' \| 'closed' |
-| `label` | `data-state` | props.phase |
-| `summary` | `data-state` | props.phase |
-| `status` | `data-state` | props.phase |
-| `status` | `data-tone` | statusTone(phase) |
+| `label` | `data-state` | 'input-streaming' \| 'input-available' \| 'awaiting-approval' \| 'output-available' \| 'output-error'（条件成立时才出现） |
+| `summary` | `data-state` | 'input-streaming' \| 'input-available' \| 'awaiting-approval' \| 'output-available' \| 'output-error'（条件成立时才出现） |
+| `status` | `data-state` | 'input-streaming' \| 'input-available' \| 'awaiting-approval' \| 'output-available' \| 'output-error'（条件成立时才出现） |
+| `status` | `data-tone` | 'brand' \| 'neutral' \| 'success' \| 'warning' \| 'danger' \| 'info'（条件成立时才出现） |
 | `duration` | `data-loading` | ''（条件成立时才出现） |
-| `duration` | `data-state` | props.phase |
-| `approval` | `data-state` | props.phase |
+| `duration` | `data-state` | 'input-streaming' \| 'input-available' \| 'awaiting-approval' \| 'output-available' \| 'output-error'（条件成立时才出现） |
+| `approval` | `data-state` | 'input-streaming' \| 'input-available' \| 'awaiting-approval' \| 'output-available' \| 'output-error'（条件成立时才出现） |
 | `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-state` | 'open' \| 'closed' |
-| `input` | `data-state` | props.phase |
-| `output` | `data-state` | props.phase |
-| `error` | `data-state` | props.phase |
+| `input` | `data-state` | 'input-streaming' \| 'input-available' \| 'awaiting-approval' \| 'output-available' \| 'output-error'（条件成立时才出现） |
+| `output` | `data-state` | 'input-streaming' \| 'input-available' \| 'awaiting-approval' \| 'output-available' \| 'output-error'（条件成立时才出现） |
+| `error` | `data-state` | 'input-streaming' \| 'input-available' \| 'awaiting-approval' \| 'output-available' \| 'output-error'（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

@@ -375,17 +375,17 @@ multiple 时选中的日期在输入行里排成标签，点标签上的叉或�
 | --- | --- | --- |
 | `segment-group` | `aria-disabled` | 'true' \| 'false' |
 | `segment-group` | `aria-label` | props.ariaLabel |
-| `segment-group` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `segment-group` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `segment-group` | `role` | 'group' |
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
 | `trigger` | `aria-label` | props.ariaLabel |
-| `trigger` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `trigger` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `clear-trigger` | `aria-label` | label.clearTrigger |
-| `content` | `aria-hidden` | !open \|\| undefined |
+| `content` | `aria-hidden` | 'true'（条件成立时才出现） |
 | `content` | `aria-label` | props.ariaLabel |
-| `content` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `content` | `aria-labelledby` | `label` 部件的 id（条件成立时才出现） |
 | `content` | `aria-modal` | 'false' |
 | `content` | `role` | 'dialog' |
 | `preset-group` | `aria-disabled` | 'true' \| 'false' |
@@ -425,21 +425,21 @@ multiple 时选中的日期在输入行里排成标签，点标签上的叉或�
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-state` | 'open' \| 'closed' |
-| `control` | `data-variant` | props.variant |
+| `control` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
-| `control` | `data-xh-field-layout` | 'multi-tag' \| undefined |
+| `control` | `data-xh-field-layout` | 'multi-tag'（条件成立时才出现） |
 | `control` | `data-xh-field-size` | props.size |
 | `tag-list` | `data-disabled` | ''（条件成立时才出现） |
 | `tag-list` | `data-instant` | ''（条件成立时才出现） |
 | `tag-list` | `data-placeholder-shown` | ''（条件成立时才出现） |
-| `tag-list` | `data-placeholder-text` | props.placeholder \| undefined \| undefined |
+| `tag-list` | `data-placeholder-text` | props.placeholder（条件成立时才出现） |
 | `tag-list` | `data-xh-tag-list` | '' |
 | `segment-group` | `data-complete` | ''（条件成立时才出现） |
 | `segment-group` | `data-disabled` | ''（条件成立时才出现） |
@@ -447,7 +447,7 @@ multiple 时选中的日期在输入行里排成标签，点标签上的叉或�
 | `segment-group` | `data-invalid` | ''（条件成立时才出现） |
 | `segment-group` | `data-out-of-range` | ''（条件成立时才出现） |
 | `segment-group` | `data-placeholder-shown` | ''（条件成立时才出现） |
-| `segment-group` | `data-placeholder-text` | props.placeholder \| undefined |
+| `segment-group` | `data-placeholder-text` | props.placeholder（条件成立时才出现） |
 | `segment-group` | `data-readonly` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
@@ -470,7 +470,7 @@ multiple 时选中的日期在输入行里排成标签，点标签上的叉或�
 | `positioner` | `data-size` | props.size |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-tone` | props.tone |
-| `positioner` | `data-variant` | props.variant |
+| `positioner` | `data-variant` | 'outline' \| 'subtle' \| 'ghost' |
 | `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
@@ -484,11 +484,11 @@ multiple 时选中的日期在输入行里排成标签，点标签上的叉或�
 | `calendar` | `data-disabled` | ''（条件成立时才出现） |
 | `calendar` | `data-readonly` | ''（条件成立时才出现） |
 | `calendar` | `data-state` | 'open' \| 'closed' |
-| `time-column` | `data-unit` | live[at]!.getAttribute('data-unit') as DatePickerTime… |
+| `time-column` | `data-unit` | 'hour' \| 'minute' \| 'second' \| 'dayPeriod'（条件成立时才出现） |
 | `time-item` | `data-disabled` | ''（条件成立时才出现） |
 | `time-item` | `data-pressed` | ''（条件成立时才出现） |
 | `time-item` | `data-state` | 'checked' \| 'unchecked' |
-| `time-item` | `data-unit` | live[at]!.getAttribute('data-unit') as DatePickerTime… |
+| `time-item` | `data-unit` | 'hour' \| 'minute' \| 'second' \| 'dayPeriod'（条件成立时才出现） |
 | `time-item` | `data-value` | v |
 | `time-item` | `data-xh-collection-context` | 'overlay' |
 | `time-item` | `data-xh-collection-item` | '' |
@@ -500,7 +500,7 @@ multiple 时选中的日期在输入行里排成标签，点标签上的叉或�
 | `confirm-trigger` | `data-xh-action-size` | 'xs' |
 | `confirm-trigger` | `data-xh-action-variant` | 'solid' |
 | `confirm-trigger` | `data-xh-ink-surface` | '' |
-| `overflow-tag` | `data-count` | String(overflowCount) |
+| `overflow-tag` | `data-count` | 数值 |
 | `tag` | `data-value` | v |
 
 <!-- xh-component-tokens:start -->
