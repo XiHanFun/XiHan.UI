@@ -36,7 +36,7 @@
 
 <XhDemo src="separator/03-section-title" />
 
-### 变体
+### 形态
 
 设置分隔线强度和线型
 

@@ -11,7 +11,7 @@ import type { MultiPointerSession } from '@xihan-ui/pointer'
 import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
 import type { LiquidIndicator } from '../shared/indicator'
 
-/** 视觉变体。line 是默认档，segment 用于需要浮起选中面的主导航。 */
+/** 形态。line 是默认档，segment 用于需要浮起选中面的主导航。 */
 export type TabsVariant = 'line' | 'card' | 'segmented'
 
 /**
@@ -136,7 +136,7 @@ export interface TabsSchema extends MachineSchema {
     activationMode?: TabsActivationMode
     /** 方向键到达末尾是否回绕，默认 true。 */
     loop?: boolean
-    /** 变体：line / card / segment，决定选中态的绘制方式。默认 line。 */
+    /** 形态：line / card / segment，决定选中态的绘制方式。默认 line。 */
     variant?: TabsVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 */
     tone?: Tone

@@ -96,7 +96,7 @@ export interface FloatButtonAppearance {
   offset?: number
   /** 指针悬停就展开动作组，默认关（点击才展开）。 */
   expandOnHover?: boolean
-  /** 变体：solid / subtle / outline / ghost，默认 outline（缺省中性，描边 + 磨砂面；solid 才品牌实心）。 */
+  /** 形态：solid / subtle / outline / ghost，默认 outline（缺省中性，描边 + 磨砂面；solid 才品牌实心）。 */
   variant?: ActionVariant
   /** 颜色：brand / neutral / success / warning / danger / info。 */
   tone?: Tone

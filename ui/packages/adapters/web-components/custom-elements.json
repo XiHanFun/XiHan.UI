@@ -3810,7 +3810,7 @@
               "type": {
                 "text": "ActionVariant | undefined"
               },
-              "description": "变体，默认 subtle；下发给未自写 variant 的每一段",
+              "description": "形态，默认 subtle；下发给未自写 variant 的每一段",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -4092,7 +4092,7 @@
               "type": {
                 "text": "ButtonVariant | undefined"
               },
-              "description": "视觉变体，默认 solid（只有 Button 缺省品牌实心，其余触发器缺省中性）；dashed 描边改虚线，link 是不铺面的文字钮",
+              "description": "形态，默认 solid（只有 Button 缺省品牌实心，其余触发器缺省中性）；dashed 描边改虚线，link 是不铺面的文字钮",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -24980,7 +24980,7 @@
               "type": {
                 "text": "ActionVariant | undefined"
               },
-              "description": "变体，默认 subtle（solid 才品牌实心）",
+              "description": "形态，默认 subtle（solid 才品牌实心）",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -31705,7 +31705,7 @@
               "type": {
                 "text": "ActionVariant | undefined"
               },
-              "description": "变体，默认 outline（磨砂面；solid 才品牌实心）",
+              "description": "形态，默认 outline（磨砂面；solid 才品牌实心）",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -70839,7 +70839,7 @@
               "type": {
                 "text": "TabsVariant | undefined"
               },
-              "description": "视觉变体，默认 line",
+              "description": "形态，默认 line",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -71703,7 +71703,7 @@
               "type": {
                 "text": "TagVariant | undefined"
               },
-              "description": "视觉变体，沿继承流下发给每个标签",
+              "description": "形态，沿继承流下发给每个标签",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -78045,7 +78045,7 @@
               "type": {
                 "text": "ActionVariant | undefined"
               },
-              "description": "变体，决定段的底色与描边使用方式",
+              "description": "形态，决定段的底色与描边使用方式",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -78415,7 +78415,7 @@
               "type": {
                 "text": "ActionVariant | undefined"
               },
-              "description": "视觉变体，默认 subtle；solid 只在按下时品牌实心，未按下按 ghost 取面",
+              "description": "形态，默认 subtle；solid 只在按下时品牌实心，未按下按 ghost 取面",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -84662,7 +84662,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-typography>`：Light-DOM 行为宿主，无状态机，把 connectTypography 产出接到各角色节点。\n\n标签全部由作者编写：`<h2 data-xh-part=\"heading\">`、`<p data-xh-part=\"paragraph\">`、\n`<span data-xh-part=\"text\">`、`<a data-xh-part=\"link\">`，皮肤识别的是 data-scope + data-part。\n标题的字号档位取节点上的 `level`，行内文字的变体、颜色与字重取节点上的 `variant`、`tone` 与 `weight`，\n删除线、下划线与标记取节点上有没有 `strikethrough`、`underline` 与 `mark` 三个布尔属性。\n运行期改写这些属性不触发重新接线，需作者自行 requestUpdate。",
+          "description": "`<xh-typography>`：Light-DOM 行为宿主，无状态机，把 connectTypography 产出接到各角色节点。\n\n标签全部由作者编写：`<h2 data-xh-part=\"heading\">`、`<p data-xh-part=\"paragraph\">`、\n`<span data-xh-part=\"text\">`、`<a data-xh-part=\"link\">`，皮肤识别的是 data-scope + data-part。\n标题的字号档位取节点上的 `level`，行内文字的形态、语气与字重取节点上的 `variant`、`tone` 与 `weight`，\n删除线、下划线与标记取节点上有没有 `strikethrough`、`underline` 与 `mark` 三个布尔属性。\n运行期改写这些属性不触发重新接线，需作者自行 requestUpdate。",
           "name": "XhTypographyElement",
           "cssParts": [
             {
@@ -84678,7 +84678,7 @@
               "name": "paragraph"
             },
             {
-              "description": "行内文字，支持变体、颜色、字重，以及删除线、下划线与标记三个开关",
+              "description": "行内文字，支持形态、语气、字重，以及删除线、下划线与标记三个开关",
               "name": "text"
             },
             {

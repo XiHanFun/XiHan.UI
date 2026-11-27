@@ -1,4 +1,4 @@
-<!-- 外观 | default 使用中性底，light 保持透明 -->
+<!-- 形态 | default 使用中性底，light 保持透明 -->
 <script setup lang="ts">
 import { XhKbd } from "@xihan-ui/vue";
 </script>

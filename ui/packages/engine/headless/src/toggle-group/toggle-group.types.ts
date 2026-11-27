@@ -97,7 +97,7 @@ export interface ToggleGroupSchema<V = string> extends MachineSchema {
      * 多选模式下不可移除最后一个。
      */
     allowEmpty?: boolean
-    /** 变体：solid / subtle / outline / ghost，决定段的底色与描边使用方式。 */
+    /** 形态：solid / subtle / outline / ghost，决定段的底色与描边使用方式。 */
     variant?: ActionVariant
     /** 颜色：brand / neutral / success / warning / danger / info。 */
     tone?: Tone

@@ -1,4 +1,4 @@
-<!-- 变体 | 设置分隔线强度和线型 -->
+<!-- 形态 | 设置分隔线强度和线型 -->
 <script setup lang="ts">
 import { XhSeparator } from "@xihan-ui/vue";
 </script>

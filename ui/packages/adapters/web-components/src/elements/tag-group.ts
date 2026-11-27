@@ -53,7 +53,7 @@ import { MachineController } from '../runtime/machine-controller'
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义，默认 ltr
  * @attr {'horizontal'|'vertical'} orientation - 方向键轴向，默认 horizontal
  * @attr {boolean} typeahead - 连打检索，默认开启；写 typeahead="false" 关闭
- * @attr {'solid'|'subtle'|'outline'} variant - 视觉变体，沿继承流下发给每个标签
+ * @attr {'solid'|'subtle'|'outline'} variant - 形态，沿继承流下发给每个标签
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`

@@ -30,7 +30,7 @@
 
 <XhDemo src="page-header/02-split-footer" />
 
-### 变体
+### 形态
 
 ghost 贴在页面底色上，outline 为带描边的独立面，subtle 淡底
 

@@ -24,7 +24,7 @@ Header 放标题与说明，Content 放主体
 
 ## 示例
 
-### 变体
+### 形态
 
 outline 为默认卡面，subtle 淡底嵌入，ghost 用于嵌套
 

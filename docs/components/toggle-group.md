@@ -122,7 +122,7 @@ split 设为 false，段与段之间不画分隔线
 | `invalid` | `boolean` |  | 校验失败标注：单选组写 aria-invalid；多选是 role=group，只写 data-invalid。 |
 | `required` | `boolean` |  | 必填：单选组写 aria-required，表单影子写原生 required；多选只写 data-required 与原生 required。 |
 | `allowEmpty` | `boolean` |  | 允许清空值，默认 true（可以点击为无选中）。写 false 时单选模式下点击当前选中项不再取消它， 多选模式下不可移除最后一个。 |
-| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，决定段的底色与描边使用方式。 |
+| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定段的底色与描边使用方式。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `fullWidth` | `boolean` |  | 撑满行宽：整组占满可用宽度，每段等分剩余空间。 |

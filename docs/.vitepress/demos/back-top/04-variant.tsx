@@ -1,4 +1,4 @@
-// 变体 | 选择与所在表面匹配的样式
+// 形态 | 选择与所在表面匹配的样式
 import type { CSSProperties, ReactNode } from "react";
 import { XhBackTopRoot, XhBackTopTrigger } from "@xihan-ui/react";
 

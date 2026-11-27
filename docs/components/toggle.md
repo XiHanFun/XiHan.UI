@@ -59,8 +59,8 @@ variant 在默认与幽灵两种外观之间切换；size 提供三种尺寸，�
 
 - 使用 `aria-pressed` 表达当前状态。
 - 支持受控和非受控状态。
-- 支持变体、颜色、尺寸、仅图标和全宽外观；缺省变体是中性淡底 `subtle`。
-- 按下态是实心主色配面上反白（与实心按钮、切换按钮组的选中段同一块面），悬停与按压走主色的深一档、再深一档；变体只决定未按下时的样子，`solid` 变体未按下时按 `ghost` 取面。
+- 支持形态、语气、尺寸、仅图标和全宽外观；缺省形态是中性淡底 `subtle`。
+- 按下态是实心主色配面上反白（与实心按钮、切换按钮组的选中段同一块面），悬停与按压走主色的深一档、再深一档；形态只决定未按下时的样子，`solid` 形态未按下时按 `ghost` 取面。
 - 禁用后保留当前按下状态。
 
 ### 组合
@@ -98,7 +98,7 @@ variant 在默认与幽灵两种外观之间切换；size 提供三种尺寸，�
 | `pressed` | `boolean` |  |  |
 | `defaultPressed` | `boolean` |  |  |
 | `disabled` | `boolean` |  |  |
-| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，默认 subtle（缺省中性淡底）。 solid 只在按下（on）时才是品牌实心，未按下时按 ghost 取面；其余三档按下时一律品牌淡底。 |
+| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，默认 subtle（缺省中性淡底）。 solid 只在按下（on）时才是品牌实心，未按下时按 ghost 取面；其余三档按下时一律品牌淡底。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg |
 | `iconOnly` | `boolean` |  | 仅图标：左右内边距清零、宽高相等。宽度跟随当前尺寸档的高度， 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行提供可及名。 |

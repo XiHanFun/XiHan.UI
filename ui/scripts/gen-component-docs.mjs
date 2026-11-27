@@ -1153,14 +1153,6 @@ function demoHead(text) {
   return (source.match(/^<!--([\s\S]*?)-->/) ?? source.match(/^\/\/(.*)/))?.[1] ?? ''
 }
 
-function demoTitle(title) {
-  if (title === '形态' || title === '形态与语气')
-    return '变体'
-  if (title === '语气')
-    return '颜色'
-  return title
-}
-
 function demos(id) {
   const dir = path.join(demosRoot, id)
   if (!fs.existsSync(dir))
@@ -1188,7 +1180,8 @@ function demos(id) {
     const [title, ...rest] = head.trim().split('|')
     return {
       src: `${id}/${base}`,
-      title: demoTitle(title.trim()) || base,
+      // 标题照示例首行原样用：外观轴在示例、JSDoc 与 doc.md 里都叫「形态 / 语气」，生成页不另起一套叫法
+      title: title.trim() || base,
       description: prose(rest.join('|').trim()),
     }
   })

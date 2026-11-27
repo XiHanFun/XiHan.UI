@@ -17,7 +17,7 @@ export interface ToggleSchema extends MachineSchema {
     defaultPressed?: boolean
     disabled?: boolean
     /**
-     * 变体：solid / subtle / outline / ghost，默认 subtle（缺省中性淡底）。
+     * 形态：solid / subtle / outline / ghost，默认 subtle（缺省中性淡底）。
      * solid 只在按下（on）时才是品牌实心，未按下时按 ghost 取面；其余三档按下时一律品牌淡底。
      */
     variant?: ActionVariant

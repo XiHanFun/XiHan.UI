@@ -44,7 +44,7 @@ export interface ClipboardSchema extends MachineSchema {
     timeout?: number
     /** 禁用：复制按钮不可点击，作者调用 api.copy() 也无效（守卫在状态机层）。 */
     disabled?: boolean
-    /** 变体：solid / subtle / outline / ghost，默认 subtle（缺省中性淡底，solid 才品牌实心）。 */
+    /** 形态：solid / subtle / outline / ghost，默认 subtle（缺省中性淡底，solid 才品牌实心）。 */
     variant?: ActionVariant
     /** 颜色：brand / neutral / success / warning / danger / info。 */
     tone?: Tone

@@ -1,4 +1,4 @@
-// 外观 | default 使用中性底，light 保持透明
+// 形态 | default 使用中性底，light 保持透明
 import type { ReactNode } from "react";
 import { XhKbd } from "@xihan-ui/react";
 

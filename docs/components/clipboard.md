@@ -93,7 +93,7 @@ variant 设置复制按钮的外观，size 分小、中、大三档
 | `value` | `string` |  | 要复制的文本；未提供时复制空串。 |
 | `timeout` | `number` |  | 复制成功后指示器保持多久（毫秒），默认 3000；&lt;=0 或非有限数表示不自动回落。 |
 | `disabled` | `boolean` |  | 禁用：复制按钮不可点击，作者调用 api.copy() 也无效（守卫在状态机层）。 |
-| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，默认 subtle（缺省中性淡底，solid 才品牌实心）。 |
+| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，默认 subtle（缺省中性淡底，solid 才品牌实心）。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<ClipboardTranslations>` |  |  |

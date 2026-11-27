@@ -17,7 +17,7 @@ export interface ButtonSchema extends MachineSchema {
     /** 加载态：用 aria-disabled + 拦截事件表达，保留焦点。 */
     loading?: boolean
     /**
-     * 变体：solid / subtle / outline / ghost / dashed / link，默认 solid——只有 Button 缺省品牌实心，其余触发器缺省中性。
+     * 形态：solid / subtle / outline / ghost / dashed / link，默认 solid——只有 Button 缺省品牌实心，其余触发器缺省中性。
      * dashed 与 outline 同一套面、描边改虚线；link 是不铺面的文字钮，悬停与按下加下划线。
      */
     variant?: ButtonVariant

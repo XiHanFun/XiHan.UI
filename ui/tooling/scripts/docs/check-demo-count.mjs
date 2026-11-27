@@ -29,7 +29,14 @@ const TABLE = 'tooling/scripts/demo-count-exempt.json'
 const FLOOR = 3
 
 /** 外观轴示例的标题：只由这几个轴名用「、」「与」连成。 */
-const AXIS_TITLE = /^(?:形态|语气|尺寸|状态|颜色|变体)(?:[、与](?:形态|语气|尺寸|状态|颜色|变体))*$/
+const AXIS_TITLE = /^(?:形态|语气|尺寸|状态)(?:[、与](?:形态|语气|尺寸|状态))*$/
+
+/**
+ * 同样只由轴名连成、却把形态叫「变体」、语气叫「颜色」的标题：示例、JSDoc 与 doc.md 一律叫形态 / 语气，
+ * 同一条轴两套叫法读者对不上，这类标题直接判红。
+ */
+const STRAY_AXIS_TITLE = /^(?:形态|语气|尺寸|状态|颜色|变体)(?:[、与](?:形态|语气|尺寸|状态|颜色|变体))*$/
+const STRAY_AXIS_WORD = /颜色|变体/
 
 /** 清单里登记的组件，按出现次序；line 是它在清单里的行号，报错时指得到位置。 */
 async function manifestComponents() {
@@ -71,12 +78,16 @@ const components = await manifestComponents()
 const counts = new Map()
 /** 组件 → 外观轴示例（文件名与标题）。 */
 const axisDemos = new Map()
+/** 外观轴叫法不对的示例。 */
+const strayTitles = []
 for (const component of components) {
   const files = await demoFiles(component.id)
   counts.set(component.id, files.length)
   const axes = []
   for (const file of files) {
     const title = await demoTitle(component.id, file)
+    if (STRAY_AXIS_TITLE.test(title) && STRAY_AXIS_WORD.test(title))
+      strayTitles.push(`docs/.vitepress/demos/${component.id}/${file} —— 标题「${title}」：形态与语气这两条轴不叫「变体」「颜色」，改成「形态」「语气」`)
     if (AXIS_TITLE.test(title))
       axes.push(`${file.replace(/\.vue$/, '')}「${title}」`)
   }
@@ -120,7 +131,7 @@ function exemptLine(id) {
   return at === -1 ? 1 : at + 1
 }
 
-const problems = []
+const problems = [...strayTitles]
 let short = 0
 let total = 0
 

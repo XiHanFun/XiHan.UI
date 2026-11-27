@@ -48,7 +48,7 @@
 
 <XhDemo src="mention/05-async" />
 
-### 变体
+### 形态
 
 variant 更换正文框的描边与底色，候选面板不受影响
 

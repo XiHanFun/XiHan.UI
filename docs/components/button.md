@@ -76,8 +76,8 @@ variant 设置按钮外观，size 分小、中、大三档，disabled 标出暂�
 
 ### 特性
 
-- 支持四种变体、六种颜色和三种尺寸。
-- 缺省变体是品牌实心 `solid`，这是按钮独有的缺省；其余触发器缺省中性。
+- 支持四种形态、六种语气和三种尺寸。
+- 缺省形态是品牌实心 `solid`，这是按钮独有的缺省；其余触发器缺省中性。
 - 支持文字、图标、图标加文字与全宽按钮。
 - `loading` 保留焦点并阻止重复操作。在途时钮宽不变：进入在途一个 micro 之后，加载环在钮正中淡入、原有内容同刻淡出留位；不到一个 micro 就结束的请求什么都不闪，退出在途时两者交叉淡回。
 - `as="a"` 保留原生链接能力。
@@ -118,7 +118,7 @@ variant 设置按钮外观，size 分小、中、大三档，disabled 标出暂�
 | `type` | `'button' \| 'submit' \| 'reset'` |  |  |
 | `disabled` | `boolean` |  |  |
 | `loading` | `boolean` |  | 加载态：用 aria-disabled + 拦截事件表达，保留焦点。 |
-| `variant` | `ButtonVariant` |  | 变体：solid / subtle / outline / ghost / dashed / link，默认 solid——只有 Button 缺省品牌实心，其余触发器缺省中性。 dashed 与 outline 同一套面、描边改虚线；link 是不铺面的文字钮，悬停与按下加下划线。 |
+| `variant` | `ButtonVariant` |  | 形态：solid / subtle / outline / ghost / dashed / link，默认 solid——只有 Button 缺省品牌实心，其余触发器缺省中性。 dashed 与 outline 同一套面、描边改虚线；link 是不铺面的文字钮，悬停与按下加下划线。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  |  |
 | `iconOnly` | `boolean` |  | 仅图标：左右内边距清零、宽高相等。宽度跟随当前尺寸档的高度， 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行提供可及名： 根上写 aria-label / aria-labelledby，或在按钮里放一段视觉隐藏的文字。 |

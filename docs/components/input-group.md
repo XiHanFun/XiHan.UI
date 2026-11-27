@@ -30,7 +30,7 @@
 
 <XhDemo src="input-group/02-action" />
 
-### 变体
+### 形态
 
 outline 画描边输入面，subtle 用淡底嵌入已有表面
 

@@ -118,7 +118,7 @@ variant 设置浮动按钮的表面，size 取小、中、大三档
 | `size` | `Size` |  | 尺寸：sm / md / lg（28 / 40 / 44px），缺省 md：悬浮按钮需要易于触达，起始即比行内按钮大一档。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `translations` | `Partial<FloatButtonTranslations>` |  |  |
-| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，默认 outline（缺省中性，描边 + 磨砂面；solid 才品牌实心）。 |
+| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，默认 outline（缺省中性，描边 + 磨砂面；solid 才品牌实心）。 |
 
 ### 事件
 

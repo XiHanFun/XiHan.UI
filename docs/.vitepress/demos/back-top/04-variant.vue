@@ -1,4 +1,4 @@
-<!-- 变体 | 选择与所在表面匹配的样式 -->
+<!-- 形态 | 选择与所在表面匹配的样式 -->
 <script setup lang="ts">
 import { XhBackTopRoot, XhBackTopTrigger } from "@xihan-ui/vue";
 

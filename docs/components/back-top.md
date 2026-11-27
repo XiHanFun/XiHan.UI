@@ -36,7 +36,7 @@
 
 <XhDemo src="back-top/03-behavior" />
 
-### 变体
+### 形态
 
 选择与所在表面匹配的样式
 

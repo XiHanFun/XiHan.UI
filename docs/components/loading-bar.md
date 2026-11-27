@@ -42,7 +42,7 @@ trickle 为 false 时进度条停在起步值 startValue 不动，向前推进�
 
 <XhDemo src="loading-bar/04-trickle" />
 
-### 颜色
+### 语气
 
 tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，这里改写为 absolute 并配一个相对定位的容器，六条才留在示例中而不是叠到页面顶边
 

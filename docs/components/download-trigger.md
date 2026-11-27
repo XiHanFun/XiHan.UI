@@ -65,7 +65,7 @@ variant 设置触发器外观，size 取小、中、大三档，disabled 禁止�
 ### 组合
 
 - 与[进度条](./progress)组合展示可量化的长任务。
-- 通过变体与颜色调整操作层级。
+- 通过形态与语气调整操作层级。
 
 ### 最佳实践
 
@@ -99,7 +99,7 @@ variant 设置触发器外观，size 取小、中、大三档，disabled 禁止�
 | `fileName` | `string` |  | 写出的文件名；未提供或空串时回退为内建默认名。 |
 | `mimeType` | `string` |  | 内容类型；提供后以它为准，Blob 自带的类型也按它重新包装。未提供时文本按纯文本处理。 |
 | `disabled` | `boolean` |  | 禁用：按钮不可聚焦、不可点击。 |
-| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，默认 subtle（缺省中性淡底，solid 才品牌实心）。 |
+| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，默认 subtle（缺省中性淡底，solid 才品牌实心）。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<DownloadTriggerTranslations>` |  |  |

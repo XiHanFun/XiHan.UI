@@ -26,7 +26,7 @@ const GROUP_AXES: readonly GroupAxis[] = ['variant', 'tone', 'size']
  *
  * @customElement xh-button-group
  * @attr {'horizontal'|'vertical'} orientation - 排布，决定相邻两段在哪个轴上合并边缘，默认 horizontal
- * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体，默认 subtle；下发给未自写 variant 的每一段
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，默认 subtle；下发给未自写 variant 的每一段
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色；下发给未自写 tone 的每一段
  * @attr {'sm'|'md'|'lg'} size - 尺寸，决定各段的高度、内边距与字号；下发给未自写 size 的每一段
  * @attr {boolean} disabled - 整组禁用：组内每一段都写上原生 disabled；段自身声明禁用的仍然禁用

@@ -42,7 +42,7 @@ import { MachineController } from '../runtime/machine-controller'
  * @attr {boolean} invalid - 校验失败标注：单选组写 aria-invalid，多选只写 data-invalid
  * @attr {boolean} required - 必填：单选组写 aria-required，表单影子写原生 required
  * @attr {boolean} allow-empty - 允许清空值，默认 true；写 allow-empty="false" 时最后一个选中项不可移除
- * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体，决定段的底色与描边使用方式
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，决定段的底色与描边使用方式
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} full-width - 撑满行宽，每段等分剩余空间

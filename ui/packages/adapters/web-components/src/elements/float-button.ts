@@ -47,7 +47,7 @@ import { MachineController } from '../runtime/machine-controller'
  * @prop {FloatButtonPosition} position - 受控位置：贴边位置 `{ edge, ratio }` 或像素坐标 `{ x, y }`，只走 property
  * @prop {FloatButtonPosition} defaultPosition - 初始位置，例如 `{ edge: 'inline-end', ratio: 0.75 }`，只走 property
  * @attr {'hover'|'click'} expand-trigger - 展开方式，默认 click
- * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体，默认 outline（磨砂面；solid 才品牌实心）
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，默认 outline（磨砂面；solid 才品牌实心）
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸，默认与 lg 同档
  * @fires open-change - 展开状态变化；detail 为 `{ open: boolean }`

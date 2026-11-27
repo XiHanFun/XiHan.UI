@@ -42,7 +42,7 @@
 
 <XhDemo src="highlight/04-search" />
 
-### 颜色
+### 语气
 
 tone 决定命中片段使用哪族颜色，未命中的文本不受影响
 

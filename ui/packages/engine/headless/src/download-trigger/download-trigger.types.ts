@@ -49,7 +49,7 @@ export interface DownloadTriggerSchema extends MachineSchema {
     mimeType?: string
     /** 禁用：按钮不可聚焦、不可点击。 */
     disabled?: boolean
-    /** 变体：solid / subtle / outline / ghost，默认 subtle（缺省中性淡底，solid 才品牌实心）。 */
+    /** 形态：solid / subtle / outline / ghost，默认 subtle（缺省中性淡底，solid 才品牌实心）。 */
     variant?: ActionVariant
     /** 颜色：brand / neutral / success / warning / danger / info。 */
     tone?: Tone
