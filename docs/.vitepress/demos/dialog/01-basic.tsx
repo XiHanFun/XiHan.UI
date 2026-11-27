@@ -1,4 +1,4 @@
-// props 写法 | 不写结构时按标准结构铺：标题、说明与触发器文字三项写出一个确认对话框；确认动作返回 Promise 时等它落定才收起，期间确定钮转圈
+// 基础用法 | 不写结构时按标准结构铺：标题、说明与触发器文字三项写出一个确认对话框；确认动作返回 Promise 时等它落定才收起，期间确定钮转圈
 import type { ReactNode } from "react";
 import { XhDialogRoot } from "@xihan-ui/react";
 import { useState } from "react";

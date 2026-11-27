@@ -12,7 +12,7 @@
 
 ## 用法
 
-不传 open 即为非受控；Esc 或点击遮罩关闭，关闭后焦点回到触发按钮
+不写结构时按标准结构铺：标题、说明与触发器文字三项写出一个确认对话框；确认动作返回 Promise 时等它落定才收起，期间确定钮转圈
 
 <XhDemo src="dialog/01-basic" />
 
@@ -66,11 +66,11 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 
 <XhDemo src="dialog/09-service" />
 
-### props 写法
+### 手写部件
 
-不写结构时按标准结构铺：标题、说明与触发器文字三项写出一个确认对话框；确认动作返回 Promise 时等它落定才收起，期间确定钮转圈
+不传 open 即为非受控；Esc 或点击遮罩关闭，关闭后焦点回到触发按钮
 
-<XhDemo src="dialog/10-props" />
+<XhDemo src="dialog/10-parts" />
 
 ### 全屏
 
