@@ -271,7 +271,8 @@ export function connectFileUpload<T extends PropTypes>(
       'accept': acceptAttr(prop('accept')),
       // 是否多选由数量上限决定
       'multiple': maxFiles > 1 || undefined,
-      'webkitdirectory': prop('directory') || undefined,
+      // 不是标准布尔属性：按 DOM 口径写空串表示在场。写布尔 true 的话 React 不认这个属性名，会丢掉它
+      'webkitdirectory': prop('directory') ? '' : undefined,
       'capture': prop('capture'),
       'disabled': disabled || undefined,
       // 只在列表为空时带：选完文件输入就被清空，恒带会把已经选了文件的表单也拦下
