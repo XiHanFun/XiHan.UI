@@ -66,6 +66,8 @@ export interface XhSelectRootProps<V = string> extends RootElementProps {
   estimateSize?: number
   /** 列表内容第一次展开时才挂载；打开前的选中文字与收起态连打按 collection 算。 */
   lazyMount?: boolean
+  /** 收起动画播完后卸载列表内容，默认 false；下次展开重新挂载。收起之后的连打按 collection 算。 */
+  unmountOnExit?: boolean
   /** 标题文字。提供后不必再写 label 部件。 */
   label?: ReactNode
   /** 自动渲染树中的空态内容，没给时取 translations.empty。 */
@@ -143,6 +145,7 @@ export function XhSelectRoot<V = string>({
   virtual,
   estimateSize,
   lazyMount,
+  unmountOnExit,
   label,
   empty,
   value,
@@ -190,6 +193,7 @@ export function XhSelectRoot<V = string>({
     valueKey,
     virtualizer: virtual ? virtualWindow?.bridge : virtualizer,
     lazyMount,
+    unmountOnExit,
     value,
     defaultValue,
     multiple,
@@ -400,9 +404,9 @@ export interface XhSelectPositionerProps extends ComponentPropsWithRef<'div'> {
 export function XhSelectPositioner({ children, container, ...rest }: XhSelectPositionerProps): ReactNode {
   const ctx = useSelectContext()
   // 列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner，条子走浮层 4px 档
-  // 列表内容懒挂载、还没展开过时轴先禁用着：容器暂缺属于预期
+  // 列表内容判为不挂（lazyMount 还没展开过、unmountOnExit 退场播完）时轴先禁用着：容器暂缺属于预期
   // 虚拟化时滚的是 Virtualizer 的视口，列表只是视口里的一层：自绘条跟着桥交出的视口走，与 TreeSelect、Transfer 同一做法
-  const bars = useOverlayScrollbars({ present: () => ctx.rendered, scrollable: () => ctx.service.prop('virtualizer')?.getViewportElement() ?? ctx.listRef.current, props: () => ({ size: 'sm', disabled: !ctx.api.isContentMounted() }) })
+  const bars = useOverlayScrollbars({ present: () => ctx.rendered, scrollable: () => ctx.service.prop('virtualizer')?.getViewportElement() ?? ctx.listRef.current, props: () => ({ size: 'sm', disabled: !ctx.api.isContentMounted(ctx.rendered) }) })
   return (
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef} present={ctx.rendered}>
       <div
@@ -436,7 +440,8 @@ export function XhSelectContent({ children, ...rest }: XhSelectContentProps): Re
         },
       )}
     >
-      {ctx.api.isContentMounted() ? children : null}
+      {/* content 节点常驻；里面的内容挂不挂由 headless 按 lazyMount / unmountOnExit 判，手写与按数据铺的都走这一处 */}
+      {ctx.api.isContentMounted(ctx.rendered) ? children : null}
     </div>
   )
 }

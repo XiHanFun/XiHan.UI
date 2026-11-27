@@ -172,6 +172,11 @@ export interface SelectSchema<V = string> extends MachineSchema {
      */
     lazyMount?: boolean
     /**
+     * 收起动画播完后卸载列表内容，默认 false；下次展开重新挂载。收起之后的连打按 collection 计算；
+     * 没给 collection 时，收起期间换了值，选中文字退回值本身，连打不生效。
+     */
+    unmountOnExit?: boolean
+    /**
      * 选中值。裸串是单选的简写，null 是受控且无选中，未提供（undefined）才是非受控；内部一律按数组处理。
      * 受控时 cell 直读 prop，写入只发 onValueChange 不落内部值。
      */
@@ -244,7 +249,7 @@ export interface SelectSchema<V = string> extends MachineSchema {
      * 第一次收起时清掉，之后的每一次打开照常进场。
      */
     openedAtMount: boolean
-    /** 挂载之后展开过没有（含首帧即展开）。lazyMount 下列表内容从第一次展开起才挂载。 */
+    /** 挂载之后展开过没有（含首帧即展开）。lazyMount 下列表内容从第一次展开起才挂载，收起态连打也看它。 */
     opened: boolean
     /** 定位引擎回填的最新结果；connect 只读取它，不涉及 DOM 也不调用引擎。 */
     position: PositionResult | null
@@ -384,10 +389,11 @@ export interface SelectApi<T extends PropTypes = PropTypes, V = string> {
   /** 浮层外壳：描边、底色、阴影与键盘收口都在它身上。 */
   getContentProps: () => T['element']
   /**
-   * content 里的列表内容此刻该不该挂载。未开 lazyMount 时恒为真；开了的话第一次展开起为真。
+   * content 里的列表内容此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。
+   * 缺省恒为真；lazyMount 下没展开过为假；unmountOnExit 下闸门落下（退场播完）即为假。
    * content 节点本身始终在场，只有它的内容按此挂载。
    */
-  isContentMounted: () => boolean
+  isContentMounted: (present: boolean) => boolean
   /** 列表框本体，滚动在这一层；role=listbox 与条目的拥有关系都归它。 */
   getListProps: () => T['element']
   /** 浮层底部的操作区，是 list 的兄弟；不在列表框的拥有关系中，也不参与方向键与连打检索。 */

@@ -9,6 +9,7 @@ import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } fro
 import type { SelectApi, SelectItemProps, SelectNodeMeta, SelectSchema } from './select.types'
 import { contains, createPressTracker, dataAttr, focusItem, focusSafely, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemQuerySelector, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { SELECT_EN_US } from '../locale/en-US'
+import { overlayContentMounted } from '../shared/disclosure-mount'
 import { resolveMaxSelected } from '../shared/max-selected'
 import { overlayAnchorWidthVar, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
@@ -81,8 +82,9 @@ function connectSelectKeys<T extends PropTypes>(
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
   const indexOf = new Map(collection.map((meta, index) => [meta.value, index]))
   const virtualizer = prop('virtualizer')
-  // lazyMount 下第一次展开之前列表内容不在 DOM 里：收起态连打与选中文字都只能按 collection 算
-  const contentMounted = !prop('lazyMount') || context.get('opened')
+  // lazyMount 第一次展开之前、unmountOnExit 收起之后，列表内容不在 DOM 里：收起态连打与选中文字都只能按 collection 算。
+  // unmountOnExit 收起后一律按数据算，不看退场动画播没播完，同一下按键不因时机不同落到两条路上
+  const listDetached = (!!prop('lazyMount') && !context.get('opened')) || (!!prop('unmountOnExit') && !open)
   assertCollectionVirtualizer('Select', virtualizer, collection.length, prop('collection') != null)
 
   // 给了 collection 就当场按数据算，首帧即准；没给才读机器现查 DOM 后回填的那一份。
@@ -178,7 +180,7 @@ function connectSelectKeys<T extends PropTypes>(
     })
   }
 
-  /** 按 collection 数据连打检索：虚拟列表恒走这条；lazyMount 下列表还没挂上时收起态连打也走这条。 */
+  /** 按 collection 数据连打检索：虚拟列表恒走这条；列表内容不在 DOM 里（lazyMount 还没展开过、unmountOnExit 收起后）时收起态连打也走这条。 */
   const matchCollection = (query: string, from: string | null): { index: number, value: string } | null => {
     return virtualCollectionMatch(collection, from, query, {
       value: item => item.value,
@@ -339,7 +341,7 @@ function connectSelectKeys<T extends PropTypes>(
         const query = isTypeaheadEvent(event) ? refs.get('typeahead').push(event.key) : null
         if (query != null) {
           event.preventDefault()
-          const next = virtualizer || !contentMounted
+          const next = virtualizer || listDetached
             ? matchCollection(query, value.at(-1) ?? null)?.value ?? null
             : itemValue(match(query, value.at(-1) ?? null))
           if (next != null && interactive)
@@ -463,7 +465,7 @@ function connectSelectKeys<T extends PropTypes>(
     // 浮层的外壳：描边、底色、阴影画在它身上，键盘也在它上面收口（条目只管声明自己）。
     // 列表框语义与滚动都归 list——底部操作区要留在滚动之外，且 listbox 里不能塞按钮。
     // Escape 归消解层管，只有栈顶层响应。
-    isContentMounted: () => contentMounted,
+    isContentMounted: overlayContentMounted(prop, context.get('opened'), open),
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
       // 锚定瞬态浮层的内容面：皮肤按材质家族配方画 frosted 四件套与 1px 顶光

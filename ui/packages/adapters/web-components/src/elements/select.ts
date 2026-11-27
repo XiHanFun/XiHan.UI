@@ -78,6 +78,7 @@ const SELECT_VIRTUAL_ESTIMATE = 36
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} lazy-mount - 列表内容第一次展开时才挂载：条目写在 list 里的一个 `<template>` 中时，第一次展开才克隆、之后常驻；打开前的选中文字与收起态连打按 collection 算
+ * @attr {boolean} unmount-on-exit - 收起动画播完后撤走列表里的条目（按数据铺的与 `<template>` 克隆出的），下次展开重新铺，默认 false；收起之后的连打按 collection 算
  * @attr {string} value-key - 对象值按哪个字段取键（同一个选项每次都是新对象时给它）；取值函数经 property `valueKey` 给，不给按对象身份认
  * @fires value-change - 选中值变化；detail 为 `{ value: 值[] }`，值是 value / collection 里交进来的原值（字符串、数字或对象）
  * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
@@ -134,12 +135,14 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
     build: (host) => {
       if (!host.ctrl.service)
         return undefined
-      const nodes = selectStructure(connectSelect(host.ctrl.service, wcNormalize), {
+      const api = connectSelect(host.ctrl.service, wcNormalize)
+      const nodes = selectStructure(api, {
         label: host.label,
         clearable: host.clearable,
         empty: host.empty,
         virtualItems: host.virtual ? (host.virtualBinding?.virtualItems ?? []) : undefined,
         slotted: (name, key) => host.slotted(name, key),
+        contentMounted: host.listMounted(api),
       })
       // 虚拟化那一块还在路上：先不铺 Virtualizer 的视口与内容层，列表本体空着
       return host.virtual && !host.virtualBinding ? unwrapDelegated(nodes, VIRTUAL_STRUCTURE_DELEGATE.name) : nodes
@@ -156,6 +159,7 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
     virtual: { converter: BOOLEAN_CONVERTER },
     estimateSize: { converter: NUMBER_CONVERTER, attribute: 'estimate-size' },
     lazyMount: { converter: BOOLEAN_CONVERTER, attribute: 'lazy-mount' },
+    unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
     label: { converter: STRING_CONVERTER },
     clearable: { converter: BOOLEAN_CONVERTER },
     empty: { converter: STRING_CONVERTER },
@@ -191,6 +195,7 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
   declare virtual?: boolean
   declare estimateSize?: number
   declare lazyMount?: boolean
+  declare unmountOnExit?: boolean
   declare label?: string
   declare clearable?: boolean
   declare empty?: string
@@ -304,8 +309,16 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
     props: () => ({ size: 'sm' }),
   })
 
-  /** list 里 `<template>` 写的条目按 headless 的判定克隆进来；没写模板的作者节点照旧常驻 */
+  /** list 里 `<template>` 写的条目按 headless 的判定克隆进来或撤走；没写模板的作者节点照旧常驻 */
   private readonly lazyList = new LazyContent({ stash: false })
+
+  /**
+   * 列表里的条目此刻挂不挂。结构与 wire() 开头都排在闸门跟上 open 之前：展开中或退场没播完都算在场，
+   * 退场播完由闸门叫的那一轮撤掉条目。
+   */
+  private listMounted(api: { open: boolean, isContentMounted: (present: boolean) => boolean }): boolean {
+    return api.isContentMounted(api.open || this.overlay.visible)
+  }
 
   /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。 */
   private readonly declaredDisabled = createDisabledDeclarations()
@@ -332,6 +345,7 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
       ...valueTyped,
       virtualizer: this.currentVirtualizer(),
       lazyMount: this.lazyMount,
+      unmountOnExit: this.unmountOnExit,
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       disabled: control.disabled,
@@ -512,7 +526,7 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
     this.ensureVirtualBinding()
     const api = connectSelect(this.ctrl.service, wcNormalize)
     // 新克隆进来的条目由部件观察器补一轮 wire 接上属性
-    this.lazyList.sync(this.getPart('list'), api.isContentMounted())
+    this.lazyList.sync(this.getPart('list'), this.listMounted(api))
 
     const put = (name: string, props: Record<string, unknown>): void => {
       const el = this.getPart(name)

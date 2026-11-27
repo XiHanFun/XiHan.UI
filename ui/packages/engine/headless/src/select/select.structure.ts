@@ -72,10 +72,15 @@ export interface SelectStructureOptions {
    * 下标与 key 取自 Virtualizer 的 virtualItems；没给即铺全部条目。
    */
   virtualItems?: readonly StructureVirtualItem[]
+  /**
+   * 列表里的条目这一刻铺不铺，缺省铺；取 isContentMounted 的判定。Web Components 生成节点时按它增删条目，
+   * Vue / React 由 content 部件自己按判定渲不渲子节点，不必传。
+   */
+  contentMounted?: boolean
 }
 
 // 值不论什么类型，结构只用元信息里的键：按 unknown 收，带具体值类型的 api 都交得进来
-type SelectStructureModel = Pick<SelectApi<PropTypes, unknown>, 'collection' | 'multiple' | 'tags' | 'isContentMounted' | 'translations'>
+type SelectStructureModel = Pick<SelectApi<PropTypes, unknown>, 'collection' | 'multiple' | 'tags' | 'translations'>
 
 /** 一个条目：行首、文字、副文本、行尾、选中标记；带 slot 的格子的 data 是这一条的元信息。 */
 function itemStructure(node: SelectNodeMeta<unknown>, slotted: StructureSlotted): SelectNode {
@@ -105,6 +110,7 @@ const NOTHING_SLOTTED: StructureSlotted = () => false
  */
 export function selectStructure(model: SelectStructureModel, options: SelectStructureOptions = {}): SelectNode[] {
   const slotted = options.slotted ?? NOTHING_SLOTTED
+  const mounted = options.contentMounted !== false
   const trigger: SelectNode = {
     key: 'trigger',
     tag: 'button',
@@ -149,7 +155,7 @@ export function selectStructure(model: SelectStructureModel, options: SelectStru
           options.virtualItems
             ? virtualListStructure<SelectStructurePart | SelectTagPart>(
                 { key: 'list', tag: 'div', part: 'list' },
-                model.isContentMounted() ? options.virtualItems : [],
+                mounted ? options.virtualItems : [],
                 (index) => {
                   const node = model.collection[index]
                   return node ? itemStructure(node, slotted) : null
@@ -159,7 +165,8 @@ export function selectStructure(model: SelectStructureModel, options: SelectStru
                 key: 'list',
                 tag: 'div',
                 part: 'list',
-                children: model.isContentMounted() ? model.collection.map(node => itemStructure(node, slotted)) : [],
+                // lazyMount / unmountOnExit 判为不挂时 list 照旧在，里面不铺条目
+                children: mounted ? model.collection.map(node => itemStructure(node, slotted)) : [],
               },
           slotted('empty')
             ? { key: 'empty', tag: 'div', part: 'empty', slot: { name: 'empty' } }

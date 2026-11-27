@@ -62142,7 +62142,7 @@
                 "text": "ElementStructure<XhSelectElement>"
               },
               "static": true,
-              "default": "{ build: (host) => { if (!host.ctrl.service) return undefined const nodes = selectStructure(connectSelect(host.ctrl.service, wcNormalize), { label: host.label, clearable: host.clearable, empty: host.empty, virtualItems: host.virtual ? (host.virtualBinding?.virtualItems ?? []) : undefined, slotted: (name, key) => host.slotted(name, key), }) // 虚拟化那一块还在路上：先不铺 Virtualizer 的视口与内容层，列表本体空着 return host.virtual && !host.virtualBinding ? unwrapDelegated(nodes, VIRTUAL_STRUCTURE_DELEGATE.name) : nodes }, }"
+              "default": "{ build: (host) => { if (!host.ctrl.service) return undefined const api = connectSelect(host.ctrl.service, wcNormalize) const nodes = selectStructure(api, { label: host.label, clearable: host.clearable, empty: host.empty, virtualItems: host.virtual ? (host.virtualBinding?.virtualItems ?? []) : undefined, slotted: (name, key) => host.slotted(name, key), contentMounted: host.listMounted(api), }) // 虚拟化那一块还在路上：先不铺 Virtualizer 的视口与内容层，列表本体空着 return host.virtual && !host.virtualBinding ? unwrapDelegated(nodes, VIRTUAL_STRUCTURE_DELEGATE.name) : nodes }, }"
             },
             {
               "kind": "field",
@@ -62195,6 +62195,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "lazy-mount"
+            },
+            {
+              "kind": "field",
+              "name": "unmountOnExit",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "unmount-on-exit"
             },
             {
               "kind": "field",
@@ -62576,7 +62585,26 @@
               "privacy": "private",
               "readonly": true,
               "default": "new LazyContent({ stash: false })",
-              "description": "list 里 `<template>` 写的条目按 headless 的判定克隆进来；没写模板的作者节点照旧常驻"
+              "description": "list 里 `<template>` 写的条目按 headless 的判定克隆进来或撤走；没写模板的作者节点照旧常驻"
+            },
+            {
+              "kind": "method",
+              "name": "listMounted",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "{ open: boolean, isContentMounted: (present: boolean) => boolean }"
+                  }
+                }
+              ],
+              "description": "列表里的条目此刻挂不挂。结构与 wire() 开头都排在闸门跟上 open 之前：展开中或退场没播完都算在场，\n退场播完由闸门叫的那一轮撤掉条目。"
             },
             {
               "kind": "field",
@@ -63048,6 +63076,14 @@
               "description": "列表内容第一次展开时才挂载：条目写在 list 里的一个 `<template>` 中时，第一次展开才克隆、之后常驻；打开前的选中文字与收起态连打按 collection 算",
               "name": "lazy-mount",
               "fieldName": "lazyMount"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "收起动画播完后撤走列表里的条目（按数据铺的与 `<template>` 克隆出的），下次展开重新铺，默认 false；收起之后的连打按 collection 算",
+              "name": "unmount-on-exit",
+              "fieldName": "unmountOnExit"
             },
             {
               "type": {
